@@ -1,5 +1,9 @@
 # AgentMeasure Roadmap
 
+> **Status（2026-08-16）**：Public launch week — v0.1.0 已发布（Standard Draft 0.4.3 + @agentmeasure/mcp SDK），
+> 正在推进 **Product Gate A**（第一个真实外部 Provider + 第一份 Measurement Report 的实数据版）。
+> 开放讨论：#1 Strict Qualified Usage 默认值 · #3 首个 benchmark 设计。欢迎在任何环节提出异议。
+
 > 顺序原则（标准轨）：**先统一尺子（语义），再统一如何证明尺子可信（质量），最后才谈价值与生态。**
 > 顺序原则（产品轨）：**产品验证不能等标准毕业**——最小 hosted analytics 现在就可以验证
 > "有没有 Provider 真愿意接"，但商业产品不得控制标准定义。
