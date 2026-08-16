@@ -1,0 +1,15 @@
+{
+  "runtime": "claude-code",
+  "runtime_version": "2.x",
+  "collector_profile": "otel",
+  "valid_from": "2026-08-01",
+  "signals": {
+    "presented": "UNKNOWN",
+    "selected": "OBSERVABLE",
+    "invoked": "OBSERVABLE",
+    "completed": "OBSERVABLE",
+    "consumed": "OBSERVABLE",
+    "task_outcome": "PARTIAL",
+    "external_effect": "UNKNOWN"
+  }
+}

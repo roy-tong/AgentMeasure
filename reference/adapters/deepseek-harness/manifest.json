@@ -1,0 +1,15 @@
+{
+  "runtime": "deepseek-harness",
+  "runtime_version": "0.1.x",
+  "collector_profile": "plugin",
+  "valid_from": "2026-08-01",
+  "signals": {
+    "presented": "UNKNOWN",
+    "selected": "OBSERVABLE",
+    "invoked": "OBSERVABLE",
+    "completed": "OBSERVABLE",
+    "consumed": "UNKNOWN",
+    "task_outcome": "UNKNOWN",
+    "external_effect": "UNKNOWN"
+  }
+}

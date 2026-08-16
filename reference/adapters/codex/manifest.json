@@ -1,0 +1,15 @@
+{
+  "runtime": "codex",
+  "runtime_version": "0.148.x",
+  "collector_profile": "hook",
+  "valid_from": "2026-08-01",
+  "signals": {
+    "presented": "UNOBSERVABLE",
+    "selected": "OBSERVABLE",
+    "invoked": "OBSERVABLE",
+    "completed": "PARTIAL",
+    "consumed": "UNOBSERVABLE",
+    "task_outcome": "UNKNOWN",
+    "external_effect": "UNKNOWN"
+  }
+}

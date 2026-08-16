@@ -81,8 +81,8 @@ def _run_consumed_rate(vector: dict) -> bool:
 
 
 RUNNERS = {
-    "AUAS-M2.2 Selection Rate": _run_selection_rate,
-    "AUAS-M4.1 Result Consumed Rate": _run_consumed_rate,
+    "M2.2 Selection Rate": _run_selection_rate,
+    "M4.1 Result Consumed Rate": _run_consumed_rate,
 }
 
 

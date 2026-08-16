@@ -101,7 +101,7 @@ def compute(conn, project_id: str, days: int = DAYS) -> dict:
     # 披露：context/validity 未知份额（Strict 口径的激励漏洞防护）
     row = conn.execute(
         """
-        SELECT COUNT(*) FROM invocations i
+        SELECT COUNT(DISTINCT i.invocation_id) FROM invocations i
         JOIN observation_links l ON l.invocation_id = i.invocation_id
         JOIN observations o ON o.observation_id = l.observation_id
         WHERE i.project_id=? AND i.started_at>=? AND i.eligible=1
@@ -111,16 +111,27 @@ def compute(conn, project_id: str, days: int = DAYS) -> dict:
     ).fetchone()
     unknown_share_invocations = row[0] or 0
 
-    # ---- execution success（invocation 级） ----
+    # ---- success rate（AUAS-M3.3：Successful Completed ÷ Completed；
+    #      unknown/inconsistent 不进分母，单列披露） ----
     row = conn.execute(
         """
         SELECT COUNT(*), SUM(outcome='success') FROM invocations
         WHERE project_id=? AND started_at>=? AND eligible=1
+          AND outcome IN ('success', 'failure', 'denied')
         """,
         (project_id, since),
     ).fetchone()
-    total, success = row
-    success_rate = round(success / total, 3) if total else 0.0
+    completed, success = row
+    success_rate = round(success / completed, 3) if completed else 0.0
+    row = conn.execute(
+        """
+        SELECT COUNT(*) FROM invocations
+        WHERE project_id=? AND started_at>=? AND eligible=1
+          AND outcome NOT IN ('success', 'failure', 'denied')
+        """,
+        (project_id, since),
+    ).fetchone()
+    unknown_or_inconsistent = row[0] or 0
 
     # ---- 证据分布 / 宿主分布（invocation 级） ----
     evidence = conn.execute(
@@ -159,6 +170,7 @@ def compute(conn, project_id: str, days: int = DAYS) -> dict:
         "qualified_rate": qualified_rate,
         "unknown_context_or_validity": unknown_share_invocations,
         "success_rate": success_rate,
+        "unknown_or_inconsistent_outcomes": unknown_or_inconsistent,
         "evidence": [{"grade": e, "invocations": c} for e, c in evidence],
         "observers": [{"principal": p, "invocations": c} for p, c in hosts],
     }

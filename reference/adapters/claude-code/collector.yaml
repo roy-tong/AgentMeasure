@@ -29,7 +29,7 @@ processors:
   # 全量数据原样转发给用户 backend（不干预）
   passthrough:
   # agent-used 只保留工具调用相关信号（元数据层）
-  agentused-filter:
+  agentmeasure-filter:
     error_mode: ignore
     logs:
       log_record:
@@ -57,15 +57,15 @@ exporters:
   otlp/customer:
     endpoint: ${env:CUSTOMER_OTLP_ENDPOINT}
   # agent-used 本地 collector（默认端口）
-  otlp/agentused:
+  otlp/agentmeasure:
     endpoint: localhost:14318
 
 service:
   pipelines:
     logs:
       receivers: [otlp]
-      processors: [agentused-filter, batch]
-      exporters: [otlp/customer, otlp/agentused]
+      processors: [agentmeasure-filter, batch]
+      exporters: [otlp/customer, otlp/agentmeasure]
 ```
 
 ## 使用
@@ -83,5 +83,5 @@ claude --telemetry-endpoint http://localhost:4318/v1/logs
 ## 说明
 
 - **不要求用户放弃现有 backend**：passthrough 语义由 otlp/customer exporter 保证
-- **脱敏发生在 agent-used 消费侧**：filter processor 在导出到 agentused 前删除敏感属性（与 redactor 双保险）
+- **脱敏发生在 agent-used 消费侧**：filter processor 在导出到 agentmeasure 前删除敏感属性（与 redactor 双保险）
 - 本配置是设计稿；OTLP 接收端（collector serve --otlp-port）实现于 M2 的 collector 演进

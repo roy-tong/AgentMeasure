@@ -22,10 +22,10 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from collector.usage import pseudonymize  # noqa: E402
 
 EVENTS_DIR = Path(
-    os.environ.get("AGENT_USED_EVENTS_DIR", str(Path.home() / ".agent-used" / "events"))
+    os.environ.get("AGENTMEASURE_EVENTS_DIR", str(Path.home() / ".agent-used" / "events"))
 ).expanduser()
 DO_NOT_TRACK = os.environ.get("DO_NOT_TRACK", "0") == "1"
-AGENT_HOST = os.environ.get("AGENT_USED_HOST", "codex")
+AGENT_HOST = os.environ.get("AGENTMEASURE_HOST", "codex")
 
 # 允许透传的键（官方 PostToolUse 稳定字段）——内容键一律不捕获
 ALLOWED_KEYS = ("hook_event_name", "event_name", "tool_name", "tool_use_id",

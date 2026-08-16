@@ -22,7 +22,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from collector.verifier.ed25519 import publickey, sign  # noqa: E402
 from collector.verifier.verifier import canonical  # noqa: E402
 
-KEYS_DIR = Path(os.environ.get("AGENT_USED_KEYS_DIR", str(Path.home() / ".agent-used" / "keys")))
+KEYS_DIR = Path(os.environ.get("AGENTMEASURE_KEYS_DIR", str(Path.home() / ".agent-used" / "keys")))
 PUBLIC_DIR = Path(__file__).resolve().parents[2] / "keys"
 
 def load_secret(key_id: str) -> bytes:

@@ -58,7 +58,7 @@ PROVENANCES = ("hook", "otel", "wrapper", "platform")
 OUTCOMES = ("success", "failure", "retry", "denied", "unknown")
 
 # ---- 伪匿名（spec/privacy.md：HMAC(epoch_secret, host:raw) 按月轮换） ----
-_SECRET_PATH = Path(os.environ.get("AGENT_USED_IDENTITY_DIR", str(Path.home() / ".agent-used"))) / "identity"
+_SECRET_PATH = Path(os.environ.get("AGENTMEASURE_IDENTITY_DIR", str(Path.home() / ".agent-used"))) / "identity"
 
 
 def _epoch() -> str:

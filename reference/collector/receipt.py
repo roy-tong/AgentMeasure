@@ -27,7 +27,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from collector.usage import pseudonymize, utc_now  # noqa: E402
 
-PROTOCOL_VERSION = "auas-0.1"
+PROTOCOL_VERSION = "agentmeasure-0.1"
 
 RECEIPT_FIELDS = (
     "spec_version", "receipt_id", "observed_at",
@@ -42,8 +42,15 @@ RECEIPT_FIELDS = (
 COMMITMENT_FIELDS = ("project_id", "trace_id", "tool_call_id")
 
 
-def correlation_commitment(project_id: str, trace_id: str, tool_call_id: str) -> str:
-    """H(protocol_version || project_id || trace_id || tool_call_id)。"""
+def correlation_commitment(project_id: str, trace_id: str, tool_call_id: str):
+    """H(protocol_version || project_id || trace_id || tool_call_id)。
+
+    fail-closed：无 trace_id 且无 tool_call_id 时返回 None（关联材料不足，
+    绝不生成"同项目全空 id"的统一 commitment——否则同项目缺失 id 的调用
+    会被错误关联）。
+    """
+    if not trace_id and not tool_call_id:
+        return None
     payload = "||".join([PROTOCOL_VERSION, str(project_id or ""),
                          str(trace_id or ""), str(tool_call_id or "")])
     return "c-" + hashlib.sha256(payload.encode()).hexdigest()[:32]

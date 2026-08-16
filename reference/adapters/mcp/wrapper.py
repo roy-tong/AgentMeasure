@@ -6,9 +6,9 @@
   agent-used wrap -- <mcp-server-command> [args...]
 
 环境变量:
-  AGENT_USED_EVENTS_DIR  事件目录（默认 ~/.agent-used/events）
-  AGENT_USED_TARGET      被包装项目的标识（默认 github.com/roy-tong/agent-used）
-  AGENT_USED_OPTIN=1     允许上传聚合（当前版本仅记录，不实现上传）
+  AGENTMEASURE_EVENTS_DIR  事件目录（默认 ~/.agent-used/events）
+  AGENTMEASURE_TARGET      被包装项目的标识（默认 github.com/roy-tong/agent-used）
+  AGENTMEASURE_OPTIN=1     允许上传聚合（当前版本仅记录，不实现上传）
   DO_NOT_TRACK=1         完全禁用记录
 
 隐私边界（写死）: 只记工具名/结果/粗粒度耗时，绝不记录参数、结果、内容、路径。
@@ -28,12 +28,12 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 EVENTS_DIR = Path(
-    os.environ.get("AGENT_USED_EVENTS_DIR", str(Path.home() / ".agent-used" / "events"))
+    os.environ.get("AGENTMEASURE_EVENTS_DIR", str(Path.home() / ".agent-used" / "events"))
 ).expanduser()
-TARGET = os.environ.get("AGENT_USED_TARGET", "github.com/roy-tong/agent-used")
+TARGET = os.environ.get("AGENTMEASURE_TARGET", "github.com/roy-tong/agent-used")
 DO_NOT_TRACK = os.environ.get("DO_NOT_TRACK", "0") == "1"
-SIGNING_SECRET = os.environ.get("AGENT_USED_SECRET", "")  # 空 = 本地无签名模式
-KEY_ID = os.environ.get("AGENT_USED_KEY_ID", "local")
+SIGNING_SECRET = os.environ.get("AGENTMEASURE_SECRET", "")  # 空 = 本地无签名模式
+KEY_ID = os.environ.get("AGENTMEASURE_KEY_ID", "local")
 
 BUCKETS = [(1, "<1s"), (10, "1s-10s"), (60, "10s-60s"), (600, "1m-10m")]
 

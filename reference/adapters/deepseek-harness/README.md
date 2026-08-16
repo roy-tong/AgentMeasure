@@ -30,15 +30,15 @@ DSH session event stream（dsh-agent-loop 持久化事件流）
 
 ## 3. 事件映射（spec/otel-mapping.md）
 
-| DSH 字段 | agentused.* |
+| DSH 字段 | agentmeasure.* |
 | --- | --- |
 | `name`（tool/call） | `gen_ai.tool.name` → unified `tool` |
 | `callId` | `tool_use_id` |
 | `session`（DSH session id） | 伪匿名 `session_id`（本地哈希） |
-| — | `agentused.agent.host = "deepseek-harness"` |
-| — | `agentused.observer.side = "client"` |
-| — | `agentused.provenance = "platform"`（harness 原生） |
-| — | `agentused.evidence.level`：初始 E2（harness 原生配对）；工具侧同 trace 时升级 |
+| — | `agentmeasure.agent.host = "deepseek-harness"` |
+| — | `agentmeasure.observer.side = "client"` |
+| — | `agentmeasure.provenance = "platform"`（harness 原生） |
+| — | `agentmeasure.evidence.level`：初始 E2（harness 原生配对）；工具侧同 trace 时升级 |
 
 ## 4. 证据说明
 

@@ -4,7 +4,7 @@
 Metric 不能脱离 Policy：两个网站都显示 "Agent Usage = 12,000" 但一个只算 E2、
 另一个 E0 都算——不可比。本对象使指标携带完整口径：
 
-  12,481 ACD @ policy=AUAS/Core-1
+  12,481 ACD @ policy=AgentMeasure/Core-1
 
 Policy 字段（全部必填）：
   policy_id / spec_version
@@ -21,8 +21,8 @@ from __future__ import annotations
 import json
 
 CORE_POLICY_V1 = {
-    "policy_id": "AUAS/Core-1",
-    "spec_version": "auas-0.1",
+    "policy_id": "AgentMeasure/Core-1",
+    "spec_version": "agentmeasure-0.1",
     "eligible_evidence": ["E1+", "E2"],      # E0 不计入
     "correlation_policy": "exact-first",
     "coverage_scope": {"hosts": ["codex", "claude-code", "deepseek-harness"],

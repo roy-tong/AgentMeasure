@@ -31,7 +31,7 @@ def run_receipt_vectors() -> int:
                               observer_side=v["input"]["observer_side"],
                               provenance=v["input"]["provenance"],
                               project_id=v["input"]["project_id"])
-            ok = r["spec_version"] == "auas-0.1"
+            ok = r["spec_version"] == "agentmeasure-0.1"
         elif vid == "receipt-forbidden-fields":
             # 输入故意含内容字段；检查构建出的收据不含任何内容
             obs = empty_observation()

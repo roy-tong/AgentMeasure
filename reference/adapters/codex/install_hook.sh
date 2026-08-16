@@ -37,4 +37,4 @@ EOF
 echo "已写入 $HOOKS_FILE"
 echo "Codex 会要求你 review + trust 这个 hook（/hooks 命令）。"
 echo "事件写入 ~/.agent-used/events/agent-use-events.jsonl"
-echo "环境变量: AGENT_USED_TARGET=<你的项目标识> AGENT_USED_HOST=codex DO_NOT_TRACK=1(禁用)"
+echo "环境变量: AGENTMEASURE_TARGET=<你的项目标识> AGENTMEASURE_HOST=codex DO_NOT_TRACK=1(禁用)"
