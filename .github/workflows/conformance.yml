@@ -61,6 +61,9 @@ jobs:
       - name: AUAS test vectors
         run: |
           python3 verify_vectors.py
+      - name: Metric contract vectors
+        run: |
+          python3 conformance/runners/run_metrics.py
       - name: Conformance suite
         run: |
           python3 - <<'PY'
