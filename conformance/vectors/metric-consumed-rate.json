@@ -1,0 +1,46 @@
+{
+  "spec_version": "auas-0.3",
+  "metric": "AUAS-M4.1 Result Consumed Rate",
+  "grain": "result / invocation",
+  "strict_qualified": {"context": "production", "validity": "normal"},
+  "vectors": [
+    {
+      "id": "normal",
+      "description": "3 个 claude-otel 可观察调用，1 个被消费 → 0.333",
+      "input": {
+        "project": "p1",
+        "invocations": [
+          {"tool_call_id": "tc-1", "observer": "claude-otel@a", "outcome": "success", "context": "production", "validity": "normal"},
+          {"tool_call_id": "tc-2", "observer": "claude-otel@a", "outcome": "success", "context": "production", "validity": "normal"},
+          {"tool_call_id": "tc-3", "observer": "claude-otel@a", "outcome": "success", "context": "production", "validity": "normal"}
+        ],
+        "consumptions": [{"tool_use_id": "tc-1"}]
+      },
+      "expect": {"consumed": 1, "observable": 3, "unobservable": 0, "rate": 0.333}
+    },
+    {
+      "id": "unobservable-not-false",
+      "description": "codex 调用（consumption 不可观察）绝不并入分母、绝不记为未消费",
+      "input": {
+        "project": "p1",
+        "invocations": [
+          {"tool_call_id": "tc-1", "observer": "claude-otel@a", "outcome": "success", "context": "production", "validity": "normal"},
+          {"tool_call_id": "tc-x1", "observer": "codex-hook@b", "outcome": "success", "context": "production", "validity": "normal"},
+          {"tool_call_id": "tc-x2", "observer": "codex-hook@b", "outcome": "success", "context": "production", "validity": "normal"}
+        ],
+        "consumptions": [{"tool_use_id": "tc-1"}]
+      },
+      "expect": {"consumed": 1, "observable": 1, "unobservable": 2, "rate": 1.0}
+    },
+    {
+      "id": "duplicate",
+      "description": "同 tool_use_id 重复消费信号 → 只计 1 次消费",
+      "input": {
+        "project": "p1",
+        "invocations": [{"tool_call_id": "tc-1", "observer": "claude-otel@a", "outcome": "success", "context": "production", "validity": "normal"}],
+        "consumptions": [{"tool_use_id": "tc-1"}, {"tool_use_id": "tc-1"}]
+      },
+      "expect": {"consumed": 1, "observable": 1, "rate": 1.0}
+    }
+  ]
+}

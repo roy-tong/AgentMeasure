@@ -43,7 +43,47 @@ def _run_selection_rate(vector: dict) -> bool:
             and tool["selection_rate"] == exp["selection_rate"])
 
 
-RUNNERS = {"AUAS-M2.2 Selection Rate": _run_selection_rate}
+def _run_consumed_rate(vector: dict) -> bool:
+    from collector.correlator.correlator import connect, store_observation, match_invocations
+    from collector.consumption import ingest_consumption_events, consumed_rate
+    from collector.usage import empty_observation, new_observation_id
+
+    tmp = tempfile.mkdtemp()
+    conn = connect(Path(tmp) / "v.db")
+    project = vector["input"]["project"]
+    for i, inv in enumerate(vector["input"]["invocations"]):
+        # 每调用双侧观察（client=observer + server=wrapper）保证 eligible
+        for side, principal in (("client", inv["observer"]), ("server", "mcp-wrapper@t")):
+            o = empty_observation(); o.update(dict(
+                observation_id=new_observation_id(),
+                observed_at=f"2026-08-16T00:{i:02d}:00Z",
+                observer_principal=principal, observer_side=side,
+                provenance="hook" if side == "client" else "wrapper",
+                trust_domain="td-a" if side == "client" else "td-s",
+                project_id=project, tool="foo.search", tool_call_id=inv["tool_call_id"],
+                outcome=inv["outcome"], lifecycle_stage="L2",
+                usage_context=inv["context"], validity=inv["validity"]))
+            store_observation(conn, o)
+    match_invocations(conn)
+    path = Path(tmp) / "consume.jsonl"
+    path.write_text("\n".join(
+        json.dumps({"type": "tool_result", "tool_use_id": c["tool_use_id"], "tool": "foo.search",
+                    "ts": "2026-08-16T00:01:00Z"}) + "\n" +
+        json.dumps({"type": "request", "mcp_tool": "foo.search", "ts": "2026-08-16T00:01:05Z", "seq": i})
+        for i, c in enumerate(vector["input"]["consumptions"])), encoding="utf-8")
+    ingest_consumption_events(conn, path, project)
+    s = consumed_rate(conn, project)
+    exp = vector["expect"]
+    return (s["consumed_results"] == exp["consumed"]
+            and s["consumption_observable_invocations"] == exp["observable"]
+            and s["consumption_unobservable_invocations"] == exp.get("unobservable", 0)
+            and s["consumed_rate"] == exp["rate"])
+
+
+RUNNERS = {
+    "AUAS-M2.2 Selection Rate": _run_selection_rate,
+    "AUAS-M4.1 Result Consumed Rate": _run_consumed_rate,
+}
 
 
 def main() -> int:
