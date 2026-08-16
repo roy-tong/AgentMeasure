@@ -21,7 +21,7 @@ agentmeasure Collector（本地）
 | 接入形态 | OTel Collector Processor + Exporter 组合（AgentMeasure 发行独立 collector 配置） |
 | 数据分流 | 同一 OTLP 流：全量转发给用户 backend；AgentMeasure 只消费 execute_tool / mcp 相关 span |
 | 字段映射 | `gen_ai.tool.name`、`mcp.method.name` → unified tool；`agentmeasure.*` 扩展属性由 Claude adapter 注入 |
-| 证据等级 | Claude OTel 输出为 client 侧观测 → E1 起点；与工具侧 trace_id 匹配 → E2 |
+| 证据等级 | Claude OTel 输出为 client 侧观测 → authenticated 级起点；与工具侧 trace_id 匹配 → cross-side corroborated |
 | 敏感处理 | 官方提示 tool details 可能含 command/path/URL——AgentMeasure 消费端默认 DROP（复用 redactor） |
 | Session | Claude session 标识 → 伪匿名（本地哈希，不落原始值） |
 

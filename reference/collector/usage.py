@@ -31,39 +31,53 @@ from pathlib import Path
 OBSERVATION_KEYS = (
     "observation_id",
     "observed_at",
-    "observer_principal",   # adapter 身份，如 codex-hook@roy-tong
+    "observation_type",     # presentation|selection|attempt_started|attempt_completed|result_consumed|task_outcome
+    "observer_principal",   # adapter 身份，如 am-sdk@acme
     "observer_side",        # client | server | platform
     "provenance",           # hook | otel | wrapper | platform
     "project_id",           # 部署上下文标识（DATA §1 deployment_context），非实体权威
     "tool",                 # 归一 surface 工具名（观察发生在 surface 层）
     "surface_id",           # 具体调用界面标识（Core §2.3）
     "surface_namespace",    # surface 的注册/命名空间（尽力而为）
+    "caller_type",          # Caller Claim（DATA §1）：unknown|claimed_agent|correlated_agent|platform_attested
+    "caller_runtime",       # claude | codex | deepseek-harness | other | unknown
+    "caller_identity_strength",  # unknown | declared | correlated | attested
     "tool_call_id",         # 精确关联键（若 adapter 能提供）
     "trace_id",             # OTel trace（若 adapter 能提供）
     "session_key",          # 伪匿名会话（内存内生成，绝不落原始值）
-    "outcome",              # success | failure | retry | denied | unknown
+    "outcome",              # success | failure | retry | denied | unknown（attempt 结果）
     "duration_bucket",      # <1s | 1s-10s | ... | None（未知）
+    "duration_ms",          # 非敏感精确耗时（Draft 0.4.3，支持 p50/p95）；未知 None
     "lifecycle_stage",      # 生命周期阶段数据码：L0 选择 · L1 执行 · L2 完成 · L3 消费（非证据）
     "signature",            # Ed25519 签名（可选，Verified Profile）
     "key_id",               # 签名密钥标识（可选）
     "source_event_id",      # adapter 自身事件 id（去重用）
-    "source_sequence",      # 单调递增序号；云端据此检出丢失缺口（Draft 0.4.2）
+    "source_sequence",      # 单调递增序号（Draft 0.4.2）
+    "source_instance_id",   # 采集实例标识（Draft 0.4.3：重启后 sequence 从 1 开始可识别）
+    "sequence_epoch",       # 序号纪元（重启/轮换分界）
+    "dropped_since_last_report",  # SDK 自身丢失数（进入 Measurement Coverage）
+    "buffer_overflow",      # 缓冲溢出标记
     "trust_domain",         # 观察者信任域（AgentMeasure-TRUST；独立佐证判定的关键）
     "sampling",             # {"method": "fixed", "probability": 0.1} 等（AgentMeasure-QUALITY）
     "usage_context",        # production|development|test|benchmark|evaluation|synthetic|ci|unknown
-    "validity",             # normal|retry|duplicate|replay|agent_loop|health_check|load_test|suspected_invalid|unknown
-    "context_source",       # none|provider_configuration|collector_derived|runtime_propagated（Draft 0.4.2）
-    "validity_source",      # none|collector_derived|runtime_propagated（Draft 0.4.2）
+    "validity",             # normal|duplicate|replay|health_check|load_test|suspected_invalid|unknown（无 retry，0.4.3）
+    "context_source",       # none|provider_configuration|collector_derived|runtime_propagated
+    "validity_source",      # none|collector_derived|runtime_propagated
     "operation_id",         # 逻辑使用（Core §2.4）；未知留 null（不变量 23：无证据不归并）
     "task_id",              # 任务单位（谱系起点）；未知留 null
 )
 
 USAGE_CONTEXTS = ("production", "development", "test", "benchmark",
                   "evaluation", "synthetic", "ci", "unknown")
+VALIDITIES = ("normal", "duplicate", "replay", "health_check",
+              "load_test", "suspected_invalid", "unknown")
+OBSERVATION_TYPES = ("presentation", "selection", "attempt_started",
+                     "attempt_completed", "result_consumed", "task_outcome")
 # Strict Qualified Usage = production + validity=normal（Core §7）；unknown 单独披露
 STRICT_QUALIFIED = {"context": "production", "validity": "normal"}
 CONTEXT_SOURCES = ("none", "provider_configuration", "collector_derived", "runtime_propagated")
 VALIDITY_SOURCES = ("none", "collector_derived", "runtime_propagated")
+CALLER_STRENGTHS = ("unknown", "declared", "correlated", "attested")
 
 LIFECYCLE_STAGES = ("L0", "L1", "L2", "L3")
 SIDES = ("client", "server", "platform")

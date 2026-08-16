@@ -78,7 +78,7 @@ AgentMeasure 定义 **Metric Families**，不定义全局北极星。搜索能�
 | 层 | 回答 | 代表指标 |
 | --- | --- | --- |
 | **Reach** | 能力有没有进入 Agent 的选择范围？ | Eligible Opportunities · Presentations · Presentation Rate · Distribution Coverage |
-| **Choice** | Agent 有机会时会选它吗？ | Observed Selection Rate · Conditional Choice Share |
+| **Choice** | Agent 有机会时会选它吗？ | Observed Selection Rate · Observed Head-to-Head Choice Share |
 | **Use** | 选了以后真的用了吗？ | Operations · Attempts · Completion Rate · Success Rate |
 | **Utility** | 产生了可用结果或确认的效应吗？ | Result Consumption · Effect Confirmation |
 | **Value** | 改善任务结果了吗？ | Incremental Task Success（Draft 0.5） |
@@ -94,7 +94,7 @@ AgentMeasure 定义 **Metric Families**，不定义全局北极星。搜索能�
 
 全程保持声称纪律：*observed choice ≠ preference*。选择可能由模型、路由、工作流、
 用户、策略或平台作出；**Observed Selection Rate** 只报告观测到的选择，而
-**Conditional Choice Share** 是*可比候选条件下观测到的正面竞争选择份额*——可比
+**Observed Head-to-Head Choice Share** 是*可比候选条件下观测到的正面竞争选择份额*——可比
 意味着声明相同的候选集、类别、Choice Mode 与决策轴（Decision Authority /
 Selection Constraint）。
 
@@ -224,15 +224,15 @@ AgentMeasure/
 
 ## 状态与路线图
 
-**Draft 0.4.2（Measurement Integrity）** —— observe-first 数据模型：usage_context/
-validity 默认 unknown、Provider-only 只产生 Attempt（Operation 需解析证据，M3.5
-披露覆盖率）、MeasurementPolicy v2、Evidence 单词显示等级。参考实现已迁移到
-0.4.1/0.4.2 数据模型。
+**Draft 0.4.3（Canonicalization & Reference Convergence）** —— 唯一 Canonical
+Observation（schemas/observation.schema.json，6 类 payload）；Choice/Execution 从同一
+Envelope 派生；M3.1 只计已解析 operation（无回退）；Attempt 级 qualification 派生；
+metrics.yaml 单一事实源；四维正交（Evidence/Caller/Use Profile/Billing）。
 
 | 能力 | 标准 | 参考实现 | 真实运行 |
 | --- | --- | --- | --- |
 | Observed Selection Rate | Defined | Implemented | Limited |
-| Conditional Choice Share | Defined | Implemented | Experimental |
+| Observed Head-to-Head Choice Share | Defined | Implemented | Experimental |
 | Operations / Attempts | Defined | Implemented | Yes |
 | Operation Resolution Coverage | Defined | Implemented | No |
 | Result Consumption | Defined | Implemented | Claude partial |
@@ -245,7 +245,7 @@ validity 默认 unknown、Provider-only 只产生 Attempt（Operation 需解析�
 
 ## 参与
 
-- **讨论测量语义**：GitHub Discussions（Metric Semantics / Measurement Quality / Runtime Profiles / Proposals / Experiments / General）
+- **讨论测量语义**：GitHub Issues（Discussions 待开启；categories：Metric Semantics / Measurement Quality / Runtime Profiles / Proposals / Experiments / General）
 - **提标准变更**：`proposals/`（AUP：Draft → Discussion → Accepted → Experimental → Stable）
 - **报告测量偏差**：`reports/`（Discrepancy Report 模板）
 - **修参考实现**：PR 必须通过 `conformance/` 全部 vectors

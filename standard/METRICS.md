@@ -1,4 +1,4 @@
-# AgentMeasure Metrics — Metric Registry（Draft 0.4）
+# AgentMeasure Metrics — Metric Registry（Document revision 0.4.3）
 
 > **本文件是 AgentMeasure 变更最频繁的文档。** 每个正式指标必须携带完整合同（Metric
 > Contract），使任何独立实现输入相同数据算出相同数字。
@@ -80,13 +80,18 @@ Counterexamples
 - **Grain**：Decision Opportunity
 - **Required Dimensions**：decision_authority / selection_constraint（同 M2.2）
 
-### M2.5 — Conditional Choice Share
+### M2.5 — Observed Head-to-Head Choice Share
 
-- **Purpose**：A 与 B 实际同台竞争时的选择偏好（最表达 Agent Preference）
+- **Purpose**：A 与 B 实际同台竞争时的**观测到的正面竞争选择份额**（claim discipline：
+  不默认称为 preference）
 - **公式**：`A selected ÷ (A+B selected)`，仅限 A、B 同时出现在同一 Candidate Set 的 decision
 - **Eligibility**：同 candidate_set_id、同 category、同 Choice Mode、同窗口
 - **Required Dimensions**：decision_authority / selection_constraint——同轴竞争默认；
-  混轴时 MUST 披露（如 64% 是 model 自主竞争下的偏好，policy 强制场景另计）
+  混轴时 MUST 披露
+- **Preference 声称条件**：仅当 `decision_authority=model` 且
+  `selection_constraint=autonomous` 且 candidate placement 受控、task/model/runtime
+  可比时，才可以说 "preference evidence / preference signal"（否则只能报告
+  observed share）
 - **Counterexample**：全局 SoC 高不意味直接竞争中胜出（Exa vs Tavily 同台 10,000 次选 6,400 → 64%）
 
 ## 2. Execution Family（M3，对象 = Operation 与 Attempt；Grain 按指标声明）
@@ -98,11 +103,14 @@ Counterexamples
 
 - **Purpose**：实际执行的逻辑使用数（重试/重复归一后）
 - **Object**：Operation；**Grain**：Operation
-- **公式**：`COUNT(DISTINCT operation_id)`；无 operation_id 的旧数据回退
-  `COUNT(DISTINCT invocation_id)`（0.3 兼容，Label 披露 `operation_resolution`）
+- **公式**：`COUNT(DISTINCT operation_id)` —— **只计已解析的 operation，无回退**
+  （Draft 0.4.3，不变量 25）
 - **Eligibility**：Strict Qualified；**Dedup**：结构性——同 operation 多 attempt 只计 1
-- **Label 要求**：`attempts_per_operation`（均值/分布，公开披露）
-- 历史名：Logical Invocations（参考实现输出键 `logical_invocations` 保持不变）
+- **Label 要求**：`attempts_per_operation`（均值/分布，公开披露）；
+  `operation_resolution` 分布；无解析证据时本指标为 0 / N/A——**绝不把 Attempt
+  数伪装成 Operation 数**。旧 0.3 数据如需兼容，提供
+  `Legacy Attempt-equivalent Count`（独立字段，不得命名为 Operation Count）
+- 历史名：Logical Invocations
 
 ### M3.2 — Attempt Completion Rate
 
@@ -155,9 +163,13 @@ Counterexamples
 ### M1.1 — Active Clients
 
 - **Purpose**：采用广度
-- **公式**：`COUNT(DISTINCT client_key)`（窗口内 ≥1 次 Strict Qualified eligible invocation）
-- **Grain**：Client；**Eligibility**：Strict Qualified
+- **公式**：`COUNT(DISTINCT client_instance_id)`（窗口内 ≥1 次 Strict Qualified eligible attempt）
+- **Grain**：Client Instance（身份 Grain 明确：session ≠ runtime_instance ≠
+  client_instance ≠ deployment ≠ consumer_account）
+- **Eligibility**：Strict Qualified
 - **Unknown**：client 不可解析/无标识的调用不计入，披露 Identity Coverage
+- **Pseudonym epoch**：伪匿名密钥按月轮换，跨月窗口 MUST 披露 epoch（否则同一
+  client 跨月会被双计）；session_key 不得直接用作 client 计数（session ≠ client）
 
 ### M1.2 — Repeat Clients（定义，待向量）
 

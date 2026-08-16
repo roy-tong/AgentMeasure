@@ -1,4 +1,4 @@
-# AgentMeasure Core Specification — Open Measurement Standard for AI-Agent Software Usage（Draft 0.4）
+# AgentMeasure Core Specification — Open Measurement Standard for AI-Agent Software Usage（Standard Compatibility agentmeasure-0.4 · Document revision 0.4.3）
 
 > **Draft 0.4：Measurement Objects & Verification Decoupling。** 0.3 解决了"怎么算"；
 > 0.4 解决"算的是什么"——把测量对象扩展为完整的
@@ -79,7 +79,7 @@ surface，不一定知道 entity——entity 身份由 registry 的 alias 归并
 | **Tool Presentation** | 某 selectable 出现在该 Candidate Set | `presentation_id` |
 | **Selection** | Agent 选择某 selectable | `selection_id` |
 | **Operation** | 对某 Capability 的一次**逻辑使用**（为某 task 而用） | `operation_id` |
-| **Attempt** | Operation 的一次实际执行 | `attempt_id`（= tool_call_id） |
+| **Attempt** | **标准执行对象**：一次实际执行（API request / MCP call / CLI execution / Agent-to-Agent call 统一映射为 Attempt） | `attempt_id`（= tool_call_id） |
 | **Result / Effect** | 执行产生的返回值 / 世界状态改变 | — |
 | **Outcome** | Task 或 Operation 的最终结果 | — |
 
@@ -97,10 +97,13 @@ Task ──▶ Decision Opportunity ──▶ Selection
                                   Outcome
 ```
 
-**Operation / Attempt 拆分**（Draft 0.4 核心）：
-- **Operation** = 逻辑使用（"为任务 T 使用能力 C"），是 M3.1 的计数对象
-- **Attempt** = 单次执行；**重试 = 同一 Operation 的多个 Attempt，不再是 validity 分类**
-  （validity 只保留 duplicate / replay / suspected_invalid 等观察质量分类）
+**Operation / Attempt 拆分**（Draft 0.4.3 最终形态）：
+- **Operation** = 逻辑使用（"为任务 T 使用能力 C"），是 M3.1 的计数对象；
+  **M3.1 只计已解析的 operation，无回退**（不变量 25）
+- **Attempt** = 标准执行对象；`invocation` 只作为外部协议的原始概念
+  （如 MCP invocation），标准内统一为 Attempt（旧命名见 LEGACY-MIGRATION.md）
+- **重试 = 同一 Operation 的多个 Attempt**：关系通过 `operation_id` / `retry_of`
+  表达，**不再属于 validity**
 - 无 Operation 证据时，观察只能形成 Attempt；Operation 归并 MUST 遵循
   AgentMeasure Correlation 的确定性规则（不变量 23：无证据不归并）
 
@@ -160,8 +163,8 @@ Capability 按交互性质分类，决定 Utility 的度量方式：
 | --- | --- |
 | Distribution | Client / Client-Day |
 | **Choice** | **Decision Opportunity** |
-| Execution | Attempt（= Invocation） |
-| Utility | Result / Invocation |
+| Execution | Attempt（标准执行对象） |
+| Utility | Result / Attempt |
 | Outcome | Task / Operation |
 | Relationship | Client × Project × Window |
 
@@ -216,15 +219,26 @@ authority 与 constraint 同样适用（不变量 24）。比较类指标 MUST �
 production · development · test · benchmark · evaluation · synthetic · ci · demo · unknown
 ```
 
-### Invocation Validity（调用有效性）
+### Attempt Validity（执行有效性，Draft 0.4.3 干净模型）
 
 ```text
-normal · retry · duplicate · replay · agent_loop · health_check · load_test · suspected_invalid · unknown
+normal · duplicate · replay · health_check · load_test · suspected_invalid · unknown
 ```
 
-> Draft 0.4 注：`retry` 作为 validity 值保留用于**无 Operation 上下文**的旧数据；
-> 有 Operation 上下文时，重试 MUST 建模为同一 Operation 的多个 Attempt
-> （见 §2.4），不再使用 validity=retry。
+retry **不是** validity：重试关系通过 `operation_id` / `retry_of` 表达
+（LEGACY-MIGRATION.md 定义旧 `validity=retry` 值的迁移）。
+
+### Qualification Resolution（Attempt 级口径，Draft 0.4.3）
+
+一次 Attempt 可有多条 observation（runtime + provider），各自带 context/validity。
+Attempt 级口径由 collector **派生**（derived_attempt_qualification）：
+
+- Attempt Context：全部一致取该值；部分 unknown 取最高权威已知值（partial）；
+  冲突（production vs test）→ `inconsistent`（不压平）
+- Attempt Validity：normal + unknown → `partially_classified`；
+  normal + suspected_invalid → `suspected_invalid`（冲突保留）
+- 指标只查询派生列，禁止在统计 SQL 中临时 join 原始 observations 判定
+  （不变量 26）
 
 ### 口径定义
 
@@ -268,6 +282,9 @@ Observable population / Qualified population / Runtime coverage / Choice mode
 21. **Surface 观察未经 alias 归并 MUST NOT 跨形态合并计数**
 22. **Utility 指标 MUST 声明度量 Result 还是 Effect**
 23. **无 Operation 证据时 MUST NOT 把 Attempt 归并为逻辑调用**（fail-closed 归并）
+25. **M3.1 Operation Count 只计已解析 operation；无 0.3 回退**（legacy 数据提供
+    Legacy Attempt-equivalent Count，绝不命名为 Operation Count）
+26. **Attempt 级 qualification 由派生列决定；禁止统计 SQL 临时 join 判定**
 24. **不同 decision_authority / selection_constraint 默认 MUST NOT 直接比较 Selection 类指标**
 
 ## 10. 分层：Core 与 Verification Profile 解耦（Draft 0.4）

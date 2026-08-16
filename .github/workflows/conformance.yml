@@ -9,6 +9,15 @@ on:
       - 'schemas/**'
       - 'registry/**'
       - 'scripts/**'
+      - 'docs/**'
+      - 'product/**'
+      - 'extensions/**'
+      - 'whitepaper/**'
+      - 'README*'
+      - 'ROADMAP.md'
+      - 'GOVERNANCE.md'
+      - 'CONTRIBUTING.md'
+      - 'LEGACY-MIGRATION.md'
       - 'verify_vectors.py'
   pull_request:
 
@@ -37,6 +46,9 @@ jobs:
       - name: Metric registry validation (metrics.yaml ↔ METRICS.md)
         run: |
           python3 registry/validate_metrics.py
+      - name: Canonical observation schema validation
+        run: |
+          python3 schemas/validate_observation.py
 
   # ─── 套件 2：reference implementation ───
   reference-implementation:
@@ -73,11 +85,13 @@ jobs:
                   store_observation(conn, o)
           match_invocations(conn)
           s = compute(conn, "github.com/foo/bar")
-          assert s["logical_invocations"] == 100, s          # 0.3 回退（无 operation 证据）
+          assert s["logical_invocations"] == 0, s            # 0.4.3：无回退，不把 Attempt 伪装成 Operation
+          assert s["attempts"] == 100, s
+          assert s["legacy_attempt_equivalent"] == 100, s    # 独立披露字段
           assert s["operation_resolution"]["unknown"] == 100, s
           assert s["operation_resolution_coverage"] == 0.0, s
-          assert s["corroborated_share"] == 1.0, s
-          print("core: 100 bilateral -> share 1.0, resolution unknown (fail-closed) OK")
+          assert s["corroborated_share"] == 1.0, s           # 单边 Provider observed 数据 eligible（0.4.3）
+          print("core: 100 attempts / 0 operations (no fallback), share 1.0 OK")
 
           # 单侧 -> observed（最低显示等级）
           o = empty_observation(); o.update(dict(
@@ -109,6 +123,24 @@ jobs:
           assert s2["operation_resolution"]["explicit"] == 3, s2
           assert s2["operation_resolution_coverage"] == 1.0, s2
           print("core: explicit operation -> 3 attempts / 1 operation, coverage 1.0 OK")
+
+          # Qualification Resolution：production + test 冲突 -> inconsistent（不压平）
+          conn3 = connect(pathlib.Path(tempfile.mkdtemp()) / "q.db")
+          for i, (ctx, val) in enumerate((("production", "normal"), ("test", "normal"))):
+              o = empty_observation(); o.update(dict(
+                  observation_id=new_observation_id(),
+                  observed_at=f"2026-08-16T03:00:0{i}Z",
+                  observer_principal=f"p{i}@t", observer_side="server",
+                  provenance="wrapper", project_id="github.com/foo/bar",
+                  tool="foo.search", tool_call_id="tc-q", outcome="success",
+                  usage_context=ctx, validity=val))
+              store_observation(conn3, o)
+          match_invocations(conn3)
+          row = conn3.execute(
+              "SELECT attempt_context, qualification_status FROM invocations").fetchone()
+          assert row["attempt_context"] == "inconsistent", dict(row)
+          assert row["qualification_status"] == "inconsistent", dict(row)
+          print("core: qualification conflict production+test -> inconsistent OK")
           PY
       - name: Choice end-to-end (M2.2 / M2.5)
         env:

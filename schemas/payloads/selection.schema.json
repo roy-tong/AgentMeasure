@@ -1,0 +1,18 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "payload: selection",
+  "type": "object",
+  "required": ["decision_id", "decision_authority", "selection_constraint"],
+  "properties": {
+    "decision_id": {"type": "string"},
+    "selection_id": {"type": "string"},
+    "rank": {"type": "integer"},
+    "decision_authority": {"type": "string",
+                           "enum": ["model", "router", "workflow", "user", "policy",
+                                    "platform", "unknown"]},
+    "selection_constraint": {"type": "string",
+                             "enum": ["autonomous", "recommended", "required",
+                                      "user_requested", "fallback", "forced", "unknown"]},
+    "selection_reason_observable": {"type": "boolean"}
+  }
+}

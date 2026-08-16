@@ -21,8 +21,8 @@ dashboard（MVP 字段）
 | **Operation Resolution Coverage** | resolved attempts ÷ attempts | 覆盖率低时 Operations 不突出显示 |
 | Unresolved Attempts | attempts − resolved | fail-closed 披露 |
 | Success Rate | M3.3（Attempt Success Rate） | unknown/inconsistent 单列 |
-| Retry | attempts per operation / retry rate | 与 Operation 计数区分 |
-| Latency | duration_bucket 分布 | — |
+| Retry-chain Rate | 仅 resolved operations 内（M3.5 覆盖之外无法判定 retry，不得展示全量 Retry Rate） | 与 Operation 计数区分 |
+| Latency | duration_ms 可用时 p50/p95；否则仅 buckets 分布（bucket 算不出可信 p95） | — |
 | Caller attribution | correlated / declared / unknown 分层 | **强度分层，绝不裸标 "Claude Code"** |
 | Measurement Coverage | coverage_basis=participating_network | 只能说 Observed/Participating（QUALITY.md） |
 

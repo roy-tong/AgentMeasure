@@ -15,7 +15,8 @@ Agent 一天看到 Exa 10 次选 1 次 = 10 presentations / 1 selection = 10%。
   M2.1 Presented Opportunities
   M2.2 Observed Selection Rate = Observed Selected ÷ Presented
       （observed ≠ preference：required/forced 的"选择"不是偏好，须按轴披露）
-  M2.5 Conditional Choice Share = A/(A+B)（仅 A、B 同台竞争的 decisions）
+  M2.5 Observed Head-to-Head Choice Share = A/(A+B)
+      （观测到的同台竞争份额；preference 声称需满足 authority/constraint 条件）
 
 M2.5 纪律（fail-closed）：
   - 同台竞争 = 同一 decision_id + 同一 candidate_set_id + 同一 choice_mode

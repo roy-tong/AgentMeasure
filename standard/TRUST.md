@@ -1,4 +1,4 @@
-# AgentMeasure Trust — Principal、Signature、Trust Domain、Evidence Profile（Draft 0.4）
+# AgentMeasure Trust — Principal、Signature、Trust Domain、Evidence Profile（Document revision 0.4.3）
 
 ## 1. Observer Principal
 
@@ -34,7 +34,7 @@
 | Corroboration | C0 single / C1 multiple | 有几方这么说 |
 | Independence | I0 unknown / I1 distinct runtime / I2 distinct trust domain | 是否同一主体控制 |
 | Attestation | T0 none / T1 platform-attested | 是否有受信任平台背书 |
-| Match | M0 none / M1 heuristic / M2 exact call-id / M3 trace-verified | 关联强度 |
+| Match | none / heuristic / exact-call-id / trace-verified | 关联强度（单词取值；不用 M 码，避免与商业计量等级冲突） |
 
 ## 4. 派生显示等级（UI/API 层）
 
@@ -46,7 +46,18 @@
 | Independently Corroborated | C1 + I2（跨 trust domain） |
 | Platform Attested | T1（**当前 UNSUPPORTED**——未实现平台签名验证前，任何 `provenance="platform"` 字符串不授予） |
 
-## 5. Attestation（未实现）
+## 5. 四维正交（Draft 0.4.3）
+
+| 维度 | 回答 | 取值体系 |
+| --- | --- | --- |
+| Evidence Profile | observation 有多可信？ | 多轴向量 → 单词显示等级 |
+| Caller Identity | 调用者是谁，判断有多可信？ | unknown / declared / correlated / attested |
+| Measurement Use Profile | 这份数据准备用于什么？ | first_party_analytics / comparative / cross_side_attribution / billable_audit（QUALITY §4） |
+| Billing Requirements | 若用于收费，需满足哪些 predicate？ | billing_requirements（COMMERCIAL §6，非等级） |
+
+四个维度正交，**不再新增任何字母阶梯**（M 码只存在于过去的文档，见 LEGACY-MIGRATION.md）。
+
+## 6. Attestation（未实现）
 
 - 需要平台私钥签名或平台官方 API 确认
 - 未实现前：`PLATFORM_ATTESTATION = UNSUPPORTED`（fail-closed，绝不由字符串授予）

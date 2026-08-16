@@ -78,7 +78,7 @@ AgentMeasure defines **metric families**, not a universal KPI. A search capabili
 | Layer | Question | Representative metrics |
 | --- | --- | --- |
 | **Reach** | Did the capability enter the agent's choice range? | Eligible Opportunities · Presentations · Presentation Rate · Distribution Coverage |
-| **Choice** | When the agent had the chance, did it choose it? | Observed Selection Rate · Conditional Choice Share |
+| **Choice** | When the agent had the chance, did it choose it? | Observed Selection Rate · Observed Head-to-Head Choice Share |
 | **Use** | After selection, was it actually used? | Operations · Attempts · Completion Rate · Success Rate |
 | **Utility** | Did it produce a usable result or confirmed effect? | Result Consumption · Effect Confirmation |
 | **Value** | Did it improve the task outcome? | Incremental Task Success（Draft 0.5） |
@@ -92,7 +92,7 @@ The five layers are the **measurement view**. The same facts map onto an economi
 | Outcome | Value |
 | Economics | Metering / Attribution（future extension） |
 
-Claim discipline throughout: *observed choice is not preference*. A selection can be made by the model, a router, a workflow, the user, a policy, or the platform; **Observed Selection Rate** reports what was observed, and **Conditional Choice Share** is an *observed head-to-head choice share under comparable candidate conditions* — comparable means the same candidate set, category, choice mode, and decision axes (Decision Authority / Selection Constraint) are declared.
+Claim discipline throughout: *observed choice is not preference*. A selection can be made by the model, a router, a workflow, the user, a policy, or the platform; **Observed Selection Rate** reports what was observed, and **Observed Head-to-Head Choice Share** is an *observed head-to-head choice share under comparable candidate conditions* — comparable means the same candidate set, category, choice mode, and decision axes (Decision Authority / Selection Constraint) are declared.
 
 ## How AgentMeasure works in production
 
@@ -222,15 +222,15 @@ AgentMeasure/
 
 ## Current status & roadmap
 
-**Draft 0.4.2（Measurement Integrity）** — observe-first 数据模型：usage_context/validity
-默认 unknown、Provider-only 只产生 Attempt（Operation 需解析证据，M3.5 披露覆盖率）、
-MeasurementPolicy v2、Evidence 单词显示等级。Reference implementation 已迁移到
-0.4.1/0.4.2 数据模型。
+**Draft 0.4.3（Canonicalization & Reference Convergence）** — 唯一 Canonical
+Observation（schemas/observation.schema.json，6 类 payload）；Choice/Execution 从同一
+Envelope 派生；M3.1 只计已解析 operation（无回退）；Attempt 级 qualification 派生；
+metrics.yaml 单一事实源；四维正交（Evidence/Caller/Use Profile/Billing）。
 
 | Capability | Standard | Reference | Real Runtime |
 | --- | --- | --- | --- |
 | Observed Selection Rate | Defined | Implemented | Limited |
-| Conditional Choice Share | Defined | Implemented | Experimental |
+| Observed Head-to-Head Choice Share | Defined | Implemented | Experimental |
 | Operations / Attempts | Defined | Implemented | Yes |
 | Operation Resolution Coverage | Defined | Implemented | No |
 | Result Consumption | Defined | Implemented | Claude partial |
@@ -241,7 +241,7 @@ The roadmap runs on two tracks — the standard (0.4 objects & quality → 0.5 u
 
 ## Contribute
 
-- **Discuss measurement semantics**: GitHub Discussions (Metric Semantics / Measurement Quality / Runtime Profiles / Proposals / Experiments / General)
+- **Discuss measurement semantics**: GitHub Issues（Discussions 待开启；categories：Metric Semantics / Measurement Quality / Runtime Profiles / Proposals / Experiments / General）
 - **Propose standard changes**: `proposals/` (AUP: Draft → Discussion → Accepted → Experimental → Stable)
 - **Report measurement discrepancies**: `reports/` (Discrepancy Report template)
 - **Fix the reference implementation**: PRs must pass all `conformance/` vectors

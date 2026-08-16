@@ -1,0 +1,160 @@
+{
+  "note": "Valid canonical observations, one per observation_type. Defaults: usage_context/validity unknown; classification only with evidence.",
+  "observations": [
+    {
+      "spec_version": "agentmeasure-0.4",
+      "observation_id": "obs-1",
+      "observation_type": "presentation",
+      "observer": {
+        "principal": "claude-otel@acme",
+        "trust_domain": "acme",
+        "side": "client"
+      },
+      "observed_at": "2026-08-16T03:00:00Z",
+      "deployment_context": {
+        "project_id": "github.com/foo/bar"
+      },
+      "surface": {
+        "surface_id": "mcp_tool:bar.search",
+        "surface_namespace": "io.github.foo"
+      },
+      "usage_context": "unknown",
+      "validity": "unknown",
+      "context_source": "none",
+      "validity_source": "none",
+      "provenance": "otel",
+      "payload": {
+        "decision_id": "d1",
+        "candidate_set_id": "cs1",
+        "choice_mode": "exclusive"
+      }
+    },
+    {
+      "spec_version": "agentmeasure-0.4",
+      "observation_id": "obs-2",
+      "observation_type": "selection",
+      "observer": {
+        "principal": "claude-otel@acme",
+        "trust_domain": "acme",
+        "side": "client"
+      },
+      "observed_at": "2026-08-16T03:00:01Z",
+      "surface": {
+        "surface_id": "mcp_tool:bar.search",
+        "surface_namespace": "io.github.foo"
+      },
+      "usage_context": "unknown",
+      "validity": "unknown",
+      "provenance": "otel",
+      "payload": {
+        "decision_id": "d1",
+        "decision_authority": "model",
+        "selection_constraint": "autonomous"
+      }
+    },
+    {
+      "spec_version": "agentmeasure-0.4",
+      "observation_id": "obs-3",
+      "observation_type": "attempt_started",
+      "observer": {
+        "principal": "am-sdk@acme",
+        "trust_domain": "acme",
+        "side": "server"
+      },
+      "observed_at": "2026-08-16T03:00:02Z",
+      "surface": {
+        "surface_id": "mcp_tool:bar.search",
+        "surface_namespace": "io.github.foo"
+      },
+      "caller": {
+        "type": "claimed_agent",
+        "runtime": "claude",
+        "identity_strength": "declared"
+      },
+      "usage_context": "unknown",
+      "validity": "unknown",
+      "collection_health": {
+        "source_instance_id": "srv-7",
+        "source_sequence": 1007,
+        "sequence_epoch": "2026-08",
+        "dropped_since_last_report": 3,
+        "buffer_overflow": false
+      },
+      "provenance": "wrapper",
+      "payload": {
+        "tool_call_id": "tc-9",
+        "trace_id": "t-9"
+      }
+    },
+    {
+      "spec_version": "agentmeasure-0.4",
+      "observation_id": "obs-4",
+      "observation_type": "attempt_completed",
+      "observer": {
+        "principal": "am-sdk@acme",
+        "trust_domain": "acme",
+        "side": "server"
+      },
+      "observed_at": "2026-08-16T03:00:06Z",
+      "surface": {
+        "surface_id": "mcp_tool:bar.search",
+        "surface_namespace": "io.github.foo"
+      },
+      "usage_context": "production",
+      "validity": "normal",
+      "context_source": "provider_configuration",
+      "validity_source": "collector_derived",
+      "provenance": "wrapper",
+      "payload": {
+        "tool_call_id": "tc-9",
+        "outcome": "success",
+        "duration_ms": 1250
+      }
+    },
+    {
+      "spec_version": "agentmeasure-0.4",
+      "observation_id": "obs-5",
+      "observation_type": "result_consumed",
+      "observer": {
+        "principal": "claude-otel@acme",
+        "trust_domain": "acme",
+        "side": "client"
+      },
+      "observed_at": "2026-08-16T03:00:10Z",
+      "surface": {
+        "surface_id": "mcp_tool:bar.search",
+        "surface_namespace": "io.github.foo"
+      },
+      "usage_context": "unknown",
+      "validity": "unknown",
+      "provenance": "otel",
+      "payload": {
+        "tool_call_id": "tc-9",
+        "consumed_by_request_seq": 42
+      }
+    },
+    {
+      "spec_version": "agentmeasure-0.4",
+      "observation_id": "obs-6",
+      "observation_type": "task_outcome",
+      "observer": {
+        "principal": "claude-otel@acme",
+        "trust_domain": "acme",
+        "side": "client"
+      },
+      "observed_at": "2026-08-16T03:01:00Z",
+      "surface": {
+        "surface_id": "runtime:task",
+        "surface_namespace": "runtime"
+      },
+      "usage_context": "unknown",
+      "validity": "unknown",
+      "provenance": "otel",
+      "payload": {
+        "task_id": "tk-1",
+        "task_success": true,
+        "model": "gpt-5.6"
+      }
+    }
+  ]
+}

@@ -87,7 +87,7 @@ def run_correlation_vectors() -> int:
         s = compute(conn, v["input"]["project"])
         exp = v["expect"]
         ok = True
-        if "invocations" in exp and s["logical_invocations"] != exp["invocations"]:
+        if "attempts" in exp and s["attempts"] != exp["attempts"]:
             ok = False
         if "outcome" in exp:
             row = conn.execute("SELECT outcome FROM invocations").fetchone()
@@ -102,7 +102,7 @@ def run_correlation_vectors() -> int:
             if row and row["evidence"] in ("corroborated", "independently-corroborated"):
                 ok = False
         if not ok:
-            print(f"  ✗ {v['id']} (got invocations={s['logical_invocations']})")
+            print(f"  ✗ {v['id']} (got attempts={s['attempts']})")
             failed += 1
         else:
             print(f"  ✓ {v['id']}")

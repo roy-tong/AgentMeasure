@@ -1,4 +1,4 @@
-# AgentMeasure Quality — Measurement Quality Model（Draft 0.4.2）
+# AgentMeasure Quality — Measurement Quality Model（Document revision 0.4.3）
 
 > **证据 ≠ 覆盖 ≠ 限定 ≠ 方法。** 一组来源强但只覆盖 2% Agent 的事件不是
 > 市场数据。本文件定义**七维质量模型**、Measurement Use Classes 与
@@ -61,20 +61,27 @@ coverage_basis
 每指标必须声明各状态的可观察率：TRUE / FALSE / UNKNOWN / UNOBSERVABLE。
 UNOBSERVABLE 必须单列——绝不并入 FALSE（不变量 17）。
 
-## 4. Measurement Use Classes（测量使用等级：fit-for-purpose）
+## 4. Measurement Use Profiles（测量用途画像：fit-for-purpose）
 
 同一批数据，用于内部趋势与用于对外收费，所需可信度完全不同。**Measurement
-Quality 按用途分级**：
+Quality 按用途画像**（是用途，不是严格的大小等级）：
 
-| Class | 名称 | 要求 | 可用于 |
-| --- | --- | --- | --- |
-| **A** | First-party Analytics | Provider 自己观察 | 产品分析、reliability、内部趋势 |
-| **B** | Comparative Measurement | 标准 metric + coverage 披露 + entity resolution + qualification | benchmark、public analytics |
-| **C** | Correlated Measurement | Provider + Runtime 双侧独立观察 | 更强的 Agent 归属、公共信任信号 |
-| **D** | Billable / Auditable Measurement | operation/effect 证据 + versioned metering policy + replay protection + immutable revisions + 双方协议（必要时第三方证言） | **真实账单**（见 extensions/COMMERCIAL.md §5） |
+```text
+use_profile:
+  first_party_analytics     Provider 自己观察：产品分析、reliability、内部趋势
+  comparative               标准 metric + coverage 披露 + entity resolution + qualification
+  cross_side_attribution    Provider + Runtime 双侧独立观察：更强的 Agent 归属、公共信任信号
+  billable_audit            operation/effect 证据 + versioned metering policy + replay
+                            protection + immutable revisions + 双方协议（必要时第三方证言）
+```
 
-**声称规则：数据的 Use Class 必须与其证据匹配。** Class A 数据不能发布为
-Class C 声称；Class D 还额外要求 Metering Assurance（M0-M3）。
+每个 profile 声明自己的 requirements（非等级序列）：例如两个企业合同完全可以接受
+`provider-authenticated + idempotency key` 作为 billable 数据，而无需 Runtime
+Correlation。
+
+**声称规则：数据的 Use Profile 必须与其证据匹配。** first_party_analytics 数据
+不能发布为 comparative/cross_side 声称；billable_audit 还额外要求
+billing_requirements（extensions/COMMERCIAL.md §6）。
 
 ## 5. Measurement Label（披露要求）
 
@@ -82,7 +89,7 @@ Class C 声称；Class D 还额外要求 Metering Assurance（M0-M3）。
 Agent Usage Measurement Label
 Standard version:   0.4
 Metric:             M2.2 Observed Selection Rate
-Use class:          B (comparative)
+Use profile:        comparative
 Window:             30 days
 Grain:              decision-opportunity
 Usage context:      production (context_source: provider_configuration)
@@ -111,5 +118,5 @@ Choice mode:        exclusive
 | partial / participating_network | Observed Selection Share | Agent Market Share |
 | 单平台完整 | Claude Code Selection Share | Global Agent Selection Share |
 | 总体推断条件满足 | Estimated Agent Ecosystem Share | — |
-| Use Class A 数据 | First-party analytics | Comparative / market 声称 |
+| first_party_analytics 数据 | First-party analytics | Comparative / market 声称 |
 | UA/clientInfo 匹配 | Caller (declared) | Caller (correlated) / "Agent 使用量" |

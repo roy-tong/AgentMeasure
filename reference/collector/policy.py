@@ -6,7 +6,8 @@ cross-side corroborated、另一个 observed 都算——不可比。v2 变化�
   - Policy **绑定具体 Metric**（metric_id），不再一个 CORE_POLICY 控制所有指标
   - 废弃遗留：eligible_evidence E1+/E2、VACD、agentmeasure-0.1 spec
   - 引入 Strict Qualified（production + normal）为 qualification 默认
-  - 机器可读版见 registry/metrics.yaml（单一事实源，validator 校验一致性）
+  - **registry/metrics.yaml 是单一事实源**：METRIC_POLICIES 运行时从 yaml 派生，
+    不再手写第二份定义（validate_metrics.py 保证 yaml ↔ METRICS.md 一致）
 
 Policy 字段：
   policy_id / spec_version / metric_id
@@ -23,6 +24,8 @@ Policy 字段：
 from __future__ import annotations
 
 import json
+import sys
+from pathlib import Path
 
 STRICT_QUALIFIED = {"context": "production", "validity": "normal"}
 
@@ -44,26 +47,36 @@ MEASUREMENT_POLICY = {
     "privacy_threshold": 10,
 }
 
-# Metric-bound 覆盖（与 registry/metrics.yaml 的 policy 段保持一致）
-METRIC_POLICIES = {
-    "M3.1": {"metric_id": "M3.1", "dedup_policy": "operation-unique",
-             "qualification_policy": dict(STRICT_QUALIFIED)},
-    "M3.3": {"metric_id": "M3.3", "dedup_policy": "attempt-unique",
-             "qualification_policy": dict(STRICT_QUALIFIED)},
-    "M3.5": {"metric_id": "M3.5", "dedup_policy": "attempt-unique",
-             "qualification_policy": {"context": "production", "validity": "normal"},
-             "observability_policy": {"resolution_disclosed": True}},
-    "M2.2": {"metric_id": "M2.2", "dedup_policy": "decision-unique",
-             "qualification_policy": dict(STRICT_QUALIFIED)},
-    "M4.1": {"metric_id": "M4.1", "dedup_policy": "attempt-unique",
-             "qualification_policy": dict(STRICT_QUALIFIED)},
-    "M1.1": {"metric_id": "M1.1", "dedup_policy": "client-unique",
-             "qualification_policy": dict(STRICT_QUALIFIED)},
-}
+# Metric-bound policy 从 registry/metrics.yaml 派生（单一事实源，Draft 0.4.3）。
+# 不再手写第二份定义；validate_metrics.py 保证 yaml ↔ METRICS.md 一致。
+_METRICS_YAML = Path(__file__).resolve().parents[2] / "registry" / "metrics.yaml"
+
+
+def _load_metric_policies() -> dict:
+    try:
+        from registry.mini_yaml import parse  # noqa: F401
+    except ImportError:
+        sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "registry"))
+        from mini_yaml import parse  # noqa: F401
+    data = parse(_METRICS_YAML.read_text(encoding="utf-8"))
+    out = {}
+    for m in data.get("metrics", []):
+        mid = m.get("id")
+        if not mid:
+            continue
+        out[mid] = {
+            "metric_id": mid,
+            "dedup_policy": m.get("dedup"),
+            "qualification_policy": dict(m.get("qualification") or STRICT_QUALIFIED),
+        }
+    return out
+
+
+METRIC_POLICIES = _load_metric_policies()
 
 
 def metric_policy(metric_id: str) -> dict:
-    """metric 专属 policy：基础口径 + metric 覆盖。"""
+    """metric 专属 policy：基础口径 + metrics.yaml 覆盖。"""
     policy = dict(MEASUREMENT_POLICY)
     policy.update(METRIC_POLICIES.get(metric_id, {}))
     return policy

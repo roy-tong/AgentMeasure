@@ -21,11 +21,11 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 
 DOC_DIRS = ("standard", "whitepaper", "docs", "product", "extensions",
-            "proposals", "conformance")
+            "proposals", "conformance", "reference")
 DOC_FILES = ("README.md", "README.zh-CN.md", "ROADMAP.md", "GOVERNANCE.md",
              "CONTRIBUTING.md")
-ALLOWED_SUBSTR = ("archive", "fixtures", "conformance/vectors", "reference",
-                  "CHANGELOG")
+ALLOWED_SUBSTR = ("archive", "fixtures", "conformance/vectors",
+                  "CHANGELOG", "LEGACY-MIGRATION")
 
 # (pattern, label) —— 文档层禁用
 BANNED = [
@@ -40,7 +40,13 @@ BANNED = [
     (r"agentmeasure-0\.1", "0.1 spec_version"),
     (r"auas-0\.3", "auas spec_version"),
     (r"(?<!Observed )\bSelection Rate\b", "裸 Selection Rate（应为 Observed Selection Rate）"),
+    (r"(?<!Observed Head-to-Head )Conditional Choice Share",
+     "裸 Conditional Choice Share（应为 Observed Head-to-Head Choice Share）"),
+    (r"Metering Assurance Profile", "Metering Assurance M0-M3 遗留（应为 billing_requirements）"),
+    (r"Use Class [A-D]", "Use Class A-D 遗留（应为 Measurement Use Profile）"),
 ]
+# 数据码（L0-L3 / E0-E3）：只扫文档层，reference 数据值豁免
+DATA_CODE_PATTERNS = [r"\bL[0-3]\b", r"\bE[0-3]\b"]
 
 VERSION_RE = re.compile(r'"spec_version"\s*:\s*"([^"]+)"')
 
@@ -69,6 +75,13 @@ def main() -> int:
                 line = text[: m.start()].count("\n") + 1
                 print(f"  ✗ {path.relative_to(ROOT)}:{line} — {label}: {m.group(0)!r}")
                 failed += 1
+        # 数据码只查文档层（reference 的字段值/枚举定义豁免）
+        if "reference" not in path.relative_to(ROOT).parts:
+            for pattern in DATA_CODE_PATTERNS:
+                for m in re.finditer(pattern, text):
+                    line = text[: m.start()].count("\n") + 1
+                    print(f"  ✗ {path.relative_to(ROOT)}:{line} — 数据码残留: {m.group(0)!r}")
+                    failed += 1
         # 版本一致性：standard/ 文档中的 spec_version 必须一致
         if "standard" in path.relative_to(ROOT).parts:
             for m in VERSION_RE.finditer(text):

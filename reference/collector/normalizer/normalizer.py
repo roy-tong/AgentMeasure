@@ -62,6 +62,7 @@ def normalize_observation(raw: dict, source: str, project_id: str, principal: st
     if source == "codex-hook":
         # Codex 官方 PostToolUse 稳定字段：tool_name / tool_use_id / session_id / model / turn_id
         # 官方 schema 无 trace_id / start_time / end_time / is_error —— 不假设
+        obs["observation_type"] = "attempt_completed"  # 执行已结束（outcome 不可判）
         obs["tool"] = str(raw.get("tool_name") or "unknown")[:120]
         obs["tool_call_id"] = str(raw.get("tool_use_id") or "")[:120] or None
         obs["session_key"] = raw.get("session_id")
@@ -73,17 +74,23 @@ def normalize_observation(raw: dict, source: str, project_id: str, principal: st
 
     if source == "mcp-wrapper":
         # wrapper 在 server 侧真实调用边界：outcome/duration 可信
+        obs["observation_type"] = "attempt_completed"
         obs["tool"] = str(raw.get("tool") or "unknown")[:120]
         obs["tool_call_id"] = str(raw.get("tool_call_id") or "")[:120] or None
         obs["trace_id"] = str(raw.get("trace_id") or "")[:64] or None
         obs["session_key"] = raw.get("session_key") or raw.get("session_id")
         obs["outcome"] = str(raw.get("outcome") or "unknown")
         obs["duration_bucket"] = str(raw.get("duration_bucket") or "") or None
+        try:
+            obs["duration_ms"] = int(raw.get("duration_ms")) if raw.get("duration_ms") is not None else None
+        except (TypeError, ValueError):
+            obs["duration_ms"] = None
         obs["lifecycle_stage"] = "L2" if obs["outcome"] in ("success", "failure") else "L1"
         return _to_observation(obs, principal, "server", "wrapper", "mcp")
 
     if source == "dsh":
         # DSH plugin 输出（已归一）。lifecycle 来自 harness 事件，evidence 字段一律忽略
+        obs["observation_type"] = "attempt_completed"
         obs["tool"] = str(raw.get("tool") or "unknown")[:120]
         obs["tool_call_id"] = str(raw.get("tool_use_id") or "")[:120] or None
         obs["trace_id"] = str(raw.get("trace_id") or "")[:64] or None

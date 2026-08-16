@@ -56,8 +56,10 @@ def compute(conn, project_id: str, days: int = DAYS) -> dict:
         (project_id, since),
     ).fetchone()
     resolved_operations = row[0] or 0
-    # 0.3 兼容回退：无任何已解析 operation 时按 attempt 计（Label 披露 resolution）
-    logical_invocations = resolved_operations or attempts
+    # Draft 0.4.3：M3.1 只计已解析 operation，无回退（不变量 25）
+    # 0.3 数据如需兼容：提供 legacy_attempt_equivalent（独立字段，绝不命名 Operation Count）
+    logical_invocations = resolved_operations
+    legacy_attempt_equivalent = attempts if resolved_operations == 0 else 0
 
     row = conn.execute(
         """
@@ -123,31 +125,30 @@ def compute(conn, project_id: str, days: int = DAYS) -> dict:
     ).fetchone()
     active_clients = row[0] or 0
 
-    # ---- Qualified Usage（排除 benchmark/test/synthetic/ci） ----
+    # ---- Qualified Usage（基于 derived_attempt_qualification，不变量 26） ----
     row = conn.execute(
         """
-        SELECT COUNT(DISTINCT i.invocation_id) FROM invocations i
-        JOIN observation_links l ON l.invocation_id = i.invocation_id
-        JOIN observations o ON o.observation_id = l.observation_id
-        WHERE i.project_id=? AND i.started_at>=? AND i.eligible=1
-          AND o.usage_context = 'production' AND o.validity = 'normal'
+        SELECT COUNT(*) FROM invocations
+        WHERE project_id=? AND started_at>=? AND eligible=1
+          AND attempt_context='production' AND attempt_validity='normal'
         """,
         (project_id, since),
     ).fetchone()
     qualified_invocations = row[0] or 0
     qualified_rate = round(qualified_invocations / eligible_attempts, 3) if eligible_attempts else 0.0
-    # 披露：context/validity 未知份额（Strict 口径的激励漏洞防护）
+    # 披露：partially_classified / inconsistent / unknown（激励漏洞防护）
     row = conn.execute(
         """
-        SELECT COUNT(DISTINCT i.invocation_id) FROM invocations i
-        JOIN observation_links l ON l.invocation_id = i.invocation_id
-        JOIN observations o ON o.observation_id = l.observation_id
-        WHERE i.project_id=? AND i.started_at>=? AND i.eligible=1
-          AND (o.usage_context='unknown' OR o.validity IS NULL OR o.validity='unknown')
+        SELECT qualification_status, COUNT(*) AS n FROM invocations
+        WHERE project_id=? AND started_at>=? AND eligible=1
+        GROUP BY qualification_status
         """,
         (project_id, since),
-    ).fetchone()
-    unknown_share_invocations = row[0] or 0
+    ).fetchall()
+    qualification_status = {r["qualification_status"] or "unknown": r["n"] for r in row}
+    unknown_share_invocations = (qualification_status.get("unknown", 0)
+                                 + qualification_status.get("partially_classified", 0)
+                                 + qualification_status.get("inconsistent", 0))
 
     # ---- success rate（AgentMeasure-M3.3：Successful Completed ÷ Completed；
     #      unknown/inconsistent 不进分母，单列披露） ----
@@ -204,7 +205,9 @@ def compute(conn, project_id: str, days: int = DAYS) -> dict:
         "logical_invocations": logical_invocations,   # M3.1：已解析 Operation 数（0.3 回退时 = attempts）
         "attempts": attempts,                          # attempt 数（M3.2/M3.3 单位）
         "resolved_operations": resolved_operations,
+        "legacy_attempt_equivalent": legacy_attempt_equivalent,  # 仅 0.3 迁移期披露
         "unresolved_attempts": unresolved_attempts,
+        "qualification_status": qualification_status,
         "operation_resolution_coverage": operation_resolution_coverage,  # M3.5
         "attempts_per_operation": attempts_per_operation,
         "operation_resolution": operation_resolution,  # explicit | structural | unknown

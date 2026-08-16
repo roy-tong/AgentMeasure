@@ -1,0 +1,30 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "payload: attempt_completed",
+  "type": "object",
+  "required": [
+    "tool_call_id",
+    "outcome"
+  ],
+  "properties": {
+    "tool_call_id": {
+      "type": "string"
+    },
+    "outcome": {
+      "type": "string",
+      "enum": [
+        "success",
+        "failure",
+        "retry",
+        "denied",
+        "unknown"
+      ]
+    },
+    "duration_ms": {
+      "type": "integer"
+    },
+    "error_type": {
+      "type": "string"
+    }
+  }
+}

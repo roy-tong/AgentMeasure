@@ -26,17 +26,24 @@ attempt；其余观察各自独立（不提升证据）。
 Operation = 逻辑使用（"为任务 T 使用能力 C"）。归并规则（fail-closed）：
 
 ```text
-1. 显式 operation_id    观察自带 → 直接归组
-2. 结构推导             task_id + capability + 同一选择（selection_id）→ 同一 operation
-3. 重试链               同 task 下对同一 capability 的连续 attempt，
-                        且前一次失败后无其他 selection 介入 → 同一 operation
-4. 无证据               → 不归并（每个 attempt 独立，不变量 23）
+1. explicit（默认唯一启用）   observation 自带 operation_id / idempotency key /
+                             精确关联 → 直接归组
+2. structural（experimental） task_id + capability + 同一选择（selection_id）+
+                             无其他 selection 介入 → 同一 operation。
+                             **默认关闭（Draft 0.4.3）**：Provider 看不到中间
+                             decision，失败后同 tool 调用未必是重试——宁可
+                             resolution coverage 低，也不要错
+3. 无证据                   → operation_id = null, resolution = unknown
+                            （不归并、不伪装，不变量 23）
 ```
 
-- **重试 = 同一 Operation 的多个 Attempt**，不再是 validity 分类（Core §7 注）
+- **重试 = 同一 Operation 的多个 Attempt**（`retry_of` / `operation_id` 表达），
+  不再是 validity 分类（Core §7）
 - 归并 MUST 确定性：同一输入 + 同一 policy → 同一 operation 划分
-- operation 归属不确定时，M3.1 回退 `COUNT(DISTINCT invocation_id)`（0.3 兼容），
-  Measurement Label 披露 `operation_resolution: explicit|structural|none`
+- **M3.1 只计已解析 operation，无回退**（不变量 25）；0.3 数据迁移期仅提供
+  Legacy Attempt-equivalent Count（LEGACY-MIGRATION.md §2）
+- Measurement Label 披露 `operation_resolution: explicit|unknown`（+ experimental
+  structural 启用声明）
 
 ## 4. 谱系（Lineage，Draft 0.4）
 

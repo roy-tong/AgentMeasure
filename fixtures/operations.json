@@ -51,7 +51,7 @@
     },
     {
       "id": "op-structural-retry",
-      "description": "无 operation_id，同 task 失败后重试成功 → 结构性归并（resolution=structural，M3.1 = 1）",
+      "description": "无 operation_id（structural 推断默认关闭，experimental）：失败后重试不自动归并 → 2 attempts / 0 operations（fail-closed）",
       "input": {
         "project": "github.com/foo/bar",
         "observations": [
@@ -76,16 +76,16 @@
         ]
       },
       "expect": {
-        "logical_invocations": 1,
+        "logical_invocations": 0,
         "attempts": 2,
         "resolution": {
-          "structural": 2
+          "unknown": 2
         }
       }
     },
     {
       "id": "op-no-merge-after-success",
-      "description": "同 task 两次成功调用（第二次不是失败后的重试）→ 不归并，2 个 operation",
+      "description": "同 task 两次成功调用：structural 关闭 → 不归并，2 attempts / 0 operations",
       "input": {
         "project": "github.com/foo/bar",
         "observations": [
@@ -110,10 +110,10 @@
         ]
       },
       "expect": {
-        "logical_invocations": 2,
+        "logical_invocations": 0,
         "attempts": 2,
         "resolution": {
-          "structural": 2
+          "unknown": 2
         }
       }
     },
@@ -142,7 +142,7 @@
         ]
       },
       "expect": {
-        "logical_invocations": 2,
+        "logical_invocations": 0,
         "attempts": 2,
         "resolution": {
           "unknown": 2

@@ -110,7 +110,7 @@ def _run_consumed_rate(vector: dict) -> bool:
 
 RUNNERS = {
     "M2.2 Observed Selection Rate": _run_selection_rate,
-    "M2.5 Conditional Choice Share": _run_conditional_choice_share,
+    "M2.5 Observed Head-to-Head Choice Share": _run_conditional_choice_share,
     "M4.1 Result Consumed Rate": _run_consumed_rate,
 }
 

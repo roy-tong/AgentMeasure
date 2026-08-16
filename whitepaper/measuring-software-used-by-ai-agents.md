@@ -208,12 +208,13 @@ AgentMeasure defines **metric families**, not a universal KPI. Metric status is
 marked explicitly — **Defined**（正式指标合同）、**Draft**（草案）、
 **Research**（方向）——概念论文不冒充标准已全定义。
 
-**M1 Adoption & Relationship — Reach.**
+**M1 Adoption & Relationship.**（Active Clients 是采用指标，不是 Reach；Reach 由
+M2 Presented / Eligibility 表达）
 `Active Clients (Defined) · Repeat Clients (Draft) · Active Client-Days (Defined)`
 
 **M2 Choice — the most agent-native family.** When the agent had the chance, did it
 choose the capability?
-`Observed Selection Rate (Defined) · Conditional Choice Share (Defined) ·
+`Observed Selection Rate (Defined) · Observed Head-to-Head Choice Share (Defined) ·
 First-choice Rate (Proposed)`
 
 **M3 Execution — Use.** Was it usable after selection? The Draft 0.4 model counts
@@ -249,13 +250,17 @@ market data.
 
 ```text
 Measurement Quality
-├── Provenance / Evidence Strength   where did this observation come from, and how
+├── Provenance Strength             where did this observation come from, and how
 │                                    strongly is its origin supported?
 ├── Coverage                         how much of the world did we see?
 ├── Qualification                    does this count as real production use?
 ├── Sampling                         sampled? with what uncertainty?
-├── Identity                         how well do identifiers resolve to entities?
-└── Method/version                   which statistics, which spec version?
+├── Identity Resolution             how well do identifiers resolve to entities?
+└── Method & Version                 which statistics, which spec version?
+
+Quality is assessed per **Measurement Use Profile** (first_party_analytics /
+comparative / cross_side_attribution / billable_audit) — the same data may be
+fit for internal trends but not for billing (see QUALITY §4).
 ```
 
 **Qualified usage.** Every observation carries two axes — Usage Context (where the
@@ -374,7 +379,7 @@ Distribution Side → Agent Runtime Side → Provider Side → Effect / Outcome 
 | --- | --- |
 | Registry | discovery / availability |
 | Agent runtime | presentation / choice / consumption |
-| Capability provider | operation / attempts / result |
+| Capability provider | attempt / completion / result (+ operation only when resolution evidence exists) |
 | Target system | effect / transaction |
 | Experiment layer | incrementality |
 

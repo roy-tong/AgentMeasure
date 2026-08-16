@@ -1,4 +1,4 @@
-# AgentMeasure Commercial Extension（COMMERCIAL）— Experimental
+# AgentMeasure Commercial Extension（COMMERCIAL）— Experimental（Document revision 0.4.3）
 
 > **Status: Experimental / Informative.** 本文件**不是**规范性标准的一部分，不参与
 > conformance 认证。它定义 CaaS 所需的*经济语义*（economic semantics），为未来的
@@ -132,10 +132,21 @@ AgentMeasure 建立——否则托管层可能重建"一个账户跨不同 Provi
 | Compute | `compute_completed` | `gpu_second` | 47.2 |
 | Booking | `effect_confirmed` | `booking` | 1 |
 | Lead Generation | `outcome_qualified` | `qualified_lead` | 5 |
-| Commerce | `transaction_settled` | `transaction` | 0.03（收入分成份额） |
+| Commerce | `transaction_settled` | `transaction` | 1（rate 与 quantity 分离，见下） |
 
 **Measurement Unit ≠ Billable Unit**：`successful_search` 是事件条件，不是单位。
 测量事实（Core）永远是计费语义的输入，计费折算 MUST 在 Metering Policy 中声明。
+
+**Revenue share 不混入 quantity**：
+
+```yaml
+billable_event: transaction_settled
+billable_unit: transaction
+billable_quantity: 1
+pricing_model: revenue_share
+rate: "0.030000"        # 3% 费率（字符串，防浮点误差）
+basis: settled_amount   # 分成基数
+```
 
 ### Metering Policy
 
@@ -239,17 +250,23 @@ minimum_resolution:
   = 不可计费，直到 resolution evidence 出现
 ```
 
-### Metering Assurance Profile（计量保证等级）
+### Billing Requirements（计量 predicate，非等级）
 
-| 等级 | 定义 | 适用 |
-| --- | --- | --- |
-| **M0 Provider-declared** | Provider 自己观察、自己声明 | first-party analytics / 内部对账 |
-| **M1 Authenticated provider** | Provider 观察带来源认证（签名/密钥） | 防抵赖的 provider 数据 |
-| **M2 Bilaterally correlated** | Provider + Runtime 双侧独立观察 + 共享关联键 | 可审计的 Agent 计量 |
-| **M3 Platform/third-party attested** | 受信任平台/第三方证言 | 最高等级（当前 UNSUPPORTED，不变量 11） |
+不用等级阶梯——直接声明 predicate（AgentMeasure-native，且避免与 Evidence 的
+Match 轴、Caller Identity 混淆）：
 
-**双方合同自行决定 `minimum_metering_assurance`**（如 M2）；AgentMeasure 只定义
-等级与判定规则——这就是商业系统里的 auditability requirement。
+```yaml
+billing_requirements:
+  provenance: authenticated          # none | authenticated | identity-verified
+  operation_resolution: explicit    # explicit_operation_id | idempotency_key | correlated | provider_policy | none
+  cross_side_corroboration: required   # required | optional | none
+  replay_protection: required         # required | optional | none
+```
+
+**双方合同自行决定 `billing_requirements`**（如 `provenance: authenticated +
+operation_resolution: explicit + replay_protection: required`）；AgentMeasure 只
+定义 predicate 与判定规则——这就是商业系统里的 auditability requirement。
+`platform-attested` 当前 UNSUPPORTED（不变量 11）。
 
 ## 6. Commercial Attribution（商业归因）
 

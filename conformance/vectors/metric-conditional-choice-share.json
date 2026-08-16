@@ -1,6 +1,6 @@
 {
   "spec_version": "agentmeasure-0.4",
-  "metric": "M2.5 Conditional Choice Share",
+  "metric": "M2.5 Observed Head-to-Head Choice Share",
   "grain": "decision-opportunity",
   "strict_qualified": {
     "context": "production",
@@ -16,21 +16,138 @@
         "tool_a": "Exa",
         "tool_b": "Tavily",
         "events": [
-          {"type": "presented", "decision_id": "d1", "candidate_set_id": "c1", "tool": "Exa", "choice_mode": "exclusive", "context": "production", "validity": "normal", "ts": "2026-08-16T00:00:00Z"},
-          {"type": "presented", "decision_id": "d1", "candidate_set_id": "c1", "tool": "Tavily", "choice_mode": "exclusive", "context": "production", "validity": "normal", "ts": "2026-08-16T00:00:01Z"},
-          {"type": "selected", "decision_id": "d1", "candidate_set_id": "c1", "tool": "Exa", "rank": 1, "choice_mode": "exclusive", "context": "production", "validity": "normal", "ts": "2026-08-16T00:01:00Z"},
-          {"type": "presented", "decision_id": "d2", "candidate_set_id": "c1", "tool": "Exa", "choice_mode": "exclusive", "context": "production", "validity": "normal", "ts": "2026-08-16T00:02:00Z"},
-          {"type": "presented", "decision_id": "d2", "candidate_set_id": "c1", "tool": "Tavily", "choice_mode": "exclusive", "context": "production", "validity": "normal", "ts": "2026-08-16T00:02:01Z"},
-          {"type": "selected", "decision_id": "d2", "candidate_set_id": "c1", "tool": "Exa", "rank": 1, "choice_mode": "exclusive", "context": "production", "validity": "normal", "ts": "2026-08-16T00:03:00Z"},
-          {"type": "presented", "decision_id": "d3", "candidate_set_id": "c2", "tool": "Exa", "choice_mode": "exclusive", "context": "production", "validity": "normal", "ts": "2026-08-16T00:04:00Z"},
-          {"type": "presented", "decision_id": "d3", "candidate_set_id": "c2", "tool": "Tavily", "choice_mode": "exclusive", "context": "production", "validity": "normal", "ts": "2026-08-16T00:04:01Z"},
-          {"type": "selected", "decision_id": "d3", "candidate_set_id": "c2", "tool": "Exa", "rank": 1, "choice_mode": "exclusive", "context": "production", "validity": "normal", "ts": "2026-08-16T00:05:00Z"},
-          {"type": "presented", "decision_id": "d4", "candidate_set_id": "c2", "tool": "Exa", "choice_mode": "exclusive", "context": "production", "validity": "normal", "ts": "2026-08-16T00:06:00Z"},
-          {"type": "presented", "decision_id": "d4", "candidate_set_id": "c2", "tool": "Tavily", "choice_mode": "exclusive", "context": "production", "validity": "normal", "ts": "2026-08-16T00:06:01Z"},
-          {"type": "selected", "decision_id": "d4", "candidate_set_id": "c2", "tool": "Tavily", "rank": 1, "choice_mode": "exclusive", "context": "production", "validity": "normal", "ts": "2026-08-16T00:07:00Z"}
+          {
+            "type": "presented",
+            "decision_id": "d1",
+            "candidate_set_id": "c1",
+            "tool": "Exa",
+            "choice_mode": "exclusive",
+            "context": "production",
+            "validity": "normal",
+            "ts": "2026-08-16T00:00:00Z"
+          },
+          {
+            "type": "presented",
+            "decision_id": "d1",
+            "candidate_set_id": "c1",
+            "tool": "Tavily",
+            "choice_mode": "exclusive",
+            "context": "production",
+            "validity": "normal",
+            "ts": "2026-08-16T00:00:01Z"
+          },
+          {
+            "type": "selected",
+            "decision_id": "d1",
+            "candidate_set_id": "c1",
+            "tool": "Exa",
+            "rank": 1,
+            "choice_mode": "exclusive",
+            "context": "production",
+            "validity": "normal",
+            "ts": "2026-08-16T00:01:00Z"
+          },
+          {
+            "type": "presented",
+            "decision_id": "d2",
+            "candidate_set_id": "c1",
+            "tool": "Exa",
+            "choice_mode": "exclusive",
+            "context": "production",
+            "validity": "normal",
+            "ts": "2026-08-16T00:02:00Z"
+          },
+          {
+            "type": "presented",
+            "decision_id": "d2",
+            "candidate_set_id": "c1",
+            "tool": "Tavily",
+            "choice_mode": "exclusive",
+            "context": "production",
+            "validity": "normal",
+            "ts": "2026-08-16T00:02:01Z"
+          },
+          {
+            "type": "selected",
+            "decision_id": "d2",
+            "candidate_set_id": "c1",
+            "tool": "Exa",
+            "rank": 1,
+            "choice_mode": "exclusive",
+            "context": "production",
+            "validity": "normal",
+            "ts": "2026-08-16T00:03:00Z"
+          },
+          {
+            "type": "presented",
+            "decision_id": "d3",
+            "candidate_set_id": "c2",
+            "tool": "Exa",
+            "choice_mode": "exclusive",
+            "context": "production",
+            "validity": "normal",
+            "ts": "2026-08-16T00:04:00Z"
+          },
+          {
+            "type": "presented",
+            "decision_id": "d3",
+            "candidate_set_id": "c2",
+            "tool": "Tavily",
+            "choice_mode": "exclusive",
+            "context": "production",
+            "validity": "normal",
+            "ts": "2026-08-16T00:04:01Z"
+          },
+          {
+            "type": "selected",
+            "decision_id": "d3",
+            "candidate_set_id": "c2",
+            "tool": "Exa",
+            "rank": 1,
+            "choice_mode": "exclusive",
+            "context": "production",
+            "validity": "normal",
+            "ts": "2026-08-16T00:05:00Z"
+          },
+          {
+            "type": "presented",
+            "decision_id": "d4",
+            "candidate_set_id": "c2",
+            "tool": "Exa",
+            "choice_mode": "exclusive",
+            "context": "production",
+            "validity": "normal",
+            "ts": "2026-08-16T00:06:00Z"
+          },
+          {
+            "type": "presented",
+            "decision_id": "d4",
+            "candidate_set_id": "c2",
+            "tool": "Tavily",
+            "choice_mode": "exclusive",
+            "context": "production",
+            "validity": "normal",
+            "ts": "2026-08-16T00:06:01Z"
+          },
+          {
+            "type": "selected",
+            "decision_id": "d4",
+            "candidate_set_id": "c2",
+            "tool": "Tavily",
+            "rank": 1,
+            "choice_mode": "exclusive",
+            "context": "production",
+            "validity": "normal",
+            "ts": "2026-08-16T00:07:00Z"
+          }
         ]
       },
-      "expect": {"co_presented": 4, "a_selected": 3, "b_selected": 1, "share_a": 0.75}
+      "expect": {
+        "co_presented": 4,
+        "a_selected": 3,
+        "b_selected": 1,
+        "share_a": 0.75
+      }
     },
     {
       "id": "id-collision-across-sets",
@@ -40,15 +157,76 @@
         "tool_a": "Exa",
         "tool_b": "Tavily",
         "events": [
-          {"type": "presented", "decision_id": "d1", "candidate_set_id": "c1", "tool": "Exa", "choice_mode": "exclusive", "context": "production", "validity": "normal", "ts": "2026-08-16T00:00:00Z"},
-          {"type": "presented", "decision_id": "d1", "candidate_set_id": "c1", "tool": "Tavily", "choice_mode": "exclusive", "context": "production", "validity": "normal", "ts": "2026-08-16T00:00:01Z"},
-          {"type": "selected", "decision_id": "d1", "candidate_set_id": "c1", "tool": "Exa", "rank": 1, "choice_mode": "exclusive", "context": "production", "validity": "normal", "ts": "2026-08-16T00:01:00Z"},
-          {"type": "presented", "decision_id": "d1", "candidate_set_id": "c2", "tool": "Exa", "choice_mode": "exclusive", "context": "production", "validity": "normal", "ts": "2026-08-16T00:02:00Z"},
-          {"type": "presented", "decision_id": "d1", "candidate_set_id": "c2", "tool": "Tavily", "choice_mode": "exclusive", "context": "production", "validity": "normal", "ts": "2026-08-16T00:02:01Z"},
-          {"type": "selected", "decision_id": "d1", "candidate_set_id": "c2", "tool": "Tavily", "rank": 1, "choice_mode": "exclusive", "context": "production", "validity": "normal", "ts": "2026-08-16T00:03:00Z"}
+          {
+            "type": "presented",
+            "decision_id": "d1",
+            "candidate_set_id": "c1",
+            "tool": "Exa",
+            "choice_mode": "exclusive",
+            "context": "production",
+            "validity": "normal",
+            "ts": "2026-08-16T00:00:00Z"
+          },
+          {
+            "type": "presented",
+            "decision_id": "d1",
+            "candidate_set_id": "c1",
+            "tool": "Tavily",
+            "choice_mode": "exclusive",
+            "context": "production",
+            "validity": "normal",
+            "ts": "2026-08-16T00:00:01Z"
+          },
+          {
+            "type": "selected",
+            "decision_id": "d1",
+            "candidate_set_id": "c1",
+            "tool": "Exa",
+            "rank": 1,
+            "choice_mode": "exclusive",
+            "context": "production",
+            "validity": "normal",
+            "ts": "2026-08-16T00:01:00Z"
+          },
+          {
+            "type": "presented",
+            "decision_id": "d1",
+            "candidate_set_id": "c2",
+            "tool": "Exa",
+            "choice_mode": "exclusive",
+            "context": "production",
+            "validity": "normal",
+            "ts": "2026-08-16T00:02:00Z"
+          },
+          {
+            "type": "presented",
+            "decision_id": "d1",
+            "candidate_set_id": "c2",
+            "tool": "Tavily",
+            "choice_mode": "exclusive",
+            "context": "production",
+            "validity": "normal",
+            "ts": "2026-08-16T00:02:01Z"
+          },
+          {
+            "type": "selected",
+            "decision_id": "d1",
+            "candidate_set_id": "c2",
+            "tool": "Tavily",
+            "rank": 1,
+            "choice_mode": "exclusive",
+            "context": "production",
+            "validity": "normal",
+            "ts": "2026-08-16T00:03:00Z"
+          }
         ]
       },
-      "expect": {"co_presented": 1, "a_selected": 1, "b_selected": 0, "share_a": 1.0}
+      "expect": {
+        "co_presented": 1,
+        "a_selected": 1,
+        "b_selected": 0,
+        "share_a": 1.0
+      }
     },
     {
       "id": "choice-mode-mismatch",
@@ -58,12 +236,45 @@
         "tool_a": "Exa",
         "tool_b": "Tavily",
         "events": [
-          {"type": "presented", "decision_id": "d1", "candidate_set_id": "c1", "tool": "Exa", "choice_mode": "exclusive", "context": "production", "validity": "normal", "ts": "2026-08-16T00:00:00Z"},
-          {"type": "presented", "decision_id": "d1", "candidate_set_id": "c1", "tool": "Tavily", "choice_mode": "fallback", "context": "production", "validity": "normal", "ts": "2026-08-16T00:00:01Z"},
-          {"type": "selected", "decision_id": "d1", "candidate_set_id": "c1", "tool": "Exa", "rank": 1, "choice_mode": "exclusive", "context": "production", "validity": "normal", "ts": "2026-08-16T00:01:00Z"}
+          {
+            "type": "presented",
+            "decision_id": "d1",
+            "candidate_set_id": "c1",
+            "tool": "Exa",
+            "choice_mode": "exclusive",
+            "context": "production",
+            "validity": "normal",
+            "ts": "2026-08-16T00:00:00Z"
+          },
+          {
+            "type": "presented",
+            "decision_id": "d1",
+            "candidate_set_id": "c1",
+            "tool": "Tavily",
+            "choice_mode": "fallback",
+            "context": "production",
+            "validity": "normal",
+            "ts": "2026-08-16T00:00:01Z"
+          },
+          {
+            "type": "selected",
+            "decision_id": "d1",
+            "candidate_set_id": "c1",
+            "tool": "Exa",
+            "rank": 1,
+            "choice_mode": "exclusive",
+            "context": "production",
+            "validity": "normal",
+            "ts": "2026-08-16T00:01:00Z"
+          }
         ]
       },
-      "expect": {"co_presented": 0, "a_selected": 0, "b_selected": 0, "share_a": 0.0}
+      "expect": {
+        "co_presented": 0,
+        "a_selected": 0,
+        "b_selected": 0,
+        "share_a": 0.0
+      }
     },
     {
       "id": "missing-candidate-set",
@@ -73,12 +284,42 @@
         "tool_a": "Exa",
         "tool_b": "Tavily",
         "events": [
-          {"type": "presented", "decision_id": "d1", "tool": "Exa", "choice_mode": "exclusive", "context": "production", "validity": "normal", "ts": "2026-08-16T00:00:00Z"},
-          {"type": "presented", "decision_id": "d1", "tool": "Tavily", "choice_mode": "exclusive", "context": "production", "validity": "normal", "ts": "2026-08-16T00:00:01Z"},
-          {"type": "selected", "decision_id": "d1", "tool": "Exa", "rank": 1, "choice_mode": "exclusive", "context": "production", "validity": "normal", "ts": "2026-08-16T00:01:00Z"}
+          {
+            "type": "presented",
+            "decision_id": "d1",
+            "tool": "Exa",
+            "choice_mode": "exclusive",
+            "context": "production",
+            "validity": "normal",
+            "ts": "2026-08-16T00:00:00Z"
+          },
+          {
+            "type": "presented",
+            "decision_id": "d1",
+            "tool": "Tavily",
+            "choice_mode": "exclusive",
+            "context": "production",
+            "validity": "normal",
+            "ts": "2026-08-16T00:00:01Z"
+          },
+          {
+            "type": "selected",
+            "decision_id": "d1",
+            "tool": "Exa",
+            "rank": 1,
+            "choice_mode": "exclusive",
+            "context": "production",
+            "validity": "normal",
+            "ts": "2026-08-16T00:01:00Z"
+          }
         ]
       },
-      "expect": {"co_presented": 0, "a_selected": 0, "b_selected": 0, "share_a": 0.0}
+      "expect": {
+        "co_presented": 0,
+        "a_selected": 0,
+        "b_selected": 0,
+        "share_a": 0.0
+      }
     },
     {
       "id": "strict-qualified-both-sides",
@@ -88,15 +329,76 @@
         "tool_a": "Exa",
         "tool_b": "Tavily",
         "events": [
-          {"type": "presented", "decision_id": "d1", "candidate_set_id": "c1", "tool": "Exa", "choice_mode": "exclusive", "context": "production", "validity": "normal", "ts": "2026-08-16T00:00:00Z"},
-          {"type": "presented", "decision_id": "d1", "candidate_set_id": "c1", "tool": "Tavily", "choice_mode": "exclusive", "context": "production", "validity": "normal", "ts": "2026-08-16T00:00:01Z"},
-          {"type": "selected", "decision_id": "d1", "candidate_set_id": "c1", "tool": "Exa", "rank": 1, "choice_mode": "exclusive", "context": "production", "validity": "normal", "ts": "2026-08-16T00:01:00Z"},
-          {"type": "presented", "decision_id": "d2", "candidate_set_id": "c1", "tool": "Exa", "choice_mode": "exclusive", "context": "production", "validity": "normal", "ts": "2026-08-16T00:02:00Z"},
-          {"type": "presented", "decision_id": "d2", "candidate_set_id": "c1", "tool": "Tavily", "choice_mode": "exclusive", "context": "unknown", "validity": "normal", "ts": "2026-08-16T00:02:01Z"},
-          {"type": "selected", "decision_id": "d2", "candidate_set_id": "c1", "tool": "Exa", "rank": 1, "choice_mode": "exclusive", "context": "production", "validity": "normal", "ts": "2026-08-16T00:03:00Z"}
+          {
+            "type": "presented",
+            "decision_id": "d1",
+            "candidate_set_id": "c1",
+            "tool": "Exa",
+            "choice_mode": "exclusive",
+            "context": "production",
+            "validity": "normal",
+            "ts": "2026-08-16T00:00:00Z"
+          },
+          {
+            "type": "presented",
+            "decision_id": "d1",
+            "candidate_set_id": "c1",
+            "tool": "Tavily",
+            "choice_mode": "exclusive",
+            "context": "production",
+            "validity": "normal",
+            "ts": "2026-08-16T00:00:01Z"
+          },
+          {
+            "type": "selected",
+            "decision_id": "d1",
+            "candidate_set_id": "c1",
+            "tool": "Exa",
+            "rank": 1,
+            "choice_mode": "exclusive",
+            "context": "production",
+            "validity": "normal",
+            "ts": "2026-08-16T00:01:00Z"
+          },
+          {
+            "type": "presented",
+            "decision_id": "d2",
+            "candidate_set_id": "c1",
+            "tool": "Exa",
+            "choice_mode": "exclusive",
+            "context": "production",
+            "validity": "normal",
+            "ts": "2026-08-16T00:02:00Z"
+          },
+          {
+            "type": "presented",
+            "decision_id": "d2",
+            "candidate_set_id": "c1",
+            "tool": "Tavily",
+            "choice_mode": "exclusive",
+            "context": "unknown",
+            "validity": "normal",
+            "ts": "2026-08-16T00:02:01Z"
+          },
+          {
+            "type": "selected",
+            "decision_id": "d2",
+            "candidate_set_id": "c1",
+            "tool": "Exa",
+            "rank": 1,
+            "choice_mode": "exclusive",
+            "context": "production",
+            "validity": "normal",
+            "ts": "2026-08-16T00:03:00Z"
+          }
         ]
       },
-      "expect": {"co_presented": 1, "a_selected": 1, "b_selected": 0, "share_a": 1.0}
+      "expect": {
+        "co_presented": 1,
+        "a_selected": 1,
+        "b_selected": 0,
+        "share_a": 1.0
+      }
     },
     {
       "id": "cross-project",
@@ -105,15 +407,82 @@
         "tool_a": "Exa",
         "tool_b": "Tavily",
         "events": [
-          {"type": "presented", "decision_id": "d1", "candidate_set_id": "c1", "project_id": "p1", "tool": "Exa", "choice_mode": "exclusive", "context": "production", "validity": "normal", "ts": "2026-08-16T00:00:00Z"},
-          {"type": "presented", "decision_id": "d1", "candidate_set_id": "c1", "project_id": "p1", "tool": "Tavily", "choice_mode": "exclusive", "context": "production", "validity": "normal", "ts": "2026-08-16T00:00:01Z"},
-          {"type": "selected", "decision_id": "d1", "candidate_set_id": "c1", "project_id": "p1", "tool": "Exa", "rank": 1, "choice_mode": "exclusive", "context": "production", "validity": "normal", "ts": "2026-08-16T00:01:00Z"},
-          {"type": "presented", "decision_id": "d2", "candidate_set_id": "c1", "project_id": "p2", "tool": "Exa", "choice_mode": "exclusive", "context": "production", "validity": "normal", "ts": "2026-08-16T00:02:00Z"},
-          {"type": "presented", "decision_id": "d2", "candidate_set_id": "c1", "project_id": "p2", "tool": "Tavily", "choice_mode": "exclusive", "context": "production", "validity": "normal", "ts": "2026-08-16T00:02:01Z"},
-          {"type": "selected", "decision_id": "d2", "candidate_set_id": "c1", "project_id": "p2", "tool": "Tavily", "rank": 1, "choice_mode": "exclusive", "context": "production", "validity": "normal", "ts": "2026-08-16T00:03:00Z"}
+          {
+            "type": "presented",
+            "decision_id": "d1",
+            "candidate_set_id": "c1",
+            "project_id": "p1",
+            "tool": "Exa",
+            "choice_mode": "exclusive",
+            "context": "production",
+            "validity": "normal",
+            "ts": "2026-08-16T00:00:00Z"
+          },
+          {
+            "type": "presented",
+            "decision_id": "d1",
+            "candidate_set_id": "c1",
+            "project_id": "p1",
+            "tool": "Tavily",
+            "choice_mode": "exclusive",
+            "context": "production",
+            "validity": "normal",
+            "ts": "2026-08-16T00:00:01Z"
+          },
+          {
+            "type": "selected",
+            "decision_id": "d1",
+            "candidate_set_id": "c1",
+            "project_id": "p1",
+            "tool": "Exa",
+            "rank": 1,
+            "choice_mode": "exclusive",
+            "context": "production",
+            "validity": "normal",
+            "ts": "2026-08-16T00:01:00Z"
+          },
+          {
+            "type": "presented",
+            "decision_id": "d2",
+            "candidate_set_id": "c1",
+            "project_id": "p2",
+            "tool": "Exa",
+            "choice_mode": "exclusive",
+            "context": "production",
+            "validity": "normal",
+            "ts": "2026-08-16T00:02:00Z"
+          },
+          {
+            "type": "presented",
+            "decision_id": "d2",
+            "candidate_set_id": "c1",
+            "project_id": "p2",
+            "tool": "Tavily",
+            "choice_mode": "exclusive",
+            "context": "production",
+            "validity": "normal",
+            "ts": "2026-08-16T00:02:01Z"
+          },
+          {
+            "type": "selected",
+            "decision_id": "d2",
+            "candidate_set_id": "c1",
+            "project_id": "p2",
+            "tool": "Tavily",
+            "rank": 1,
+            "choice_mode": "exclusive",
+            "context": "production",
+            "validity": "normal",
+            "ts": "2026-08-16T00:03:00Z"
+          }
         ]
       },
-      "expect": {"co_presented": 2, "a_selected": 1, "b_selected": 1, "share_a": 0.5}
+      "expect": {
+        "co_presented": 2,
+        "a_selected": 1,
+        "b_selected": 1,
+        "share_a": 0.5
+      }
     },
     {
       "id": "mode-filter",
@@ -124,15 +493,76 @@
         "tool_b": "Tavily",
         "choice_mode": "exclusive",
         "events": [
-          {"type": "presented", "decision_id": "d1", "candidate_set_id": "c1", "tool": "Exa", "choice_mode": "exclusive", "context": "production", "validity": "normal", "ts": "2026-08-16T00:00:00Z"},
-          {"type": "presented", "decision_id": "d1", "candidate_set_id": "c1", "tool": "Tavily", "choice_mode": "exclusive", "context": "production", "validity": "normal", "ts": "2026-08-16T00:00:01Z"},
-          {"type": "selected", "decision_id": "d1", "candidate_set_id": "c1", "tool": "Exa", "rank": 1, "choice_mode": "exclusive", "context": "production", "validity": "normal", "ts": "2026-08-16T00:01:00Z"},
-          {"type": "presented", "decision_id": "d2", "candidate_set_id": "c2", "tool": "Exa", "choice_mode": "fallback", "context": "production", "validity": "normal", "ts": "2026-08-16T00:02:00Z"},
-          {"type": "presented", "decision_id": "d2", "candidate_set_id": "c2", "tool": "Tavily", "choice_mode": "fallback", "context": "production", "validity": "normal", "ts": "2026-08-16T00:02:01Z"},
-          {"type": "selected", "decision_id": "d2", "candidate_set_id": "c2", "tool": "Tavily", "rank": 1, "choice_mode": "fallback", "context": "production", "validity": "normal", "ts": "2026-08-16T00:03:00Z"}
+          {
+            "type": "presented",
+            "decision_id": "d1",
+            "candidate_set_id": "c1",
+            "tool": "Exa",
+            "choice_mode": "exclusive",
+            "context": "production",
+            "validity": "normal",
+            "ts": "2026-08-16T00:00:00Z"
+          },
+          {
+            "type": "presented",
+            "decision_id": "d1",
+            "candidate_set_id": "c1",
+            "tool": "Tavily",
+            "choice_mode": "exclusive",
+            "context": "production",
+            "validity": "normal",
+            "ts": "2026-08-16T00:00:01Z"
+          },
+          {
+            "type": "selected",
+            "decision_id": "d1",
+            "candidate_set_id": "c1",
+            "tool": "Exa",
+            "rank": 1,
+            "choice_mode": "exclusive",
+            "context": "production",
+            "validity": "normal",
+            "ts": "2026-08-16T00:01:00Z"
+          },
+          {
+            "type": "presented",
+            "decision_id": "d2",
+            "candidate_set_id": "c2",
+            "tool": "Exa",
+            "choice_mode": "fallback",
+            "context": "production",
+            "validity": "normal",
+            "ts": "2026-08-16T00:02:00Z"
+          },
+          {
+            "type": "presented",
+            "decision_id": "d2",
+            "candidate_set_id": "c2",
+            "tool": "Tavily",
+            "choice_mode": "fallback",
+            "context": "production",
+            "validity": "normal",
+            "ts": "2026-08-16T00:02:01Z"
+          },
+          {
+            "type": "selected",
+            "decision_id": "d2",
+            "candidate_set_id": "c2",
+            "tool": "Tavily",
+            "rank": 1,
+            "choice_mode": "fallback",
+            "context": "production",
+            "validity": "normal",
+            "ts": "2026-08-16T00:03:00Z"
+          }
         ]
       },
-      "expect": {"co_presented": 1, "a_selected": 1, "b_selected": 0, "share_a": 1.0}
+      "expect": {
+        "co_presented": 1,
+        "a_selected": 1,
+        "b_selected": 0,
+        "share_a": 1.0
+      }
     },
     {
       "id": "authority-mixed",
@@ -142,15 +572,80 @@
         "tool_a": "Exa",
         "tool_b": "Tavily",
         "events": [
-          {"type": "presented", "decision_id": "d1", "candidate_set_id": "c1", "tool": "Exa", "choice_mode": "exclusive", "context": "production", "validity": "normal", "ts": "2026-08-16T00:00:00Z"},
-          {"type": "presented", "decision_id": "d1", "candidate_set_id": "c1", "tool": "Tavily", "choice_mode": "exclusive", "context": "production", "validity": "normal", "ts": "2026-08-16T00:00:01Z"},
-          {"type": "selected", "decision_id": "d1", "candidate_set_id": "c1", "tool": "Exa", "rank": 1, "choice_mode": "exclusive", "decision_authority": "model", "selection_constraint": "autonomous", "context": "production", "validity": "normal", "ts": "2026-08-16T00:01:00Z"},
-          {"type": "presented", "decision_id": "d2", "candidate_set_id": "c1", "tool": "Exa", "choice_mode": "exclusive", "context": "production", "validity": "normal", "ts": "2026-08-16T00:02:00Z"},
-          {"type": "presented", "decision_id": "d2", "candidate_set_id": "c1", "tool": "Tavily", "choice_mode": "exclusive", "context": "production", "validity": "normal", "ts": "2026-08-16T00:02:01Z"},
-          {"type": "selected", "decision_id": "d2", "candidate_set_id": "c1", "tool": "Tavily", "rank": 1, "choice_mode": "exclusive", "decision_authority": "policy", "selection_constraint": "forced", "context": "production", "validity": "normal", "ts": "2026-08-16T00:03:00Z"}
+          {
+            "type": "presented",
+            "decision_id": "d1",
+            "candidate_set_id": "c1",
+            "tool": "Exa",
+            "choice_mode": "exclusive",
+            "context": "production",
+            "validity": "normal",
+            "ts": "2026-08-16T00:00:00Z"
+          },
+          {
+            "type": "presented",
+            "decision_id": "d1",
+            "candidate_set_id": "c1",
+            "tool": "Tavily",
+            "choice_mode": "exclusive",
+            "context": "production",
+            "validity": "normal",
+            "ts": "2026-08-16T00:00:01Z"
+          },
+          {
+            "type": "selected",
+            "decision_id": "d1",
+            "candidate_set_id": "c1",
+            "tool": "Exa",
+            "rank": 1,
+            "choice_mode": "exclusive",
+            "decision_authority": "model",
+            "selection_constraint": "autonomous",
+            "context": "production",
+            "validity": "normal",
+            "ts": "2026-08-16T00:01:00Z"
+          },
+          {
+            "type": "presented",
+            "decision_id": "d2",
+            "candidate_set_id": "c1",
+            "tool": "Exa",
+            "choice_mode": "exclusive",
+            "context": "production",
+            "validity": "normal",
+            "ts": "2026-08-16T00:02:00Z"
+          },
+          {
+            "type": "presented",
+            "decision_id": "d2",
+            "candidate_set_id": "c1",
+            "tool": "Tavily",
+            "choice_mode": "exclusive",
+            "context": "production",
+            "validity": "normal",
+            "ts": "2026-08-16T00:02:01Z"
+          },
+          {
+            "type": "selected",
+            "decision_id": "d2",
+            "candidate_set_id": "c1",
+            "tool": "Tavily",
+            "rank": 1,
+            "choice_mode": "exclusive",
+            "decision_authority": "policy",
+            "selection_constraint": "forced",
+            "context": "production",
+            "validity": "normal",
+            "ts": "2026-08-16T00:03:00Z"
+          }
         ]
       },
-      "expect": {"co_presented": 2, "a_selected": 1, "b_selected": 1, "share_a": 0.5}
+      "expect": {
+        "co_presented": 2,
+        "a_selected": 1,
+        "b_selected": 1,
+        "share_a": 0.5
+      }
     },
     {
       "id": "authority-filtered",
@@ -161,15 +656,80 @@
         "tool_b": "Tavily",
         "decision_authority": "model",
         "events": [
-          {"type": "presented", "decision_id": "d1", "candidate_set_id": "c1", "tool": "Exa", "choice_mode": "exclusive", "context": "production", "validity": "normal", "ts": "2026-08-16T00:00:00Z"},
-          {"type": "presented", "decision_id": "d1", "candidate_set_id": "c1", "tool": "Tavily", "choice_mode": "exclusive", "context": "production", "validity": "normal", "ts": "2026-08-16T00:00:01Z"},
-          {"type": "selected", "decision_id": "d1", "candidate_set_id": "c1", "tool": "Exa", "rank": 1, "choice_mode": "exclusive", "decision_authority": "model", "selection_constraint": "autonomous", "context": "production", "validity": "normal", "ts": "2026-08-16T00:01:00Z"},
-          {"type": "presented", "decision_id": "d2", "candidate_set_id": "c1", "tool": "Exa", "choice_mode": "exclusive", "context": "production", "validity": "normal", "ts": "2026-08-16T00:02:00Z"},
-          {"type": "presented", "decision_id": "d2", "candidate_set_id": "c1", "tool": "Tavily", "choice_mode": "exclusive", "context": "production", "validity": "normal", "ts": "2026-08-16T00:02:01Z"},
-          {"type": "selected", "decision_id": "d2", "candidate_set_id": "c1", "tool": "Tavily", "rank": 1, "choice_mode": "exclusive", "decision_authority": "policy", "selection_constraint": "forced", "context": "production", "validity": "normal", "ts": "2026-08-16T00:03:00Z"}
+          {
+            "type": "presented",
+            "decision_id": "d1",
+            "candidate_set_id": "c1",
+            "tool": "Exa",
+            "choice_mode": "exclusive",
+            "context": "production",
+            "validity": "normal",
+            "ts": "2026-08-16T00:00:00Z"
+          },
+          {
+            "type": "presented",
+            "decision_id": "d1",
+            "candidate_set_id": "c1",
+            "tool": "Tavily",
+            "choice_mode": "exclusive",
+            "context": "production",
+            "validity": "normal",
+            "ts": "2026-08-16T00:00:01Z"
+          },
+          {
+            "type": "selected",
+            "decision_id": "d1",
+            "candidate_set_id": "c1",
+            "tool": "Exa",
+            "rank": 1,
+            "choice_mode": "exclusive",
+            "decision_authority": "model",
+            "selection_constraint": "autonomous",
+            "context": "production",
+            "validity": "normal",
+            "ts": "2026-08-16T00:01:00Z"
+          },
+          {
+            "type": "presented",
+            "decision_id": "d2",
+            "candidate_set_id": "c1",
+            "tool": "Exa",
+            "choice_mode": "exclusive",
+            "context": "production",
+            "validity": "normal",
+            "ts": "2026-08-16T00:02:00Z"
+          },
+          {
+            "type": "presented",
+            "decision_id": "d2",
+            "candidate_set_id": "c1",
+            "tool": "Tavily",
+            "choice_mode": "exclusive",
+            "context": "production",
+            "validity": "normal",
+            "ts": "2026-08-16T00:02:01Z"
+          },
+          {
+            "type": "selected",
+            "decision_id": "d2",
+            "candidate_set_id": "c1",
+            "tool": "Tavily",
+            "rank": 1,
+            "choice_mode": "exclusive",
+            "decision_authority": "policy",
+            "selection_constraint": "forced",
+            "context": "production",
+            "validity": "normal",
+            "ts": "2026-08-16T00:03:00Z"
+          }
         ]
       },
-      "expect": {"co_presented": 2, "a_selected": 1, "b_selected": 0, "share_a": 1.0}
+      "expect": {
+        "co_presented": 2,
+        "a_selected": 1,
+        "b_selected": 0,
+        "share_a": 1.0
+      }
     }
   ]
 }

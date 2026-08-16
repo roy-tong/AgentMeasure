@@ -32,7 +32,7 @@ Operation Resolution Coverage       51.4%
 Unresolved Attempts                 6,071
 
 Success Rate                       91.8%        unknown outcomes 3.1%
-Retry Rate                          9.4%
+Retry-chain Rate（resolved ops 内）  4.1%        coverage 51.4%——未知的不能算 retry
 Latency p95                        <2s
 
 Caller attribution
@@ -76,7 +76,7 @@ Measurement Coverage               participating_network · observed clients 142
 Alpha 期间记录 `Measurement insight → action`：
 
 ```text
-发现 12% retry        → 修 SDK
+发现 12% retry-chain（resolved 内）→ 修 SDK
 发现 unknown caller 60% → 增加 MCP metadata
 发现 tool A latency 高  → 优化 service
 发现某 runtime failure 高 → 修兼容性

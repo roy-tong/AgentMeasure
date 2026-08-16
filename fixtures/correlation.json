@@ -3,7 +3,7 @@
   "vectors": [
     {
       "id": "correlation-exact-call-id",
-      "description": "双侧同 tool_call_id → 1 个 invocation，E2，outcome 取一致值",
+      "description": "双侧同 tool_call_id → 1 个 attempt，E2，outcome 取一致值",
       "input": {
         "project": "github.com/foo/bar",
         "observations": [
@@ -26,9 +26,9 @@
         ]
       },
       "expect": {
-        "invocations": 1,
         "evidence": "independently-corroborated",
-        "outcome": "success"
+        "outcome": "success",
+        "attempts": 1
       }
     },
     {
@@ -56,8 +56,8 @@
         ]
       },
       "expect": {
-        "invocations": 1,
-        "outcome": "inconsistent"
+        "outcome": "inconsistent",
+        "attempts": 1
       }
     },
     {
@@ -85,13 +85,13 @@
         ]
       },
       "expect": {
-        "invocations": 2,
-        "evidence_not_corroborated": true
+        "evidence_not_corroborated": true,
+        "attempts": 2
       }
     },
     {
       "id": "aggregation-duplicate-observations",
-      "description": "同一调用 3 条观察（含重复）→ 1 个 invocation（重复不增计数）",
+      "description": "同一调用 3 条观察（含重复）→ 1 个 attempt（重复不增计数）",
       "input": {
         "project": "github.com/foo/bar",
         "observations": [
@@ -122,7 +122,7 @@
         ]
       },
       "expect": {
-        "invocations": 1
+        "attempts": 1
       }
     },
     {
@@ -150,8 +150,8 @@
         ]
       },
       "expect": {
-        "invocations": 1,
-        "outcome": "inconsistent"
+        "outcome": "inconsistent",
+        "attempts": 1
       }
     }
   ]

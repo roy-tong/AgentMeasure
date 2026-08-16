@@ -181,11 +181,12 @@ AgentMeasure 定义 **Metric Families**，不定义全局北极星。指标状�
 **Defined**（正式指标合同）、**Draft**（草案）、**Research**（方向）——概念论文
 不冒充标准已全定义。
 
-**M1 Adoption & Relationship — Reach。**
+**M1 Adoption & Relationship。**（Active Clients 是采用指标，不是 Reach；Reach 由
+M2 Presented / Eligibility 表达）
 `Active Clients (Defined) · Repeat Clients (Draft) · Active Client-Days (Defined)`
 
 **M2 Choice — 最 Agent-native。** Agent 有机会时会选它吗？
-`Observed Selection Rate (Defined) · Conditional Choice Share (Defined) · First-choice Rate (Proposed)`
+`Observed Selection Rate (Defined) · Observed Head-to-Head Choice Share (Defined) · First-choice Rate (Proposed)`
 
 **M3 Execution — Use。** 选了以后好用吗？Draft 0.4 分开计数 Operation 与 Attempt——
 这正是未来 Metering 需要的区分：
@@ -323,7 +324,7 @@ Agent C 在乎隐私。排名是 Agent 与 Marketplace 的产品决策；标准�
 | --- | --- |
 | Registry | 发现 / 可用性 |
 | Agent runtime | 呈现 / 选择 / 消费 |
-| Capability provider | 操作 / attempts / 结果 |
+| Capability provider | attempt / completion / result（仅在有 resolution evidence 时才有 operation） |
 | 目标系统 | 效应 / 交易 |
 | 实验层 | 增量 |
 
