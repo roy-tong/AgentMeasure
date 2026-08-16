@@ -1,0 +1,102 @@
+name: conformance
+
+on:
+  push:
+    paths:
+      - 'collector/**'
+      - 'adapters/**'
+      - 'conformance.py'
+      - 'spec/**'
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Core integrity tests
+        run: |
+          python3 - <<'PY'
+          import sys, json, tempfile, pathlib, os, subprocess
+          sys.path.insert(0, ".")
+          from collector.correlator.correlator import connect, store_observation, match_invocations
+          from collector.aggregator.aggregator import compute
+          from collector.usage import empty_observation, new_observation_id
+
+          # 50% bug 修复：100 次双边调用 -> share=1.0
+          tmp = pathlib.Path(tempfile.mkdtemp())
+          conn = connect(tmp / "collector.db")
+          for n in range(100):
+              for side, principal in (("client", "codex-hook@t"), ("server", "mcp-wrapper@t")):
+                  o = empty_observation(); o.update(dict(
+                      observation_id=new_observation_id(),
+                      observed_at=f"2026-08-16T00:{n//60:02d}:{n%60:02d}Z",
+                      observer_principal=principal, observer_side=side,
+                      provenance="hook" if side=="client" else "wrapper",
+                      project_id="github.com/foo/bar", tool="foo.search",
+                      tool_call_id=f"tc-{n}", session_key=f"sess-{n%10}" if side=="client" else None,
+                      outcome="success", lifecycle_stage="L2"))
+                  store_observation(conn, o)
+          match_invocations(conn)
+          s = compute(conn, "github.com/foo/bar")
+          assert s["logical_invocations"] == 100, s
+          assert s["corroborated_share"] == 1.0, s
+          print("core: 100 bilateral -> share 1.0 OK")
+
+          # 单侧 -> E0
+          o = empty_observation(); o.update(dict(
+              observation_id=new_observation_id(), observed_at="2026-08-16T03:00:00Z",
+              observer_principal="codex-hook@t", observer_side="client", provenance="hook",
+              project_id="github.com/foo/bar", tool="foo.only", tool_call_id="tc-s",
+              session_key="sess-x", outcome="unknown", lifecycle_stage="L1"))
+          store_observation(conn, o)
+          match_invocations(conn)
+          ev = conn.execute("SELECT evidence FROM invocations WHERE tool='foo.only'").fetchone()
+          assert ev["evidence"] == "E0", ev["evidence"]
+          print("core: single observation -> E0 OK")
+          PY
+      - name: Conformance suite
+        run: |
+          python3 - <<'PY'
+          import sys, json, tempfile, pathlib, subprocess, os
+          # 生成符合规范的 observation 样例 -> conformance 应 PASS
+          tmp = pathlib.Path(tempfile.mkdtemp())
+          sample = tmp / "sample.jsonl"
+          os.environ["AGENT_USED_KEYS_DIR"] = str(tmp)
+          sys.path.insert(0, ".")
+          from collector.usage import empty_observation, new_observation_id, pseudonymize
+          recs = []
+          for n in range(3):
+              o = empty_observation(); o.update(dict(
+                  observation_id=new_observation_id(), observed_at="2026-08-16T03:00:00Z",
+                  observer_principal="codex-hook@ci", observer_side="client", provenance="hook",
+                  project_id="github.com/foo/bar", tool=f"foo.t{n}", tool_call_id=f"tc-{n}",
+                  session_key=pseudonymize(f"sess-{n}", "codex"),
+                  outcome="unknown", lifecycle_stage="L1"))
+              recs.append(o)
+          sample.write_text("\n".join(json.dumps(r) for r in recs))
+          r = subprocess.run([sys.executable, "conformance.py", str(sample)], capture_output=True, text=True)
+          print(r.stdout)
+          assert r.returncode == 0, r.stdout + r.stderr
+          PY
+      - name: Adapter privacy tests
+        run: |
+          python3 - <<'PY'
+          import sys, json, tempfile, pathlib, os, subprocess
+          tmp = pathlib.Path(tempfile.mkdtemp())
+          env = dict(os.environ, AGENT_USED_EVENTS_DIR=str(tmp / "hook"))
+          subprocess.run([sys.executable, "adapters/codex/hook_agent.py"], input=json.dumps({
+              "hook_event_name": "PostToolUse", "tool_name": "Bash", "tool_use_id": "tu-1",
+              "session_id": "RAW-SESSION-42",
+              "tool_input": {"command": "cat /etc/shadow"},
+              "tool_response": "SUPER-SECRET",
+              "trace_id": "ignored", "is_error": True}), capture_output=True, text=True, env=env)
+          raw = (tmp / "hook" / "codex-hook-events.jsonl").read_text()
+          assert "RAW-SESSION-42" not in raw and "SUPER-SECRET" not in raw and "shadow" not in raw
+          assert "trace_id" not in raw and "is_error" not in raw
+          assert "p-" in raw
+          print("adapter privacy OK")
+          PY

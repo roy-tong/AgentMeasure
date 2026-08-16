@@ -5,15 +5,17 @@
 
 | Stage | 目标 | 关键产物 | 状态 |
 | --- | --- | --- | --- |
-| **M0 Definition** | 讲清"什么算 Agent Usage" | Whitepaper《How to Measure the Agent Tool Economy》+ Measurement Spec + Threat Model | ✅ 完成（spec/ 7 文档 + whitepaper/ 中英） |
-| **M1 Cross-Agent Proof** | 证明跨 Agent 可统一 | Codex Adapter（hooks）+ Claude Adapter（OTLP）+ DSH Plugin | 🔵 Codex 已有实现；Claude/DSH 设计完成，实现中 |
-| **M2 OTel Native** | 标准采集链 | Collector（normalizer/correlator/redactor/aggregator）+ OTel mapping + MCP adapter | 🔵 Collector 已实现并测试；MCP wrapper 已降级为 legacy adapter |
-| **M3 Attribution** | 项目核心 | Identity Graph + Correlation（E2）+ Evidence Grading | 🔵 correlator 已实现（E2）；identity graph 待填 |
-| **M4 Public Network** | 公开数据 | API + Dashboard + Badge | ⬜ Badge 已有（本地）；云端待 M3 后 |
-| **M5 External Validation** | 指标是否真被需要 | 5-10 个外部 Tool 项目接入 + 《State of Agent Tool Usage》实验报告 | ⬜ |
-| **M6 Ecosystem** | 公共基础设施 | MCP / OTel / Agent Platform / Registry 合作 | ⬜ |
+| **M0 Definition** | 讲清"什么算 Agent Usage" | Whitepaper + Measurement Spec + Threat Model | ✅ |
+| **M1 Measurement Integrity** | 修可信度基础 | Observation/Invocation 拆分、Evidence derived only、隐私先于落盘、真实 adapter 能力声明 | ✅ 已完成（v3 重构） |
+| **M2 Reference Integrations** | 真正跑通四宿主 | Claude（含 S3 consumption）+ Codex + DSH + MCP | 🔵 DSH/Codex 已实现；Claude S3 实验进行中 |
+| **M3 Conformance** | 标准可验证 | fixtures + tests + CI（conformance.yml）+ adapter compatibility | 🔵 套件已建，待扩充 |
+| **M4 External Validation** | 指标真实稳定 | 5-10 个外部项目接入 + 第一份《Measurement Discrepancy Report》 | ⬜ |
+| **M5 Identity + Aggregation** | 真实数据驱动 | Identity Graph（真实项目）+ 聚合 | ⬜ |
+| **M6 Public Network** | 最后做公开面 | Dashboard / Badge / Rankings / API | ⬜ |
 
-## 当前阶段：M1-M2（Cross-Agent Proof + OTel Native）
+> 顺序原则（v3 更新）：**External Validation 前置**——最大的未知数不是"能不能写
+> aggregator"，而是"这些 metrics 在真实环境里稳不稳定"。公开排名/徽章是最后一步。
+## 当前阶段：M2-M3（Reference Integrations + Conformance）
 
 **本月目标**：
 1. 三个 adapter 全部跑通（codex hooks 已实现 → claude OTLP → dsh plugin）
