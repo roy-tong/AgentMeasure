@@ -1,0 +1,11 @@
+{
+  "project_id": "github.com/roy-tong/agent-used",
+  "name": "agent-used",
+  "aliases": {
+    "skill": "agent-used",
+    "cli": "agent-used"
+  },
+  "tools": ["agent-used.wrap", "agent-used.hook", "agent-used.collect"],
+  "declared_by": "github.com/roy-tong/agent-used",
+  "verified": false
+}
