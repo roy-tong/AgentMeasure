@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agent-used.dev/schemas/agent-use-event-v1.schema.json",
+  "title": "Agent Use Event v1",
+  "description": "One line of agent-use-event.jsonl. Records that an agent called a tool on the callee side (wrapper), never the content.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "event_id",
+    "occurred_at",
+    "target",
+    "surface",
+    "tool",
+    "outcome",
+    "telemetry_mode"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0" },
+    "event_id": { "type": "string", "format": "uuid" },
+    "occurred_at": { "type": "string", "format": "date-time" },
+    "target": {
+      "type": "string",
+      "description": "The wrapped project, e.g. github.com/owner/repo"
+    },
+    "surface": { "enum": ["mcp", "cli", "http"] },
+    "tool": { "type": "string", "description": "Tool or command name, e.g. monitor" },
+    "outcome": { "enum": ["success", "failure", "retry"] },
+    "duration_bucket": {
+      "enum": ["<1s", "1s-10s", "10s-60s", "1m-10m", ">10m"],
+      "description": "Coarse duration, privacy-friendly"
+    },
+    "agent_host": {
+      "type": "string",
+      "description": "Host agent when identifiable (claude-code, cursor, codex, gemini-cli); unknown otherwise",
+      "default": "unknown"
+    },
+    "telemetry_mode": { "enum": ["local", "opted-in"] }
+  },
+  "additionalProperties": false,
+  "privacy": {
+    "never_recorded": [
+      "prompt or input content",
+      "tool arguments or results",
+      "file paths",
+      "user identity",
+      "IP or device identifiers"
+    ]
+  }
+}
