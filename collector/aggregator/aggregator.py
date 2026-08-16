@@ -92,12 +92,24 @@ def compute(conn, project_id: str, days: int = DAYS) -> dict:
         JOIN observation_links l ON l.invocation_id = i.invocation_id
         JOIN observations o ON o.observation_id = l.observation_id
         WHERE i.project_id=? AND i.started_at>=? AND i.eligible=1
-          AND o.usage_context IN ('production', 'unknown')
+          AND o.usage_context = 'production' AND o.validity = 'normal'
         """,
         (project_id, since),
     ).fetchone()
     qualified_invocations = row[0] or 0
     qualified_rate = round(qualified_invocations / eligible_invocations, 3) if eligible_invocations else 0.0
+    # 披露：context/validity 未知份额（Strict 口径的激励漏洞防护）
+    row = conn.execute(
+        """
+        SELECT COUNT(*) FROM invocations i
+        JOIN observation_links l ON l.invocation_id = i.invocation_id
+        JOIN observations o ON o.observation_id = l.observation_id
+        WHERE i.project_id=? AND i.started_at>=? AND i.eligible=1
+          AND (o.usage_context='unknown' OR o.validity IS NULL OR o.validity='unknown')
+        """,
+        (project_id, since),
+    ).fetchone()
+    unknown_share_invocations = row[0] or 0
 
     # ---- execution success（invocation 级） ----
     row = conn.execute(
@@ -145,6 +157,7 @@ def compute(conn, project_id: str, days: int = DAYS) -> dict:
         "corroborated_share": corroborated_share,
         "qualified_invocations": qualified_invocations,
         "qualified_rate": qualified_rate,
+        "unknown_context_or_validity": unknown_share_invocations,
         "success_rate": success_rate,
         "evidence": [{"grade": e, "invocations": c} for e, c in evidence],
         "observers": [{"principal": p, "invocations": c} for p, c in hosts],

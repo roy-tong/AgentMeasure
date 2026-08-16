@@ -45,6 +45,7 @@ OBSERVATION_KEYS = (
     "trust_domain",         # 观察者信任域（AUAS-TRUST；独立佐证判定的关键）
     "sampling",             # {"method": "fixed", "probability": 0.1} 等（AUAS-COVERAGE）
     "usage_context",        # production|development|test|benchmark|evaluation|synthetic|ci|unknown
+    "validity",             # normal|retry|duplicate|replay|agent_loop|health_check|load_test|suspected_invalid|unknown
 )
 
 USAGE_CONTEXTS = ("production", "development", "test", "benchmark",

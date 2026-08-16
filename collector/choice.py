@@ -1,16 +1,17 @@
 #!/usr/bin/env python3
-"""AUAS Choice 家族指标（Selection Rate / Share of Agent Choice）。
+"""AUAS Choice 家族（Draft 0.3：Grain = Decision Opportunity）。
 
-数据来源（Agent runtime routing 层观察）：
-  - presented 事件：Tool 进入 Agent 的 decision context（candidate set）
-  - selected 事件：Agent/runtime 决定调用该 Tool
+对象模型（AUAS-CORE §2.1）：
+  Decision Opportunity（decision_id）→ Candidate Set（candidate_set_id）
+  → Tool Presentation（presentation_id）→ Selection（selection_id）
 
-指标（AUAS-CORE §4 M2）：
-  Selection Rate = Selections ÷ Presented（同 project + tool + 窗口）
-  Share of Choice = tool selections ÷ category selections（可替代能力类别）
+计数纪律：presentation 按 decision 计（同 decision 同 tool 只计 1）；
+Agent 一天看到 Exa 10 次选 1 次 = 10 presentations / 1 selection = 10%。
 
-注意：presented 是选择行为的真实分母（不是 available）。多数 runtime 尚未暴露
-routing 层信号——能力矩阵如实声明，指标定义先立，数据面随平台能力扩展。
+指标（AUAS-METRICS M2）：
+  M2.1 Presented Opportunities
+  M2.2 Selection Rate = Selected decisions ÷ Presented decisions
+  M2.5 Conditional Choice Share = A/(A+B)（仅 A、B 同台竞争的 decisions）
 """
 from __future__ import annotations
 
@@ -28,37 +29,44 @@ def connect(db_path: Path = DB_DEFAULT) -> sqlite3.Connection:
     conn.row_factory = sqlite3.Row
     conn.execute(
         """
-        CREATE TABLE IF NOT EXISTS opportunities (
-            opportunity_id TEXT PRIMARY KEY,
+        CREATE TABLE IF NOT EXISTS presentations (
+            decision_id TEXT NOT NULL,
+            candidate_set_id TEXT,
             project_id TEXT NOT NULL,
             tool TEXT NOT NULL,
-            client_day TEXT NOT NULL,     -- UTC 日（伪匿名 client × 日）
+            choice_mode TEXT,
             presented_at TEXT,
-            source TEXT
+            context TEXT,
+            validity TEXT,
+            UNIQUE(decision_id, tool)
         )
         """
     )
     conn.execute(
         """
         CREATE TABLE IF NOT EXISTS selections (
-            selection_id TEXT PRIMARY KEY,
+            decision_id TEXT NOT NULL,
+            candidate_set_id TEXT,
             project_id TEXT NOT NULL,
             tool TEXT NOT NULL,
-            client_day TEXT NOT NULL,
+            rank INTEGER,
+            choice_mode TEXT,
             selected_at TEXT,
-            source TEXT
+            context TEXT,
+            validity TEXT,
+            UNIQUE(decision_id, tool)
         )
         """
     )
-    conn.execute("CREATE INDEX IF NOT EXISTS idx_opp ON opportunities(project_id, tool)")
-    conn.execute("CREATE INDEX IF NOT EXISTS idx_sel ON selections(project_id, tool)")
     return conn
 
 
 def ingest_choice_events(conn, path: Path) -> dict:
-    """导入选择事件 JSONL：
-      {"type": "presented", "project_id": "...", "tool": "...", "client_key": "...", "ts": "..."}
-      {"type": "selected",  "project_id": "...", "tool": "...", "client_key": "...", "ts": "..."}
+    """导入选择事件 JSONL（Draft 0.3 载荷）：
+      {"type":"presented","decision_id":"d1","candidate_set_id":"c1","project_id":"p",
+       "tool":"Exa","choice_mode":"exclusive","ts":"...","context":"production","validity":"normal"}
+      {"type":"selected","decision_id":"d1","candidate_set_id":"c1","project_id":"p",
+       "tool":"Exa","rank":1,"choice_mode":"exclusive","ts":"...","context":"production","validity":"normal"}
     """
     presented = selected = 0
     for line in Path(path).read_text(encoding="utf-8").splitlines():
@@ -69,83 +77,104 @@ def ingest_choice_events(conn, path: Path) -> dict:
             ev = json.loads(line)
         except json.JSONDecodeError:
             continue
-        project = ev.get("project_id")
+        decision = ev.get("decision_id")
         tool = ev.get("tool")
-        client = ev.get("client_key")
-        ts = ev.get("ts")
-        if not project or not tool or not client:
+        project = ev.get("project_id")
+        if not decision or not tool or not project:
             continue
-        client_day = f"{str(ts or '')[:10]}|{client}"  # UTC 日 × 伪匿名 client
+        common = (decision, ev.get("candidate_set_id"), project, tool,
+                  ev.get("choice_mode"), ev.get("ts"), ev.get("context"), ev.get("validity"))
         if ev.get("type") == "presented":
             conn.execute(
-                "INSERT OR IGNORE INTO opportunities (opportunity_id, project_id, tool, client_day, presented_at, source) VALUES (?,?,?,?,?,?)",
-                (f"o-{project}-{tool}-{client_day}", project, tool, client_day, ts, ev.get("source")),
+                """INSERT OR IGNORE INTO presentations
+                   (decision_id, candidate_set_id, project_id, tool, choice_mode,
+                    presented_at, context, validity) VALUES (?,?,?,?,?,?,?,?)""",
+                common,
             )
             presented += 1
         elif ev.get("type") == "selected":
             conn.execute(
-                "INSERT OR IGNORE INTO selections (selection_id, project_id, tool, client_day, selected_at, source) VALUES (?,?,?,?,?,?)",
-                (f"s-{project}-{tool}-{client_day}", project, tool, client_day, ts, ev.get("source")),
+                """INSERT OR IGNORE INTO selections
+                   (decision_id, candidate_set_id, project_id, tool, rank, choice_mode,
+                    selected_at, context, validity) VALUES (?,?,?,?,?,?,?,?,?)""",
+                (decision, ev.get("candidate_set_id"), project, tool,
+                 ev.get("rank"), ev.get("choice_mode"), ev.get("ts"),
+                 ev.get("context"), ev.get("validity")),
             )
             selected += 1
     conn.commit()
     return {"presented": presented, "selected": selected}
 
 
+def _strict_filter(prefix: str, extra: str = "") -> str:
+    return f" AND {prefix}.context='production' AND {prefix}.validity='normal' " + extra
+
+
 def selection_metrics(conn, project_id: str, days: int = 30) -> dict:
-    """Selection Rate：同 project + tool，窗口内 Selections ÷ Presented。"""
+    """M2.1/M2.2：Presented Opportunities 与 Selection Rate（Grain = decision）。"""
     since = (datetime.now(timezone.utc) - timedelta(days=days)).isoformat()
     rows = conn.execute(
-        """
-        SELECT o.tool,
-               COUNT(DISTINCT o.client_day) AS presented,
-               COUNT(DISTINCT s.client_day) AS selected
-        FROM opportunities o
-        LEFT JOIN selections s ON s.project_id = o.project_id
-                              AND s.tool = o.tool
-                              AND s.client_day = o.client_day
-        WHERE o.project_id=? AND o.presented_at>=?
-        GROUP BY o.tool
+        f"""
+        SELECT p.tool,
+               COUNT(DISTINCT p.decision_id) AS presented_decisions,
+               COUNT(DISTINCT s.decision_id) AS selected_decisions
+        FROM presentations p
+        LEFT JOIN selections s ON s.decision_id = p.decision_id AND s.tool = p.tool
+        WHERE p.project_id=? AND p.presented_at>=? {_strict_filter('p')}
+        GROUP BY p.tool
         """,
         (project_id, since),
     ).fetchall()
-    metrics = []
+    tools = []
     for r in rows:
-        presented = r["presented"]
-        selected = r["selected"] or 0
-        metrics.append({
+        presented = r["presented_decisions"]
+        selected = r["selected_decisions"] or 0
+        tools.append({
             "tool": r["tool"],
             "presented_opportunities": presented,
             "selections": selected,
             "selection_rate": round(selected / presented, 3) if presented else 0.0,
         })
-    return {"project": project_id, "days": days, "tools": metrics}
+    return {"project": project_id, "days": days, "grain": "decision-opportunity", "tools": tools}
 
 
-def share_of_choice(conn, project_id: str, category_map: dict, days: int = 30) -> dict:
-    """Share of Agent Choice：给定 tool → category 映射，计算类别内选择份额。"""
+def conditional_choice_share(conn, project_id: str, tool_a: str, tool_b: str, days: int = 30) -> dict:
+    """M2.5：A、B 同台竞争时的选择份额（同 candidate_set + 同 decision）。"""
     since = (datetime.now(timezone.utc) - timedelta(days=days)).isoformat()
-    rows = conn.execute(
-        """
-        SELECT tool, COUNT(DISTINCT client_day) AS selected
-        FROM selections WHERE project_id=? AND selected_at>=?
-        GROUP BY tool
+    both = conn.execute(
+        f"""
+        SELECT COUNT(DISTINCT p1.decision_id) AS n
+        FROM presentations p1
+        JOIN presentations p2 ON p2.decision_id = p1.decision_id
+        WHERE p1.project_id=? AND p1.tool=? AND p2.tool=?
+          AND p1.presented_at>=? AND p2.presented_at>=? {_strict_filter('p1')}
         """,
-        (project_id, since),
-    ).fetchall()
-    by_category: dict = {}
-    tool_sel = {r["tool"]: r["selected"] for r in rows}
-    for tool, category in category_map.items():
-        by_category.setdefault(category, 0)
-        if tool in tool_sel:
-            by_category[category] += tool_sel[tool]
-    result = {}
-    for tool, category in category_map.items():
-        total = by_category.get(category, 0)
-        result.setdefault(category, {"total_selections": total, "tools": []})
-        result[category]["tools"].append({
-            "tool": tool,
-            "selections": tool_sel.get(tool, 0),
-            "share": round(tool_sel.get(tool, 0) / total, 3) if total else 0.0,
-        })
-    return result
+        (project_id, tool_a, tool_b, since, since),
+    ).fetchone()["n"]
+    sel_a = conn.execute(
+        f"""
+        SELECT COUNT(DISTINCT s.decision_id) AS n FROM selections s
+        JOIN presentations p1 ON p1.decision_id = s.decision_id AND p1.tool = s.tool
+        JOIN presentations p2 ON p2.decision_id = s.decision_id AND p2.tool = ?
+        WHERE s.project_id=? AND s.tool=? AND p1.tool=?
+          AND s.selected_at>=? {_strict_filter('s')}
+        """,
+        (tool_b, project_id, tool_a, tool_a, since),
+    ).fetchone()["n"]
+    sel_b = conn.execute(
+        f"""
+        SELECT COUNT(DISTINCT s.decision_id) AS n FROM selections s
+        JOIN presentations p1 ON p1.decision_id = s.decision_id AND p1.tool = s.tool
+        JOIN presentations p2 ON p2.decision_id = s.decision_id AND p2.tool = ?
+        WHERE s.project_id=? AND s.tool=? AND p1.tool=?
+          AND s.selected_at>=? {_strict_filter('s')}
+        """,
+        (tool_a, project_id, tool_b, tool_b, since),
+    ).fetchone()["n"]
+    total = sel_a + sel_b
+    return {
+        "tool_a": tool_a, "tool_b": tool_b,
+        "co_presented_decisions": both,
+        "a_selected": sel_a, "b_selected": sel_b,
+        "conditional_choice_share_a": round(sel_a / total, 3) if total else 0.0,
+    }
