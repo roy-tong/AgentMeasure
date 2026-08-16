@@ -1,50 +1,64 @@
-# agent-used-dsh — DeepSeek Harness Adapter（设计）
+# agent-used-dsh — DeepSeek Harness Adapter
 
-> DSH 是 agent-used 的第一方深集成目标：everything is a plugin；base profile 原生包含 telemetry；
-> tool 执行暴露 `pre-execute / execute / post-execute` seam；session 是可持久化事件流。
-> 目标：证明同一套 Usage Attribution Spec 横跨 Codex / Claude Code / DSH。
+> DSH 是 agent-used 的第一方深集成目标（spec/measurement-spec.md 的 E2/E3 能力来源）。
+> 本文件基于 DSH 实际源码（@deepseek-ai/dsh-agent-loop）确认的事件流编写。
 
 ## 1. 架构
 
 ```text
-DSH（DeepSeek Harness）
- └ agent-used plugin（Cordis plugin）
-      ├─ listen tools/pre-execute     → S1 Executed 起点
-      ├─ listen tools/post-execute    → outcome + duration + S2
-      ├─ correlate session events     → session 级归一
-      ├─ emit OTel（agentused.* 扩展属性）
-      └─ generate safe usage records → 本地 collector
+DSH session event stream（dsh-agent-loop 持久化事件流）
+  ├─ tool/call     {turn, step, callId, name, arguments}   ← S1 起点
+  ├─ tool/result   {turn, step, message, error, meta}      ← S2 + outcome（经 sourceEventSeqs 关联）
+  ├─ turn/start / step/start / step/end / turn/end         ← session 级归一
+  └─ agent-used plugin（Cordis）
+        ├─ 监听 tool/call + tool/result
+        ├─ 只提取: name / callId / turn / step / outcome / 时间差
+        ├─ DROP: arguments / message 内容 / 路径
+        └─ 伪匿名 session → 本地 collector → 统一 usage 记录
 ```
 
-## 2. 事件映射（spec/otel-mapping.md）
+## 2. 已确认的事件结构（源码核实，`dsh-agent-loop/lib/index.js`）
 
-| DSH 事件 | agent-used 字段 |
+| 事件 | 字段 | agent-used 用途 | 处理 |
+| --- | --- | --- | --- |
+| `tool/call` | `turn, step, callId, name, arguments` | stage=S1, tool=name, tool_use_id=callId | `arguments` **DROP** |
+| `tool/result` | `turn, step, message{content,isError}, error, meta` | stage=S2, outcome=isError?failure:success, 耗时=tool/call→tool/result 时间差 | `message.content` **DROP** |
+| `turn/start` | `turn` | 会话内归一边界 | 计数用 |
+| `step/start` | `{turn, step, ...}` | 同上 | 计数用 |
+
+关联机制：`tool/result` 通过 `sourceEventSeqs: [callSeq]` 引用其 `tool/call` 事件——**DSH 原生提供配对关系**（等价于 agent-side 的 E2 半边）。
+
+## 3. 事件映射（spec/otel-mapping.md）
+
+| DSH 字段 | agentused.* |
 | --- | --- |
-| tools/pre-execute（tool 名、trace_id、session） | stage=S1, observer_side=client, provenance=platform |
-| tools/post-execute（outcome、耗时、trace_id） | stage=S2, outcome, duration_bucket |
-| skill 加载 | surface=skill（能力获取，S0 Selected 的 proxy） |
-| job / subagent / goal 上下文 | session_id 伪匿名化 |
+| `name`（tool/call） | `gen_ai.tool.name` → unified `tool` |
+| `callId` | `tool_use_id` |
+| `session`（DSH session id） | 伪匿名 `session_id`（本地哈希） |
+| — | `agentused.agent.host = "deepseek-harness"` |
+| — | `agentused.observer.side = "client"` |
+| — | `agentused.provenance = "platform"`（harness 原生） |
+| — | `agentused.evidence.level`：初始 E2（harness 原生配对）；工具侧同 trace 时升级 |
 
-## 3. 为什么 DSH 能给出 E2/E3 级证据
+## 4. 证据说明
 
-DSH 与 Codex/Claude Code 的关键差异：**harness 本身是 runtime**。
-- 插件运行在 harness 内，工具调用经过 harness 的执行 seam——不是外部 hooks 观察，而是执行链路的原生部分
-- `observer.side=client` + provenance=`platform`：接近 E3 的强证据（harness 原生证明）
-- 若工具侧同时接入 wrapper/OTel，trace_id 传播 → E2 双边关联同样成立
+- DSH 插件运行在 harness 内、事件来自持久化 session 流——**provenance=platform，天然强于 hooks 观察**
+- `tool/call ↔ tool/result` 的 sourceEventSeqs 配对是 harness 原生证明 → 本 adapter 产出事件直接标记 E2（harness 内配对）
+- 若工具侧（MCP wrapper）同 trace_id 关联，构成真正的双边 E2（跨 harness 与工具）
 
-## 4. 实现计划
+## 5. 实现计划
 
 | 步骤 | 内容 | 状态 |
 | --- | --- | --- |
-| P1 | Cordis plugin 骨架：注册 tools/pre-execute、post-execute 监听 | 待开发 |
-| P2 | 事件归一 + 伪匿名 session + 本地 JSONL 落盘 | 待开发 |
-| P3 | OTel span 输出（agentused.* 属性） | 待开发 |
-| P4 | 与 collector 打通：本地 collector 消费 → E2/E3 统计 | 待开发 |
-| P5 | 公开 demo：DSH 侧真实使用数据 → 徽章 | 待开发 |
+| P1 | Cordis plugin 骨架：订阅 session 事件（tool/call、tool/result） | 待开发（事件名已确认） |
+| P2 | 归一化 + 伪匿名 + 本地 JSONL（复用 collector/normalizer 的 codex 分支模式） | 待开发 |
+| P3 | sourceEventSeqs 配对 → E2 记录 | 待开发 |
+| P4 | 泄漏测试（arguments/message 零落盘）+ 与 collector 打通 | 待开发 |
+| P5 | 公开 demo：DSH 真实使用数据 → 徽章 | 待开发 |
 
-## 5. 验证标准
+## 6. 验证标准
 
-- [ ] 插件安装后，DSH 每次工具调用产生 1 条本地 usage 记录
-- [ ] 记录含 trace_id 且与工具侧一致时可关联为 E2
-- [ ] 敏感字段零泄漏（复用 redactor 泄漏测试）
-- [ ] 同一 project 在 Codex + DSH 双宿主数据可并入同一统计
+- [ ] 插件安装后每次工具调用产生 1 条 S1+S2 配对记录（含耗时）
+- [ ] arguments / message 内容零泄漏（断言）
+- [ ] 与 Codex / Claude 数据并入同一统计（跨宿主统一）
+- [ ] 工具侧接入时升级为跨侧 E2
