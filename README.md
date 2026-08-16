@@ -11,6 +11,34 @@ agent-used 是一套面向 AI Agent 软件生态的开放 **Usage Attribution �
 
 [《如何测量 Agent Tool Economy》（白皮书）](whitepaper/) · [Measurement Spec](spec/measurement-spec.md) · [English](README.en.md)
 
+## Try it in 2 minutes
+
+```bash
+# 1. 安装（零依赖，Python 3.9+）
+git clone https://github.com/roy-tong/agent-used && cd agent-used
+
+# 2. 模拟一次双侧调用（client + server 观察同一 tool_call_id）
+python3 - <<'PY'
+import sys; sys.path.insert(0, ".")
+from collector.correlator.correlator import connect, store_observation, match_invocations
+from collector.aggregator.aggregator import compute
+from collector.usage import empty_observation, new_observation_id
+
+conn = connect()  # ./collector.db
+for side, principal in (("client", "codex-hook@you"), ("server", "mcp-wrapper@you")):
+    o = empty_observation(); o.update(dict(
+        observation_id=new_observation_id(), observed_at="2026-08-16T03:00:00Z",
+        observer_principal=principal, observer_side=side, provenance="hook" if side=="client" else "wrapper",
+        project_id="github.com/you/your-tool", tool="your.search", tool_call_id="tc-1",
+        session_key="sess-1" if side=="client" else None, outcome="success", lifecycle_stage="L2"))
+    store_observation(conn, o)
+match_invocations(conn)
+print(compute(conn, "github.com/you/your-tool")["corroborated_share"])  # 1.0 = 双侧独立佐证
+PY
+
+# 3. 数据全在本地。README 徽章（M4 后公开）
+```
+
 ## 核心概念
 
 ### 使用漏斗：Install ≠ Usage
