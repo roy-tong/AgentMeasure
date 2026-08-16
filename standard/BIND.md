@@ -19,9 +19,9 @@
 | `gen_ai.tool.name` / `gen_ai.tool.call.id` | tool / tool_call_id 语义字段 |
 | Execute tool span | S1/S2 观察载体 |
 | `trace_id` / `span_id` / parent-child | Structural match |
-| OTLP Collector | 数据分流载体（agent-used 消费侧脱敏） |
+| OTLP Collector | 数据分流载体（参考实现消费侧脱敏） |
 
-**agent-used 只增加 6 个 `agentused.*` 扩展字段**；evidence 是派生属性，
+**参考实现只增加 6 个 `agentused.*` 扩展字段**（属性前缀沿用早期实现名，是技术标识）；evidence 是派生属性，
 只出现在 Invocation/Attribution Record，不出现在 instrumentation span。
 
 ## B3. 绑定原则
