@@ -1,0 +1,66 @@
+{
+  "spec_version": "auas-0.1",
+  "vectors": [
+    {
+      "id": "correlation-exact-call-id",
+      "description": "双侧同 tool_call_id → 1 个 invocation，E2，outcome 取一致值",
+      "input": {
+        "project": "github.com/foo/bar",
+        "observations": [
+          {"side": "client", "principal": "codex-hook@td-a", "tool": "foo.search", "call_id": "tc-1", "outcome": "success", "ts": "2026-08-16T03:00:00Z"},
+          {"side": "server", "principal": "mcp-wrapper@td-b", "tool": "foo.search", "call_id": "tc-1", "outcome": "success", "ts": "2026-08-16T03:00:05Z"}
+        ]
+      },
+      "expect": {"invocations": 1, "evidence": "E2", "outcome": "success"}
+    },
+    {
+      "id": "correlation-outcome-conflict",
+      "description": "client success + server failure → derived_outcome = inconsistent（不压平）",
+      "input": {
+        "project": "github.com/foo/bar",
+        "observations": [
+          {"side": "client", "principal": "codex-hook@td-a", "tool": "foo.search", "call_id": "tc-2", "outcome": "success", "ts": "2026-08-16T03:00:00Z"},
+          {"side": "server", "principal": "mcp-wrapper@td-b", "tool": "foo.search", "call_id": "tc-2", "outcome": "failure", "ts": "2026-08-16T03:00:05Z"}
+        ]
+      },
+      "expect": {"invocations": 1, "outcome": "inconsistent"}
+    },
+    {
+      "id": "correlation-ambiguous",
+      "description": "无精确/结构/承诺键的观察 → 各自独立，不强行配对（fail-closed）",
+      "input": {
+        "project": "github.com/foo/bar",
+        "observations": [
+          {"side": "client", "principal": "codex-hook@td-a", "tool": "foo.search", "call_id": null, "outcome": "success", "ts": "2026-08-16T03:00:00Z"},
+          {"side": "server", "principal": "mcp-wrapper@td-b", "tool": "foo.search", "call_id": null, "outcome": "success", "ts": "2026-08-16T03:00:05Z"}
+        ]
+      },
+      "expect": {"invocations": 2, "evidence_none_E2": true}
+    },
+    {
+      "id": "aggregation-duplicate-observations",
+      "description": "同一调用 3 条观察（含重复）→ 1 个 invocation（重复不增计数）",
+      "input": {
+        "project": "github.com/foo/bar",
+        "observations": [
+          {"side": "client", "principal": "codex-hook@td-a", "tool": "foo.search", "call_id": "tc-3", "outcome": "success", "ts": "2026-08-16T03:00:00Z"},
+          {"side": "server", "principal": "mcp-wrapper@td-b", "tool": "foo.search", "call_id": "tc-3", "outcome": "success", "ts": "2026-08-16T03:00:05Z"},
+          {"side": "server", "principal": "mcp-wrapper-2@td-c", "tool": "foo.search", "call_id": "tc-3", "outcome": "success", "ts": "2026-08-16T03:00:06Z"}
+        ]
+      },
+      "expect": {"invocations": 1}
+    },
+    {
+      "id": "aggregation-retry-chain",
+      "description": "失败重试链 → invocation 归一（call-fail-retry-success 计 1 次）",
+      "input": {
+        "project": "github.com/foo/bar",
+        "observations": [
+          {"side": "server", "principal": "mcp-wrapper@td-b", "tool": "foo.search", "call_id": "tc-4", "outcome": "failure", "ts": "2026-08-16T03:00:00Z"},
+          {"side": "server", "principal": "mcp-wrapper@td-b", "tool": "foo.search", "call_id": "tc-4", "outcome": "success", "ts": "2026-08-16T03:00:05Z"}
+        ]
+      },
+      "expect": {"invocations": 1, "outcome": "inconsistent"}
+    }
+  ]
+}

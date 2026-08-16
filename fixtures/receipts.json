@@ -1,0 +1,71 @@
+{
+  "spec_version": "auas-0.1",
+  "vectors": [
+    {
+      "id": "receipt-valid",
+      "description": "合法收据：字段完整、canonical 可序列化",
+      "input": {
+        "receipt_id": "r-1",
+        "spec_version": "auas-0.1",
+        "observed_at": "2026-08-16T03:00:00Z",
+        "observer_principal": "codex-hook@acme",
+        "observer_side": "client",
+        "provenance": "hook",
+        "trust_domain": "acme",
+        "project_id": "github.com/foo/bar",
+        "tool": "foo.search",
+        "tool_call_id": "tc-1",
+        "outcome": "unknown",
+        "lifecycle_stage": "L1"
+      },
+      "expect": {"valid": true}
+    },
+    {
+      "id": "receipt-forbidden-fields",
+      "description": "收据含内容字段 → 无效（隐私不变量）",
+      "input": {
+        "receipt_id": "r-2",
+        "spec_version": "auas-0.1",
+        "observed_at": "2026-08-16T03:00:00Z",
+        "observer_principal": "codex-hook@acme",
+        "observer_side": "client",
+        "provenance": "hook",
+        "trust_domain": "acme",
+        "project_id": "github.com/foo/bar",
+        "tool": "foo.search",
+        "tool_call_id": "tc-2",
+        "outcome": "unknown",
+        "lifecycle_stage": "L1",
+        "prompt": "SECRET"
+      },
+      "expect": {"valid": false, "reason": "content field"}
+    },
+    {
+      "id": "commitment-same-call",
+      "description": "同一次调用（同 trace+call_id）→ 相同 commitment，异侧可关联",
+      "input": {
+        "a": {"project_id": "github.com/foo/bar", "trace_id": "t-1", "tool_call_id": "tc-9", "observer_side": "client"},
+        "b": {"project_id": "github.com/foo/bar", "trace_id": "t-1", "tool_call_id": "tc-9", "observer_side": "server"}
+      },
+      "expect": {"correspond": true}
+    },
+    {
+      "id": "commitment-different-call",
+      "description": "不同调用 → 不同 commitment，不关联",
+      "input": {
+        "a": {"project_id": "github.com/foo/bar", "trace_id": "t-1", "tool_call_id": "tc-9", "observer_side": "client"},
+        "b": {"project_id": "github.com/foo/bar", "trace_id": "t-2", "tool_call_id": "tc-10", "observer_side": "server"}
+      },
+      "expect": {"correspond": false}
+    },
+    {
+      "id": "same-side-never-corroborates",
+      "description": "同侧两条观察不构成佐证",
+      "input": {
+        "a": {"project_id": "github.com/foo/bar", "trace_id": "t-1", "tool_call_id": "tc-9", "observer_side": "client"},
+        "b": {"project_id": "github.com/foo/bar", "trace_id": "t-1", "tool_call_id": "tc-9", "observer_side": "client"}
+      },
+      "expect": {"correspond": false}
+    }
+  ]
+}

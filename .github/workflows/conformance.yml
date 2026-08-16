@@ -58,6 +58,9 @@ jobs:
           assert ev["evidence"] == "E0", ev["evidence"]
           print("core: single observation -> E0 OK")
           PY
+      - name: AUAS test vectors
+        run: |
+          python3 verify_vectors.py
       - name: Conformance suite
         run: |
           python3 - <<'PY'
