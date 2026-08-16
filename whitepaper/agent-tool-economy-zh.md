@@ -1,168 +1,220 @@
-# 如何测量 Agent Tool Economy
+# Agent 软件的使用应该如何被度量？
 
-**An Open Standard for Usage Attribution in the Agent Ecosystem**
+**一份行业方法论 — Agent Usage Attribution Standard（AUAS），Draft 0.2**
 
-> 作者：Roy Tong（仝夏瑞）· 产品经理 · 连续创业者
-> 配套实现：[agent-used](https://github.com/roy-tong/agent-used)（Attribution Layer 的 reference implementation）
-> 状态：v1 草案，随社区讨论演进
+> 作者：Roy Tong（仝夏瑞）
+> agent-used 是这套标准的参考实现。
 
-## 一个基本问题
+## 摘要
 
-**What does it mean for software to be "used by an agent"?**
+Agent 正在成为软件的新消费者，但行业没有统一的方法衡量 Agent 如何发现、选择、使用和依赖软件。下载量、star、自报安装数——既不测量 Agent，也不测量价值。本文定义 AUAS：一套 Agent 软件生态的度量标准——什么算机会、什么算选择、什么算调用、什么算消费、什么算贡献；这些如何计数、如何比较、如何限定；每一级证据能支持什么结论。目标不是仪表盘，而是 Tool 开发者、Agent 平台、模型公司、Registry、投资者和第三方研究机构之间的**共同数据语言**。
 
-2026 年，Agent 正在成为软件分发最重要的新渠道。Claude Code、Codex、DeepSeek Harness 会替用户选择工具、安装 skill、调用 MCP server。工具作者第一次面对一个无法回答的问题：**我的工具到底有没有被 Agent 用？**
+## 一、为什么 Agent 使用需要新的度量模型
 
-现有信号全部失效：
-
-- GitHub star / clone 显示的是人，不是 Agent
-- skills.sh 安装数是自报遥测（可刷、无 API、无验证）
-- MCP registry 明确不做采纳数据
-- llms.txt 声明了——一项针对 13.7 万个站点的研究显示，在发布有效 llms.txt 的站点中，97% 的文件在 2026 年 5 月没有收到任何请求
-
-于是工具作者只能靠感觉决策：该不该继续维护这个 MCP server？该把算力投到哪个工具？Agent 是怎么发现工具的？
-
-本文想做的第一件事不是给答案，而是**把问题定义清楚**。
-
-## 概念贡献：使用不是一个事件，是一条链
-
-工具生态过去有一个隐含假设：下载了 = 用了。Agent 生态把这个假设彻底打破。
+软件分发曾有一条可读的链路：下载、安装、使用。Agent 经济打破了每一个环节：
 
 ```text
-Install ≠ Usage
-Discovery ≠ Selection
-Selection ≠ Execution
-Execution ≠ Success
-Success ≠ Consumption
-Consumption ≠ Contribution
+安装 ≠ 可用
+可用 ≠ 被呈现
+被呈现 ≠ 被选择
+被选择 ≠ 被使用
+被使用 ≠ 有用
+有用 ≠ 增量价值
 ```
 
-每一层都不能替代下一层：
+- *安装*与*可用*描述工具的存在，不描述 Agent 的行为。
+- *被呈现*——进入 Agent 的决策上下文——是选择行为的真正分母，而今天几乎不可观测。
+- *被选择*是决策；*被调用*是执行；*完成*是结果。
+- *被消费*意味着结果进入了任务；*有用*意味着它产生了作用。
+- *增量价值*是反事实：没有这个工具，结果会不会更差？
 
-| 阶段 | 定义 | 谁可观察 | 意义 |
-| --- | --- | --- | --- |
-| S0 Selected | Agent 选择了该工具 | Agent runtime | 被发现且被选中 |
-| S1 Executed | 实际执行了调用 | 双侧 | 选择变成了行为 |
-| S2 Execution Success | 成功返回 | 双侧 | 行为变成了结果 |
-| S3 Result Consumed | 结果被后续上下文使用 | Agent runtime（部分） | 结果变成了输入 |
-| S4 Task Contribution | 对下游任务完成有贡献 | 研究方向 | 输入变成了价值 |
+广告行业用了几十年学会：曝光不是转化，点击不是价值，归因不是增量。Agent 软件生态可以从第一天就采用这门纪律。AUAS 回答五个问题：
 
-**"调用成功"不等于"工具有用"。** 一个被反复调用但结果从不被 Agent 使用的工具，和没有被调用没有本质区别。长期来看，**Result Consumed Rate 比 Tool Calls 更接近工具的真实价值**——这是整个测量框架最重要的研究方向。
+> **Reach（触达）**——我的 Tool 有没有进入 Agent 的选择范围？
+> **Choice（选择）**——Agent 有机会时，会不会选我？
+> **Use（使用）**——选了以后，有没有真正使用？
+> **Utility（效用）**——使用以后，有没有产生有效结果？
+> **Value（价值）**——没有我，Agent 的结果会不会更差？
 
-## 证据分级：签名不等于真实
+## 二、测量对象
 
-开放生态里不存在绝对 ground truth。任何"客观真实"的宣称都需要回答：**你凭什么证明？**
+**Observation（观察）是证据单位，不是业务测量单位。** AUAS 先定义业务单位：
 
-一个工具作者可以生成 100 万条假调用，用自己的 key 做 HMAC——全部是合法签名。所以 HMAC 只证明"数据来自持 key 主体且未被篡改"，不证明"真的有 Agent 调用了它"。
-
-因此测量体系必须用**证据等级**取代二元判断：
-
-| 等级 | 名称 | 能证明什么 | 公共统计可信度 |
-| --- | --- | --- | --- |
-| E0 Observed | 单边日志 | 某一方声称 | 低 |
-| E1 Source-authenticated | 签名事件 | 来源与完整性 | 中低 |
-| **E2 Correlated** | 双边独立观测匹配 | 同一次真实调用 | **高（核心）** |
-| E3 Platform-attested | 平台直接证明 | 平台确认 | 很高 |
-
-**E2 是技术上的关键突破点**：当 Agent 侧与 Tool 侧通过同一 OTel trace（`trace_id`）独立记录到同一次调用，两侧无法单方伪造对方的观测，这才构成 **corroborated usage**。
-
-MCP 2026-07-28 正式规范把 OTel trace context（`traceparent / tracestate / baggage`）正式纳入 `_meta` 传递——**协议级双边关联首次成为现实**。这是本框架最重要的技术基础：不是我们发明了 trace 传播，而是我们第一次定义"trace 对上之后，什么才算一次可信的使用"。
-
-## 测量模型：六要素
-
-```
-Agent Usage Measurement Model
-        ├─ Identity     这次使用属于哪个项目（repo↔npm↔MCP↔tool↔CLI↔skill 归一）
-        ├─ Observation  谁观测的（client / server / platform）
-        ├─ Correlation  双边是否对上（trace_id / tool_use_id）
-        ├─ Evidence     可信到什么程度（E0-E3）
-        ├─ Aggregation  如何归一化（session 归一、重试归一、防拆 API）
-        └─ Privacy      如何公开而不泄露（raw stays local）
-```
-
-其中 **Identity** 是被低估的难点：同一项目在 GitHub、npm、MCP registry、tool 名、CLI、skill 下有六种身份。不做归一，同一个项目会被拆成六份数据——排名失真，也给"拆 API 刷榜"留了空间。Canonical Identity Graph 是测量体系的底层资产。
-
-## 指标：为什么 Raw Call Count 不是北极星
-
-一个 Agent 完成任务需要 `search → fetch → parse` × 2 = 6 次调用；另一个 Agent 用高度封装工具 `research()` = 1 次调用。前者不意味着 6 倍使用。失败重试链 `call → fail → retry → success` 反而产生 3 条记录。
-
-因此公开指标按四层组织，优先级递减：
-
-1. **Adoption**（首要）：Active Agent Sessions——过去 30 天产生 verified usage 的会话数
-2. **Engagement**：Repeat Usage、7d / 30d 回访率
-3. **Quality**：Execution Success、Result Consumption
-4. **Trust**：Corroborated Usage Share（E2 占比）
-
-排行榜按 Active Sessions 而非 calls——否则必然出现"为刷榜把工具拆成 50 个 API"。
-
-## 与现有标准的关系：站在 OTel 上面
-
-agent-used 不替代 OpenTelemetry，也不替代 MCP：
-
-- **OTel 解决 telemetry 怎么传**：trace 传播、span、字段约定
-- **MCP 解决工具怎么调**：协议、`_meta` trace context
-- **agent-used 解决什么才算使用**：语义、证据、身份、指标、隐私
-
-实现上只增加 6 个 `agentused.*` 扩展字段（`project.id`、`observer.side`、`agent.host`、`provenance`、`evidence.level`、`project.version`），其余全部复用标准字段。若 OTel GenAI 工作组未来采纳，字段并入标准，agent-used 退化为纯语义层——这是设计目标。
-
-## 架构：Attribution Layer
-
-```text
-Public Usage Layer（Dashboard / API / Badge / Rankings / Trends）
-        ▲  aggregated only
-Attribution Layer
-  Identity Resolution · Dedup · Correlation · Evidence Grading
-  Privacy Aggregation · Metric Normalization
-        ▲                ▲
- Agent Adapters        Tool Adapters
-  codex / claude / dsh   mcp / http / cli
-        ▲                ▲
-   OTel / MCP existing standards
-```
-
-三个 Agent 侧 adapter 证明跨平台可统一：
-
-- **Codex**：`PreToolUse / PostToolUse` hooks 观测 MCP、shell 与 local function tools；`prompt / tool_input / tool_output` 默认 DROP——adapter 的意义不是记录更多，而是**证明 Codex 这一侧真的发起了调用**
-- **Claude Code**：原生 OTLP 输出（metrics/events/traces），agent-used 作为 OTel Processor/Exporter 接入——**不要求用户放弃现有 observability backend**
-- **DeepSeek Harness**：everything is a plugin，tool 执行暴露 `pre-execute / execute / post-execute` seam，session 是可持久化事件流——可以做最深的第一方集成
-
-同一套 Measurement Model 横跨三套完全不同的 harness——这就是"标准"的意义。
-
-## 隐私：Raw stays local
-
-```
-Raw Events → 本地 Collector（identity/dedup/redact/aggregate/evidence）→ SAFE AGGREGATES → 公开
-```
-
-云端默认拿不到：prompt、input、output、path、email、username、raw session id。伪匿名 installation id（本地 secret + 按月轮换）支持 unique installations 与 repeat usage 计算，云端无法反推身份。
-
-**为什么"我们绝不记录参数"不够**：那是承诺；体系是架构。把 redaction 放进采集链路的默认路径，让泄漏在代码层不可能发生（adapter 带泄漏测试）。
-
-## 政策红线
-
-1. 不自动 star / follow（GitHub AUP 明确禁止 automated starring）
-2. 不爬 GitHub 网页采集数据（交叉验证走官方 API）
-3. 不按 raw calls 排名（防拆 API 刷榜）
-4. 测量"使用"，不是"好评"
-
-## 生态路径
-
-三条路不是竞争，是互补：
-
-| 伙伴 | 解决什么 | 角色 |
+| 对象 | 定义 | 层 |
 | --- | --- | --- |
-| **Agent 平台**（OpenAI / Anthropic / DeepSeek） | 谁真正调用了 | 证据的最高权威（E3） |
-| **GitHub** | 项目是谁的、代码在哪 | 身份与归属（repo identity、badge） |
-| **MCP Registry** | 这个 server 是谁 | **第一批生态合作的自然起点**——registry 是身份，agent-used 是实际使用；官方明确为 downstream aggregators 留出增值 metadata 空间（ratings、download counts、security results）；usage attribution 与这一架构天然兼容，是 agent-used 希望探索的扩展方向 |
+| Opportunity | Agent 的决策上下文里有这个 Tool | Behavior |
+| Invocation | Tool 实际执行了调用 | Behavior |
+| Task | Invocation 所服务的任务单位 | Behavior |
+| Client | 独立 Agent runtime / installation | Market |
+| Project | package/MCP/skill 归属的软件项目 | Market |
+| Category | 可比较的能力类别（搜索、编码…） | Market |
+| Observation | 对上述行为的证据性观察（签名收据） | **Evidence** |
 
-## 行动号召
+把 observation 当成 usage 计数，会双计每一次被佐证的调用；把 invocation 当成价值，会混淆行为与效用。层级不可互换。
 
-- **工具作者**：接入 adapter，先看自己的真实数据（不急着上榜）
-- **Agent 平台**：开放 attestation 接口，让"使用证明"成为平台原生能力
-- **标准社区**：讨论 S0-S4 漏斗与 E0-E3 证据模型——这是可以进 AAIF / OTel GenAI 的草案
-- **研究者**：Result Consumption（S3）与 Task Contribution（S4）的测量方法，是开放问题
+## 三、Agent Tool 交互生命周期
 
-**先推动问题定义，再推动实现。** 本文是问题定义；[agent-used](https://github.com/roy-tong/agent-used) 是 reference implementation。
+每个阶段必须明确：分子、分母、可观测还是推断、最低证据。
+
+| 阶段 | 定义 | 可观测 | 最低证据 |
+| --- | --- | --- | --- |
+| Presented | Tool 进入 Agent 决策上下文（候选集） | Agent runtime（routing 层） | runtime 级观察 |
+| Selected | Agent/runtime 决定调用 | Agent runtime | runtime 级观察 |
+| Invoked | 开始执行 | 双侧 | 任意侧观察 |
+| Completed | 返回 success/failure/denied | 双侧 | 任意侧观察 |
+| Consumed | 后续模型请求使用了结果 | 部分平台 | 平台信号 |
+| Contributed | 结果影响任务结果 | — | **推断** |
+
+**Discovered 被 Presented 取代**：`tools/list`、registry 检索、skill 搜索只说明工具存在；Presented 说明工具真正进入了 Agent 的决策上下文——就像"租了广告牌"不等于"广告被展示"。三个商业意义不同的状态：
+
+```text
+可用 ✓ 被呈现 ✓ 被选择 ✓   ← 被选中
+可用 ✓ 被呈现 ✓ 被选择 ✗   ← 错过的机会（Selection Rate 的分母）
+可用 ✓ 被呈现 ✗            ← 根本没上场（分发缺口）
+```
+
+## 四、测量框架：五大指标家族
+
+**AUAS 定义 Metric Families，不定义全局北极星。** 搜索工具、支付工具、企业 SaaS 工具的价值结构不同，一个 KPI 无法通用。
+
+**M1 Distribution（分发）— Reach。** 我的 Tool 进入 Agent 的世界了吗？
+`可用 Clients · 被呈现机会数 · Presentation Rate · Agent Host 覆盖 · 模型覆盖`
+
+**M2 Choice（选择）— 最 Agent-native。** Agent 有机会时会不会选我？
+`选择数 · Selection Rate（Selected÷Presented）· Share of Choice · 首选率 · 替代率 · 切换率`
+
+**M3 Execution（执行）— Use。** 选了以后好不好用？
+`逻辑调用数 · 完成率 · 成功率 · 错误/重试率 · 延迟 · 成本`
+
+**M4 Utility（效用）— 有效使用。** 返回的东西 Agent 到底用没用？
+`结果送达率 · 结果消费率 · 继续使用率 · 纠错率 · 回退率`
+
+**M5 Outcome（价值）— Value。** 最终是否改善任务？
+`任务成功关联 · 贡献 · 增量提升 · 节省时间 · 节省成本 · 减少人工干预`
+
+### Selection Rate（选择率）
+
+\[
+Selection\ Rate = \frac{Selected}{Presented}
+\]
+
+Tool A：呈现 100,000、选择 5,000 → 5%。Tool B：呈现 10,000、选择 4,000 → 40%。绝对调用量偏向 A，但 Agent 明显更偏好 B。这才是开发者真正关心的数据。
+
+### Share of Agent Choice（Agent 选择份额）
+
+在一个能力类别（如网页搜索）下，若干可替代工具：
+
+\[
+SoC = \frac{该工具的选择数}{类别内全部选择数}
+\]
+
+开发者看到的将不只是 "1.2M calls"，而是：
+
+```text
+Search 类别
+Exa       呈现份额 31% · 选择份额 44% · 选择率 58% · 重复选择 71%
+```
+
+这是 Agent 软件的市场数据，不是遥测。
+
+## 五、关系测量（Relationship Measurement）
+
+跨时间关系，用 Agent-native 行为定义：
+
+| 关系 | 定义 |
+| --- | --- |
+| Trial | 首次使用 |
+| Active | 周期内有 eligible usage |
+| Repeated | 跨多个窗口重复使用 |
+| Preferred | 同等候选集中持续首选 |
+| Dependent | 移除工具后任务表现显著下降 |
+
+**Dependency 是长期资产指标**：最有价值的工具不是调用最多的，而是最不可替代的。`Adoption → Preference → Utility → Dependency` 是一条 Agent-native 的工具关系模型。
+
+## 六、归因 ≠ 增量（Attribution vs Incrementality）
+
+**工具参与了成功任务，不等于它导致了成功。**
+
+- **归因测量**（observational）：哪些工具参与了任务链——只能支持"关联"与"参与执行链"的结论。
+- **增量测量**（counterfactual）：工具的存在创造了多少额外价值——随机对照（Treatment=可用 / Control=不可见），比较任务成功、时间、token 成本、总调用数、人工干预、质量：
+
+```text
+增量任务成功 = P(成功|有工具) − P(成功|无工具)
+时间提升 = 对照组时间 − 工具组时间
+成本提升 = 对照组成本 − 工具组成本
+```
+
+广告行业从 last-click 归因走向 holdout 分组与增量测试，正是这个原因。Agent 工具第一天就应分离这两个测量体制。
+
+## 七、测量质量（Measurement Quality）
+
+**证据质量不是覆盖质量，两者都不是限定质量，也都不是方法论。** 一组 100% 真实但只覆盖 2% Agent 的事件，不是市场数据。
+
+```text
+Measurement Quality
+├── Evidence        事件真实吗？（签名、佐证）
+├── Coverage        我们看到了多少世界？
+├── Qualification   这算不算真实生产使用？
+├── Sampling        采样了吗？不确定性多少？
+├── Identity        标识归一得怎么样？
+└── Method/version  用什么统计、哪个规范版本？
+```
+
+### Qualified Agent Usage（限定使用）
+
+**Raw Invocation ≠ Qualified Usage。** 未来大量工具流量不代表采用：开发者自测、CI、benchmark、eval、synthetic agent、health check、重试风暴、agent loop、replay、压测、demo。AUAS 要求每条观察携带 **Usage Context**：
+
+```text
+production · development · test · benchmark · evaluation · synthetic · ci · unknown
+```
+
+公开采用指标默认为 `production` + 单独披露的 `unknown`；benchmark/eval/test/CI/synthetic **绝不混入 qualified usage**。在决定排行榜是否可信上，上下文限定可能比证据分级更直接。
+
+## 八、标准报告（Standard Reporting）
+
+### Measurement Label（测量标签——数字的营养成分表）
+
+每个公开指标必须携带：
+
+```text
+Agent Usage Measurement Label
+Standard version:   0.2
+Window:             30 days
+Usage context:      production
+Agent hosts:        Claude Code, Codex
+Coverage:           partial
+Collection:         client + server
+Corroborated:       68%
+Sampling:           none
+Unknown context:    12%
+Synthetic excluded: yes
+Identity coverage:  91%
+```
+
+标签不给数据打分；它披露数字是怎么来的，让使用者自行判断适用性。
+
+### Measurement Profiles（测量画像）
+
+| Profile | North Star | Guardrails | Diagnostics |
+| --- | --- | --- | --- |
+| Adoption | Active Clients | Qualified Usage Rate, Coverage | Presented, Selection Rate, Repeat |
+| Reliability | 成功完成调用数 | p95 延迟, 成本, 重试 | 错误类型, host, 版本 |
+| Utility | Consumed Results | 纠错率, 回退率 | 完成→消费转化 |
+| Value | 增量任务成功 | 成本, 延迟, 安全 | 任务类型, 模型, 替代工具 |
+
+## 九、互操作（Interoperability）
+
+标准是 transport-neutral、vendor-neutral 的。现有基础设施作为实现例子而非前提：MCP 承载生命周期事件与 trace context；OpenTelemetry 承载工具 span；Codex/Claude Code/DeepSeek Harness 暴露带能力声明的观察点。技术选择（签名算法、采集格式、存储）属于参考实现与 profiles——方法论不会因技术换代而过时。
+
+## 十、开放问题
+
+1. **任务边界**：什么算一个"任务"，由谁定义？
+2. **贡献**：如何测量消费之外的结果贡献？
+3. **增量**：如何在生态规模上运行反事实实验而不干扰生产？
+4. **候选集可观测性**：Presented 是关键分母，但多数 runtime 尚未暴露 routing 层信号。
+5. **隐私**：伪匿名下关联与留存能走多远？
+6. **跨 Agent 身份**：同一 client 跨 Codex/Claude/DSH——何时可知？
 
 ---
 
-*反馈：GitHub Issues（agent-used 仓库）或 X @elliwoodtong。Spec 全文见仓库 `spec/`（measurement-spec / evidence-model / metrics / privacy / identity / threat-model / otel-mapping）。*
+*规范全文（测量对象、生命周期、指标家族、质量、报告）与参考实现（agent-used）均已开源。AUAS 1.0 毕业标准：2 个独立实现、3 个 runtime profiles、2 个 tool-side 实现、公开 conformance + canonical test vectors、5-10 个真实项目、已发布的 discrepancy report、安全与隐私审查。*
