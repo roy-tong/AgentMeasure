@@ -1,22 +1,57 @@
 # AgentMeasure
 
-**A proposed open measurement standard for software used by AI agents.**
+**Open measurement infrastructure for the Agent Capability Economy.**
 
-> AgentMeasure is an open measurement standard that uses a unified data language to
-> measure how AI agents discover, choose, and use software — and how much value that
-> software ultimately creates.
->
-> Traditional software metrics measure what humans download and use. AgentMeasure
-> measures what agents see, what they choose, what they actually use, and whether
-> those choices create value.
+AgentMeasure defines a common language for measuring how AI agents discover, choose, use, and derive value from software capabilities.
 
-[Whitepaper](whitepaper/measuring-software-used-by-ai-agents.md) · [白皮书（中文）](whitepaper/agent-tool-economy-zh.md) · [Core Specification](standard/CORE.md) · [中文](README.zh-CN.md)
+**Today:** measure agent-facing capability usage.
+**Next:** make capabilities comparable and meterable.
+**Long term:** provide the measurement foundation for Capability as a Service (CaaS).
 
-## Why
+**Reach → Choice → Use → Utility → Value**
 
-Agents are becoming software's new consumers, but every existing signal breaks down —
-download counts measure humans, not agents; self-reported installs are gameable;
-registries don't expose adoption data.
+> AgentMeasure is **not** a payment protocol, marketplace, or universal ranking system.
+> It standardizes the facts and measurement semantics those systems can build on.
+
+---
+
+## Why capabilities need a new measurement layer
+
+The software consumer is changing from humans to agents, and the economic unit is shifting from software seats toward callable capabilities.
+
+```text
+Skill / MCP / CLI / SDK
+        ↓
+Describe / expose / distribute a capability
+
+Capability
+        ↓
+Data / Compute / Action / Permission / Transaction
+        ↓
+Creates scarce economic value
+```
+
+**Interfaces may become cheap to create; capabilities remain scarce to deliver.**
+
+The first generation of capability distribution is already here — open Skills, open MCP adapters, open CLIs. The scarce layer underneath them is what the next economy is built on: proprietary data, compute, execution, permissions, and real-world fulfillment.
+
+## From software to capability economy
+
+```text
+Human Software Economy
+User → UI → SaaS → Seat / Month
+
+             ↓
+
+Agent Capability Economy
+Agent → Capability → Execution → Outcome
+                       ↓
+              Usage / Value / Transaction
+```
+
+If a capability is to become an economic unit that agents can discover, compare, and eventually purchase automatically, it must first be **identifiable, measurable, and comparable under a shared semantics**. That is what AgentMeasure provides.
+
+Traditional usage metrics cannot support this economy — the old chain breaks at every link, and the last link is new:
 
 ```text
 Install ≠ Available
@@ -25,63 +60,133 @@ Presented ≠ Selected
 Selected ≠ Used
 Used ≠ Useful
 Useful ≠ Incremental Value
+Measured Usage ≠ Billable Usage
 ```
 
-AgentMeasure answers five questions: **Reach → Choice → Use → Utility → Value**
+The last inequality is why the Operation/Attempt model matters commercially: 3 attempts of one operation are not 3 billable operations — unless the metering policy says so.
 
-1. **Reach** — does my software enter an agent's selection range?
-2. **Choice** — when an agent has the opportunity, does it pick me? (Observed Selection Rate / Conditional Choice Share)
-3. **Use** — after being chosen, is it actually used?
-4. **Utility** — does using it produce useful results? (Result Consumption)
-5. **Value** — without me, would the agent's outcome be worse? (Incrementality)
+## The measurement view: Reach → Choice → Use → Utility → Value
 
-## Five-layer measurement framework
+AgentMeasure defines **metric families**, not a universal KPI. A search capability, a booking API, and a compute job have different value structures.
 
 | Layer | Question | Representative metrics |
 | --- | --- | --- |
-| Reach | Did it enter the agent world | Presented Opportunities、Active Clients |
-| Choice | Would it be chosen when given the chance | Observed Selection Rate、Conditional Choice Share |
-| Use | Is it usable once chosen | Logical Invocations、Completion Rate、Success Rate |
-| Utility | Was the result used | Result Consumed Rate |
-| Value | Did it create value | Incremental Task Success（Draft 0.5） |
+| **Reach** | Did the capability enter the agent's choice range? | Eligible Opportunities · Presentations · Presentation Rate · Distribution Coverage |
+| **Choice** | When the agent had the chance, did it choose it? | Observed Selection Rate · Conditional Choice Share |
+| **Use** | After selection, was it actually used? | Operations · Attempts · Completion Rate · Success Rate |
+| **Utility** | Did it produce a usable result or confirmed effect? | Result Consumption · Effect Confirmation |
+| **Value** | Did it improve the task outcome? | Incremental Task Success（Draft 0.5） |
 
-## Core concepts
+The five layers are the **measurement view**. The same facts map onto an economic view:
 
-- **Decision Opportunity / Candidate Set / Presentation / Selection** — the four
-  objects of choice behavior; the Observed Selection Rate denominator is Presented,
-  not Available
-- **Observed Selection Rate** = Observed Selected ÷ Presented — the probability an
-  agent picks you when it truly has the chance
-  (observed ≠ preference: a "choice" under required/forced constraint is not a preference)
-- **Conditional Choice Share** — head-to-head preference when A and B actually compete
-  in the same candidate set
-- **Software Entity / Capability / Interaction Surface** — what exists, what it can
-  do, and the observable interface; observation happens on surfaces, attribution
-  resolves to entities (see [AgentMeasure Entity](standard/ENTITY.md))
-- **Operation / Attempt** — a logical use vs. a single execution; retries are multiple
-  attempts of one operation, not a validity class
-- **Qualified Usage** — real production use after excluding benchmark / test /
-  synthetic / retry
-- **Result Consumption** — the result was actually used by the task (≠ successful return)
-- **Incrementality** — would the outcome be worse without this software?
-- **Measurement Label** — a nutrition label for every public number (coverage /
-  sampling / policy / method)
-
-## Who is this for?
-
-| Audience | Entry |
+| CaaS Domain | AgentMeasure |
 | --- | --- |
-| Tool / MCP developers | [Quickstart](#quickstart) · [Runtime Profiles](standard/PROFILES.md) |
-| Agent runtime platforms | [Runtime Profile](standard/PROFILES.md) · Observability |
-| Data researchers | [Whitepaper](whitepaper/measuring-software-used-by-ai-agents.md) · [Metrics](standard/METRICS.md) |
-| Standard contributors | [Core](standard/CORE.md) · [Proposals](proposals/) |
-| Third-party implementers | [Conformance](conformance/) |
+| Demand | Reach + Choice |
+| Delivery | Use + Utility |
+| Outcome | Value |
+| Economics | Metering / Attribution（future extension） |
+
+Claim discipline throughout: *observed choice is not preference*. A selection can be made by the model, a router, a workflow, the user, a policy, or the platform; **Observed Selection Rate** reports what was observed, and **Conditional Choice Share** is an *observed head-to-head choice share under comparable candidate conditions* — comparable means the same candidate set, category, choice mode, and decision axes (Decision Authority / Selection Constraint) are declared.
+
+## How AgentMeasure works in production
+
+```text
+Agent Runtime                     Capability Provider
+
+Claude / Codex
+      │
+      │ MCP / API
+      ▼
+                         ┌──────────────────────┐
+                         │ Customer Capability  │
+                         │                      │
+                         │ AgentMeasure SDK     │
+                         │ Business Handler     │
+                         └──────────┬───────────┘
+                                    │
+                               observations
+                                    │
+                                    ▼
+                              Collector
+                                    │
+                                    ▼
+                            AgentMeasure Cloud
+```
+
+Four things a real developer needs to know:
+
+> Your software does **not** need to be open source.
+>
+> MCP is **not** required — it is the first reference surface.
+>
+> Third-party agents do **not** need AgentMeasure installed for provider-side usage measurement.
+>
+> AgentMeasure is **not** on the critical request path.
+
+## What AgentMeasure measures today
+
+- **Decision Opportunity / Candidate Set / Presentation / Selection** — the four objects of choice; the Observed Selection Rate denominator is Presented, not Available
+- **Software Entity → Capability → Interaction Surface** — what exists, what it can do, and the observable interface; observation happens on surfaces, attribution resolves to entities through the machine-readable registry
+- **Operation / Attempt** — one logical use vs. one execution; **retries are multiple attempts of one operation**, not a validity class (they are kept as reliability signals, not counted as distinct logical uses)
+- **Qualified Usage** — production usage after excluding test, benchmark, synthetic, replay, duplicate and other invalid traffic according to policy
+- **Result Consumption / Effect Confirmation** — the result was used by the task, or the intended world-state change was confirmed (Interaction Classes: Information / Action / Transaction / Computation / Communication / …)
+- **Measurement Label** — a nutrition label for every public number (coverage / sampling / policy / method)
+
+The full model lives in the [Core Specification](standard/CORE.md), [Metrics](standard/METRICS.md), [Entity](standard/ENTITY.md), and [Quality](standard/QUALITY.md). The README is not a spec summary.
+
+## From measurement to CaaS
+
+```text
+Capability
+    │
+    ▼
+Discover → Choose → Use → Deliver Value → Measure → Meter → Price / Pay / Settle
+```
+
+AgentMeasure standardizes the data and semantics of the **first five steps** — discovery through measurement. Metering and commercial attribution are future extensions; payment rails can be provided by existing payment infrastructure.
+
+> **AgentMeasure standardizes economic facts, not money movement.**
+
+## What AgentMeasure is / is not
+
+| AgentMeasure is | AgentMeasure is not |
+| --- | --- |
+| Measurement standard | Payment protocol |
+| Usage analytics foundation | Marketplace |
+| Metering semantics | Wallet |
+| Comparable quality signals | Universal reputation score |
+| Attribution framework | Single global source of truth |
+
+## Who it is for
+
+| Audience | Why |
+| --- | --- |
+| **Capability Provider** | measure and eventually meter agent usage of your capabilities |
+| **Agent Runtime** | expose decision / usage signals consistently |
+| **Registry / Marketplace** | compare capabilities using standardized signals |
+| **Data / Measurement Provider** | produce comparable agent-usage analytics |
+| **Commerce / Payment Infrastructure** | consume standardized billable events in future profiles |
+| **Researchers / Standard Contributors** | evolve the methodology |
+
+## Try the standard
+
+```bash
+git clone https://github.com/roy-tong/AgentMeasure && cd AgentMeasure
+python3 conformance/runners/run_metrics.py   # metric vectors (M2.2 / M2.5 / M4.1)
+python3 verify_vectors.py                     # receipt / correlation / operation vectors
+python3 registry/validate_entities.py         # validate the machine-readable registry
+```
+
+## Product MVP — in development
+
+The first product path is **Remote MCP / API Capability Measurement**: an AgentMeasure Provider SDK that emits observations from the provider side (no agent-side install), feeding a collector and hosted analytics. The SDK and hosted analytics are not implemented yet — the standard, reference collector, and conformance suite are.
 
 ## Repository map
 
 ```text
 AgentMeasure/
-├── standard/          # the standard itself (CORE / METRICS / QUALITY / DATA / ...)
+├── standard/          # the normative standard (CORE / METRICS / QUALITY / DATA / ...)
+├── extensions/        # experimental, non-normative profiles (COMMERCIAL.md)
 ├── whitepaper/        # methodology papers (EN/CN)
 ├── conformance/       # language-neutral test vectors + runners
 ├── reference/         # reference implementation (collector + adapters)
@@ -95,69 +200,24 @@ AgentMeasure/
 └── archive/           # retired early documents
 ```
 
-**The standard is the artifact; the code is a reference implementation.** Using the
-standard does not mean uploading data to any central server.
+**The standard is the artifact; the code is a reference implementation.** Using the standard does not mean uploading data to any central server.
 
-## Quickstart
+## Current status & roadmap
 
-```bash
-git clone https://github.com/roy-tong/AgentMeasure && cd AgentMeasure
-python3 conformance/runners/run_metrics.py   # run metric vectors (16/16 + M2.5/M4.1)
-python3 verify_vectors.py                     # receipt / correlation / operation vectors
-python3 registry/validate_entities.py         # validate machine-readable registry
-```
-
-After feeding in Decision Opportunity events, the reference implementation outputs:
-
-```text
-AgentMeasure Demo
-
-Reach
-Presented Opportunities    150
-
-Choice
-Observed Selection Rate   43.3%
-
-Use
-Invocations                  62
-Completion Rate           96.8%
-
-Utility
-Observable Results           41
-Consumed Results             28
-Consumption Rate          68.3%
-
-Measurement Quality
-Usage Context        production
-Coverage             partial
-Sampling             none
-```
-
-Data stays local by default; public metrics must carry a
-[Measurement Label](standard/QUALITY.md).
-
-## Current status
-
-**Draft 0.4（Measurement Objects & Verification Decoupling）** — measurement objects
-are now entity-based (Software Entity → Capability → Interaction Surface), Core is
-decoupled from the Verification Profile.
+**Draft 0.4（Measurement Objects & Verification Decoupling）** — entity-based measurement objects, Operation/Attempt, Core decoupled from the Verification Profile.
 
 | Capability | Standard | Reference | Real Runtime |
 | --- | --- | --- | --- |
 | Observed Selection Rate | Defined | Implemented | Limited |
 | Conditional Choice Share | Defined | Implemented | Experimental |
-| Logical Invocations | Defined | Implemented | Yes |
+| Operations / Attempts | Defined | Implemented | Yes |
 | Result Consumption | Defined | Implemented | Claude partial |
 | Incrementality | Defined (formula) | Planned | No |
 | Qualified Usage | Defined | Implemented | Yes |
 
-Defined ≠ fully measurable today. Capabilities are being validated one by one.
+The roadmap runs on two tracks — the standard (0.4 objects & quality → 0.5 utility & economic semantics → 1.0) and the product (Remote Capability Analytics → Provider SDK + hosted analytics → metering). See [ROADMAP.md](ROADMAP.md).
 
-Roadmap: Draft 0.3 (semantics) → **0.4 (objects & quality)** → 0.5 (value) → 1.0
-(graduation: 2 independent implementations + 3 runtime profiles + public conformance
-+ 5-10 real projects).
-
-## How to contribute
+## Contribute
 
 - **Discuss measurement semantics**: GitHub Discussions (Metric Semantics / Measurement Quality / Runtime Profiles / Proposals / Experiments / General)
 - **Propose standard changes**: `proposals/` (AUP: Draft → Discussion → Accepted → Experimental → Stable)
@@ -166,5 +226,4 @@ Roadmap: Draft 0.3 (semantics) → **0.4 (objects & quality)** → 0.5 (value) �
 
 ---
 
-*AgentMeasure does not define who owns the truth. It defines what evidence, under
-what rules, can support what conclusions.*
+*AgentMeasure does not define who owns the truth. It defines what evidence, under what rules, can support what conclusions.*

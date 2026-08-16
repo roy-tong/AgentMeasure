@@ -296,4 +296,5 @@ Observable population / Qualified population / Runtime coverage / Choice mode
 | AgentMeasure Quality | Context/Validity/Coverage/Observability/Label |
 | AgentMeasure Privacy / SECURITY / BIND / PROFILES | 不变 |
 | AgentMeasure Taxonomy | Category/Capability 分类（Draft 0.4 立项） |
+| extensions/COMMERCIAL.md | 经济语义（Offering / Billable Unit / Metering Policy）——**Experimental / Informative，非规范性，不参与 conformance** |
 | proposals/ | 指标与规范变更提案（AUP） |

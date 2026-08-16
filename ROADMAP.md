@@ -1,32 +1,46 @@
 # AgentMeasure Roadmap
 
-> 顺序原则：**先统一尺子（语义），再统一如何证明尺子可信（质量），最后才谈价值与生态。**
-> 每一版本都要求垂直闭环：概念 → spec → schema → 指标合同 → 参考实现 → conformance vectors → 声称。
+> 顺序原则（标准轨）：**先统一尺子（语义），再统一如何证明尺子可信（质量），最后才谈价值与生态。**
+> 顺序原则（产品轨）：**产品验证不能等标准毕业**——最小 hosted analytics 现在就可以验证
+> "有没有 Provider 真愿意接"，但商业产品不得控制标准定义。
 
-## 版本路线
+## 双轨路线
 
-| 版本 | 目标 | 关键产物 | 状态 |
-| --- | --- | --- | --- |
-| **Draft 0.3 — Metric Semantics** | 每个指标都能被独立实现且算出同一个数字 | Decision Opportunity、Measurement Grain、Observability 4-states、Strict Qualified、Reach→Value 五层框架 | ✅ 已发布 |
-| **Draft 0.4 — Entity & Quality** | 测量对象可标识、读数可信度可验证 | Software Entity→Capability→Interaction Surface、Interaction Classes、Core/Verification 解耦、Measurement Quality、机器可读 registry | 🔵 当前 |
-| **Draft 0.5 — Utility & Value** | 从"被使用"走向"产出价值" | Result/Effect 双元 Utility、Value 家族（M5） | ⬜ |
-| **Draft 0.6 — External Validation** | 指标在真实环境稳定 | 5-10 个外部项目接入、第一份《Measurement Discrepancy Report》、实验报告 | ⬜ |
-| **Draft 0.7 — Interoperability** | 跨实现可互操作 | 独立实现（Go/Rust/TS）、OTel/MCP 生态对齐、Measurement Profiles | ⬜ |
-| **1.0 — Candidate Standard** | 毕业 | 2 独立实现 + 3 profiles + conformance + 5-10 项目 + 双 review | ⬜ |
+| 阶段 | Standard Track | Product Track |
+| --- | --- | --- |
+| **Now** | Draft 0.4 — Objects & Quality（Software Entity/Capability/Surface、Operation/Attempt、三轴、Core/Verification 解耦、机器可读 registry） | **Remote Capability Analytics**（Provider 侧测量 Remote MCP / API 的真实 Agent 使用） |
+| **Next** | Draft 0.5 — Utility & Economic Semantics（Result/Effect 双元 Utility、Interaction Classes 指标化） | Provider SDK + Hosted Analytics（SDK 产出 observations，托管 collector/分析） |
+| **Then** | Draft 0.6 — External Validation（5-10 外部项目、第一份《Measurement Discrepancy Report》） | Runtime 集成 + Optimize（跨 runtime 信号、效果确认） |
+| **Later** | Commercial Measurement Profile（COMMERCIAL 转正：Billable Event/Unit/Metering Policy） | Metering（计费事实输出，对接外部支付 rails） |
+| **Long term** | CaaS Measurement Standard（1.0 毕业：2 独立实现 + 3 profiles + conformance + 5-10 项目 + 双 review） | Intelligence / Ecosystem（跨能力比较信号、生态数据面） |
 
-## 当前阶段：Draft 0.4（Entity & Quality）
+## 三种资产（从第一天分开）
 
-**本月目标**：
-1. 领域模型落地：Software Entity → Capability → Interaction Surface；Interaction Classes（Information/Action/Transaction…）
-2. Core 与 Verification Profile 解耦——验证是高级符合性，不是采用前置条件
-3. 机器可读 registry（`schemas/` + `registry/*.yaml`）+ BCP14 规范语言
-4. 指标合同补全 vectors（M2.1 / M2.3 / M2.4 / M3.x）
+| 资产 | 内容 | 开放度 |
+| --- | --- | --- |
+| **1. Standard** | Objects、Metrics、Measurement Quality、Metering Semantics（CORE/METRICS/QUALITY/…） | 最开放 |
+| **2. Open-source Reference Infrastructure** | SDK、Collector、Runtime Adapters、Conformance | 开源 |
+| **3. Commercial Network / Product** | Analytics、Optimize、Meter、Intelligence | 商业层不得控制第 1 层 |
+
+## 当前阶段（双轨并行）
+
+**Standard — Draft 0.4（Objects & Quality）**：
+1. 领域模型已落地（Entity→Capability→Surface、Operation/Attempt、三轴、lineage）
+2. Core 与 Verification Profile 解耦；BCP14 规范语言
+3. 机器可读 registry（schemas/ + registry/）+ CI 校验
+4. 待办：M3.x conformance vectors 发布；Interaction Classes 指标化（0.5 前置）
+
+**Product — Remote Capability Analytics（MVP）**：
+1. AgentMeasure Provider SDK（provider 侧观测，无 Agent 侧安装）——**未实现**
+2. 托管 Collector + 分析（远程 MCP / API 能力的使用面板）——**未实现**
+3. 验证目标：≥1 个真实 Provider 愿意接入并产出第一份 provider-scoped 报告
 
 ## 明确不做（直到对应阶段）
 
 - ❌ 不替代 OTel（永远）
 - ❌ 不按 raw calls 排名（永远）
-- ❌ 聚合云（直到 0.6，且先回答"什么数据值得统计"）
+- ❌ 不实现支付 rails / 钱包 / 结算（永远，见 extensions/COMMERCIAL.md）
+- ❌ 聚合云只服务于标准毕业指标（0.6）；hosted analytics 服务于产品验证（Now）
 - ❌ 自动 star/follow（永远）
 - ❌ 内容采集（永远，隐私架构）
 
@@ -41,3 +55,4 @@
 | 参考实现 | 与指标合同一致；测试绿 |
 | Conformance | 每个指标至少 3 个 vectors（正常 / 边界 / fail-closed） |
 | 声称 | 只宣称有 vectors 支撑的部分 |
+| 产品 | MVP 只承诺已实现的能力；SDK/Analytics 标注 in development |

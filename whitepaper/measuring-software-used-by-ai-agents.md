@@ -1,63 +1,120 @@
 # Measuring Software Used by AI Agents
 
-**AgentMeasure — A Proposed Open Measurement Standard for How AI Agents Use Software (Draft 0.3)**
+**A Measurement Foundation for Capability as a Service and the Agent Capability Economy**
+
+*Whitepaper v0.2 · AgentMeasure Standard Draft 0.4*
 
 > Roy Tong
 > The reference implementation lives in the AgentMeasure repository.
 
 ## 0. Abstract
 
-Agents are becoming a new class of software consumer, yet the industry has no
-common method for measuring how agents discover, choose, use, and depend on
-software. Existing signals — downloads, stars, self-reported installs — measure
-neither agents nor value. This paper defines AgentMeasure, a measurement standard for the
-agent software ecosystem: what counts as an opportunity, a selection, an
-invocation, a consumption, and a contribution; how these are counted, compared,
-and qualified; and what conclusions each level of evidence can support. The goal
-is not a dashboard. It is a shared data language for tool developers, agent
-platforms, model companies, registries, investors, and researchers.
+AI agents are becoming both software consumers and autonomous economic actors. As
+interfaces such as Skills, MCP servers, APIs and CLIs become easier to create and
+distribute, economic value increasingly shifts toward the scarce capabilities behind
+them: proprietary data, compute, execution, permissions, transactions and real-world
+fulfillment.
 
-## 1. Why Agent Usage Requires a New Measurement Model
+This creates a measurement problem before it creates a payment problem. A capability
+cannot be reliably priced, compared, billed or optimized until the ecosystem agrees
+on what constitutes a selection, an operation, a successful delivery, a consumed
+result, an outcome and a billable unit.
 
-Software distribution once had a readable chain: downloaded, installed, used. The
-agent economy breaks every link:
+AgentMeasure proposes an open measurement standard for this emerging capability
+economy: a common data language — reach, choice, use, utility, value — plus the
+measurement semantics that metering, marketplaces and payment rails can later build
+on. The goal is not a dashboard. It is the measurement foundation that makes
+Capability as a Service (CaaS) possible.
+
+## 1. From SaaS to Capability Economy
+
+Software distribution once had a readable chain: downloaded, installed, used. Each
+era has had its own economic unit:
 
 ```text
-Install ≠ Available
-Available ≠ Presented
-Presented ≠ Selected
-Selected ≠ Used
-Used ≠ Useful
-Useful ≠ Incremental Value
+SaaS
+Human → Application → Seat / Month
+
+API Economy
+Software → API → Request / Token
+
+Capability Economy
+Agent → Capability → Operation / Outcome
 ```
 
-- *Install* and *available* describe the tool's presence, not the agent's behavior.
-- *Presented* — entering the agent's decision context — is the true denominator for
-  choice, and it is rarely observable today.
-- *Selected* is a decision; *invoked* is an execution; *completed* is a result.
-- *Consumed* means the result entered the task; *useful* means it mattered.
-- *Incremental value* is the counterfactual: without the tool, would the outcome
-  have been worse?
+Three forces are driving the shift to the third row.
 
-Advertising learned this lesson over decades: impressions are not conversions,
-clicks are not value, and attribution is not incrementality. The agent software
-ecosystem can adopt the discipline on day one. AgentMeasure answers five questions:
+**Interfaces are being absorbed by agents.** The UI and the workflow are increasingly
+executed by the agent, not presented to a human. What remains for software is a
+callable surface — a skill file, an MCP tool, a CLI, an endpoint.
 
-> **Reach** — did my tool enter the agent's choice set?
-> **Choice** — when the agent had a chance, did it pick me?
-> **Use** — after selection, was it actually used?
-> **Utility** — did the use produce a usable result?
-> **Value** — without me, would the agent's outcome have been worse?
+**Distribution artifacts are commoditizing.** An open Skill, an open MCP adapter, an
+open CLI can be authored and published by anyone in hours. Interfaces may become
+cheap to create; capabilities remain scarce to deliver.
 
-## 2. Measurement Objects
+**Scarcity moved down the stack.** The scarce layer is no longer the app shell; it is
+what the callable surface controls access to:
+
+```text
+Data · Compute · Action · Permission · Trust · Real-world fulfillment
+```
+
+A search capability is scarce because of its index; a booking capability because it
+can confirm a reservation; a payment capability because it can move money. When
+commercial value concentrates in the capability, the natural economic unit becomes
+the operation, the quantity, the effect, the outcome — or a revenue share on any of
+them.
+
+**If capability becomes the economic unit, capability measurement becomes
+infrastructure.** That is the thesis of this paper.
+
+## 2. Measurement Before Monetization
+
+Before CaaS can have pricing, billing and reputation, it needs common measurement
+semantics. Four questions make the point:
+
+```text
+One user task → 1 Operation → 3 retries
+Charge 1 time or 3?
+
+Tool returned successfully → Agent ignored the result
+Was value delivered?
+
+Booking API executed → reservation was never confirmed
+Was the capability fulfilled?
+
+Task succeeded → would it succeed without the capability?
+Can the provider claim value?
+```
+
+None of these questions can be answered by raw call counts, and none of them can be
+answered by a payment rail. They require agreed definitions of *operation*, *attempt*,
+*delivery*, *consumption*, *effect* and *outcome* — and agreed rules for turning
+observations into those objects. That agreement is the wedge: **measurement before
+monetization**.
+
+## 3. Measurement Objects
 
 An observation is an *evidence unit*, not a *business measurement unit*. AgentMeasure
-defines the business units first (Draft 0.4 model):
+defines the business units first:
+
+```text
+Provider
+    ↓
+Software Entity
+    ↓
+Capability
+    ↓
+Interaction Surface
+```
+
+> **Capability is the economic object. Interaction Surface is the delivery interface.
+> Software Entity is the identity/container.**
 
 | Object | Definition | Layer |
 | --- | --- | --- |
 | Software Entity | the software being measured: tool, skill, API, data source, agent, application, runtime capability | Market |
-| Capability | a named function of an entity | Market |
+| Capability | a named function of an entity — the economic object | Market |
 | Interaction Surface | the observable calling interface of a capability (mcp_tool, cli_command, http_endpoint, …) | Market |
 | Decision Opportunity | one tool-choice decision | Behavior |
 | Candidate Set | the set actually offered in that decision | Behavior |
@@ -69,149 +126,73 @@ defines the business units first (Draft 0.4 model):
 | Task | the unit of work an operation serves | Behavior |
 | Client | an independent agent runtime / installation | Market |
 | Project | the software entity packages/tools/skills roll up to | Market |
-| Category | a comparable capability class (search, coding, …) | Market |
+| Category | a comparable capability class (search, booking, …) | Market |
 | Observation | evidence of one of the above (a signed receipt) | Evidence |
 
-```
-Evidence Layer:   Observation
-                      ↓ reconstruct
-Behavior Layer:   Decision Opportunity · Selection · Operation · Attempt · Task
-                      ↓ aggregate
-Market Layer:     Software Entity · Capability · Surface · Client · Project · Category
-```
+Observation happens on **Interaction Surfaces**; attribution resolves to **Software
+Entities** through a machine-readable registry — never guessed at observation time.
 
-Observation happens on **Interaction Surfaces**; attribution resolves to
-**Software Entities** through a machine-readable registry — never guessed at
-observation time. Counting observations as usage double-counts every corroborated
-call; counting invocations as value confuses behavior with utility. The layers are
-not interchangeable.
+Pricing is deliberately **not** an object of the core model. An `Offering` — pricing
+model, billable unit, price, SLA, commercial constraints — is defined in the
+Commercial Extension (experimental, non-normative), so that measurement semantics
+can evolve without being coupled to any payment design.
 
-## 3. Agent Tool Interaction Lifecycle
+## 4. Agent–Capability Interaction Model
 
-Each stage is defined by its numerator, its denominator, whether it is observable
-or inferred, and the minimum evidence required.
-
-| Stage | Definition | Observable | Minimum evidence |
-| --- | --- | --- | --- |
-| Presented | tool entered the agent's decision context (candidate set) | agent runtime (routing) | runtime-level observation |
-| Selected | agent/runtime decided to call it | agent runtime | runtime-level observation |
-| Invoked | execution began | both sides | any side observation |
-| Completed | returned success/failure/denied | both sides | any side observation |
-| Consumed | a later model request used the result | some platforms | platform signal |
-| Contributed | result influenced the task outcome | — | **inference** |
-
-*Discovered* is deliberately replaced by *Presented*. Discovery (`tools/list`,
-registry search, skill lookup) says the tool exists; presentation says the tool
-entered the agent's actual decision context — the difference between a billboard
-that was rented and an ad that was shown. Three states with very different
-business meaning:
+**Reach → Value is a measurement view, not a universal execution state machine.**
+Different classes of capabilities have different meaningful chains:
 
 ```text
-Available ✓ Presented ✓ Selected ✓   ← chosen
-Available ✓ Presented ✓ Selected ✗   ← missed opportunity (Observed Selection Rate denominator)
-Available ✓ Presented ✗              ← never in the game (distribution gap)
+Information   Operation → Result → Consumption
+Action        Operation → Effect → Confirmation
+Transaction   Operation → Authorization → Commit / Settlement
 ```
 
-## 4. Measurement Framework
+The Interaction Class (information / action / transaction / computation /
+communication / control / storage / sensing) determines which chain applies and
+therefore which Utility signals are meaningful. A search result is *consumed*; a
+booking is *confirmed*; a payment is *settled*. Forcing every capability through one
+pipeline would produce numbers that mean different things.
 
-AgentMeasure defines **metric families**, not a universal KPI. A search tool, a payment
-tool, and an enterprise SaaS tool have different value structures; one north star
-cannot serve all.
+## 5. Measurement Framework
 
-**M1 Distribution — Reach.** Is my tool in the agent world?
-`Available Clients · Presented Opportunities · Presentation Rate · Agent Host
-Coverage · Model/Runtime Coverage`
+AgentMeasure defines **metric families**, not a universal KPI.
 
-**M2 Choice — the most agent-native family.** When the agent had a chance, did it
-choose me?
-`Selections · Observed Selection Rate (Observed Selected ÷ Presented) · Share of
-Choice · First-choice Rate · Substitution Rate · Switch Rate`
+**M1 Distribution — Reach.** Is the capability in the agent world?
+`Available Clients · Eligible Opportunities · Presentations · Presentation Rate ·
+Distribution Coverage`
 
-**M3 Execution — Use.** Was it usable after selection?
-`Logical Invocations · Completion Rate · Success Rate · Error/Retry Rate ·
-Latency · Cost`
+**M2 Choice — the most agent-native family.** When the agent had the chance, did it
+choose the capability?
+`Selections · Observed Selection Rate (Observed Selected ÷ Presented) · Conditional
+Choice Share · First-choice Rate`
 
-**M4 Utility — effective use.** Did the agent actually use what was returned?
-`Result Delivered Rate · Result Consumed Rate · Continuation Rate · Correction
-Rate · Fallback Rate`
+**M3 Execution — Use.** Was it usable after selection? The Draft 0.4 model counts
+operations and attempts separately — the distinction that metering will eventually
+need:
+
+```text
+Operations · Attempts · Attempts per Operation
+Operation Completion Rate · Operation Success Rate
+Attempt Failure Rate · Retry Rate · Latency
+```
+
+**M4 Utility — effective use.** Did the capability deliver usable information or
+cause the intended effect?
+
+```text
+Result Utility      Delivered · Consumed · Accepted
+Effect Utility      Applied · Confirmed · Reversed / Failed
+```
 
 **M5 Outcome — Value.** Did it improve the task?
-`Task Success Association · Contribution · Incremental Lift · Time Saved · Cost
-Saved · Human Intervention Reduced`
+`Task Success Association · Incremental Lift · Time Saved · Cost Saved`
 
-### Observed Selection Rate
+**Relationships** (formerly a separate chapter, now a subsection): Trial → Active →
+Repeated → Preferred → Dependent. Dependency — the least replaceable — remains the
+long-term asset signal.
 
-\[
-Observed\ Selection\ Rate = \frac{Observed\ Selected\ Opportunities}{Presented\ Opportunities}
-\]
-
-Tool A: presented 100,000, selected 5,000 → 5%. Tool B: presented 10,000, selected
-4,000 → 40%. Absolute calls favor A; agent preference strongly favors B. Observed
-Selection Rate answers the question developers actually care about: *when the agent
-had the chance, how often did it choose me?*
-
-**Observed ≠ preference.** The metric reports what was observed as selected; a
-selection made under `required`/`forced` constraint (policy-mandated, user-requested)
-is not a preference. Comparisons MUST declare the choice axis (Choice Mode) and the
-decision axes (Decision Authority, Selection Constraint), or standardize them.
-
-### Share of Agent Choice
-
-For a capability category (say, web search) with several substitutable tools:
-
-\[
-SoC = \frac{tool\ selections}{all\ selections\ in\ comparable\ capability}
-\]
-
-A developer would then see not "1.2M calls" but:
-
-```text
-Search category
-Exa       Presented Share 31% · Selection Share 44% · Observed Selection Rate 58% · Repeat Selection 71%
-```
-
-This is agent-software market data, not telemetry.
-
-## 5. Relationship Measurement
-
-Across-time relationships, defined agent-natively:
-
-| Relationship | Definition |
-| --- | --- |
-| Trial | first use |
-| Active | eligible usage within the period |
-| Repeated | usage across multiple windows |
-| Preferred | sustained first choice within comparable candidate sets |
-| Dependent | task performance degrades significantly when the tool is removed |
-
-Dependency is the long-term asset metric: the most valuable tool is not the most
-called — it is the least replaceable. `Adoption → Preference → Utility →
-Dependency` is an agent-native tool relationship model.
-
-## 6. Attribution vs Incrementality
-
-**A tool's participation in a successful task is not evidence that it caused the
-success.**
-
-- **Attribution measurement** is observational: which tools participated in the
-  task chain. It supports claims of *association* and *contribution to the
-  execution chain* — nothing more.
-- **Incrementality measurement** is counterfactual: how much additional value did
-  the tool create? The method is randomized comparison — treatment (tool
-  available) vs control (tool invisible) — across task success, time, token cost,
-  total tool calls, human intervention, and quality:
-
-```text
-Incremental Task Success = P(Success | Tool) − P(Success | No Tool)
-Time Lift   = Time(control) − Time(tool)
-Cost Lift   = Cost(control) − Cost(tool)
-```
-
-Advertising moved from last-click attribution to holdout groups and incrementality
-testing for exactly this reason. Agent tools inherit the lesson. AgentMeasure separates
-the two measurement regimes from the first day.
-
-## 7. Measurement Quality
+## 6. Measurement Quality & Claim Discipline
 
 Evidence quality is not coverage quality; both are not qualification quality; none
 is methodology. A set of perfectly attested events covering 2% of agents is not
@@ -219,117 +200,184 @@ market data.
 
 ```text
 Measurement Quality
-├── Evidence        is this event real? (signature, corroboration)
-├── Coverage        how much of the world did we see?
-├── Qualification   does this count as real production use?
-├── Sampling        sampled? with what uncertainty?
-├── Identity        how well do identifiers resolve to projects?
-└── Method/version  which statistics, which spec version?
+├── Provenance / Evidence Strength   where did this observation come from, and how
+│                                    strongly is its origin supported?
+├── Coverage                         how much of the world did we see?
+├── Qualification                    does this count as real production use?
+├── Sampling                         sampled? with what uncertainty?
+├── Identity                         how well do identifiers resolve to entities?
+└── Method/version                   which statistics, which spec version?
 ```
 
-### Qualified Agent Usage
+**Qualified usage.** Every observation carries two axes — Usage Context (where the
+traffic came from) and Validity (whether the observation is genuine). **Strict
+Qualified Usage** = `production` + `validity=normal`: the default for public metrics.
+Unknown context/validity is disclosed separately, never silently included — no
+"report unknown → make the leaderboard" incentive. A retry is an additional attempt
+of the same operation, kept as a reliability signal, not as a distinct logical use.
 
-Raw invocations are not qualified usage. A large share of future tool traffic
-will not represent adoption: developer self-testing, CI, benchmarks, evals,
-synthetic agents, health checks, retry storms, agent loops, replays, load tests,
-demos. AgentMeasure qualifies every observation on two axes — **Usage Context**
-(where the traffic came from) and **Validity** (whether the observation is genuine):
+**Claim discipline.** Every published metric carries a Measurement Label: numerator,
+denominator, observable population, qualified population, runtime coverage, grain,
+choice mode, decision authority, selection constraint. Observed choice is never
+presented as preference; association is never presented as causation; unobservable is
+never interpreted as negative.
+
+## 7. Measurement and Metering
+
+The bridge from measurement standard to CaaS is semantic: **measurement unit ≠
+billable unit**.
+
+| Capability | Measurement | Billable |
+| --- | --- | --- |
+| Search | Operation | Successful Search |
+| Data | Query | 1,000 Records |
+| Compute | Job | GPU-second |
+| Action | Operation | Confirmed Effect |
+| Booking | Transaction | Successful Booking |
+| Lead Generation | Task | Qualified Lead |
+| Commerce | Transaction | % of Transaction |
+
+Metering semantics therefore define, per Offering:
 
 ```text
-Usage Context:  production · development · test · benchmark · evaluation · synthetic · ci · unknown
-Validity:       normal · retry · duplicate · replay · agent_loop · health_check · load_test · suspected_invalid · unknown
+Billable Event       which measured fact triggers a charge
+Billable Unit        the unit of quantity (operation, record, GPU-second, effect…)
+Billable Quantity    how the unit is counted (per policy: attempts, confirmations…)
+Pricing Model        per-operation · per-quantity · per-effect · per-outcome · revenue share
+Metering Policy      how measurement facts map to billable facts (rules, exclusions)
+Commercial Attribution  which parties contributed to discovery / selection / revenue
 ```
 
-**Strict Qualified Usage** = `production` + `validity=normal` — the default for
-public leaderboards and market metrics. `unknown` context/validity is never silently
-included (no "report unknown → make the leaderboard" incentive); it is disclosed
-separately as *Unknown Context Share* / *Unknown Validity Share*. Benchmark, eval,
-test, CI, and synthetic usage are never mixed into qualified usage. Context
-qualification may matter more than evidence grading in deciding whether a
-leaderboard is believable.
+**Payment is out of scope.** AgentMeasure does not define payment rails, wallets,
+settlement currencies, merchant-of-record relationships, or financial custody. It
+produces the facts — qualified operation, confirmed effect, qualified outcome,
+billable quantity, commercial attribution — that payment systems consume.
 
-> Draft 0.4: with the Operation/Attempt split, a retry is modeled as another
-> attempt of the same operation (sharing `operation_id`), not as a validity class.
+> **AgentMeasure standardizes economic facts, not money movement.**
 
-## 8. Standard Reporting
+## 8. Attribution and Incrementality
 
-### Measurement Label
+**A capability's participation in a successful task is not evidence that it caused
+the success.**
 
-Every published metric carries a label — a nutrition label for numbers, not a
-quality score:
+- **Attribution measurement** is observational: which capabilities participated in
+  the task chain. It supports claims of *association* and *contribution to the
+  execution chain* — nothing more.
+- **Incrementality measurement** is counterfactual: how much additional value did the
+  capability create? The method is randomized comparison — treatment (capability
+  available) vs control (capability invisible) — across task success, time, cost,
+  and quality.
+
+Commercial attribution extends the observational side along the distribution chain:
 
 ```text
-Agent Usage Measurement Label
-Standard version:   0.4
-Window:             30 days
-Grain:              decision-opportunity
-Usage context:      production
-Validity:           normal
-Decision authority: model
-Selection constraint: autonomous
-Agent hosts:        Claude Code, Codex
-Coverage:           partial
-Collection:         client + server
-Corroborated:       68%
-Sampling:           none
-Unknown context:    12%
-Synthetic excluded: yes
-Identity coverage:  91%
+GitHub Skill → Registry → Agent Recommendation → Capability → Payment
 ```
 
-The label does not grade the data; it discloses how the number was produced so
-that the reader can judge its applicability.
+Who contributed to discovery, selection and revenue? This is the future basis for
+agent affiliate and revenue-sharing models — and it must never be conflated with
+causal incrementality.
 
-### Measurement Profiles
+## 9. Capability Trust and Comparability
 
-AgentMeasure defines standard profiles instead of a universal north star:
+A capability consumer (agent, marketplace, or human) compares signals, not brands:
 
-| Profile | North Star | Guardrails | Diagnostics |
-| --- | --- | --- | --- |
-| Adoption | Active Clients | Qualified Usage Rate, Coverage | Presented, Observed Selection Rate, Repeat |
-| Reliability | Successful Completed Invocations | p95 latency, cost, retry | error type, host, version |
-| Utility | Consumed Results | Correction Rate, Fallback Rate | completion→consumption conversion |
-| Value | Incremental Task Success | Cost, Latency, Safety | task type, model, alternatives |
+```text
+Capability Signals
+Reliability · Latency · Price · Freshness · Consumption · Effect Success
+Outcome · Safety · Measurement Coverage
+```
 
-Organizations choose a profile by use case; the standard defines the families, not
-the winner.
+AgentMeasure **does not calculate a universal AgentMeasure Score**. Agent A cares
+about price, Agent B about latency, Agent C about privacy. Ranking is a product
+decision for agents and marketplaces; the standard defines only comparable signals
+and the labels that make them comparable. The Measurement Label is the foundation of
+this comparability.
 
-## 9. Interoperability
+## 10. Observation & Deployment Architecture
+
+Measurement surfaces differ in what they can see; single-sided adoption has value,
+but the claim must match the surface:
+
+```text
+Distribution Side → Agent Runtime Side → Provider Side → Effect / Outcome Side
+```
+
+| Surface | Can see |
+| --- | --- |
+| Registry | discovery / availability |
+| Agent runtime | presentation / choice / consumption |
+| Capability provider | operation / attempts / result |
+| Target system | effect / transaction |
+| Experiment layer | incrementality |
+
+Two-sided observations (agent runtime + provider) enable corroboration (E2); the
+provider side alone is sufficient for provider-scoped usage metrics. The standard is
+not on the critical request path: observations are emitted asynchronously, metadata
+only, pseudonymized before persistence.
+
+## 11. Interoperability
 
 The standard is transport-neutral and vendor-neutral. Current infrastructure binds
-to it as implementation examples, not as preconditions: MCP carries lifecycle
-events and trace context; OpenTelemetry carries tool spans; Codex, Claude Code,
-and DeepSeek Harness expose observation points with declared capability matrices.
-Technical choices — signature algorithms, collection formats, storage — live in
-the reference implementation and its profiles, so that the methodology does not
-expire when the technology changes.
+to it as implementation examples, not as preconditions: MCP carries lifecycle events
+and trace context; OpenTelemetry carries tool spans; Codex, Claude Code, and DeepSeek
+Harness expose observation points with declared capability matrices; registries
+provide entity identity. Payment rails, when they arrive, consume the standard's
+facts rather than extending its core.
 
-## 10. Open Questions
+## 12. Non-goals and Governance
+
+AgentMeasure is **not** a payment protocol, a marketplace, a wallet, or a universal
+reputation system. The standard does not:
+
+- move money or custody funds;
+- rank capabilities or score providers;
+- define what a "good" capability is;
+- require any central server, agent-side install, or open-source provider.
+
+The standard itself is community-governed (AUP process, `proposals/`); commercial
+products built on it must not control the standard's definitions.
+
+## 13. Open Questions
 
 1. **Task boundaries.** What is the unit of a "task," and who defines it?
-2. **Contribution.** How to measure result contribution beyond consumption?
-3. **Incrementality.** How to run counterfactual experiments at ecosystem scale
-   without disturbing production?
+2. **Effect verification.** How to confirm an effect (booking confirmed, payment
+   settled) without deep integration into every target system?
+3. **Incrementality at scale.** How to run counterfactual experiments across the
+   ecosystem without disturbing production?
 4. **Candidate-set observability.** Presentation is the key denominator; most
    runtimes do not expose it yet.
-5. **Privacy.** How far can correlation and retention go under pseudonymity?
-6. **Cross-agent identity.** Same client across Codex, Claude, and DSH — when is
+5. **Cross-agent identity.** Same client across Codex, Claude, and DSH — when is
    that knowable?
+6. **Billable-unit consensus.** Which measurement facts will providers and payment
+   rails actually agree on, and at what cost of mis-measurement?
+7. **Privacy.** How far can correlation and retention go under pseudonymity?
 
-## 11. References
+## 14. Conclusion
+
+The software consumer is changing from humans to agents, and the economic unit is
+shifting from seats to callable capabilities. Before capabilities can be priced,
+billed and compared, the ecosystem needs a shared measurement language — what a
+selection is, what an operation is, what a delivery, a consumption, an effect and an
+outcome are, and which numbers can support which conclusions.
+
+AgentMeasure is that proposal: measurement semantics as infrastructure, commercial
+semantics as a future extension, payment as someone else's rails. **Measure how
+agents use software capabilities today; make capabilities comparable and meterable
+next; build the measurement foundation for Capability as a Service in the long
+term.**
+
+## References
 
 1. RFC 2119 / BCP 14 — *Key words for use in RFCs to Indicate Requirement Levels*.
-   Normative language of this standard (MUST / SHOULD / MAY).
-2. OpenTelemetry GenAI semantic conventions — `gen_ai.*` tool-call telemetry
-   fields reused by AgentMeasure bindings.
-3. Model Context Protocol (MCP) specification — tool discovery and invocation
-   surfaces for agent runtimes.
+2. OpenTelemetry GenAI semantic conventions — `gen_ai.*` tool-call telemetry fields.
+3. Model Context Protocol (MCP) specification — tool discovery and invocation surfaces.
 4. MCP Registry — server identity as the entry point for entity resolution.
-5. EDPB — guidance on pseudonymisation: pseudonymised data may still qualify as
-   personal data; pseudonymisation is a safeguard, not a legal exemption.
+5. EDPB — guidance on pseudonymisation (pseudonymised data may still be personal data).
 6. AgentMeasure specification — Core, Metrics, Data, Entity, Quality, Correlation
-   (`standard/`), machine-readable registry (`schemas/`, `registry/`), and the
-   reference implementation with conformance vectors in the same repository.
+   (`standard/`); Commercial Extension (`extensions/COMMERCIAL.md`, experimental);
+   machine-readable registry (`schemas/`, `registry/`); reference implementation and
+   conformance vectors in the same repository.
 
 ---
 
