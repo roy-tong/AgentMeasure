@@ -27,7 +27,7 @@ Useful ≠ Incremental Value
 ## Core concepts
 
 - Decision Opportunity / Candidate Set / Presentation / Selection
-- Selection Rate (Selected ÷ Presented)
+- Observed Selection Rate (Observed Selected ÷ Presented; observed ≠ preference)
 - Conditional Choice Share (head-to-head agent preference)
 - Qualified Usage (excludes benchmark/test/synthetic/retry)
 - Result Consumption (≠ successful return)
@@ -63,11 +63,11 @@ standard does not mean uploading data to any central server.
 
 ## Status
 
-Draft 0.3 — Metric Semantics & Denominator Discipline.
+Draft 0.4 — Measurement Objects & Verification Decoupling.
 
 | Capability | Standard | Reference | Real Runtime |
 | --- | --- | --- | --- |
-| Selection Rate | Defined | Implemented | Limited |
+| Observed Selection Rate | Defined | Implemented | Limited |
 | Conditional Choice Share | Defined | Implemented | Experimental |
 | Logical Invocations | Defined | Implemented | Yes |
 | Result Consumption | Defined | Implemented | Claude partial |

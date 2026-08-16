@@ -3,7 +3,7 @@
 - 状态：Draft
 - 作者：
 - 日期：
-- 相关：AgentMeasure Core Draft 0.3 / Metrics M? 
+- 相关：AgentMeasure Core Draft 0.4 / Metrics M? 
 
 ## 问题
 

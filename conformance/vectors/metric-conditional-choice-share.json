@@ -1,5 +1,5 @@
 {
-  "spec_version": "agentmeasure-0.3",
+  "spec_version": "agentmeasure-0.4",
   "metric": "M2.5 Conditional Choice Share",
   "grain": "decision-opportunity",
   "strict_qualified": {
@@ -133,6 +133,43 @@
         ]
       },
       "expect": {"co_presented": 1, "a_selected": 1, "b_selected": 0, "share_a": 1.0}
+    },
+    {
+      "id": "authority-mixed",
+      "description": "d1 model 自主（A 胜）、d2 policy 强制（B 胜）混轴：不过滤时全部计入（share_a=0.5，混轴 MUST 披露）",
+      "input": {
+        "project": "p1",
+        "tool_a": "Exa",
+        "tool_b": "Tavily",
+        "events": [
+          {"type": "presented", "decision_id": "d1", "candidate_set_id": "c1", "tool": "Exa", "choice_mode": "exclusive", "context": "production", "validity": "normal", "ts": "2026-08-16T00:00:00Z"},
+          {"type": "presented", "decision_id": "d1", "candidate_set_id": "c1", "tool": "Tavily", "choice_mode": "exclusive", "context": "production", "validity": "normal", "ts": "2026-08-16T00:00:01Z"},
+          {"type": "selected", "decision_id": "d1", "candidate_set_id": "c1", "tool": "Exa", "rank": 1, "choice_mode": "exclusive", "decision_authority": "model", "selection_constraint": "autonomous", "context": "production", "validity": "normal", "ts": "2026-08-16T00:01:00Z"},
+          {"type": "presented", "decision_id": "d2", "candidate_set_id": "c1", "tool": "Exa", "choice_mode": "exclusive", "context": "production", "validity": "normal", "ts": "2026-08-16T00:02:00Z"},
+          {"type": "presented", "decision_id": "d2", "candidate_set_id": "c1", "tool": "Tavily", "choice_mode": "exclusive", "context": "production", "validity": "normal", "ts": "2026-08-16T00:02:01Z"},
+          {"type": "selected", "decision_id": "d2", "candidate_set_id": "c1", "tool": "Tavily", "rank": 1, "choice_mode": "exclusive", "decision_authority": "policy", "selection_constraint": "forced", "context": "production", "validity": "normal", "ts": "2026-08-16T00:03:00Z"}
+        ]
+      },
+      "expect": {"co_presented": 2, "a_selected": 1, "b_selected": 1, "share_a": 0.5}
+    },
+    {
+      "id": "authority-filtered",
+      "description": "同 authority 轴：decision_authority=model 过滤后只留 d1（A 胜）→ share_a=1.0（co_presented 为呈现面上下文，不受选择面过滤）",
+      "input": {
+        "project": "p1",
+        "tool_a": "Exa",
+        "tool_b": "Tavily",
+        "decision_authority": "model",
+        "events": [
+          {"type": "presented", "decision_id": "d1", "candidate_set_id": "c1", "tool": "Exa", "choice_mode": "exclusive", "context": "production", "validity": "normal", "ts": "2026-08-16T00:00:00Z"},
+          {"type": "presented", "decision_id": "d1", "candidate_set_id": "c1", "tool": "Tavily", "choice_mode": "exclusive", "context": "production", "validity": "normal", "ts": "2026-08-16T00:00:01Z"},
+          {"type": "selected", "decision_id": "d1", "candidate_set_id": "c1", "tool": "Exa", "rank": 1, "choice_mode": "exclusive", "decision_authority": "model", "selection_constraint": "autonomous", "context": "production", "validity": "normal", "ts": "2026-08-16T00:01:00Z"},
+          {"type": "presented", "decision_id": "d2", "candidate_set_id": "c1", "tool": "Exa", "choice_mode": "exclusive", "context": "production", "validity": "normal", "ts": "2026-08-16T00:02:00Z"},
+          {"type": "presented", "decision_id": "d2", "candidate_set_id": "c1", "tool": "Tavily", "choice_mode": "exclusive", "context": "production", "validity": "normal", "ts": "2026-08-16T00:02:01Z"},
+          {"type": "selected", "decision_id": "d2", "candidate_set_id": "c1", "tool": "Tavily", "rank": 1, "choice_mode": "exclusive", "decision_authority": "policy", "selection_constraint": "forced", "context": "production", "validity": "normal", "ts": "2026-08-16T00:03:00Z"}
+        ]
+      },
+      "expect": {"co_presented": 2, "a_selected": 1, "b_selected": 0, "share_a": 1.0}
     }
   ]
 }

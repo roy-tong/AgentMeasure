@@ -27,7 +27,7 @@ Useful ≠ Incremental Value
 AgentMeasure 回答五个问题：**Reach → Choice → Use → Utility → Value**
 
 1. **Reach** — 我的软件有没有进入 Agent 的选择范围？
-2. **Choice** — Agent 有机会时会不会选我？（Selection Rate / Conditional Choice Share）
+2. **Choice** — Agent 有机会时会不会选我？（Observed Selection Rate / Conditional Choice Share）
 3. **Use** — 选了以后有没有真正使用？
 4. **Utility** — 使用以后有没有产生有效结果？（Result Consumption）
 5. **Value** — 如果没有我，Agent 的结果会不会更差？（Incrementality）
@@ -37,7 +37,7 @@ AgentMeasure 回答五个问题：**Reach → Choice → Use → Utility → Val
 | 层 | 回答 | 代表指标 |
 | --- | --- | --- |
 | Reach | 进入 Agent 世界了吗 | Presented Opportunities、Active Clients |
-| Choice | 有机会时会选我吗 | Selection Rate、Conditional Choice Share |
+| Choice | 有机会时会选我吗 | Observed Selection Rate、Conditional Choice Share |
 | Use | 选了以后好用吗 | Logical Invocations、Completion Rate、Success Rate |
 | Utility | 结果被用了吗 | Result Consumed Rate |
 | Value | 创造价值了吗 | Incremental Task Success（Draft 0.5） |
@@ -45,8 +45,9 @@ AgentMeasure 回答五个问题：**Reach → Choice → Use → Utility → Val
 ## Core concepts
 
 - **Decision Opportunity / Candidate Set / Presentation / Selection** —— 选择行为的
-  四个对象；Selection Rate 的分母是被呈现（Presented），不是可用（Available）
-- **Selection Rate** = Selected ÷ Presented —— Agent 真正有机会时选你的概率
+  四个对象；Observed Selection Rate 的分母是被呈现（Presented），不是可用（Available）
+- **Observed Selection Rate** = Observed Selected ÷ Presented —— Agent 真正有机会时选你的概率
+  （observed ≠ preference：required/forced 的"选择"不是偏好，按轴披露）
 - **Conditional Choice Share** —— A、B 同台竞争时的选择份额（Agent Preference）
 - **Qualified Usage** —— 排除 benchmark / test / synthetic / retry 后的真实生产使用
 - **Result Consumption** —— 结果被后续任务实际使用（≠ 成功返回）
@@ -98,7 +99,7 @@ Presented Opportunities    150
 
 Choice
 Selections                   65
-Selection Rate            43.3%
+Observed Selection Rate   43.3%
 
 Use
 Invocations                  62
@@ -119,11 +120,12 @@ Sampling             none
 
 ## Current status
 
-**Draft 0.3（Metric Semantics & Denominator Discipline）** — 指标语义与分母纪律已定义。
+**Draft 0.4（Measurement Objects & Verification Decoupling）** — 测量对象实体化
+（Software Entity → Capability → Interaction Surface）、Core 与验证解耦。
 
 | Capability | Standard | Reference | Real Runtime |
 | --- | --- | --- | --- |
-| Selection Rate | Defined | Implemented | Limited |
+| Observed Selection Rate | Defined | Implemented | Limited |
 | Conditional Choice Share | Defined | Implemented | Experimental |
 | Logical Invocations | Defined | Implemented | Yes |
 | Result Consumption | Defined | Implemented | Claude partial |
@@ -132,7 +134,7 @@ Sampling             none
 
 标准已定义 ≠ 现在已经能全面测。按能力逐项验证中。
 
-版本路线：Draft 0.3（语义）→ 0.4（测量质量与分类）→ 0.5（价值测量）→ 1.0
+版本路线：Draft 0.3（语义）→ **0.4（对象与质量）** → 0.5（价值测量）→ 1.0
 （毕业标准：2 个独立实现 + 3 个 runtime profiles + 公开 conformance + 5-10 个真实项目）。
 
 ## How to contribute

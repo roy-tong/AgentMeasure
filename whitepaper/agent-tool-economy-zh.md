@@ -1,6 +1,6 @@
 # 如何度量 AI Agent 对软件的使用
 
-**一份行业方法论 — Agent Usage Attribution Standard（AgentMeasure），Draft 0.2**
+**AgentMeasure — 度量 AI Agent 对软件使用的开放标准提案（Draft 0.3）**
 
 > 作者：Roy Tong（仝夏瑞）
 > 参考实现：AgentMeasure 仓库（GitHub）。

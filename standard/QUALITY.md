@@ -1,4 +1,4 @@
-# AgentMeasure Quality — Measurement Quality（Draft 0.3）
+# AgentMeasure Quality — Measurement Quality（Draft 0.4）
 
 > **证据 ≠ 覆盖 ≠ 限定 ≠ 方法。** 一组 100% 真实但只覆盖 2% Agent 的事件不是
 > 市场数据。本文件定义质量四维 + Measurement Label 披露要求。
@@ -41,12 +41,14 @@ UNOBSERVABLE 必须单列——绝不并入 FALSE（不变量 17）。
 
 ```text
 Agent Usage Measurement Label
-Standard version:   0.3
-Metric:             M2.2 Selection Rate
+Standard version:   0.4
+Metric:             M2.2 Observed Selection Rate
 Window:             30 days
 Grain:              decision-opportunity
 Usage context:      production
 Validity:           normal
+Decision authority: model / router / policy   # 三轴披露（Core §6）
+Selection constraint: autonomous / forced
 Agent hosts:        Claude Code, Codex
 Coverage:           partial
 Collection:         client + server

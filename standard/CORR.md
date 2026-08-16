@@ -1,6 +1,6 @@
-# AgentMeasure Correlation — Observation → Invocation 确定性规则（Draft 0.1）
+# AgentMeasure Correlation — Observation → Attempt → Operation 确定性规则（Draft 0.4）
 
-## 1. 匹配优先级
+## 1. 匹配优先级（Observation → Attempt）
 
 ```text
 1. Exact match        tool_call_id / protocol invocation id（同 project + tool）
@@ -11,7 +11,7 @@
 ```
 
 **规则**：Exact > Structural > Commitment。只有 1-3 匹配且无歧义时才产生
-invocation；其余观察各自独立（不提升证据）。
+attempt；其余观察各自独立（不提升证据）。
 
 ## 2. 关键纪律
 
@@ -19,13 +19,41 @@ invocation；其余观察各自独立（不提升证据）。
 - **时间窗不用于强行匹配**：连续同名调用（search A / search B）不得因时间窗
   产生笛卡尔积配对；无精确/结构/承诺匹配时宁可不关联
 - **时间解析 fail-closed**：无法解析的时间戳不参与关联（绝不假设 now）
-- **确定性**：同一输入 + 同一 policy → 同一 invocation 划分（可复现）
+- **确定性**：同一输入 + 同一 policy → 同一 attempt 划分（可复现）
 
-## 3. 输出
+## 3. Attempt → Operation 归并（Draft 0.4，AgentMeasure Core §2.4）
+
+Operation = 逻辑使用（"为任务 T 使用能力 C"）。归并规则（fail-closed）：
+
+```text
+1. 显式 operation_id    观察自带 → 直接归组
+2. 结构推导             task_id + capability + 同一选择（selection_id）→ 同一 operation
+3. 重试链               同 task 下对同一 capability 的连续 attempt，
+                        且前一次失败后无其他 selection 介入 → 同一 operation
+4. 无证据               → 不归并（每个 attempt 独立，不变量 23）
+```
+
+- **重试 = 同一 Operation 的多个 Attempt**，不再是 validity 分类（Core §7 注）
+- 归并 MUST 确定性：同一输入 + 同一 policy → 同一 operation 划分
+- operation 归属不确定时，M3.1 回退 `COUNT(DISTINCT invocation_id)`（0.3 兼容），
+  Measurement Label 披露 `operation_resolution: explicit|structural|none`
+
+## 4. 谱系（Lineage，Draft 0.4）
+
+完整链路：`task_id → decision_id → selection_id → operation_id → attempt_id →
+result/effect → outcome`
+
+- 每条观察携带**它所知道的**谱系 id；未知字段留 null，MUST NOT 编造
+- 谱系完整度是披露维度：`lineage coverage = 带完整谱系的观察 ÷ eligible 观察`
+- 断链处理：`task_id` 缺失的 attempt 仍可计数（execution 级），但不得用于
+  outcome/task 级指标（grain 纪律，不变量 16）
+
+## 5. 输出
 
 ```jsonc
 {
-  "invocation_id": "uuid",
+  "invocation_id": "uuid",          // attempt_id
+  "operation_id": "op-3",           // 逻辑使用；未知 = null
   "project_id": "...",
   "tool": "...",
   "started_at": "...",
@@ -33,13 +61,15 @@ invocation；其余观察各自独立（不提升证据）。
   "lifecycle": "L0-L3",
   "evidence": {"vector": {...}, "display": "independently-corroborated"},
   "matched_by": "exact-call-id | structural-trace | commitment | none",
+  "lineage": {"task_id": "tk-1", "decision_id": "d1", "selection_id": "s1"},
   "observations": ["receipt_id", "..."]
 }
 ```
 
-## 4. 不变量映射（AgentMeasure Core §4）
+## 6. 不变量映射（AgentMeasure Core §9）
 
-- 一个 invocation 最多计数一次
-- 重复观察不增计数
-- 模糊观察不得提升为 corroborated
+- 一个 invocation 最多计数一次（不变量 2）
+- 重复观察不增计数（不变量 3）
+- 模糊观察不得提升为 corroborated（不变量 6）
 - outcome 冲突保留为 `inconsistent`（client success + server failure → 差异数据，供 Discrepancy Report）
+- 无 Operation 证据不得把 Attempt 归并为逻辑调用（不变量 23）

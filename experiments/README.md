@@ -1,4 +1,4 @@
-# AgentMeasure Experiments（Draft 0.3，P3 实证闭环）
+# AgentMeasure Experiments（Draft 0.4，P3 实证闭环）
 
 > 目的：不是做排行榜，而是**找标准的漏洞**。三类统一实验。
 

@@ -23,7 +23,7 @@
 - 平台 attestation 未验证 → UNSUPPORTED
 - 无 observation_id → 拒绝入库
 
-## 3. 标准不变量（安全相关，AgentMeasure Core §4 摘录）
+## 3. 标准不变量（安全相关，AgentMeasure Core §9 摘录）
 
 - Unsigned fields MUST NOT affect authenticated claims
 - Ambiguous observations MUST NOT be promoted to corroborated

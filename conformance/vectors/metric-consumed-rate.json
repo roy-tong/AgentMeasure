@@ -1,5 +1,5 @@
 {
-  "spec_version": "agentmeasure-0.3",
+  "spec_version": "agentmeasure-0.4",
   "metric": "M4.1 Result Consumed Rate",
   "grain": "result / invocation",
   "strict_qualified": {"context": "production", "validity": "normal"},

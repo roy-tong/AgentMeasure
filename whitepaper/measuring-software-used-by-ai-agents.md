@@ -1,6 +1,6 @@
 # Measuring Software Used by AI Agents
 
-**An Industry Methodology — Agent Usage Attribution Standard (AgentMeasure), Draft 0.2**
+**AgentMeasure — A Proposed Open Measurement Standard for How AI Agents Use Software (Draft 0.3)**
 
 > Roy Tong
 > The reference implementation lives in the AgentMeasure repository.

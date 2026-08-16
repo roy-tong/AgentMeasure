@@ -40,7 +40,7 @@ def _run_selection_rate(vector: dict) -> bool:
     tool = sm["tools"][0]
     return (tool["presented_opportunities"] == exp["presented"]
             and tool["selections"] == exp["selected"]
-            and tool["selection_rate"] == exp["selection_rate"])
+            and tool["observed_selection_rate"] == exp["observed_selection_rate"])
 
 
 def _run_conditional_choice_share(vector: dict) -> bool:
@@ -61,7 +61,9 @@ def _run_conditional_choice_share(vector: dict) -> bool:
         conn, inp["tool_a"], inp["tool_b"],
         project_id=inp.get("project"),
         choice_mode=inp.get("choice_mode"),
-        category_id=inp.get("category_id"))
+        category_id=inp.get("category_id"),
+        decision_authority=inp.get("decision_authority"),
+        selection_constraint=inp.get("selection_constraint"))
     exp = vector["expect"]
     return (s["co_presented_decisions"] == exp["co_presented"]
             and s["a_selected"] == exp["a_selected"]
@@ -107,7 +109,7 @@ def _run_consumed_rate(vector: dict) -> bool:
 
 
 RUNNERS = {
-    "M2.2 Selection Rate": _run_selection_rate,
+    "M2.2 Observed Selection Rate": _run_selection_rate,
     "M2.5 Conditional Choice Share": _run_conditional_choice_share,
     "M4.1 Result Consumed Rate": _run_consumed_rate,
 }
