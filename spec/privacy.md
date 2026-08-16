@@ -51,6 +51,20 @@ agent-used cloud（公开 API/badge）
 
 ## 5. 法律与伦理
 
-- 本项目不采集个人信息；不依赖 GDPR/CCPA 的同意流程（因为根本没有个人数据上传）
-- 但遵循其精神：透明度（本文件）、最小化、用户控制（DO_NOT_TRACK、本地删除）
+- agent-used 设计目标是**最小化个人数据收集**：原始内容默认留在本地、标识符
+  伪匿名且按月轮换、公开基础设施只接收聚合数据
+- **部署者仍自行承担适用的隐私与数据保护义务**（GDPR/CCPA 等）：EDPB 明确区分
+  pseudonymisation 与 anonymisation——可通过额外信息重新关联的 pseudonymised
+  data 仍可能属于 personal data（GDPR Recital 26 同原则）
+- 本文件不做"GDPR 不适用"的法律判断；只承诺架构层面的最小化
 - Claude Code 官方也提示 tool details 可能含敏感信息——collector 默认主动删除是合理设计而非过度设计
+
+## 6. 内存内处理原则（代码级）
+
+```text
+stdin raw payload → 内存内 REDACT + PSEUDONYMIZE → safe observation → disk
+```
+
+禁止 `raw → disk → redact`。adapter 在落盘前完成：
+1. 白名单提取（内容键一律不捕获）
+2. session/identity 伪匿名（HMAC epoch，原始值只在内存中存在）

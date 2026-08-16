@@ -8,6 +8,7 @@
 | 领域 | 字段 | 说明 |
 | --- | --- | --- |
 | 工具 | `gen_ai.tool.name` | OTel GenAI 语义约定 |
+| 调用 ID | `gen_ai.tool.call.id` | 内部模型 `tool_use_id` 直接映射此字段，不建立平行概念 |
 | 协议 | `mcp.method.name` | MCP OTel 语义约定（定义中） |
 | 错误 | `error.type` | 标准错误字段 |
 | 服务 | `service.name` / `service.version` | 资源属性 |
@@ -25,7 +26,7 @@
 | `agentused.observer.side` | enum | `client` / `server` / `platform` | 观测发生在哪一侧 |
 | `agentused.agent.host` | enum | `codex` / `claude-code` / `deepseek-harness` / `other` | 宿主标识 |
 | `agentused.provenance` | enum | `otel` / `hook` / `wrapper` / `platform` | 数据来源机制 |
-| `agentused.evidence.level` | enum | `E0` / `E1` / `E2` / `E3` | 证据等级（见 evidence-model.md） |
+| `agentused.evidence.level` | enum | `E0` / `E1` / `E2` / `E3` | **仅出现在 Invocation/Attribution Record 上**（verifier 派生属性），不出现在 instrumentation span——证据是验证+关联后的结果，不是插桩时能声明的事实 |
 
 ## 3. 映射示例
 

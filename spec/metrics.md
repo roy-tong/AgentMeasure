@@ -1,71 +1,63 @@
-# Metrics（四层指标模型）
+# Metrics（指标模型 v3）
 
-> **Raw call count 不是北极星。** 一次任务 6 次调用 ≠ 6 倍使用；失败重试 3 次 ≠ 3 次使用。
-> 指标按四层组织，优先级递减。排名默认按 **Active Agent Sessions**，防"拆 API 刷榜"。
+> **统计对象是 invocation（一次逻辑调用），不是 observation（一次观察）。**
+> Observation/Invocation 拆分后：一次双边调用的两方观察 = 1 个 invocation。
+> 若按 observation 计数，100% 双边关联的数据 corroborated share 最高只能显示 50%。
 
-## 1. 四层指标
+## 1. 核心指标
 
-### 第一层：Execution（执行）
+### 首要：VACD（Verified Active Client-Days）
 
-| 指标 | 定义 | 备注 |
-| --- | --- | --- |
-| Tool Calls | raw 调用数 | supporting metric，不主导排名 |
-| Successful Executions | 成功执行数 | S2 |
-| Error Rate | 失败占比 | 含 retry 归一 |
-| p50 / p95 Latency | 耗时分布 | 粗粒度桶（privacy） |
+> 某 project 在某 UTC 日，被一个 privacy-preserving client identity 产生
+> ≥1 次 eligible invocation = 1 Active Client-Day。
 
-### 第二层：Adoption（采用）★ 首要
+优势：不受 tool API 数量、retries、session 生命周期差异影响；可跨
+Codex / Claude / DSH 比较；类似 DAU，是成熟的 adoption 心智。派生指标：
+7d active client-days、30d active clients、active days/client、retention。
 
-| 指标 | 定义 |
-| --- | --- |
-| **Active Agent Sessions** | 过去 30 天至少发生 1 次 verified usage 的伪匿名会话数 |
-| Sessions Using Tool | 使用该工具的会话数 |
-| Active Installations | 活跃安装数（伪匿名 installation id，见 privacy.md） |
-| Agent Host Distribution | codex / claude-code / dsh 分布 |
-| Version Distribution | 工具版本分布 |
+（Active Agent Sessions 因不同 harness 的 session 生命周期定义不一（MCP
+2026-07-28 已去 protocol-level session），不适合做跨平台首要指标。）
 
-### 第三层：Engagement（粘性）
+### 第二：Corroborated Usage
 
-| 指标 | 定义 |
-| --- | --- |
-| Calls / Active Session | 会话内平均调用（按 session 归一，不按任务内重复） |
-| Repeat Usage | 会话复用工具 |
-| 7d / 30d Repeat Session Rate | 跨周期回访率 |
+- corroborated invocations = evidence=E2 的 invocation 数
+- **corroborated share = corroborated / eligible**（100% 双边关联 → 1.0）
 
-### 第四层：Contribution（贡献）★ 最有价值、最难
+### 第三：Execution Quality
 
-```
-Tool Result Produced → Result Consumed by Agent → Agent Continued Task → Task Completed
-```
+- success rate（invocation 级，eligible 内）
+- error / retry 归一
 
-| 指标 | 定义 | 可行性 |
-| --- | --- | --- |
-| Result Consumed Rate | S3 / S1：返回结果被后续上下文实际引用 | 部分 Agent 可测（Claude Code OTel 有基础） |
-| Task Contribution | S4：对下游任务完成有贡献 | 研究方向（需要任务级完成信号） |
+### 第四：Engagement / Contribution
 
-**长期研究重点：Result Consumed Rate 比 Tool Calls 更能反映工具价值。**
+- repeat usage（client-day 内多次 eligible invocation 占比）
+- **Result Consumed Rate**（Claude Code 的 mcp_tool.name 信号可实证，见 adapters/claude-code）
 
 ## 2. 归一化规则（防刷榜）
 
-1. **会话归一**：同 session 内重复调用折叠为会话级使用（Engagement 层单独展示次数）
-2. **重试归一**：`call → fail → retry → success` 计为 1 次会话使用 + 1 次成功；错误率单列
-3. **禁用拆 API 刷榜**：排名按 sessions 而非 calls；同一 project 的多个 tool 先 roll-up（identity.md）
-4. **异常检测**：单日突刺（> 30 天中位数 ×10）、单一 installation 异常贡献 → 标记 suspicious，不计入 verified 统计
-5. **证据门槛**：verified 统计只含 E1+；corroborated 单列
+1. **invocation 归一**：多 observation 折叠为一个 invocation；重试链折叠
+2. **禁用拆 API 刷榜**：排名按 VACD / active clients；tool 先 roll-up 到 project（identity.md）
+3. **证据门槛**：eligible = evidence != E0；attributed 统计只含 E1+；corroborated 单列
+4. **异常检测**：单日突刺、单一 client 异常贡献 → 标记 suspicious，不计入 attributed
 
 ## 3. 公开展示（badge / dashboard 最小集）
 
 ```
 Agent Usage · 30d
-2.7k active agent sessions   ← 第一指标
-18.4k verified calls         ← supporting
-96.2% success
-71% corroborated
-Codex · Claude Code · DSH    ← host 分布
+
+2.8k active clients
+11.4k active client-days
+18.3k attributed invocations
+73% independently corroborated
+97% execution success
 ```
+
+**用词纪律**：Observed / Source-authenticated / Corroborated / Platform-attested。
+避免 true / real / verified / objective 等过度承诺词（E1 只是 source-authenticated，
+不是"验证了真实发生"）。
 
 ## 4. 明确不做
 
-- 不按 raw calls 排名
+- 不按 raw observation 或 raw calls 排名
 - 不展示任何可反推个人/组织身份的数据
 - 不做"好评"类指标（测量使用，不是评价）
