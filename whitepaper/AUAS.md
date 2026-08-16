@@ -1,286 +1,299 @@
-# AUAS: An Open Protocol for Measuring Software Usage by AI Agents
+# How Software Usage by AI Agents Should Be Measured
 
-**Agent Usage Attribution Standard — Draft 0.1**
+**An Industry Methodology — Agent Usage Attribution Standard (AUAS), Draft 0.2**
 
 > Roy Tong
 > agent-used is the reference implementation of this standard.
 
-## Abstract
+## 0. Abstract
 
-Agents are becoming a principal distribution channel for software, yet tool authors
-cannot observe how their software is used by agents: download counts show humans,
-registry installs are self-reported, and platforms publish no adoption data. This
-paper defines AUAS, an open protocol for producing *verifiable, privacy-preserving,
-and comparable* measurements of software usage by AI agents.
+Agents are becoming a new class of software consumer, yet the industry has no
+common method for measuring how agents discover, choose, use, and depend on
+software. Existing signals — downloads, stars, self-reported installs — measure
+neither agents nor value. This paper defines AUAS, a measurement standard for the
+agent software ecosystem: what counts as an opportunity, a selection, an
+invocation, a consumption, and a contribution; how these are counted, compared,
+and qualified; and what conclusions each level of evidence can support. The goal
+is not a dashboard. It is a shared data language for tool developers, agent
+platforms, model companies, registries, investors, and researchers.
 
-The protocol's core mechanism is the **Usage Receipt**: a minimal, signed declaration
-produced by an observer at a runtime boundary. Receipts never contain user content;
-cross-party corroboration is achieved through a one-way **correlation commitment**
-over attribution identifiers, so that independent runtimes can establish that they
-observed the same invocation without exchanging raw data. Invocations are
-reconstructed from receipts by deterministic rules, qualified by an explicit
-evidence profile, and aggregated only under a declared **Measurement Policy**.
+## 1. Why Agent Usage Requires a New Measurement Model
 
-AUAS does not define who owns the truth. It defines what evidence, under what rules,
-can support what conclusions.
+Software distribution once had a readable chain: downloaded, installed, used. The
+agent economy breaks every link:
 
-## 1. Problem
+```text
+Install ≠ Available
+Available ≠ Presented
+Presented ≠ Selected
+Selected ≠ Used
+Used ≠ Useful
+Useful ≠ Incremental Value
+```
 
-Software distribution once had readable signals: downloads, stars, issues. In 2026
-these signals no longer describe how software is used. A growing share of usage is
-mediated by agents — Claude Code, Codex, DeepSeek Harness, and others — which select
-tools, install skills, and call servers on behalf of users. Each existing signal
-fails for a different reason:
+- *Install* and *available* describe the tool's presence, not the agent's behavior.
+- *Presented* — entering the agent's decision context — is the true denominator for
+  choice, and it is rarely observable today.
+- *Selected* is a decision; *invoked* is an execution; *completed* is a result.
+- *Consumed* means the result entered the task; *useful* means it mattered.
+- *Incremental value* is the counterfactual: without the tool, would the outcome
+  have been worse?
 
-- **Downloads and stars** measure humans, not agents.
-- **Self-reported install counts** can be inflated by the author and are not
-  independently verifiable.
-- **Registries** publish discovery metadata but explicitly disclaim adoption data.
-- **llms.txt declarations** are not requests; audits show the vast majority of
-  declared files receive no AI traffic at all.
+Advertising learned this lesson over decades: impressions are not conversions,
+clicks are not value, and attribution is not incrementality. The agent software
+ecosystem can adopt the discipline on day one. AUAS answers five questions:
 
-The consequence is that tool authors make maintenance, investment, and positioning
-decisions about their software with no measurement of its actual use by agents. The
-agent economy is being played without a scoreboard — and no party can build one
-alone, because no single platform observes the whole ecosystem and no author can be
-trusted to report their own numbers.
+> **Reach** — did my tool enter the agent's choice set?
+> **Choice** — when the agent had a chance, did it pick me?
+> **Use** — after selection, was it actually used?
+> **Utility** — did the use produce a usable result?
+> **Value** — without me, would the agent's outcome have been worse?
 
-## 2. Goals and Non-goals
+## 2. Measurement Objects
 
-**Goals.** AUAS aims to enable:
+An observation is an *evidence unit*, not a *business measurement unit*. AUAS
+defines the business units first:
 
-1. **Verifiability** — usage claims can be traced to signed evidence produced at
-   runtime boundaries, not to author self-reports.
-2. **Comparability** — numbers produced by different parties are comparable because
-   they are computed under the same protocol and the same declared policy.
-3. **Privacy** — measurement is possible without collecting prompts, arguments,
-   results, paths, or identities; raw telemetry stays local.
-4. **Independence** — no single platform, author, or aggregator is trusted as the
-   source of truth.
-
-**Non-goals.**
-
-1. We do **not** define a global source of truth or a single official database.
-2. We do **not** rank tools by raw call counts.
-3. We do **not** collect content under any circumstance.
-4. We do **not** incentivize agents to star, follow, or otherwise inflate metrics.
-5. We do **not** replace OpenTelemetry or MCP; AUAS sits above them as a semantic
-   layer (Section 11).
-
-## 3. System Model
-
-| Actor | Responsibility | Trust assumption |
+| Object | Definition | Layer |
 | --- | --- | --- |
-| Agent Runtime | executes agents, initiates calls | untrusted (may be gamed) |
-| Tool Runtime | executes tools, serves calls | untrusted (may self-report) |
-| Observer | produces signed receipts at a runtime boundary | identity via public key |
-| Verifier | checks signatures and receipt validity | honest execution of rules |
-| Correlator | deterministically merges receipts into invocations | honest matching rules |
-| Attestor | platform-level attestation (future) | trusted platform |
-| Aggregator | aggregates under a policy | sees receipts/aggregates only |
-| Registry | project and observer identity claims | authenticates claims |
+| Opportunity | an agent had the tool in its decision context | Behavior |
+| Invocation | the tool actually executed | Behavior |
+| Task | the unit of work an invocation serves | Behavior |
+| Client | an independent agent runtime / installation | Market |
+| Project | the software entity packages/tools/skills roll up to | Market |
+| Category | a comparable capability class (search, coding, …) | Market |
+| Observation | evidence of one of the above (a signed receipt) | Evidence |
 
-**Trust minimization.** No single actor can fabricate "independently corroborated
-usage": corroboration requires receipts from at least two *independently controlled*
-observers (Section 7). The protocol is designed so that every claim carries its own
-evidence; nothing is accepted on the say-so of the claimant.
+```
+Evidence Layer:   Observation
+                      ↓ reconstruct
+Behavior Layer:   Opportunity · Invocation · Task
+                      ↓ aggregate
+Market Layer:     Client · Project · Category
+```
 
-## 4. Usage Model
+Counting observations as usage double-counts every corroborated call; counting
+invocations as value confuses behavior with utility. The layers are not
+interchangeable.
 
-**Install ≠ Usage.** Usage is a chain of stages, and observable facts are strictly
-separated from inferred values — if a stage cannot be observed, it is `unknown`, never
-assumed.
+## 3. Agent Tool Interaction Lifecycle
 
-| Stage | Definition | Observable | Inference |
+Each stage is defined by its numerator, its denominator, whether it is observable
+or inferred, and the minimum evidence required.
+
+| Stage | Definition | Observable | Minimum evidence |
 | --- | --- | --- | --- |
-| D0 Available | tool enters an agent-visible set | fact | — |
-| D1 Discovered | runtime loads the tool's definition | fact | — |
-| S0 Selected | model/runtime emits a tool call | fact | — |
-| S1 Executed | runtime begins execution | fact | — |
-| S2 Completed | returns success/failure/denied | fact | — |
-| S3 Delivered | result enters agent context | fact | — |
-| S4 Consumed | a later model request uses the result | fact on some platforms | — |
-| S5 Contribution | result influences the final task outcome | — | **inference (research)** |
+| Presented | tool entered the agent's decision context (candidate set) | agent runtime (routing) | runtime-level observation |
+| Selected | agent/runtime decided to call it | agent runtime | runtime-level observation |
+| Invoked | execution began | both sides | any side observation |
+| Completed | returned success/failure/denied | both sides | any side observation |
+| Consumed | a later model request used the result | some platforms | platform signal |
+| Contributed | result influenced the task outcome | — | **inference** |
 
-Discovery is not selection; delivery is not consumption; consumption is not
-contribution. A tool that is called but whose results are never consumed is
-indistinguishable, at the measurement layer, from one that was never useful.
+*Discovered* is deliberately replaced by *Presented*. Discovery (`tools/list`,
+registry search, skill lookup) says the tool exists; presentation says the tool
+entered the agent's actual decision context — the difference between a billboard
+that was rented and an ad that was shown. Three states with very different
+business meaning:
 
-## 5. Usage Receipt Protocol
-
-The unit that flows between parties is the **Usage Receipt**: a minimal, signed,
-privacy-safe declaration by one observer about one agent–tool interaction.
-
-```
-UsageReceipt {
-  spec_version, receipt_id, observed_at,
-  observer_principal, observer_side, provenance, trust_domain,
-  project_id, tool, tool_call_id?, trace_id?,
-  session_key,            // pseudonymized in memory; never raw
-  outcome, lifecycle_stage,
-  correlation_commitment, // H(protocol ‖ project ‖ trace ‖ call_id)
-  sampling?,              // if sampled
-  signature, key_id       // Ed25519 over canonical(SIGNED_FIELDS)
-}
+```text
+Available ✓ Presented ✓ Selected ✓   ← chosen
+Available ✓ Presented ✓ Selected ✗   ← missed opportunity (Selection Rate denominator)
+Available ✓ Presented ✗              ← never in the game (distribution gap)
 ```
 
-Receipts **must not** contain prompts, inputs, outputs, paths, conversations, or
-user identity.
+## 4. Measurement Framework
 
-**Canonical serialization.** Signature bytes must be identical across
-implementations: canonical JSON (sorted keys, no whitespace, NFC-normalized strings)
-over a fixed set of SIGNED_FIELDS — every field that affects attribution,
-correlation, or qualification. Unsigned fields must not affect authenticated claims.
+AUAS defines **metric families**, not a universal KPI. A search tool, a payment
+tool, and an enterprise SaaS tool have different value structures; one north star
+cannot serve all.
 
-**Correlation commitment.** Two runtimes that observed the same invocation compute
-the same commitment `H(protocol_version ‖ project_id ‖ trace_id ‖ tool_call_id)`
-without exchanging any raw data. A verifier can therefore establish that a client
-receipt and a server receipt refer to the same call, while learning nothing about
-its content. Receipts from the same side never corroborate each other.
+**M1 Distribution — Reach.** Is my tool in the agent world?
+`Available Clients · Presented Opportunities · Presentation Rate · Agent Host
+Coverage · Model/Runtime Coverage`
 
-## 6. Invocation Reconstruction
+**M2 Choice — the most agent-native family.** When the agent had a chance, did it
+choose me?
+`Selections · Selection Rate (Selected ÷ Presented) · Share of Choice ·
+First-choice Rate · Substitution Rate · Switch Rate`
 
-Receipts are merged into **invocations** by deterministic rules, in priority order:
+**M3 Execution — Use.** Was it usable after selection?
+`Logical Invocations · Completion Rate · Success Rate · Error/Retry Rate ·
+Latency · Cost`
 
-1. **Exact match** — identical `tool_call_id` (same project and tool).
-2. **Structural match** — trace parent–child or span relations.
-3. **Commitment match** — equal correlation commitments across sides.
-4. Deterministic one-to-one assignment within a key.
-5. **Ambiguous — do not corroborate.** Failure to match under 1–3 leaves
-   observations independent; ambiguity fails closed.
+**M4 Utility — effective use.** Did the agent actually use what was returned?
+`Result Delivered Rate · Result Consumed Rate · Continuation Rate · Correction
+Rate · Fallback Rate`
 
-Outcome conflicts are preserved: a client `success` with a server `failure` yields
-`derived_outcome = inconsistent` rather than being flattened. Disagreement between
-observation surfaces is measurement data, not noise.
+**M5 Outcome — Value.** Did it improve the task?
+`Task Success Association · Contribution · Incremental Lift · Time Saved · Cost
+Saved · Human Intervention Reduced`
 
-**Standard invariants.** Any AUAS implementation must satisfy:
+### Selection Rate
 
-1. Same input + same policy → same result.
-2. One invocation is counted at most once.
-3. Duplicate observations never increase invocation counts.
-4. Evidence is never self-declared.
-5. Unsigned fields never affect authenticated claims.
-6. Ambiguous observations are never promoted to corroborated.
-7. `unknown` is never inferred as `success`.
-8. Metrics always declare scope + policy + window.
-9. Public receipts never contain user content.
-10. Corroboration never assumes that different strings mean independent control.
-11. Platform attestation is UNSUPPORTED until actually verified.
-12. Outcome conflicts are preserved, never flattened.
+\[
+Selection\ Rate = \frac{Selected\ Opportunities}{Presented\ Opportunities}
+\]
 
-## 7. Trust and Evidence
+Tool A: presented 100,000, selected 5,000 → 5%. Tool B: presented 10,000, selected
+4,000 → 40%. Absolute calls favor A; agent preference strongly favors B. Selection
+Rate answers the question developers actually care about: *when the agent had the
+chance, how often did it choose me?*
 
-Evidence is **derived, never self-declared**. Adapters report facts; the verifier
-computes an **evidence profile** over multiple axes, because authentication,
-corroboration, independence, and attestation are not one scale:
+### Share of Agent Choice
 
-| Axis | Values |
+For a capability category (say, web search) with several substitutable tools:
+
+\[
+SoC = \frac{tool\ selections}{all\ selections\ in\ comparable\ capability}
+\]
+
+A developer would then see not "1.2M calls" but:
+
+```text
+Search category
+Exa       Presented Share 31% · Selection Share 44% · Selection Rate 58% · Repeat Selection 71%
+```
+
+This is agent-software market data, not telemetry.
+
+## 5. Relationship Measurement
+
+Across-time relationships, defined agent-natively:
+
+| Relationship | Definition |
 | --- | --- |
-| Authentication | A0 none · A1 signed (Ed25519) · A2 identity-verified |
-| Corroboration | C0 single · C1 multiple observers |
-| Independence | I0 unknown · I1 distinct runtime · I2 distinct trust domain |
-| Attestation | T0 none · T1 platform-attested (UNSUPPORTED until verified) |
-| Match | M0 none · M1 heuristic · M2 exact call-id · M3 trace-verified |
+| Trial | first use |
+| Active | eligible usage within the period |
+| Repeated | usage across multiple windows |
+| Preferred | sustained first choice within comparable candidate sets |
+| Dependent | task performance degrades significantly when the tool is removed |
 
-Display classes are derived from the profile: *Observed → Authenticated →
-Corroborated → Independently Corroborated → Platform Attested*. Independence is the
-critical axis: two observer principals under the same trust domain are not
-independent, no matter how different their strings are.
+Dependency is the long-term asset metric: the most valuable tool is not the most
+called — it is the least replaceable. `Adoption → Preference → Utility →
+Dependency` is an agent-native tool relationship model.
 
-Signatures use Ed25519 — asymmetric, so verification keys can be public. A signature
-proves origin and integrity, never that real usage occurred; signatures are evidence
-of who said it, not of the truth of what was said.
+## 6. Attribution vs Incrementality
 
-## 8. Measurement
+**A tool's participation in a successful task is not evidence that it caused the
+success.**
 
-Metrics are computed from invocations, not from observations. Counting observations
-would double-count every corroborated call.
+- **Attribution measurement** is observational: which tools participated in the
+  task chain. It supports claims of *association* and *contribution to the
+  execution chain* — nothing more.
+- **Incrementality measurement** is counterfactual: how much additional value did
+  the tool create? The method is randomized comparison — treatment (tool
+  available) vs control (tool invisible) — across task success, time, token cost,
+  total tool calls, human intervention, and quality:
 
-The primary adoption metric is **ACD — Active Client-Days**: a project–day pair
-with at least one eligible invocation by a pseudonymous client. ACD is robust to
-retries, session-lifecycle differences across runtimes, and tool API granularity.
-Supporting metrics: active clients, attributed invocations, corroborated share,
-execution success rate, and result-consumed rate (S4), where observable.
-
-**Measurement Policy.** Every published metric must be qualified by a policy:
-
-```
-ACD(project=X, window=30d, qualification=AUAS/Core-1)
+```text
+Incremental Task Success = P(Success | Tool) − P(Success | No Tool)
+Time Lift   = Time(control) − Time(tool)
+Cost Lift   = Cost(control) − Cost(tool)
 ```
 
-The policy declares eligible evidence, correlation rules, coverage scope, sampling
-treatment, dedup rules, window, and privacy thresholds. Two dashboards displaying
-"12,000" under different policies are not comparable; the policy is part of the
-number.
+Advertising moved from last-click attribution to holdout groups and incrementality
+testing for exactly this reason. Agent tools inherit the lesson. AUAS separates
+the two measurement regimes from the first day.
 
-## 9. Privacy and Security
+## 7. Measurement Quality
 
-**Raw telemetry stays local; public infrastructure receives aggregates by default.**
-Cross-party corroboration exchanges signed receipts and commitments only.
-Pseudonymous session keys rotate monthly (HMAC over an epoch secret); a stable local
-key never leaves the device, and retention is computed locally as cohort aggregates
-so that unlinkability and cross-period retention do not conflict.
+Evidence quality is not coverage quality; both are not qualification quality; none
+is methodology. A set of perfectly attested events covering 2% of agents is not
+market data.
 
-**Fail-closed rules:** verification failure invalidates; unparseable timestamps do
-not correlate; ambiguous matches do not corroborate; unverified attestation is
-unsupported; receipts without identifiers are rejected.
+```text
+Measurement Quality
+├── Evidence        is this event real? (signature, corroboration)
+├── Coverage        how much of the world did we see?
+├── Qualification   does this count as real production use?
+├── Sampling        sampled? with what uncertainty?
+├── Identity        how well do identifiers resolve to projects?
+└── Method/version  which statistics, which spec version?
+```
 
-**Adversarial model.** Authors can self-sign arbitrary receipts (E1 does not defend
-against this; corroboration requires independent domains). Two colluding parties
-under one controller cannot be fully defended without platform attestation; anomaly
-detection and cross-checks with independent signals mitigate. Aggregators are
-constrained by public rules and test vectors; future public auditability may use
-signed aggregate statements with Merkle commitments in an append-only transparency
-log — deliberately without any blockchain or token.
+### Qualified Agent Usage
 
-## 10. Limitations
+Raw invocations are not qualified usage. A large share of future tool traffic
+will not represent adoption: developer self-testing, CI, benchmarks, evals,
+synthetic agents, health checks, retry storms, agent loops, replays, load tests,
+demos. AUAS requires a **Usage Context** on every observation:
 
-1. **Collusion.** E2-level corroboration cannot be defended against two parties
-   under the same controller. Only platform attestation (T1) is strong against it.
-2. **Coverage.** Real data is not representative data. Metrics must declare their
-   scope; partial coverage cannot support ecosystem-wide inference.
-3. **Sampling.** Sampled telemetry requires declared probabilities and uncertainty;
-   unsampled-only is the conservative default.
-4. **S5 causal attribution.** Whether a tool result *contributed* to a task outcome
-   is causal inference, not observation; it is a research direction, not a metric.
-5. **S4 consumption** is observable only on platforms that expose it.
-6. **Identity graph** resolution across repos, packages, registries, and tools is
-   approximate until claims are verified.
+```text
+production · development · test · benchmark · evaluation · synthetic · ci · unknown
+```
 
-## 11. Interoperability
+Public adoption metrics default to `production` plus separately disclosed
+`unknown`; benchmark, eval, test, CI, and synthetic usage are never mixed into
+qualified usage. Context qualification may matter more than evidence grading in
+deciding whether a leaderboard is believable.
 
-AUAS is transport-neutral and vendor-neutral. Existing infrastructure binds to it:
+## 8. Standard Reporting
 
-- **MCP** is a transport binding: `tools/call` carries lifecycle events, `_meta`
-  trace context carries structural correlation, `clientInfo` carries observer hints.
-- **OpenTelemetry** is a telemetry binding: tool spans carry semantic fields; AUAS
-  adds only six `agentused.*` extension attributes; evidence is a derived property
-  of invocation records, never of instrumentation spans.
-- **Agent runtimes** (Codex, Claude Code, DeepSeek Harness, others) are profiles
-  with declared capability matrices; the core protocol does not depend on any of
-  them.
+### Measurement Label
 
-Bindings are replaceable; the receipt and its commitment are the only non-negotiable
-interface.
+Every published metric carries a label — a nutrition label for numbers, not a
+quality score:
 
-## 12. Conclusion
+```text
+Agent Usage Measurement Label
+Standard version:   0.2
+Window:             30 days
+Usage context:      production
+Agent hosts:        Claude Code, Codex
+Coverage:           partial
+Collection:         client + server
+Corroborated:       68%
+Sampling:           none
+Unknown context:    12%
+Synthetic excluded: yes
+Identity coverage:  91%
+```
 
-AUAS establishes a public capability that no single actor can provide alone: the
-ability to measure, verify, and compare agent usage of software without trusting any
-author's self-report, any single platform, or any central database — and without
-collecting user content.
+The label does not grade the data; it discloses how the number was produced so
+that the reader can judge its applicability.
 
-The protocol's contribution is not a dashboard or a badge. It is a definitional
-layer: **what evidence, under what rules, can support what conclusions about agent
-usage of software.** Two independent implementations that produce the same numbers
-from the same receipts under the same policy are the test of the standard; the first
-such implementation, agent-used, is published alongside this paper.
+### Measurement Profiles
+
+AUAS defines standard profiles instead of a universal north star:
+
+| Profile | North Star | Guardrails | Diagnostics |
+| --- | --- | --- | --- |
+| Adoption | Active Clients | Qualified Usage Rate, Coverage | Presented, Selection Rate, Repeat |
+| Reliability | Successful Completed Invocations | p95 latency, cost, retry | error type, host, version |
+| Utility | Consumed Results | Correction Rate, Fallback Rate | completion→consumption conversion |
+| Value | Incremental Task Success | Cost, Latency, Safety | task type, model, alternatives |
+
+Organizations choose a profile by use case; the standard defines the families, not
+the winner.
+
+## 9. Interoperability
+
+The standard is transport-neutral and vendor-neutral. Current infrastructure binds
+to it as implementation examples, not as preconditions: MCP carries lifecycle
+events and trace context; OpenTelemetry carries tool spans; Codex, Claude Code,
+and DeepSeek Harness expose observation points with declared capability matrices.
+Technical choices — signature algorithms, collection formats, storage — live in
+the reference implementation and its profiles, so that the methodology does not
+expire when the technology changes.
+
+## 10. Open Questions
+
+1. **Task boundaries.** What is the unit of a "task," and who defines it?
+2. **Contribution.** How to measure result contribution beyond consumption?
+3. **Incrementality.** How to run counterfactual experiments at ecosystem scale
+   without disturbing production?
+4. **Candidate-set observability.** Presentation is the key denominator; most
+   runtimes do not expose it yet.
+5. **Privacy.** How far can correlation and retention go under pseudonymity?
+6. **Cross-agent identity.** Same client across Codex, Claude, and DSH — when is
+   that knowable?
 
 ---
 
-*References and the full normative specification (AUAS-CORE, DATA, TRUST, CORR,
-METRICS, COVERAGE, PRIVACY, SECURITY, BIND, PROFILE) live in the agent-used
-repository. Graduation criteria to AUAS 1.0: two independent implementations, three
-agent-runtime profiles, two tool-side implementations, a public conformance suite
-with canonical test vectors, 5–10 real projects, a published discrepancy report, and
+*The normative specification (Measurement Objects, Lifecycle, Metric Families,
+Quality, Reporting) and the reference implementation (agent-used) are published
+openly. Graduation to AUAS 1.0 requires two independent implementations, three
+runtime profiles, two tool-side implementations, a public conformance suite with
+canonical test vectors, 5–10 real projects, a published discrepancy report, and
 security and privacy reviews.*

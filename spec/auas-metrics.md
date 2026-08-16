@@ -1,3 +1,5 @@
+> ⚠️ **PARTIALLY SUPERSEDED** — Metric Families 框架以 AUAS-CORE（measurement-spec.md）§4-8 为准；本文保留 ACD 与 denominator 细节。
+
 # AUAS-METRICS — ACD、Invocation、Consumption、窗口、denominator（Draft 0.1）
 
 ## 1. Metric 与 Policy 解耦

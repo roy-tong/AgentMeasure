@@ -2,14 +2,19 @@
 
 **agent-used 是 [AUAS](whitepaper/AUAS.md)（Agent Usage Attribution Standard）的参考实现。**
 
-> OpenTelemetry tells us how telemetry travels.
-> **AUAS defines what evidence, under what rules, can support what conclusions.**
+> Agent 正在成为软件的新消费者，但行业没有统一的方法衡量 Agent 如何发现、选择、
+> 使用和依赖软件。**AUAS 是 Agent 软件生态的共同数据语言。**
 
-AUAS 定义 AI Agent 软件使用证据如何被表示、认证、关联、定级与聚合，使不同主体
-能够在不依赖单一平台、不采集用户内容的前提下，对 Agent 软件使用情况进行可验证、
-可比较的测量。
+AUAS 回答五个递进问题：**Reach → Choice → Use → Utility → Value**
 
-**AUAS 不定义谁是真相来源，而定义什么证据、按照什么规则，可以支持什么结论。**
+1. **Reach** — 我的 Tool 有没有进入 Agent 的选择范围？
+2. **Choice** — Agent 有机会时会不会选我？（Selection Rate / Share of Agent Choice）
+3. **Use** — 选了以后有没有真正使用？
+4. **Utility** — 使用以后有没有产生有效结果？
+5. **Value** — 如果没有我，Agent 的结果会不会更差？（Incrementality）
+
+五个原创概念：**Agent Tool Interaction Funnel · Share of Agent Choice ·
+Qualified Agent Usage · Tool Incrementality · Measurement Label**
 
 这不是又一个 Agent observability 工具。Langfuse / Grafana 回答"我的 Agent 运行得
 怎么样"；AUAS 回答"整个生态里，哪些第三方工具真的被 Agent 使用——以及凭什么
