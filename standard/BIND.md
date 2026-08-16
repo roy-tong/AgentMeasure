@@ -1,4 +1,4 @@
-# AgentMeasure Bindings — Transport & Telemetry Bindings（Draft 0.1）
+# AgentMeasure Bindings — Transport & Telemetry Bindings（Draft 0.4）
 
 > **Core protocol 是 vendor-neutral、transport-neutral 的。** 以下是承载 AgentMeasure 的
 > 现成传输/遥测绑定——它们是可行性证明，不是协议成立的前提。
@@ -21,7 +21,9 @@
 | `trace_id` / `span_id` / parent-child | Structural match |
 | OTLP Collector | 数据分流载体（参考实现消费侧脱敏） |
 
-**参考实现只增加 6 个 `agentused.*` 扩展字段**（属性前缀沿用早期实现名，是技术标识）；evidence 是派生属性，
+**参考实现只增加少量 `agentmeasure.*` 扩展属性**（`agentmeasure.agent.host` /
+`agentmeasure.observer.side` / `agentmeasure.provenance` 等，见
+`reference/adapters/` 各 adapter 的字段映射）；evidence 是派生属性，
 只出现在 Invocation/Attribution Record，不出现在 instrumentation span。
 
 ## B3. 绑定原则

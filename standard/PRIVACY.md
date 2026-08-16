@@ -1,4 +1,4 @@
-# AgentMeasure Privacy — Identifier、Retention、Aggregation、Redaction（Draft 0.1）
+# AgentMeasure Privacy — Identifier、Retention、Aggregation、Redaction（Draft 0.4）
 
 ## 1. 架构原则
 

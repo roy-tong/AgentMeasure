@@ -1,4 +1,4 @@
-# AgentMeasure Security — Sybil、Collusion、Replay、Forgery、Malicious Aggregator（Draft 0.1）
+# AgentMeasure Security — Sybil、Collusion、Replay、Forgery、Malicious Aggregator（Draft 0.4）
 
 ## 1. 攻击与缓解
 

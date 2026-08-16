@@ -1,4 +1,4 @@
-# AgentMeasure Trust — Principal、Signature、Trust Domain、Evidence Profile（Draft 0.1）
+# AgentMeasure Trust — Principal、Signature、Trust Domain、Evidence Profile（Draft 0.4）
 
 ## 1. Observer Principal
 
