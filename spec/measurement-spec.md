@@ -20,20 +20,28 @@ agent-used 是 OTel 之上的语义层，不是替代品。
 
 ## 2. 使用漏斗（The Usage Funnel）
 
-**Install ≠ Usage。** 任何一层都不能替代下一层：
+**Install ≠ Usage。** 任何一层都不能替代下一层。**Observable fact 与 inferred value 严格分离**——
+能观测的才叫事实，需要推断的一律标注为推断（不能推断就 unknown）。
 
-| 阶段 | 定义 | 谁可观察 | MVP 范围 |
+| 阶段 | 定义 | 事实还是推断 | 谁可观察 |
 | --- | --- | --- | --- |
-| **S0 Selected** | Agent 选择了该工具（如 tools/list 命中、skill 加载） | Agent runtime | ✅ |
-| **S1 Executed** | Runtime 实际执行了该工具（tools/call 发起） | Agent runtime + Tool runtime | ✅ |
-| **S2 Execution Success** | 工具成功返回（无 error） | 双侧 | ✅ |
-| **S3 Result Consumed** | Agent 实际使用了返回结果（后续上下文引用/继续任务） | Agent runtime（部分） | 🔶 部分 |
-| **S4 Task Contribution** | 工具结果对下游任务完成有贡献 | 研究方向 | 🔬 研究 |
+| **D0 Available** | 工具进入 Agent 可见集合（注册/挂载） | 事实（配置面） | Registry / runtime |
+| **D1 Discovered** | Agent/runtime 检索或加载了定义（tools/list 命中、skill 加载） | 事实 | Agent runtime |
+| **S0 Selected** | 模型/runtime 生成 tool_use、决定调用 | 事实 | Agent runtime |
+| **S1 Execution Started** | runtime 开始执行 | 事实 | 双侧 |
+| **S2 Execution Completed** | 返回 success / failure / denied | 事实 | 双侧 |
+| **S3 Result Delivered** | 结果进入 Agent context | 事实 | Agent runtime |
+| **S4 Result Consumed** | 后续模型请求实际消费结果（如 Claude Code 的 mcp_tool.name 信号） | 事实（部分平台可观测） | Agent runtime（部分） |
+| **S5 Task Contribution** | 结果影响最终任务结果 | **推断**（causal inference / eval） | 研究方向 |
+
+**注意**：D1（discovered）≠ S0（selected）——tools/list 命中只证明可用/被发现，
+不证明被选中。lifecycle L0-L3 与 S 漏斗的关系：L1≈S1、L2≈S2（L 是简化生命周期，
+S 是完整漏斗；证据 E0-E3 是第三个独立维度）。
 
 **度量纪律**：
 - 一次任务内的 6 次重复调用 ≠ 6 倍使用（见 metrics.md 的 Engagement 层）
-- 失败重试链 `call → fail → retry → success` ≠ 3 次使用（按 session 归一）
-- 公开指标默认以 **Active Agent Sessions** 为首要口径，raw call count 只是 supporting metric
+- 失败重试链 `call → fail → retry → success` ≠ 3 次使用（invocation 归一）
+- 公开指标以 **VACD（Verified Active Client-Days）** 为首要口径，invocation 为计数单位
 
 ## 3. 证据等级（Evidence Level）
 
