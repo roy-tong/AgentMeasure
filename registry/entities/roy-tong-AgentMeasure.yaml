@@ -1,0 +1,24 @@
+schema_version: "agentmeasure-0.4"
+entity:
+  entity_id: github.com/roy-tong/AgentMeasure
+  entity_type: tool
+  name: AgentMeasure
+  declared_by: github.com/roy-tong/AgentMeasure
+  verified: false
+  aliases:
+    cli: agentmeasure
+    skill: agentmeasure
+  capabilities:
+    - capability_id: github.com/roy-tong/AgentMeasure:wrap
+      interaction_class: action
+    - capability_id: github.com/roy-tong/AgentMeasure:hook
+      interaction_class: action
+    - capability_id: github.com/roy-tong/AgentMeasure:collect
+      interaction_class: computation
+  surfaces:
+    - surface_id: cli_command:agentmeasure-wrap
+      alias: cli
+    - surface_id: cli_command:agentmeasure-hook
+      alias: cli
+    - surface_id: cli_command:agentmeasure-collect
+      alias: cli

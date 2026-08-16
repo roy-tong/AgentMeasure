@@ -1,0 +1,61 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "AgentMeasure Entity Registry Entry",
+  "description": "Machine-readable identity entry for one Software Entity (standard/ENTITY.md). Canonical registry format: YAML subset (see registry/mini_yaml.py).",
+  "type": "object",
+  "required": ["schema_version", "entity"],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "enum": ["agentmeasure-0.4"]
+    },
+    "entity": {
+      "type": "object",
+      "required": ["entity_id", "entity_type", "name", "declared_by", "verified"],
+      "properties": {
+        "entity_id": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9.-]*(/[A-Za-z0-9._-]+)+$"
+        },
+        "entity_type": {
+          "type": "string",
+          "enum": ["tool", "skill", "api", "data_source", "agent", "application", "runtime_capability", "unknown"]
+        },
+        "name": {"type": "string"},
+        "declared_by": {"type": "string"},
+        "verified": {"type": "boolean"},
+        "aliases": {
+          "type": "object",
+          "additionalProperties": {"type": "string"}
+        },
+        "capabilities": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["capability_id", "interaction_class"],
+            "properties": {
+              "capability_id": {"type": "string"},
+              "interaction_class": {
+                "type": "string",
+                "enum": ["information", "action", "transaction", "computation", "communication", "control", "storage", "sensing", "unknown"]
+              },
+              "category_id": {"type": "string"},
+              "category_version": {"type": "string"}
+            }
+          }
+        },
+        "surfaces": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["surface_id", "alias"],
+            "properties": {
+              "surface_id": {"type": "string"},
+              "alias": {"type": "string"}
+            }
+          }
+        }
+      }
+    }
+  }
+}

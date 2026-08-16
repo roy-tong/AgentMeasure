@@ -39,7 +39,9 @@ Application · Runtime Capability · unknown。类型影响 Utility 度量方式
 
 ## 4. Registry 格式（机器可读）
 
-每个 Entity 一个文件：`registry/entities/<owner>-<repo>.yaml`
+每个 Entity 一个文件：`registry/entities/<owner>-<repo>.yaml`，
+schema 见 `schemas/entity.schema.json`（JSON Schema），CI 与本地
+`python3 registry/validate_entities.py` 强制校验（零依赖实现：`registry/mini_yaml.py`）。
 
 ```yaml
 schema_version: "agentmeasure-0.4"

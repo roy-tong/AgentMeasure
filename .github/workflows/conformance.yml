@@ -7,6 +7,7 @@ on:
       - 'reference/**'
       - 'conformance/**'
       - 'schemas/**'
+      - 'registry/**'
       - 'verify_vectors.py'
   pull_request:
 
@@ -71,39 +72,47 @@ jobs:
           PYTHONPATH: reference
         run: |
           python3 conformance/runners/run_metrics.py
-      - name: Conformance suite
+      - name: Choice end-to-end (M2.2 / M2.5)
         env:
           PYTHONPATH: reference
         run: |
           python3 - <<'PY'
-          import sys, json, tempfile, pathlib, subprocess, os
-          # 生成符合规范的 observation 样例 -> conformance 应 PASS
-          tmp = pathlib.Path(tempfile.mkdtemp())
-          sample = tmp / "sample.jsonl"
-          os.environ["AGENT_USED_KEYS_DIR"] = str(tmp)
+          import sys, json, tempfile, pathlib
           sys.path.insert(0, ".")
-          from collector.usage import empty_observation, new_observation_id, pseudonymize
-          recs = []
-          for n in range(3):
-              o = empty_observation(); o.update(dict(
-                  observation_id=new_observation_id(), observed_at="2026-08-16T03:00:00Z",
-                  observer_principal="codex-hook@ci", observer_side="client", provenance="hook",
-                  project_id="github.com/foo/bar", tool=f"foo.t{n}", tool_call_id=f"tc-{n}",
-                  session_key=pseudonymize(f"sess-{n}", "codex"),
-                  outcome="unknown", lifecycle_stage="L1"))
-              recs.append(o)
-          sample.write_text("\n".join(json.dumps(r) for r in recs))
-          r = subprocess.run([sys.executable, "conformance.py", str(sample)], capture_output=True, text=True)
-          print(r.stdout)
-          assert r.returncode == 0, r.stdout + r.stderr
+          from collector.choice import connect, ingest_choice_events, selection_metrics, conditional_choice_share
+          tmp = pathlib.Path(tempfile.mkdtemp())
+          conn = connect(tmp / "choice.db")
+          events = [
+              {"type": "presented", "decision_id": f"d{i}", "candidate_set_id": "c1",
+               "project_id": "github.com/foo/bar", "tool": "Exa", "choice_mode": "exclusive",
+               "context": "production", "validity": "normal", "ts": "2026-08-16T00:00:00Z"}
+              for i in range(10)
+          ] + [
+              {"type": "selected", "decision_id": f"d{i}", "candidate_set_id": "c1",
+               "project_id": "github.com/foo/bar", "tool": "Exa", "choice_mode": "exclusive",
+               "decision_authority": "model", "selection_constraint": "autonomous",
+               "context": "production", "validity": "normal", "ts": "2026-08-16T00:01:00Z"}
+              for i in range(4)
+          ]
+          p = tmp / "events.jsonl"
+          p.write_text("\n".join(json.dumps(e) for e in events))
+          ingest_choice_events(conn, p)
+          sm = selection_metrics(conn, "github.com/foo/bar")
+          assert sm["tools"][0]["observed_selection_rate"] == 0.4, sm
+          cs = conditional_choice_share(conn, "Exa", "Tavily", project_id="github.com/foo/bar")
+          assert cs["co_presented_decisions"] == 0, cs  # Tavily 未同台 -> fail-closed 空分母
+          print("choice: M2.2=0.4, M2.5 fail-closed OK")
           PY
+      - name: Registry validation
+        run: |
+          python3 registry/validate_entities.py
       - name: Adapter privacy tests
         run: |
           python3 - <<'PY'
           import sys, json, tempfile, pathlib, os, subprocess
           tmp = pathlib.Path(tempfile.mkdtemp())
-          env = dict(os.environ, AGENT_USED_EVENTS_DIR=str(tmp / "hook"))
-          subprocess.run([sys.executable, "adapters/codex/hook_agent.py"], input=json.dumps({
+          env = dict(os.environ, AGENTMEASURE_EVENTS_DIR=str(tmp / "hook"))
+          subprocess.run([sys.executable, "reference/adapters/codex/hook_agent.py"], input=json.dumps({
               "hook_event_name": "PostToolUse", "tool_name": "Bash", "tool_use_id": "tu-1",
               "session_id": "RAW-SESSION-42",
               "tool_input": {"command": "cat /etc/shadow"},
