@@ -1,16 +1,16 @@
-# AUAS-CORE — Agent Usage Measurement Standard（Draft 0.3）
+# AgentMeasure Core Specification — Agent Usage Measurement Standard（Draft 0.3）
 
 > **Draft 0.3：Metric Semantics & Denominator Discipline。** 目标：每个指标都能被
 > 独立实现且算出同一个数字。本版本解决"怎么算"——Decision Opportunity、
 > Measurement Grain、Observability、Metric Eligibility、Denominator 纪律。
 >
-> agent-used 是参考实现。**AUAS 不定义谁是真相来源，而定义什么证据、按照什么
+> agent-used 是参考实现。**AgentMeasure 不定义谁是真相来源，而定义什么证据、按照什么
 > 规则，可以支持什么结论。**
 
 ## 0. 版本与治理
 
 - 版本路线：Draft 0.2（框架）→ **0.3（语义）** → 0.4（测量质量）→ 0.5（价值测量）→ 1.0
-- 指标变更走 **AUP**（`aup/`）；**AUAS-METRICS 是变更最频繁的文档**，whitepaper 保持稳定
+- 指标变更走 **AUP**（`aup/`）；**AgentMeasure Metrics 是变更最频繁的文档**，whitepaper 保持稳定
 - 毕业标准（不变）：2 独立实现 + 3 profiles + 2 tool-side + conformance + vectors + 5-10 项目 + discrepancy report + 双 review
 
 ## 1. 核心命题（不变）
@@ -54,7 +54,7 @@ Selection
 ### 2.2 Market 对象
 
 Client / Project / Category（不变）。Category 是**版本化的 measurement construct**
-（`category_id + category_version`），不是永久真理（见 AUAS-TAXONOMY，Draft 0.4）。
+（`category_id + category_version`），不是永久真理（见 AgentMeasure Taxonomy，Draft 0.4）。
 
 ## 3. Measurement Grain（统计粒度）
 
@@ -143,7 +143,7 @@ retry/duplicate/replay/loop/health check 不是 context——是 validity。
 
 ## 8. Measurement Label（Draft 0.3 补 denominator 披露）
 
-见 AUAS-QUALITY。每个指标除 label 外必须披露：Numerator / Denominator /
+见 AgentMeasure Quality。每个指标除 label 外必须披露：Numerator / Denominator /
 Observable population / Qualified population / Runtime coverage / Choice mode。
 
 ## 9. 标准不变量（Draft 0.3 完整版）
@@ -175,12 +175,12 @@ Observable population / Qualified population / Runtime coverage / Choice mode。
 
 | 文档 | 负责 |
 | --- | --- |
-| AUAS-CORE（本文） | Objects、Grain、Observability、Eligibility、Qualification、不变式 |
-| AUAS-DATA | Observation Envelope（六类型）schema |
-| AUAS-METRICS | Metric Registry + 指标合同（变更最频繁） |
-| AUAS-TRUST | Principal、Signature、Trust Domain、Evidence |
-| AUAS-CORR | Observation → Invocation 确定性规则 |
-| AUAS-QUALITY | Context/Validity/Coverage/Observability/Label |
-| AUAS-PRIVACY / SECURITY / BIND / PROFILES | 不变 |
-| AUAS-TAXONOMY | Category/Capability 分类（Draft 0.4 立项） |
+| AgentMeasure Core（本文） | Objects、Grain、Observability、Eligibility、Qualification、不变式 |
+| AgentMeasure Data | Observation Envelope（六类型）schema |
+| AgentMeasure Metrics | Metric Registry + 指标合同（变更最频繁） |
+| AgentMeasure Trust | Principal、Signature、Trust Domain、Evidence |
+| AgentMeasure Correlation | Observation → Invocation 确定性规则 |
+| AgentMeasure Quality | Context/Validity/Coverage/Observability/Label |
+| AgentMeasure Privacy / SECURITY / BIND / PROFILES | 不变 |
+| AgentMeasure Taxonomy | Category/Capability 分类（Draft 0.4 立项） |
 | aup/ | 指标与规范变更提案 |

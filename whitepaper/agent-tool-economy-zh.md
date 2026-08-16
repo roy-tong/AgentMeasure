@@ -1,13 +1,13 @@
-# Agent 软件的使用应该如何被度量？
+# 如何度量 AI Agent 对软件的使用
 
-**一份行业方法论 — Agent Usage Attribution Standard（AUAS），Draft 0.2**
+**一份行业方法论 — Agent Usage Attribution Standard（AgentMeasure），Draft 0.2**
 
 > 作者：Roy Tong（仝夏瑞）
 > agent-used 是这套标准的参考实现。
 
 ## 摘要
 
-Agent 正在成为软件的新消费者，但行业没有统一的方法衡量 Agent 如何发现、选择、使用和依赖软件。下载量、star、自报安装数——既不测量 Agent，也不测量价值。本文定义 AUAS：一套 Agent 软件生态的度量标准——什么算机会、什么算选择、什么算调用、什么算消费、什么算贡献；这些如何计数、如何比较、如何限定；每一级证据能支持什么结论。目标不是仪表盘，而是 Tool 开发者、Agent 平台、模型公司、Registry、投资者和第三方研究机构之间的**共同数据语言**。
+Agent 正在成为软件的新消费者，但行业没有统一的方法衡量 Agent 如何发现、选择、使用和依赖软件。下载量、star、自报安装数——既不测量 Agent，也不测量价值。本文定义 AgentMeasure：一套 Agent 软件生态的度量标准——什么算机会、什么算选择、什么算调用、什么算消费、什么算贡献；这些如何计数、如何比较、如何限定；每一级证据能支持什么结论。目标不是仪表盘，而是 Tool 开发者、Agent 平台、模型公司、Registry、投资者和第三方研究机构之间的**共同数据语言**。
 
 ## 一、为什么 Agent 使用需要新的度量模型
 
@@ -28,7 +28,7 @@ Agent 正在成为软件的新消费者，但行业没有统一的方法衡量 A
 - *被消费*意味着结果进入了任务；*有用*意味着它产生了作用。
 - *增量价值*是反事实：没有这个工具，结果会不会更差？
 
-广告行业用了几十年学会：曝光不是转化，点击不是价值，归因不是增量。Agent 软件生态可以从第一天就采用这门纪律。AUAS 回答五个问题：
+广告行业用了几十年学会：曝光不是转化，点击不是价值，归因不是增量。Agent 软件生态可以从第一天就采用这门纪律。AgentMeasure 回答五个问题：
 
 > **Reach（触达）**——我的 Tool 有没有进入 Agent 的选择范围？
 > **Choice（选择）**——Agent 有机会时，会不会选我？
@@ -38,7 +38,7 @@ Agent 正在成为软件的新消费者，但行业没有统一的方法衡量 A
 
 ## 二、测量对象
 
-**Observation（观察）是证据单位，不是业务测量单位。** AUAS 先定义业务单位：
+**Observation（观察）是证据单位，不是业务测量单位。** AgentMeasure 先定义业务单位：
 
 | 对象 | 定义 | 层 |
 | --- | --- | --- |
@@ -75,7 +75,7 @@ Agent 正在成为软件的新消费者，但行业没有统一的方法衡量 A
 
 ## 四、测量框架：五大指标家族
 
-**AUAS 定义 Metric Families，不定义全局北极星。** 搜索工具、支付工具、企业 SaaS 工具的价值结构不同，一个 KPI 无法通用。
+**AgentMeasure 定义 Metric Families，不定义全局北极星。** 搜索工具、支付工具、企业 SaaS 工具的价值结构不同，一个 KPI 无法通用。
 
 **M1 Distribution（分发）— Reach。** 我的 Tool 进入 Agent 的世界了吗？
 `可用 Clients · 被呈现机会数 · Presentation Rate · Agent Host 覆盖 · 模型覆盖`
@@ -162,7 +162,7 @@ Measurement Quality
 
 ### Qualified Agent Usage（限定使用）
 
-**Raw Invocation ≠ Qualified Usage。** 未来大量工具流量不代表采用：开发者自测、CI、benchmark、eval、synthetic agent、health check、重试风暴、agent loop、replay、压测、demo。AUAS 要求每条观察携带 **Usage Context**：
+**Raw Invocation ≠ Qualified Usage。** 未来大量工具流量不代表采用：开发者自测、CI、benchmark、eval、synthetic agent、health check、重试风暴、agent loop、replay、压测、demo。AgentMeasure 要求每条观察携带 **Usage Context**：
 
 ```text
 production · development · test · benchmark · evaluation · synthetic · ci · unknown
@@ -217,4 +217,4 @@ Identity coverage:  91%
 
 ---
 
-*规范全文（测量对象、生命周期、指标家族、质量、报告）与参考实现（agent-used）均已开源。AUAS 1.0 毕业标准：2 个独立实现、3 个 runtime profiles、2 个 tool-side 实现、公开 conformance + canonical test vectors、5-10 个真实项目、已发布的 discrepancy report、安全与隐私审查。*
+*规范全文（测量对象、生命周期、指标家族、质量、报告）与参考实现（agent-used）均已开源。AgentMeasure 1.0 毕业标准：2 个独立实现、3 个 runtime profiles、2 个 tool-side 实现、公开 conformance + canonical test vectors、5-10 个真实项目、已发布的 discrepancy report、安全与隐私审查。*

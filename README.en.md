@@ -1,54 +1,85 @@
-# agent-used
+# AgentMeasure
 
-**An open usage attribution standard for software used by AI agents.**
+**An open measurement standard for software used by AI agents.**
 
-> OpenTelemetry tells us how telemetry travels.
-> **agent-used defines what counts as usage.**
+> Traditional software metrics measure human distribution. AgentMeasure measures
+> agent decisions, usage, utility, and value.
 
-agent-used is an open Usage Attribution standard and infrastructure for the AI-agent software ecosystem. It collects call evidence from both the agent side and the tool side, normalizes usage across Codex, Claude Code, DeepSeek Harness and MCP, correlates and deduplicates both sides, and publishes privacy-preserving aggregate metrics with explicit evidence levels.
+[Whitepaper](whitepaper/measuring-software-used-by-ai-agents.md) · [Core Specification](standard/CORE.md) · [中文](README.md)
 
-**Not another observability tool.** Langfuse/Grafana answer "how is my agent running?"; agent-used answers "which third-party tools are actually used by agents across the ecosystem?"
+## Why
 
-[Whitepaper: How to Measure the Agent Tool Economy](whitepaper/agent-tool-economy-zh.md) · [Measurement Spec](spec/measurement-spec.md)
+Agents are becoming a new class of software consumer, and every existing signal fails:
+downloads measure humans, self-reported installs are gameable, registries publish no
+adoption data.
+
+```text
+Install ≠ Available
+Available ≠ Presented
+Presented ≠ Selected
+Selected ≠ Used
+Used ≠ Useful
+Useful ≠ Incremental Value
+```
+
+**Reach → Choice → Use → Utility → Value.**
 
 ## Core concepts
 
-### The usage funnel: Install != Usage
-S0 Selected → S1 Executed → S2 Execution Success → S3 Result Consumed → S4 Task Contribution (S0-S2 MVP, S3 partial, S4 research).
+- Decision Opportunity / Candidate Set / Presentation / Selection
+- Selection Rate (Selected ÷ Presented)
+- Conditional Choice Share (head-to-head agent preference)
+- Qualified Usage (excludes benchmark/test/synthetic/retry)
+- Result Consumption (≠ successful return)
+- Incrementality (would the outcome be worse without this software?)
+- Measurement Label (nutrition label for every public number)
 
-### Evidence levels: signature != truth
-E0 Observed (one-sided claim) · E1 Source-authenticated (signed) · **E2 Correlated (both sides, same trace_id — the core)** · E3 Platform-attested.
-HMAC proves origin and integrity, not that a real agent called. `corroborated usage` (E2) is the credibility core; MCP 2026-07-28 RC makes trace context propagation protocol-level.
+## Who is this for?
 
-### Metrics: raw calls are not the north star
-Adoption (Active Agent Sessions — primary) · Engagement (repeat usage) · Quality (success / consumption) · Trust (corroborated share). Rankings by sessions, never by raw calls.
+| Audience | Entry |
+|---|---|
+| Tool / MCP developers | Quickstart · Runtime Profiles |
+| Agent runtime platforms | Runtime Profile · Observability |
+| Data researchers | Whitepaper · Metrics |
+| Standard contributors | Core · Proposals |
+| Third-party implementers | Conformance |
 
-## Architecture
+## Repository map
 
+```text
+agent-measure/
+├── standard/          # the standard itself (CORE/METRICS/QUALITY/DATA/...)
+├── whitepaper/        # methodology papers (EN/CN)
+├── conformance/       # language-neutral test vectors + runners
+├── reference/         # reference implementation (collector + adapters)
+├── experiments/       # empirical experiment designs
+├── reports/           # public reports (Discrepancy Report)
+├── proposals/         # standard change proposals (AUP)
+└── archive/           # retired early documents
 ```
-Public Usage Layer (dashboard/api/badge/rankings)
-        ▲  aggregated only
-Attribution Layer (identity · dedup · correlation · evidence · privacy · normalization)
-        ▲                    ▲
- Agent Adapters            Tool Adapters
-  codex / claude / dsh       mcp / http / cli
-        ▲                    ▲
-   OTel / MCP existing standards
-```
 
-Standing **on top of OTel**: reuse `gen_ai.tool.name`, `mcp.method.name`, trace fields; add only 6 `agentused.*` extensions ([otel-mapping](spec/otel-mapping.md)).
+**The standard is the本体; the code is a reference implementation.** Using the
+standard does not mean uploading data to any central server.
 
-## Privacy
+## Status
 
-**Raw telemetry stays local. Public infrastructure receives aggregates by default.**
-prompt / tool_input / tool_output / path / raw session id — dropped at code level (leak tests). Pseudonymous installation ids (local secret, rotating epochs). `DO_NOT_TRACK=1` honored end-to-end.
+Draft 0.3 — Metric Semantics & Denominator Discipline.
 
-## Roadmap
+| Capability | Standard | Reference | Real Runtime |
+| --- | --- | --- | --- |
+| Selection Rate | Defined | Implemented | Limited |
+| Conditional Choice Share | Defined | Implemented | Experimental |
+| Logical Invocations | Defined | Implemented | Yes |
+| Result Consumption | Defined | Implemented | Claude partial |
+| Incrementality | Defined (formula) | Planned | No |
+| Qualified Usage | Defined | Implemented | Yes |
 
-M0 Definition ✅ (spec + whitepaper + threat model) · M1 Cross-Agent Proof (codex/claude/dsh adapters) · M2 OTel Native (collector + mapping) · M3 Attribution (identity graph + correlation) · M4 Public Network (api/dashboard/badge) · M5 External Validation (real adopters + discrepancy report) · M6 Ecosystem (MCP/OTel/platform/registry cooperation)
+## Contribute
 
-**Explicitly not doing**: replacing OTel, automated starring, content collection, raw-call rankings, cloud aggregation before M3.
+Discussions: Metric Semantics / Measurement Quality / Runtime Profiles / Proposals /
+Experiments / General. PRs must pass `conformance/` vectors.
 
-## License
+---
 
-MIT
+*AgentMeasure does not define who owns the truth. It defines what evidence, under
+what rules, can support what conclusions.*

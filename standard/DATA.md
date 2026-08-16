@@ -1,4 +1,4 @@
-# AUAS-DATA — Observation Envelope（Draft 0.3）
+# AgentMeasure Data — Observation Envelope（Draft 0.3）
 
 > Receipt 是系统间流动的最小签名单位；本版本定义六类观察的 Envelope，
 > 使 schema 真正表达 Presented/Selected/Invoked/Completed/Consumed。
@@ -15,8 +15,8 @@
   "project_id": "github.com/foo/bar",
   "tool_id": "foo.search",
   "client_key": "p-...",              // 伪匿名，内存内生成
-  "usage_context": "production",      // 见 AUAS-CORE §7
-  "validity": "normal",               // 见 AUAS-CORE §7
+  "usage_context": "production",      // 见 AgentMeasure Core §7
+  "validity": "normal",               // 见 AgentMeasure Core §7
   "sampling": null,
   "provenance": "hook",
   "payload": { /* 类型特有字段 */ },
@@ -62,7 +62,7 @@
 
 ## 3. 签名与 canonical（不变）
 
-- SIGNED_FIELDS 覆盖全部 attribution 字段（AUAS-CORE 不变量 5）
+- SIGNED_FIELDS 覆盖全部 attribution 字段（AgentMeasure Core 不变量 5）
 - canonical JSON：排序键、无空白、NFC（确定性字节）
 - 六类 payload 的 attribution 字段全部入签名
 

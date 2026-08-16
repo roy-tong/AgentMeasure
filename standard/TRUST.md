@@ -1,4 +1,4 @@
-# AUAS-TRUST — Principal、Signature、Trust Domain、Evidence Profile（Draft 0.1）
+# AgentMeasure Trust — Principal、Signature、Trust Domain、Evidence Profile（Draft 0.1）
 
 ## 1. Observer Principal
 
@@ -20,7 +20,7 @@
 ## 2. 签名
 
 - 算法：Ed25519（私钥签名/公钥验证；HMAC 不满足 public verification）
-- 覆盖：SIGNED_FIELDS（AUAS-DATA §2）；任何影响归因的字段未签名即无效
+- 覆盖：SIGNED_FIELDS（AgentMeasure Data §2）；任何影响归因的字段未签名即无效
 - 密钥管理：`key_id` → 公钥目录（可公开）；私钥本地（chmod 600）；支持撤销
 - fail-closed：验签失败/密钥未知/无法验证 → 不提升任何等级
 

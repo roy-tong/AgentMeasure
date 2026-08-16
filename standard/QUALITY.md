@@ -1,4 +1,4 @@
-# AUAS-QUALITY — Measurement Quality（Draft 0.3）
+# AgentMeasure Quality — Measurement Quality（Draft 0.3）
 
 > **证据 ≠ 覆盖 ≠ 限定 ≠ 方法。** 一组 100% 真实但只覆盖 2% Agent 的事件不是
 > 市场数据。本文件定义质量四维 + Measurement Label 披露要求。
@@ -42,7 +42,7 @@ UNOBSERVABLE 必须单列——绝不并入 FALSE（不变量 17）。
 ```text
 Agent Usage Measurement Label
 Standard version:   0.3
-Metric:             AUAS-M2.2 Selection Rate
+Metric:             M2.2 Selection Rate
 Window:             30 days
 Grain:              decision-opportunity
 Usage context:      production

@@ -1,4 +1,4 @@
-# AUAS-PROFILE — Agent Runtime Profiles（Draft 0.1）
+# AgentMeasure-PROFILE — Agent Runtime Profiles（Draft 0.1）
 
 > Profile 声明"这个 runtime 能可靠观察到什么"——能力矩阵是测量可信度的基础。
 > 完整矩阵见 docs/adapters.md；本文是协议侧摘要。

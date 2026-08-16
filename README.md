@@ -1,158 +1,147 @@
-# agent-used
+# AgentMeasure
 
-**agent-used 是 [AUAS](whitepaper/AUAS.md)（Agent Usage Attribution Standard）的参考实现。**
+**An open measurement standard for software used by AI agents.**
 
-> Agent 正在成为软件的新消费者，但行业没有统一的方法衡量 Agent 如何发现、选择、
-> 使用和依赖软件。**AUAS 是 Agent 软件生态的共同数据语言。**
+> AgentMeasure 是一套开放度量标准，用统一的数据语言衡量 AI Agent 如何发现、选择、
+> 使用软件，以及软件最终创造了多少价值。
+>
+> 传统软件指标衡量人下载和使用了什么；AgentMeasure 衡量 Agent 看到了什么、
+> 选择了什么、真正用了什么，以及这些选择有没有创造价值。
 
-AUAS 回答五个递进问题：**Reach → Choice → Use → Utility → Value**
+[Whitepaper](whitepaper/measuring-software-used-by-ai-agents.md) · [中文白皮书](whitepaper/agent-tool-economy-zh.md) · [Core Specification](standard/CORE.md) · [English](README.en.md)
 
-1. **Reach** — 我的 Tool 有没有进入 Agent 的选择范围？
-2. **Choice** — Agent 有机会时会不会选我？（Selection Rate / Share of Agent Choice）
+## 为什么需要
+
+Agent 正在成为软件的新消费者，但现有信号全部失效——下载量衡量人，不衡量 Agent；
+自报安装数可刷；Registry 不提供采纳数据。
+
+```text
+Install ≠ Available
+Available ≠ Presented
+Presented ≠ Selected
+Selected ≠ Used
+Used ≠ Useful
+Useful ≠ Incremental Value
+```
+
+AgentMeasure 回答五个问题：**Reach → Choice → Use → Utility → Value**
+
+1. **Reach** — 我的软件有没有进入 Agent 的选择范围？
+2. **Choice** — Agent 有机会时会不会选我？（Selection Rate / Conditional Choice Share）
 3. **Use** — 选了以后有没有真正使用？
-4. **Utility** — 使用以后有没有产生有效结果？
+4. **Utility** — 使用以后有没有产生有效结果？（Result Consumption）
 5. **Value** — 如果没有我，Agent 的结果会不会更差？（Incrementality）
 
-五个原创概念：**Agent Tool Interaction Funnel · Share of Agent Choice ·
-Qualified Agent Usage · Tool Incrementality · Measurement Label**
+## 五层 Measurement Framework
 
-这不是又一个 Agent observability 工具。Langfuse / Grafana 回答"我的 Agent 运行得
-怎么样"；AUAS 回答"整个生态里，哪些第三方工具真的被 Agent 使用——以及凭什么
-相信这些数字"。
-
-[Canonical Whitepaper (EN)](whitepaper/AUAS.md) · [《如何测量 Agent Tool Economy》（中文）](whitepaper/agent-tool-economy-zh.md) · [AUAS-CORE](spec/measurement-spec.md) · [English](README.en.md)
-
-## Try it in 2 minutes
-
-```bash
-# 1. 安装（零依赖，Python 3.9+）
-git clone https://github.com/roy-tong/agent-used && cd agent-used
-
-# 2. 模拟一次双侧调用（client + server 观察同一 tool_call_id）
-python3 - <<'PY'
-import sys; sys.path.insert(0, ".")
-from collector.correlator.correlator import connect, store_observation, match_invocations
-from collector.aggregator.aggregator import compute
-from collector.usage import empty_observation, new_observation_id
-
-conn = connect()  # ./collector.db
-for side, principal in (("client", "codex-hook@you"), ("server", "mcp-wrapper@you")):
-    o = empty_observation(); o.update(dict(
-        observation_id=new_observation_id(), observed_at="2026-08-16T03:00:00Z",
-        observer_principal=principal, observer_side=side, provenance="hook" if side=="client" else "wrapper",
-        project_id="github.com/you/your-tool", tool="your.search", tool_call_id="tc-1",
-        session_key="sess-1" if side=="client" else None, outcome="success", lifecycle_stage="L2"))
-    store_observation(conn, o)
-match_invocations(conn)
-print(compute(conn, "github.com/you/your-tool")["corroborated_share"])  # 1.0 = 双侧独立佐证
-PY
-
-# 3. 数据全在本地。README 徽章（M4 后公开）
-```
-
-## 核心概念
-
-### 使用漏斗：Install ≠ Usage
-
-| 阶段 | 定义 | MVP |
+| 层 | 回答 | 代表指标 |
 | --- | --- | --- |
-| S0 Selected | Agent 选择了该工具 | ✅ |
-| S1 Executed | Runtime 实际执行了调用 | ✅ |
-| S2 Execution Success | 工具成功返回 | ✅ |
-| S3 Result Consumed | Agent 实际使用了返回结果 | 🔶 部分 |
-| S4 Task Contribution | 结果对下游任务有贡献 | 🔬 研究 |
+| Reach | 进入 Agent 世界了吗 | Presented Opportunities、Active Clients |
+| Choice | 有机会时会选我吗 | Selection Rate、Conditional Choice Share |
+| Use | 选了以后好用吗 | Logical Invocations、Completion Rate、Success Rate |
+| Utility | 结果被用了吗 | Result Consumed Rate |
+| Value | 创造价值了吗 | Incremental Task Success（Draft 0.5） |
 
-### 证据等级：签名 ≠ 真实
+## Core concepts
 
-| 等级 | 名称 | 能证明什么 |
-| --- | --- | --- |
-| Observed | 单边观察 | 某一方声称 |
-| Authenticated | Ed25519 签名观察 | 来源与完整性 |
-| **Corroborated** | ≥2 条独立 observer 观察 | **同一次真实调用（核心）** |
-| Independently Corroborated | 跨 trust domain 的独立观察 | 最强可获证据 |
-| Platform Attested | 平台 attestation（未验证 = UNSUPPORTED） | 平台确认 |
+- **Decision Opportunity / Candidate Set / Presentation / Selection** —— 选择行为的
+  四个对象；Selection Rate 的分母是被呈现（Presented），不是可用（Available）
+- **Selection Rate** = Selected ÷ Presented —— Agent 真正有机会时选你的概率
+- **Conditional Choice Share** —— A、B 同台竞争时的选择份额（Agent Preference）
+- **Qualified Usage** —— 排除 benchmark / test / synthetic / retry 后的真实生产使用
+- **Result Consumption** —— 结果被后续任务实际使用（≠ 成功返回）
+- **Incrementality** —— 没有这个工具，任务结果会不会更差
+- **Measurement Label** —— 每个公开数字的营养成分表（覆盖/采样/口径/方法）
 
-签名只证明"数据来自持 key 主体且未被篡改"，不证明"真的有 Agent 调用"——所以证据是分级的（由 verifier 计算，adapter 不自声明），`independently corroborated`（≥2 个独立 trust domain 的观察）才是可信度核心。
+## Who is this for?
 
-### 指标：Raw Calls 不是北极星
+| 用户 | 入口 |
+| --- | --- |
+| Tool / MCP 开发者 | [Quickstart](#quickstart) · [Runtime Profiles](standard/PROFILES.md) |
+| Agent Runtime 平台 | [Runtime Profile](standard/PROFILES.md) · Observability |
+| 数据研究者 | [Whitepaper](whitepaper/measuring-software-used-by-ai-agents.md) · [Metrics](standard/METRICS.md) |
+| 标准贡献者 | [Core](standard/CORE.md) · [Proposals](proposals/) |
+| 第三方实现者 | [Conformance](conformance/) |
 
-- **Adoption**（首要）：ACD（Active Client-Days，按 Measurement Policy 限定口径）
-- **Engagement**：Repeat Usage、7d/30d 回访率
-- **Quality**：Execution Success / Result Consumption
-- **Trust**：Corroborated Usage Share
-
-排名按 sessions 而非 calls——防拆 API 刷榜。一次任务 6 次调用 ≠ 6 倍使用。
-
-## 架构
+## Repository map
 
 ```text
-Public Usage Layer（Dashboard / API / Badge / Rankings / Trends）
-        ▲   aggregated only
-agent-used Attribution Layer
-  Identity Resolution · Dedup · Cross-side Correlation
-  Evidence Grading · Privacy Aggregation · Metric Normalization
-        ▲               ▲
- Agent Adapters        Tool Adapters
-  codex / claude / dsh   mcp / http / cli
-        ▲               ▲
-   OTel / MCP existing standards
+agent-measure/
+├── standard/          # 标准本体（CORE / METRICS / QUALITY / DATA / ...）
+├── whitepaper/        # 方法论论文（中英）
+├── conformance/       # 语言无关 test vectors + runners
+├── reference/         # 参考实现（collector + adapters）
+│   ├── collector/     #   归一、关联、聚合、证据
+│   └── adapters/      #   codex / claude / dsh / mcp 观察适配
+├── experiments/       # 三类实证实验设计
+├── reports/           # Discrepancy Report 等公开报告
+├── proposals/         # 指标与规范变更提案（AUP）
+└── archive/           # 已废弃的早期文档
 ```
 
-agent-used **站在 OTel 之上**：复用 `gen_ai.tool.name`、`mcp.method.name`、trace 字段；只增加 6 个 `agentused.*` 扩展字段（[otel-mapping](spec/otel-mapping.md)）。
+**标准是本体，代码是参考实现。** 使用标准不意味着向任何中心服务器上传数据。
 
-## 目录
-
-```text
-agent-used/
-├── spec/          # 标准（测量/证据/指标/隐私/身份/威胁模型/OTel 映射）
-├── adapters/
-│   ├── codex/           # PostToolUse hooks → 本地事件
-│   ├── claude-code/     # OTLP → agent-used Collector（设计）
-│   ├── deepseek-harness/# DSH plugin（tools/pre-execute → post-execute，设计）
-│   └── mcp/             # legacy zero-config wrapper（wrapper.py）
-├── collector/
-│   ├── normalizer/      # 跨 Agent 统一口径（待实现）
-│   ├── correlator/      # 双边 trace 匹配 → E2（待实现）
-│   ├── redactor/        # 默认 DROP 敏感字段（待实现）
-│   └── aggregator/      # 本地统计 + 徽章 SVG（已有 aggregator.py）
-├── registry/
-│   └── project-identity/ # 项目身份映射（待填充）
-├── examples/
-└── whitepaper/          # 《如何测量 Agent Tool Economy》
-```
-
-## 隐私
-
-**Raw telemetry stays local. Public infrastructure receives aggregates by default.**
-
-prompt / tool_input / tool_output / path / raw session id——代码级默认 DROP（adapter 含泄漏测试）。伪匿名 installation id（本地 secret + 按月轮换）支持 unique installations 与 repeat usage，云端无法反推身份。`DO_NOT_TRACK=1` 全程生效。
-
-## 当前状态（M1-M2）
-
-跨宿主统一已跑通：codex hook（client）+ MCP wrapper（server）+ DSH plugin（harness 生命周期观察）
-三类 observation 可并入同一 project 统计——`invocations / corroborated share / ACD / host 分布`，
-证据由 verifier 计算（adapter 只报事实）。
+## Quickstart
 
 ```bash
-# 导入三类事件 → 关联 → 统计
-python3 -m collector.correlator.correlator   # 见测试：correlate() 生成 E2
-python3 collector/aggregator/aggregator.py stats --project github.com/foo/bar
+git clone https://github.com/roy-tong/agent-measure && cd agent-measure
+python3 conformance/runners/run_metrics.py   # 运行指标 vectors（9/9）
 ```
 
-## 路线图
+喂入 Decision Opportunity 事件后，参考实现输出示例：
 
-| Stage | 目标 | 关键产物 |
-| --- | --- | --- |
-| M0 Definition | 讲清"什么算 Agent Usage" | ✅ Whitepaper + Measurement Spec + Threat Model |
-| M1 Cross-Agent Proof | 证明跨 Agent 可统一 | Codex + Claude + DSH adapter |
-| M2 OTel Native | 标准采集链 | Collector + OTel mapping + MCP adapter |
-| M3 Attribution | 项目核心 | Identity Graph + Correlation + Evidence |
-| M4 Public Network | 公开数据 | API + Dashboard + Badge |
-| M5 External Validation | 指标是否真被需要 | 外部项目接入 + discrepancy report |
-| M6 Ecosystem | 公共基础设施 | MCP / OTel / Agent Platform / Registry 合作 |
+```text
+AgentMeasure Demo
 
-**不做的事**：不替代 OTel；不做自动 star/follow；不采集内容；不按 raw calls 排名；不在 M3 之前做聚合云。
+Reach
+Presented Opportunities    150
 
-## License
+Choice
+Selections                   65
+Selection Rate            43.3%
 
-MIT
+Use
+Invocations                  62
+Completion Rate           96.8%
+
+Utility
+Observable Results           41
+Consumed Results             28
+Consumption Rate          68.3%
+
+Measurement Quality
+Usage Context        production
+Coverage             partial
+Sampling             none
+```
+
+数据默认留在本地；公开指标必须携带 [Measurement Label](standard/QUALITY.md)。
+
+## Current status
+
+**Draft 0.3（Metric Semantics & Denominator Discipline）** — 指标语义与分母纪律已定义。
+
+| Capability | Standard | Reference | Real Runtime |
+| --- | --- | --- | --- |
+| Selection Rate | Defined | Implemented | Limited |
+| Conditional Choice Share | Defined | Implemented | Experimental |
+| Logical Invocations | Defined | Implemented | Yes |
+| Result Consumption | Defined | Implemented | Claude partial |
+| Incrementality | Defined (formula) | Planned | No |
+| Qualified Usage | Defined | Implemented | Yes |
+
+标准已定义 ≠ 现在已经能全面测。按能力逐项验证中。
+
+版本路线：Draft 0.3（语义）→ 0.4（测量质量与分类）→ 0.5（价值测量）→ 1.0
+（毕业标准：2 个独立实现 + 3 个 runtime profiles + 公开 conformance + 5-10 个真实项目）。
+
+## How to contribute
+
+- **讨论测量语义**：GitHub Discussions（Metric Semantics / Measurement Quality / Runtime Profiles / Proposals / Experiments / General）
+- **提标准变更**：`proposals/`（AUP 流程：Draft → Discussion → Accepted → Experimental → Stable）
+- **报告测量偏差**：reports/（Discrepancy Report 模板）
+- **修参考实现**：PR 必须通过 `conformance/` 全部 vectors
+
+---
+
+*AgentMeasure 不定义谁是真相来源，而定义什么证据、按照什么规则，可以支持什么结论。*

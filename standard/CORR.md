@@ -1,4 +1,4 @@
-# AUAS-CORR — Observation → Invocation 确定性规则（Draft 0.1）
+# AgentMeasure Correlation — Observation → Invocation 确定性规则（Draft 0.1）
 
 ## 1. 匹配优先级
 
@@ -37,7 +37,7 @@ invocation；其余观察各自独立（不提升证据）。
 }
 ```
 
-## 4. 不变量映射（AUAS-CORE §4）
+## 4. 不变量映射（AgentMeasure Core §4）
 
 - 一个 invocation 最多计数一次
 - 重复观察不增计数
