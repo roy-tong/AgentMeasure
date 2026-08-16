@@ -19,6 +19,17 @@ AgentMeasure defines a common language for measuring how AI agents discover, cho
 
 **Start with the story:** [When the Software Consumer Becomes an Agent](https://roy-tong.github.io/en/notes/when-the-software-consumer-becomes-an-agent/) (EN) · [当软件的消费者变成 Agent](https://roy-tong.github.io/notes/when-the-software-consumer-becomes-an-agent/) (ZH)
 
+## Try it in 2 minutes
+
+```bash
+./examples/demo-e2e.sh
+```
+
+Mock MCP server → canonical observations → local metrics, all on your machine, no
+cloud. Then read why we audit the ecosystem's usage claims:
+[Benchmark Run #001](reports/benchmark-run-001.md) — six real claims graded on the
+evidence ladder, every number self-reported.
+
 ---
 
 ## Why capabilities need a new measurement layer
