@@ -15,6 +15,10 @@ AgentMeasure 定义一套共同语言，衡量 AI Agent 如何发现、选择、
 
 [Whitepaper](whitepaper/measuring-software-used-by-ai-agents.md) · [中文白皮书](whitepaper/measuring-software-used-by-ai-agents.zh-CN.md) · [Core Specification](standard/CORE.md) · [English](README.md)
 
+![AgentMeasure — 计量栈总览](assets/agentmeasure-stack.svg)
+
+**从这里开始读故事：** [当软件的消费者变成 Agent](https://roy-tong.github.io/notes/when-the-software-consumer-becomes-an-agent/)（中文）· [When the Software Consumer Becomes an Agent](https://roy-tong.github.io/en/notes/when-the-software-consumer-becomes-an-agent/)（EN）
+
 ---
 
 ## 为什么 Capability 需要新的测量层
@@ -256,7 +260,8 @@ metrics.yaml 单一事实源；四维正交（Evidence/Caller/Use Profile/Billin
 
 ## 参与
 
-- **讨论测量语义**：GitHub Issues（Discussions 待开启；categories：Metric Semantics / Measurement Quality / Runtime Profiles / Proposals / Experiments / General）
+- **加入社区**：[Discussions](https://github.com/roy-tong/AgentMeasure/discussions) —— 议题与讨论守则见 [docs/DISCUSSIONS.md](docs/DISCUSSIONS.md)
+- **讨论测量语义**：GitHub Issues（Discussions categories：Metric Semantics / Measurement Quality / Runtime Profiles / Proposals / Experiments / General）
 - **提标准变更**：`proposals/`（AUP：Draft → Discussion → Accepted → Experimental → Stable）
 - **报告测量偏差**：`reports/`（Discrepancy Report 模板）
 - **修参考实现**：PR 必须通过 `conformance/` 全部 vectors

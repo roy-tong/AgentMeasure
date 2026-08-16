@@ -15,6 +15,10 @@ AgentMeasure defines a common language for measuring how AI agents discover, cho
 
 [Whitepaper](whitepaper/measuring-software-used-by-ai-agents.md) · [白皮书（中文）](whitepaper/measuring-software-used-by-ai-agents.zh-CN.md) · [Core Specification](standard/CORE.md) · [中文](README.zh-CN.md)
 
+![AgentMeasure — The Measurement Stack](assets/agentmeasure-stack.svg)
+
+**Start with the story:** [When the Software Consumer Becomes an Agent](https://roy-tong.github.io/en/notes/when-the-software-consumer-becomes-an-agent/) (EN) · [当软件的消费者变成 Agent](https://roy-tong.github.io/notes/when-the-software-consumer-becomes-an-agent/) (ZH)
+
 ---
 
 ## Why capabilities need a new measurement layer
@@ -253,7 +257,8 @@ The roadmap runs on two tracks — the standard (0.4 objects & quality → 0.5 u
 
 ## Contribute
 
-- **Discuss measurement semantics**: GitHub Issues（Discussions 待开启；categories：Metric Semantics / Measurement Quality / Runtime Profiles / Proposals / Experiments / General）
+- **Join the community**: [Discussions](https://github.com/roy-tong/AgentMeasure/discussions) — topics and ground rules in [docs/DISCUSSIONS.md](docs/DISCUSSIONS.md)
+- **Discuss measurement semantics**: GitHub Issues（Discussions categories：Metric Semantics / Measurement Quality / Runtime Profiles / Proposals / Experiments / General）
 - **Propose standard changes**: `proposals/` (AUP: Draft → Discussion → Accepted → Experimental → Stable)
 - **Report measurement discrepancies**: `reports/` (Discrepancy Report template)
 - **Fix the reference implementation**: PRs must pass all `conformance/` vectors

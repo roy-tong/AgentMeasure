@@ -1,0 +1,98 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 780" role="img" aria-labelledby="title desc" font-family="system-ui, -apple-system, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif">
+  <title id="title">AgentMeasure — The Measurement Stack</title>
+  <desc id="desc">From raw observations of agent-capability interaction, through an open measurement layer of usage chain, context, validity and evidence grading, to comparable metrics that marketplaces, metering and billing can build on.</desc>
+
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#b43f29"/>
+    </marker>
+  </defs>
+
+  <rect x="0" y="0" width="1200" height="780" rx="18" fill="#f4f5f2"/>
+
+  <!-- Title -->
+  <text x="60" y="58" font-size="26" font-weight="700" fill="#171a18" letter-spacing="-0.01em">AgentMeasure — The Measurement Stack</text>
+  <text x="60" y="84" font-size="14" fill="#626964">Open measurement infrastructure for the Agent Capability Economy · Reach → Choice → Use → Utility → Value</text>
+
+  <!-- ===== Economy layer ===== -->
+  <g>
+    <rect x="60" y="118" width="1080" height="118" rx="12" fill="none" stroke="rgba(23,26,24,0.35)" stroke-width="1.5" stroke-dasharray="6 5"/>
+    <text x="96" y="150" font-size="12" font-weight="700" fill="#626964" letter-spacing="0.14em">ECONOMY LAYER — BUILT ON THE STANDARD</text>
+    <text x="96" y="178" font-size="19" font-weight="600" fill="#171a18">Marketplaces · Metering · Billing · Rankings · Insurance</text>
+    <text x="96" y="206" font-size="14" fill="#626964">Comparable, auditable facts — not self-reported claims — as the foundation.</text>
+  </g>
+
+  <!-- Arrow: economy <- measurement -->
+  <path d="M 600 236 L 600 262" stroke="#b43f29" stroke-width="2.5" marker-end="url(#arrow)"/>
+
+  <!-- ===== AgentMeasure measurement layer ===== -->
+  <g>
+    <rect x="60" y="268" width="1080" height="330" rx="12" fill="#e6e9e4" stroke="#b43f29" stroke-width="2"/>
+    <text x="96" y="304" font-size="12" font-weight="700" fill="#b43f29" letter-spacing="0.14em">AGENTMEASURE — OPEN MEASUREMENT LAYER</text>
+
+    <!-- Usage chain -->
+    <g font-size="14" font-weight="600">
+      <rect x="96" y="326" width="196" height="52" rx="8" fill="#171a18"/>
+      <text x="194" y="358" fill="#f4f5f2" text-anchor="middle">Reach</text>
+      <path d="M 302 352 L 326 352" stroke="#b43f29" stroke-width="2" marker-end="url(#arrow)"/>
+      <rect x="336" y="326" width="196" height="52" rx="8" fill="#171a18"/>
+      <text x="434" y="358" fill="#f4f5f2" text-anchor="middle">Choice</text>
+      <path d="M 542 352 L 566 352" stroke="#b43f29" stroke-width="2" marker-end="url(#arrow)"/>
+      <rect x="576" y="326" width="196" height="52" rx="8" fill="#171a18"/>
+      <text x="674" y="358" fill="#f4f5f2" text-anchor="middle">Use</text>
+      <path d="M 782 352 L 806 352" stroke="#b43f29" stroke-width="2" marker-end="url(#arrow)"/>
+      <rect x="816" y="326" width="196" height="52" rx="8" fill="#171a18"/>
+      <text x="914" y="358" fill="#f4f5f2" text-anchor="middle">Utility</text>
+      <path d="M 1022 352 L 1046 352" stroke="#b43f29" stroke-width="2" marker-end="url(#arrow)"/>
+      <rect x="1056" y="326" width="64" height="52" rx="8" fill="#b43f29"/>
+      <text x="1088" y="358" fill="#f4f5f2" text-anchor="middle">Value</text>
+    </g>
+
+    <!-- Context / Validity / Evidence -->
+    <g>
+      <rect x="96" y="404" width="330" height="106" rx="10" fill="#f4f5f2" stroke="rgba(23,26,24,0.16)"/>
+      <text x="118" y="436" font-size="12" font-weight="700" fill="#176b5a" letter-spacing="0.1em">CONTEXT</text>
+      <text x="118" y="462" font-size="15" font-weight="600" fill="#171a18">Where was the event observed?</text>
+      <text x="118" y="486" font-size="13" fill="#626964">Agent runtime · Gateway · Provider · Self-report</text>
+
+      <rect x="440" y="404" width="330" height="106" rx="10" fill="#f4f5f2" stroke="rgba(23,26,24,0.16)"/>
+      <text x="462" y="436" font-size="12" font-weight="700" fill="#176b5a" letter-spacing="0.1em">VALIDITY</text>
+      <text x="462" y="462" font-size="15" font-weight="600" fill="#171a18">Did the attempt succeed?</text>
+      <text x="462" y="486" font-size="13" fill="#626964">Selected → Invoked → Delivered → Consumed</text>
+
+      <rect x="784" y="404" width="330" height="106" rx="10" fill="#f4f5f2" stroke="rgba(23,26,24,0.16)"/>
+      <text x="806" y="436" font-size="12" font-weight="700" fill="#176b5a" letter-spacing="0.1em">EVIDENCE</text>
+      <text x="806" y="462" font-size="15" font-weight="600" fill="#171a18">How strong is the claim?</text>
+      <text x="806" y="486" font-size="13" fill="#626964">E0–E5 graded · auditable · fail-closed</text>
+    </g>
+
+    <!-- Metrics row -->
+    <rect x="96" y="534" width="1018" height="48" rx="8" fill="#176b5a"/>
+    <text x="118" y="564" font-size="14" font-weight="600" fill="#f4f5f2">Comparable metrics &amp; measurement labels — grain, choice mode, decision authority, selection constraint disclosed</text>
+  </g>
+
+  <!-- Arrow: measurement <- observation -->
+  <path d="M 600 598 L 600 630" stroke="#b43f29" stroke-width="2.5" marker-end="url(#arrow)"/>
+
+  <!-- ===== Observation layer ===== -->
+  <g>
+    <rect x="60" y="636" width="1080" height="112" rx="12" fill="#171a18"/>
+    <text x="96" y="672" font-size="12" font-weight="700" fill="#ffc85a" letter-spacing="0.14em">OBSERVATION — RAW FACTS</text>
+    <text x="96" y="700" font-size="19" font-weight="600" fill="#f4f5f2">Agent × Capability × Interaction surface</text>
+    <g font-size="13.5" font-weight="600">
+      <rect x="620" y="676" width="92" height="34" rx="17" fill="#b43f29"/>
+      <text x="666" y="698" fill="#f4f5f2" text-anchor="middle">MCP</text>
+      <rect x="724" y="676" width="92" height="34" rx="17" fill="#b43f29"/>
+      <text x="770" y="698" fill="#f4f5f2" text-anchor="middle">Skills</text>
+      <rect x="828" y="676" width="92" height="34" rx="17" fill="#b43f29"/>
+      <text x="874" y="698" fill="#f4f5f2" text-anchor="middle">CLI</text>
+      <rect x="932" y="676" width="92" height="34" rx="17" fill="#b43f29"/>
+      <text x="978" y="698" fill="#f4f5f2" text-anchor="middle">SDK</text>
+      <rect x="1036" y="676" width="80" height="34" rx="17" fill="#b43f29"/>
+      <text x="1076" y="698" fill="#f4f5f2" text-anchor="middle">APIs</text>
+    </g>
+  </g>
+
+  <!-- Footer -->
+  <text x="60" y="762" font-size="12" fill="#626964">Open measurement standard · Reference implementation: github.com/roy-tong/AgentMeasure</text>
+</svg>
