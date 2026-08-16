@@ -1,15 +1,21 @@
 # agent-used
 
-**An open usage attribution standard for software used by AI agents.**
+**agent-used 是 [AUAS](whitepaper/AUAS.md)（Agent Usage Attribution Standard）的参考实现。**
 
 > OpenTelemetry tells us how telemetry travels.
-> **agent-used defines what counts as usage.**
+> **AUAS defines what evidence, under what rules, can support what conclusions.**
 
-agent-used 是一套面向 AI Agent 软件生态的开放 **Usage Attribution 标准与基础设施**。它从 Agent 侧与 Tool 侧采集调用证据，在 Codex、Claude Code、DeepSeek Harness、MCP 等不同运行环境之间统一数据口径，对双边事件进行关联与去重，并以明确的证据等级发布隐私保护后的使用统计。
+AUAS 定义 AI Agent 软件使用证据如何被表示、认证、关联、定级与聚合，使不同主体
+能够在不依赖单一平台、不采集用户内容的前提下，对 Agent 软件使用情况进行可验证、
+可比较的测量。
 
-**这不是又一个 Agent observability 工具。** Langfuse / Grafana 回答"我的 Agent 运行得怎么样"；agent-used 回答"整个生态里，哪些第三方工具真的被 Agent 使用"。
+**AUAS 不定义谁是真相来源，而定义什么证据、按照什么规则，可以支持什么结论。**
 
-[《如何测量 Agent Tool Economy》（白皮书）](whitepaper/) · [Measurement Spec](spec/measurement-spec.md) · [English](README.en.md)
+这不是又一个 Agent observability 工具。Langfuse / Grafana 回答"我的 Agent 运行得
+怎么样"；AUAS 回答"整个生态里，哪些第三方工具真的被 Agent 使用——以及凭什么
+相信这些数字"。
+
+[Canonical Whitepaper (EN)](whitepaper/AUAS.md) · [《如何测量 Agent Tool Economy》（中文）](whitepaper/agent-tool-economy-zh.md) · [AUAS-CORE](spec/measurement-spec.md) · [English](README.en.md)
 
 ## Try it in 2 minutes
 
