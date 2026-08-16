@@ -142,7 +142,13 @@ def correlate(conn, window_seconds: int = WINDOW_SECONDS) -> dict:
 
 
 def ingest_jsonl(conn, path: Path, source: str, project_id: str) -> dict:
-    """导入 adapter 事件并做归一化（normalizer 内联，避免循环依赖）。"""
+    """导入 adapter 事件并归一化。
+
+    source:
+      codex-hook    → normalizer 转换（原始 hook 载荷）
+      mcp-wrapper   → normalizer 转换（wrapper 事件）
+      unified       → 直接入库（DSH plugin 已输出统一格式）
+    """
     sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
     from collector.normalizer.normalizer import normalize_record  # noqa: E402
 
@@ -153,7 +159,10 @@ def ingest_jsonl(conn, path: Path, source: str, project_id: str) -> dict:
             continue
         try:
             raw = json.loads(line)
-            rec = normalize_record(raw, source, project_id)
+            if source == "unified":
+                rec = raw
+            else:
+                rec = normalize_record(raw, source, project_id)
         except Exception:
             continue
         store_event(conn, rec)

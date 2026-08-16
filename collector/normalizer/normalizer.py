@@ -24,6 +24,15 @@ def _bucket(seconds: float) -> str:
 def normalize_codex_hook(payload: dict, project_id: str, agent_host: str = "codex") -> dict:
     """Codex PostToolUse hook 载荷 → 统一记录（E1 起点，等待关联升级 E2）。"""
     r = empty_unified()
+    # 耗时：start/end 可能是 epoch 秒或 ISO；无法解析则记 <1s
+    seconds = 0.0
+    start = payload.get("start_time") or payload.get("start")
+    end = payload.get("end_time") or payload.get("end")
+    if start and end:
+        try:
+            seconds = max(0.0, float(end) - float(start))
+        except (TypeError, ValueError):
+            seconds = 0.0
     r.update({
         "event_id": new_event_id(),
         "occurred_at": utc_now(),
@@ -35,7 +44,7 @@ def normalize_codex_hook(payload: dict, project_id: str, agent_host: str = "code
         "tool": str(payload.get("tool_name") or "unknown")[:120],
         "stage": "S2" if not (payload.get("is_error") or payload.get("error")) else "S1",
         "outcome": "failure" if (payload.get("is_error") or payload.get("error")) else "success",
-        "duration_bucket": _bucket(0.0),
+        "duration_bucket": _bucket(seconds),
         "session_id": _pseudo(payload.get("session_id")),
         "tool_use_id": str(payload.get("tool_call_id") or payload.get("tool_use_id") or "")[:120],
         "trace_id": str(payload.get("trace_id") or "")[:64] or None,
