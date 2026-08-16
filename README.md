@@ -55,16 +55,17 @@ PY
 
 | 等级 | 名称 | 能证明什么 |
 | --- | --- | --- |
-| E0 Observed | 单边日志 | 某一方声称 |
-| E1 Source-authenticated | 签名事件 | 来源与完整性 |
-| **E2 Correlated** | 双边 trace 匹配（同一 trace_id） | **同一次真实调用（核心）** |
-| E3 Platform-attested | 平台直接证明 | 平台确认 |
+| Observed | 单边观察 | 某一方声称 |
+| Authenticated | Ed25519 签名观察 | 来源与完整性 |
+| **Corroborated** | ≥2 条独立 observer 观察 | **同一次真实调用（核心）** |
+| Independently Corroborated | 跨 trust domain 的独立观察 | 最强可获证据 |
+| Platform Attested | 平台 attestation（未验证 = UNSUPPORTED） | 平台确认 |
 
-HMAC 只证明"数据来自持 key 主体且未被篡改"，不证明"真的有 Agent 调用"——所以证据是分级的，`corroborated usage`（E2）才是可信度核心。MCP 2026-07-28 RC 将 OTel trace context 纳入 `_meta`，使双边关联成为协议级现实。
+签名只证明"数据来自持 key 主体且未被篡改"，不证明"真的有 Agent 调用"——所以证据是分级的（由 verifier 计算，adapter 不自声明），`independently corroborated`（≥2 个独立 trust domain 的观察）才是可信度核心。
 
 ### 指标：Raw Calls 不是北极星
 
-- **Adoption**（首要）：Active Agent Sessions
+- **Adoption**（首要）：ACD（Active Client-Days，按 Measurement Policy 限定口径）
 - **Engagement**：Repeat Usage、7d/30d 回访率
 - **Quality**：Execution Success / Result Consumption
 - **Trust**：Corroborated Usage Share
@@ -117,8 +118,9 @@ prompt / tool_input / tool_output / path / raw session id——代码级默认 D
 
 ## 当前状态（M1-M2）
 
-跨宿主统一已跑通：codex hook（client）+ MCP wrapper（server）+ DSH plugin（harness 原生 E2）
-三类事件可并入同一 project 统计——`verified calls / corroborated usage (E2) / active sessions / host 分布`。
+跨宿主统一已跑通：codex hook（client）+ MCP wrapper（server）+ DSH plugin（harness 生命周期观察）
+三类 observation 可并入同一 project 统计——`invocations / corroborated share / ACD / host 分布`，
+证据由 verifier 计算（adapter 只报事实）。
 
 ```bash
 # 导入三类事件 → 关联 → 统计
