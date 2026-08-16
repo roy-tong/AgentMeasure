@@ -17,7 +17,7 @@ Every existing signal fails:
 - GitHub stars/clones show humans, not agents
 - skills.sh installs are self-reported telemetry (gameable, no API, no verification)
 - The MCP registry explicitly publishes no adoption data
-- llms.txt: declared — but audits show 97% of files get zero AI requests
+- llms.txt: declared — a study of 137K sites found that among sites publishing a valid llms.txt, 97% of files received zero requests in May 2026
 
 The first job of this paper is not to give answers, but to define the question properly.
 
@@ -63,7 +63,7 @@ So measurement must replace binary judgment with evidence levels:
 
 **E2 is the technical breakthrough point**: when the agent side and the tool side independently record the same call via the same OTel trace (`trace_id`), neither side can fabricate the other's observation. That constitutes **corroborated usage**.
 
-The MCP 2026-07-28 Release Candidate folds OTel trace context (`traceparent / tracestate / baggage`) into `_meta` — **protocol-level two-sided correlation is now real**. This is the framework's most important technical foundation: we did not invent trace propagation; we define, for the first time, what counts as a credible usage once traces align.
+The the MCP 2026-07-28 specification folds OTel trace context (`traceparent / tracestate / baggage`) into `_meta` — **protocol-level two-sided correlation is now real**. This is the framework's most important technical foundation: we did not invent trace propagation; we define, for the first time, what counts as a credible usage once traces align.
 
 ## The measurement model: six elements
 
@@ -150,7 +150,7 @@ Three partners are complementary, not competing:
 | --- | --- | --- |
 | **Agent platforms** (OpenAI / Anthropic / DeepSeek) | who really called | highest authority on evidence (E3) |
 | **GitHub** | whose project, where's the code | identity and ownership (repo identity, badge) |
-| **MCP Registry** | who this server is | **the natural first ecosystem partner** — registry is identity, agent-used is actual usage; the registry explicitly welcomes downstream aggregators adding ratings / security / usage metadata |
+| **MCP Registry** | who this server is | **the natural first ecosystem partner** — registry is identity, agent-used is actual usage; the registry explicitly reserves value-add metadata space for downstream aggregators (ratings, download counts, security results); usage attribution is naturally compatible with that architecture and is the direction agent-used aims to explore |
 
 ## Call to action
 

@@ -17,7 +17,7 @@
 - GitHub star / clone 显示的是人，不是 Agent
 - skills.sh 安装数是自报遥测（可刷、无 API、无验证）
 - MCP registry 明确不做采纳数据
-- llms.txt 声明了，审计显示 97% 零 AI 请求
+- llms.txt 声明了——一项针对 13.7 万个站点的研究显示，在发布有效 llms.txt 的站点中，97% 的文件在 2026 年 5 月没有收到任何请求
 
 于是工具作者只能靠感觉决策：该不该继续维护这个 MCP server？该把算力投到哪个工具？Agent 是怎么发现工具的？
 
@@ -65,7 +65,7 @@ Consumption ≠ Contribution
 
 **E2 是技术上的关键突破点**：当 Agent 侧与 Tool 侧通过同一 OTel trace（`trace_id`）独立记录到同一次调用，两侧无法单方伪造对方的观测，这才构成 **corroborated usage**。
 
-MCP 2026-07-28 Release Candidate 把 OTel trace context（`traceparent / tracestate / baggage`）正式纳入 `_meta` 传递——**协议级双边关联首次成为现实**。这是本框架最重要的技术基础：不是我们发明了 trace 传播，而是我们第一次定义"trace 对上之后，什么才算一次可信的使用"。
+MCP 2026-07-28 正式规范把 OTel trace context（`traceparent / tracestate / baggage`）正式纳入 `_meta` 传递——**协议级双边关联首次成为现实**。这是本框架最重要的技术基础：不是我们发明了 trace 传播，而是我们第一次定义"trace 对上之后，什么才算一次可信的使用"。
 
 ## 测量模型：六要素
 
@@ -152,7 +152,7 @@ Raw Events → 本地 Collector（identity/dedup/redact/aggregate/evidence）→
 | --- | --- | --- |
 | **Agent 平台**（OpenAI / Anthropic / DeepSeek） | 谁真正调用了 | 证据的最高权威（E3） |
 | **GitHub** | 项目是谁的、代码在哪 | 身份与归属（repo identity、badge） |
-| **MCP Registry** | 这个 server 是谁 | **第一批生态合作的自然起点**——registry 是身份，agent-used 是实际使用；官方明确欢迎 downstream aggregator 增加 ratings / security / usage 等额外信息 |
+| **MCP Registry** | 这个 server 是谁 | **第一批生态合作的自然起点**——registry 是身份，agent-used 是实际使用；官方明确为 downstream aggregators 留出增值 metadata 空间（ratings、download counts、security results）；usage attribution 与这一架构天然兼容，是 agent-used 希望探索的扩展方向 |
 
 ## 行动号召
 
