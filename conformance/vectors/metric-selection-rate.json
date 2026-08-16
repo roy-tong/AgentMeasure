@@ -1,0 +1,383 @@
+{
+  "spec_version": "auas-0.3",
+  "metric": "AUAS-M2.2 Selection Rate",
+  "grain": "decision-opportunity",
+  "strict_qualified": {
+    "context": "production",
+    "validity": "normal"
+  },
+  "vectors": [
+    {
+      "id": "normal",
+      "description": "常规：10 presented / 4 selected → 0.4",
+      "input": {
+        "project": "p1",
+        "events": [
+          {
+            "type": "presented",
+            "decision_id": "d1",
+            "tool": "Exa",
+            "context": "production",
+            "validity": "normal",
+            "ts": "2026-08-16T00:00:00Z",
+            "choice_mode": "exclusive"
+          },
+          {
+            "type": "presented",
+            "decision_id": "d2",
+            "tool": "Exa",
+            "context": "production",
+            "validity": "normal",
+            "ts": "2026-08-16T00:01:00Z",
+            "choice_mode": "exclusive"
+          },
+          {
+            "type": "presented",
+            "decision_id": "d3",
+            "tool": "Exa",
+            "context": "production",
+            "validity": "normal",
+            "ts": "2026-08-16T00:02:00Z",
+            "choice_mode": "exclusive"
+          },
+          {
+            "type": "presented",
+            "decision_id": "d4",
+            "tool": "Exa",
+            "context": "production",
+            "validity": "normal",
+            "ts": "2026-08-16T00:03:00Z",
+            "choice_mode": "exclusive"
+          },
+          {
+            "type": "presented",
+            "decision_id": "d5",
+            "tool": "Exa",
+            "context": "production",
+            "validity": "normal",
+            "ts": "2026-08-16T00:04:00Z",
+            "choice_mode": "exclusive"
+          },
+          {
+            "type": "presented",
+            "decision_id": "d6",
+            "tool": "Exa",
+            "context": "production",
+            "validity": "normal",
+            "ts": "2026-08-16T00:05:00Z",
+            "choice_mode": "exclusive"
+          },
+          {
+            "type": "presented",
+            "decision_id": "d7",
+            "tool": "Exa",
+            "context": "production",
+            "validity": "normal",
+            "ts": "2026-08-16T00:06:00Z",
+            "choice_mode": "exclusive"
+          },
+          {
+            "type": "presented",
+            "decision_id": "d8",
+            "tool": "Exa",
+            "context": "production",
+            "validity": "normal",
+            "ts": "2026-08-16T00:07:00Z",
+            "choice_mode": "exclusive"
+          },
+          {
+            "type": "presented",
+            "decision_id": "d9",
+            "tool": "Exa",
+            "context": "production",
+            "validity": "normal",
+            "ts": "2026-08-16T00:08:00Z",
+            "choice_mode": "exclusive"
+          },
+          {
+            "type": "presented",
+            "decision_id": "d10",
+            "tool": "Exa",
+            "context": "production",
+            "validity": "normal",
+            "ts": "2026-08-16T00:09:00Z",
+            "choice_mode": "exclusive"
+          },
+          {
+            "type": "selected",
+            "decision_id": "d1",
+            "tool": "Exa",
+            "context": "production",
+            "validity": "normal",
+            "ts": "2026-08-16T00:10:00Z",
+            "choice_mode": "exclusive"
+          },
+          {
+            "type": "selected",
+            "decision_id": "d2",
+            "tool": "Exa",
+            "context": "production",
+            "validity": "normal",
+            "ts": "2026-08-16T00:11:00Z",
+            "choice_mode": "exclusive"
+          },
+          {
+            "type": "selected",
+            "decision_id": "d3",
+            "tool": "Exa",
+            "context": "production",
+            "validity": "normal",
+            "ts": "2026-08-16T00:12:00Z",
+            "choice_mode": "exclusive"
+          },
+          {
+            "type": "selected",
+            "decision_id": "d4",
+            "tool": "Exa",
+            "context": "production",
+            "validity": "normal",
+            "ts": "2026-08-16T00:13:00Z",
+            "choice_mode": "exclusive"
+          }
+        ]
+      },
+      "expect": {
+        "presented": 10,
+        "selected": 4,
+        "selection_rate": 0.4
+      }
+    },
+    {
+      "id": "duplicate",
+      "description": "同 decision 同 tool 重复 presented/selected → 只计 1（presentation_id 去重）",
+      "input": {
+        "project": "p1",
+        "events": [
+          {
+            "type": "presented",
+            "decision_id": "d1",
+            "tool": "Exa",
+            "context": "production",
+            "validity": "normal",
+            "ts": "2026-08-16T00:00:00Z",
+            "choice_mode": "exclusive"
+          },
+          {
+            "type": "presented",
+            "decision_id": "d1",
+            "tool": "Exa",
+            "context": "production",
+            "validity": "normal",
+            "ts": "2026-08-16T00:01:00Z",
+            "choice_mode": "exclusive"
+          },
+          {
+            "type": "presented",
+            "decision_id": "d2",
+            "tool": "Exa",
+            "context": "production",
+            "validity": "normal",
+            "ts": "2026-08-16T00:02:00Z",
+            "choice_mode": "exclusive"
+          },
+          {
+            "type": "selected",
+            "decision_id": "d1",
+            "tool": "Exa",
+            "context": "production",
+            "validity": "normal",
+            "ts": "2026-08-16T00:03:00Z",
+            "choice_mode": "exclusive"
+          },
+          {
+            "type": "selected",
+            "decision_id": "d1",
+            "tool": "Exa",
+            "context": "production",
+            "validity": "normal",
+            "ts": "2026-08-16T00:04:00Z",
+            "choice_mode": "exclusive"
+          }
+        ]
+      },
+      "expect": {
+        "presented": 2,
+        "selected": 1,
+        "selection_rate": 0.5
+      }
+    },
+    {
+      "id": "unknown-context-excluded",
+      "description": "context=unknown 不进入 Strict 分母（激励漏洞防护）",
+      "input": {
+        "project": "p1",
+        "events": [
+          {
+            "type": "presented",
+            "decision_id": "d1",
+            "tool": "Exa",
+            "context": "unknown",
+            "validity": "normal",
+            "ts": "2026-08-16T00:00:00Z",
+            "choice_mode": "exclusive"
+          },
+          {
+            "type": "presented",
+            "decision_id": "d2",
+            "tool": "Exa",
+            "context": "production",
+            "validity": "normal",
+            "ts": "2026-08-16T00:01:00Z",
+            "choice_mode": "exclusive"
+          },
+          {
+            "type": "selected",
+            "decision_id": "d2",
+            "tool": "Exa",
+            "context": "production",
+            "validity": "normal",
+            "ts": "2026-08-16T00:02:00Z",
+            "choice_mode": "exclusive"
+          }
+        ]
+      },
+      "expect": {
+        "presented": 1,
+        "selected": 1,
+        "selection_rate": 1.0
+      }
+    },
+    {
+      "id": "invalid-validity-excluded",
+      "description": "validity=retry 不进入 Strict 分母",
+      "input": {
+        "project": "p1",
+        "events": [
+          {
+            "type": "presented",
+            "decision_id": "d1",
+            "tool": "Exa",
+            "context": "production",
+            "validity": "retry",
+            "ts": "2026-08-16T00:00:00Z",
+            "choice_mode": "exclusive"
+          },
+          {
+            "type": "presented",
+            "decision_id": "d2",
+            "tool": "Exa",
+            "context": "production",
+            "validity": "normal",
+            "ts": "2026-08-16T00:01:00Z",
+            "choice_mode": "exclusive"
+          },
+          {
+            "type": "selected",
+            "decision_id": "d2",
+            "tool": "Exa",
+            "context": "production",
+            "validity": "normal",
+            "ts": "2026-08-16T00:02:00Z",
+            "choice_mode": "exclusive"
+          }
+        ]
+      },
+      "expect": {
+        "presented": 1,
+        "selected": 1,
+        "selection_rate": 1.0
+      }
+    },
+    {
+      "id": "unobservable-presentation",
+      "description": "presentation 不可观察的 runtime 无 presented 事件 → 不进入分母（不是 0% 选择）",
+      "input": {
+        "project": "p1",
+        "events": [
+          {
+            "type": "selected",
+            "decision_id": "d1",
+            "tool": "Exa",
+            "context": "production",
+            "validity": "normal",
+            "ts": "2026-08-16T00:00:00Z",
+            "choice_mode": "exclusive"
+          }
+        ]
+      },
+      "expect": {
+        "presented": 0,
+        "selection_rate": 0.0,
+        "denominator_empty": true
+      }
+    },
+    {
+      "id": "multi-event-same-decision",
+      "description": "同 decision 多 tool 呈现、选一个 → 每个 tool 的 selection_rate 按 decision 计",
+      "input": {
+        "project": "p1",
+        "events": [
+          {
+            "type": "presented",
+            "decision_id": "d1",
+            "tool": "Exa",
+            "context": "production",
+            "validity": "normal",
+            "ts": "2026-08-16T00:00:00Z",
+            "choice_mode": "exclusive"
+          },
+          {
+            "type": "presented",
+            "decision_id": "d1",
+            "tool": "Tavily",
+            "context": "production",
+            "validity": "normal",
+            "ts": "2026-08-16T00:01:00Z",
+            "choice_mode": "exclusive"
+          },
+          {
+            "type": "presented",
+            "decision_id": "d2",
+            "tool": "Exa",
+            "context": "production",
+            "validity": "normal",
+            "ts": "2026-08-16T00:02:00Z",
+            "choice_mode": "exclusive"
+          },
+          {
+            "type": "presented",
+            "decision_id": "d2",
+            "tool": "Tavily",
+            "context": "production",
+            "validity": "normal",
+            "ts": "2026-08-16T00:03:00Z",
+            "choice_mode": "exclusive"
+          },
+          {
+            "type": "selected",
+            "decision_id": "d1",
+            "tool": "Exa",
+            "context": "production",
+            "validity": "normal",
+            "ts": "2026-08-16T00:04:00Z",
+            "choice_mode": "exclusive"
+          },
+          {
+            "type": "selected",
+            "decision_id": "d2",
+            "tool": "Tavily",
+            "context": "production",
+            "validity": "normal",
+            "ts": "2026-08-16T00:05:00Z",
+            "choice_mode": "exclusive"
+          }
+        ]
+      },
+      "expect": {
+        "presented": 2,
+        "selected": 1,
+        "selection_rate": 0.5
+      }
+    }
+  ]
+}
