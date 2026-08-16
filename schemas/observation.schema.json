@@ -3,84 +3,225 @@
   "title": "AgentMeasure Canonical Observation Envelope",
   "description": "All adapters, Provider SDKs and runtime adapters MUST emit exactly this envelope (standard/DATA.md). Collector ingestion accepts only this format. spec_version: agentmeasure-0.4 (compatibility) · document revision 0.4.3",
   "type": "object",
-  "required": ["spec_version", "observation_id", "observation_type", "observer",
-               "observed_at", "surface", "usage_context", "validity"],
+  "required": [
+    "spec_version",
+    "observation_id",
+    "observation_type",
+    "observer",
+    "observed_at",
+    "surface",
+    "usage_context",
+    "validity",
+    "payload"
+  ],
   "properties": {
-    "spec_version": {"type": "string", "enum": ["agentmeasure-0.4"]},
-    "observation_id": {"type": "string"},
+    "spec_version": {
+      "type": "string",
+      "enum": [
+        "agentmeasure-0.4"
+      ]
+    },
+    "observation_id": {
+      "type": "string"
+    },
     "observation_type": {
       "type": "string",
-      "enum": ["presentation", "selection", "attempt_started", "attempt_completed",
-               "result_consumed", "task_outcome"]
+      "enum": [
+        "presentation",
+        "selection",
+        "attempt_started",
+        "attempt_completed",
+        "result_consumed",
+        "task_outcome"
+      ]
     },
     "observer": {
       "type": "object",
-      "required": ["principal", "side"],
+      "required": [
+        "principal",
+        "side"
+      ],
       "properties": {
-        "principal": {"type": "string"},
-        "trust_domain": {"type": "string"},
-        "side": {"type": "string", "enum": ["client", "server", "platform"]}
-      }
+        "principal": {
+          "type": "string"
+        },
+        "trust_domain": {
+          "type": "string"
+        },
+        "side": {
+          "type": "string",
+          "enum": [
+            "client",
+            "server",
+            "platform"
+          ]
+        }
+      },
+      "additionalProperties": false
     },
-    "observed_at": {"type": "string"},
+    "observed_at": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?(Z|[+-]\\d{2}:\\d{2})$"
+    },
     "deployment_context": {
       "type": "object",
-      "properties": {"project_id": {"type": "string"}}
+      "properties": {
+        "project_id": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
     },
     "surface": {
       "type": "object",
-      "required": ["surface_id"],
+      "required": [
+        "surface_id"
+      ],
       "properties": {
-        "surface_id": {"type": "string"},
-        "surface_namespace": {"type": "string"},
-        "provider_claim": {"type": ["string", "null"]},
-        "capability_claim": {"type": ["string", "null"]}
-      }
+        "surface_id": {
+          "type": "string"
+        },
+        "surface_namespace": {
+          "type": "string"
+        },
+        "provider_claim": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "capability_claim": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false
     },
     "caller": {
       "type": "object",
       "properties": {
-        "type": {"type": "string",
-                 "enum": ["unknown", "claimed_agent", "correlated_agent", "platform_attested"]},
-        "runtime": {"type": "string"},
-        "identity_strength": {"type": "string",
-                              "enum": ["unknown", "declared", "correlated", "attested"]}
-      }
+        "type": {
+          "type": "string",
+          "enum": [
+            "unknown",
+            "claimed_agent",
+            "correlated_agent",
+            "platform_attested"
+          ]
+        },
+        "runtime": {
+          "type": "string"
+        },
+        "identity_strength": {
+          "type": "string",
+          "enum": [
+            "unknown",
+            "declared",
+            "correlated",
+            "attested"
+          ]
+        }
+      },
+      "additionalProperties": false
     },
-    "client_key": {"type": "string"},
+    "client_key": {
+      "type": "string"
+    },
     "usage_context": {
       "type": "string",
-      "enum": ["production", "development", "test", "benchmark", "evaluation",
-               "synthetic", "ci", "unknown"]
+      "enum": [
+        "production",
+        "development",
+        "test",
+        "benchmark",
+        "evaluation",
+        "synthetic",
+        "ci",
+        "unknown"
+      ]
     },
     "validity": {
       "type": "string",
-      "enum": ["normal", "duplicate", "replay", "health_check", "load_test",
-               "suspected_invalid", "unknown"]
+      "enum": [
+        "normal",
+        "duplicate",
+        "replay",
+        "health_check",
+        "load_test",
+        "suspected_invalid",
+        "unknown"
+      ]
     },
     "context_source": {
       "type": "string",
-      "enum": ["none", "provider_configuration", "collector_derived", "runtime_propagated"]
+      "enum": [
+        "none",
+        "provider_configuration",
+        "collector_derived",
+        "runtime_propagated"
+      ]
     },
     "validity_source": {
       "type": "string",
-      "enum": ["none", "collector_derived", "runtime_propagated"]
+      "enum": [
+        "none",
+        "collector_derived",
+        "runtime_propagated"
+      ]
     },
     "collection_health": {
       "type": "object",
       "properties": {
-        "source_instance_id": {"type": "string"},
-        "source_sequence": {"type": "integer"},
-        "sequence_epoch": {"type": "string"},
-        "dropped_since_last_report": {"type": "integer"},
-        "buffer_overflow": {"type": "boolean"}
-      }
+        "source_instance_id": {
+          "type": "string"
+        },
+        "source_sequence": {
+          "type": "integer"
+        },
+        "sequence_epoch": {
+          "type": "string"
+        },
+        "dropped_since_last_report": {
+          "type": "integer"
+        },
+        "buffer_overflow": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
     },
-    "sampling": {"type": ["object", "null"]},
-    "provenance": {"type": "string",
-                   "enum": ["hook", "otel", "wrapper", "platform"]},
-    "payload": {"type": "object"},
-    "signature": {"type": ["string", "null"]},
-    "key_id": {"type": ["string", "null"]}
-  }
+    "sampling": {
+      "type": [
+        "object",
+        "null"
+      ]
+    },
+    "provenance": {
+      "type": "string",
+      "enum": [
+        "hook",
+        "otel",
+        "wrapper",
+        "platform"
+      ]
+    },
+    "payload": {
+      "type": "object"
+    },
+    "signature": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "key_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  },
+  "additionalProperties": false
 }

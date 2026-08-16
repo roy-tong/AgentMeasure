@@ -2,9 +2,16 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "payload: result_consumed",
   "type": "object",
-  "required": ["tool_call_id"],
+  "required": [
+    "tool_call_id"
+  ],
   "properties": {
-    "tool_call_id": {"type": "string"},
-    "consumed_by_request_seq": {"type": "integer"}
-  }
+    "tool_call_id": {
+      "type": "string"
+    },
+    "consumed_by_request_seq": {
+      "type": "integer"
+    }
+  },
+  "additionalProperties": false
 }

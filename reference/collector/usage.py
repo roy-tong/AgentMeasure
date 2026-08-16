@@ -39,6 +39,8 @@ OBSERVATION_KEYS = (
     "tool",                 # 归一 surface 工具名（观察发生在 surface 层）
     "surface_id",           # 具体调用界面标识（Core §2.3）
     "surface_namespace",    # surface 的注册/命名空间（尽力而为）
+    "provider_claim",       # surface 的 provider 自声明（不视为权威，Entity fail-closed）
+    "capability_claim",     # surface 的 capability 自声明（不视为权威）
     "caller_type",          # Caller Claim（DATA §1）：unknown|claimed_agent|correlated_agent|platform_attested
     "caller_runtime",       # claude | codex | deepseek-harness | other | unknown
     "caller_identity_strength",  # unknown | declared | correlated | attested

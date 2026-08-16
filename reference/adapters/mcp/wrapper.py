@@ -34,6 +34,16 @@ TARGET = os.environ.get("AGENTMEASURE_TARGET", "github.com/roy-tong/AgentMeasure
 DO_NOT_TRACK = os.environ.get("DO_NOT_TRACK", "0") == "1"
 SIGNING_SECRET = os.environ.get("AGENTMEASURE_SECRET", "")  # 空 = 本地无签名模式
 KEY_ID = os.environ.get("AGENTMEASURE_KEY_ID", "local")
+OBSERVER_PRINCIPAL = os.environ.get("AGENTMEASURE_PRINCIPAL", "mcp-wrapper@local")
+TRUST_DOMAIN = os.environ.get("AGENTMEASURE_TRUST_DOMAIN", "local")
+INSTANCE_ID = os.environ.get("AGENTMEASURE_INSTANCE_ID", f"wrap-{os.getpid()}")
+
+_SEQUENCE = [0]
+
+
+def next_sequence() -> int:
+    _SEQUENCE[0] += 1
+    return _SEQUENCE[0]
 
 BUCKETS = [(1, "<1s"), (10, "1s-10s"), (60, "10s-60s"), (600, "1m-10m")]
 
@@ -50,7 +60,8 @@ def _sign(event: dict) -> dict:
     if not SIGNING_SECRET:
         return event
     canonical = json.dumps(
-        {k: event[k] for k in ("event_id", "occurred_at", "target", "surface", "tool", "outcome")},
+        {k: event[k] for k in ("spec_version", "observation_id", "observation_type",
+                               "observed_at", "usage_context", "validity")},
         sort_keys=True, separators=(",", ":"),
     )
     event["signature"] = hmac.new(
@@ -61,19 +72,38 @@ def _sign(event: dict) -> dict:
 
 
 def record(surface: str, tool: str, outcome: str, seconds: float, agent_host: str = "unknown") -> None:
+    """产出 Canonical Observation Envelope（DATA.md / schemas/observation.schema.json）。
+
+    wrapper 在 server 侧真实调用边界：可提供 attempt_completed 的事实；
+    caller 不可判定（unknown）；context/validity 默认 unknown。
+    """
     if DO_NOT_TRACK:
         return
     event = {
-        "schema_version": "1.0",
-        "event_id": str(uuid.uuid4()),
-        "occurred_at": datetime.now(timezone.utc).isoformat(),
-        "target": TARGET,
-        "surface": surface,
-        "tool": tool[:120],
-        "outcome": outcome,
-        "duration_bucket": duration_bucket(seconds),
-        "agent_host": agent_host or "unknown",
-        "telemetry_mode": "local",
+        "spec_version": "agentmeasure-0.4",
+        "observation_id": str(uuid.uuid4()),
+        "observation_type": "attempt_completed",
+        "observer": {"principal": OBSERVER_PRINCIPAL, "side": "server",
+                     "trust_domain": TRUST_DOMAIN},
+        "observed_at": datetime.now(timezone.utc).isoformat(),
+        "deployment_context": {"project_id": TARGET},
+        "surface": {"surface_id": surface, "surface_namespace": "mcp"},
+        "caller": {"type": "unknown", "runtime": agent_host or "unknown",
+                   "identity_strength": "unknown"},
+        "usage_context": "unknown",
+        "validity": "unknown",
+        "context_source": "none",
+        "validity_source": "none",
+        "collection_health": {"source_instance_id": INSTANCE_ID,
+                              "source_sequence": next_sequence(),
+                              "sequence_epoch": datetime.now(timezone.utc).strftime("%Y-%m"),
+                              "dropped_since_last_report": 0,
+                              "buffer_overflow": False},
+        "provenance": "wrapper",
+        "payload": {"outcome": outcome,
+                    "duration_ms": int(seconds * 1000) if seconds is not None else None},
+        "signature": None,
+        "key_id": None,
     }
     _sign(event)
     EVENTS_DIR.mkdir(parents=True, exist_ok=True)

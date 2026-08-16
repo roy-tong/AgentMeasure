@@ -26,5 +26,6 @@
     "error_type": {
       "type": "string"
     }
-  }
+  },
+  "additionalProperties": false
 }

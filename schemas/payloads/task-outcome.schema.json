@@ -2,12 +2,26 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "payload: task_outcome",
   "type": "object",
-  "required": ["task_id", "task_success"],
+  "required": [
+    "task_id",
+    "task_success"
+  ],
   "properties": {
-    "task_id": {"type": "string"},
-    "task_success": {"type": "boolean"},
-    "model": {"type": "string"},
-    "task_type": {"type": "string"},
-    "ended_at": {"type": "string"}
-  }
+    "task_id": {
+      "type": "string"
+    },
+    "task_success": {
+      "type": "boolean"
+    },
+    "model": {
+      "type": "string"
+    },
+    "task_type": {
+      "type": "string"
+    },
+    "ended_at": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false
 }

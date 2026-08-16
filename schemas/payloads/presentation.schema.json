@@ -2,15 +2,39 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "payload: presentation",
   "type": "object",
-  "required": ["decision_id", "candidate_set_id", "choice_mode"],
+  "required": [
+    "decision_id",
+    "candidate_set_id",
+    "choice_mode"
+  ],
   "properties": {
-    "decision_id": {"type": "string"},
-    "candidate_set_id": {"type": "string"},
-    "category_id": {"type": "string"},
-    "category_version": {"type": "string"},
-    "choice_mode": {"type": "string",
-                    "enum": ["exclusive", "multi_select", "parallel", "sequential",
-                             "ordered_fallback", "router_preselected", "unknown"]},
-    "rank_in_candidate_set": {"type": "integer"}
-  }
+    "decision_id": {
+      "type": "string"
+    },
+    "candidate_set_id": {
+      "type": "string"
+    },
+    "category_id": {
+      "type": "string"
+    },
+    "category_version": {
+      "type": "string"
+    },
+    "choice_mode": {
+      "type": "string",
+      "enum": [
+        "exclusive",
+        "multi_select",
+        "parallel",
+        "sequential",
+        "ordered_fallback",
+        "router_preselected",
+        "unknown"
+      ]
+    },
+    "rank_in_candidate_set": {
+      "type": "integer"
+    }
+  },
+  "additionalProperties": false
 }

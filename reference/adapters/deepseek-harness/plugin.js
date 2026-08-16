@@ -28,11 +28,17 @@ const Config = z.object({
 	projectId: z.string().default("github.com/roy-tong/AgentMeasure"),
 	doNotTrack: z.boolean().default(false),
 	agentHost: z.string().default("deepseek-harness"),
+	observerPrincipal: z.string().default("dsh-plugin@local"),
+	trustDomain: z.string().default("local"),
+	instanceId: z.string().default("dsh-plugin-0"),
 });
 
 function pseudo(raw) {
 	return "s-" + createHash("sha256").update(String(raw)).digest("hex").slice(0, 16);
 }
+
+let _seq = 0;
+function nextSeq() { return ++_seq; }
 
 function bucket(seconds) {
 	if (seconds < 1) return "<1s";
@@ -70,19 +76,29 @@ function apply(ctx, config) {
 			// 注意：tool/call + tool/result 只证明生命周期完成（completed），
 			// 不构成独立佐证——evidence 由 verifier 计算，此处绝不自声明
 			const record = {
-				event_id: randomUUID(),
-				occurred_at: new Date().toISOString(),
-				project_id: config.projectId,
-				observer_side: "client",
-				agent_host: config.agentHost,
+				spec_version: "agentmeasure-0.4",
+				observation_id: randomUUID(),
+				observation_type: "attempt_completed",
+				observer: { principal: config.observerPrincipal, side: "client",
+				            trust_domain: config.trustDomain },
+				observed_at: new Date().toISOString(),
+				deployment_context: { project_id: config.projectId },
+				surface: { surface_id: "dsh:" + meta.name, surface_namespace: "deepseek-harness" },
+				// 不变量 11：平台证言未经验证，绝不声明 attested——只能 claimed/declared
+				caller: { type: "claimed_agent", runtime: "deepseek-harness",
+				          identity_strength: "declared" },
+				client_key: pseudo(session?.id ?? "unknown"),
+				usage_context: "unknown",
+				validity: "unknown",
+				context_source: "none",
+				validity_source: "none",
+				collection_health: { source_instance_id: config.instanceId,
+				                     source_sequence: nextSeq(),
+				                     sequence_epoch: new Date().toISOString().slice(0, 7),
+				                     dropped_since_last_report: 0, buffer_overflow: false },
 				provenance: "platform",
-				session_id: pseudo(session?.id ?? "unknown"),
-				tool: meta.name,
-				lifecycle_stage: "L2", // completed（生命周期阶段，非证据）
-				outcome,
-				duration_bucket: bucket((Date.now() - meta.startedAt) / 1000),
-				trace_id: null,
-				tool_use_id: meta.callId,
+				payload: { tool_call_id: meta.callId, outcome,
+				           duration_ms: Math.round(Date.now() - meta.startedAt) },
 			};
 			appendFileSync(file, JSON.stringify(record) + "\n");
 			return;

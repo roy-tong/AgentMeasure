@@ -46,6 +46,8 @@ def connect(db_path: Path = DB_DEFAULT) -> sqlite3.Connection:
             tool TEXT,
             surface_id TEXT,
             surface_namespace TEXT,
+            provider_claim TEXT,
+            capability_claim TEXT,
             caller_type TEXT,
             caller_runtime TEXT,
             caller_identity_strength TEXT,
@@ -112,6 +114,7 @@ def connect(db_path: Path = DB_DEFAULT) -> sqlite3.Connection:
     for table, cols in (
         ("observations", {"operation_id": "TEXT", "task_id": "TEXT",
                           "surface_id": "TEXT", "surface_namespace": "TEXT",
+                          "provider_claim": "TEXT", "capability_claim": "TEXT",
                           "source_sequence": "INTEGER", "observation_type": "TEXT",
                           "caller_type": "TEXT", "caller_runtime": "TEXT",
                           "caller_identity_strength": "TEXT", "duration_ms": "INTEGER",
@@ -140,13 +143,14 @@ def store_observation(conn, obs: dict) -> bool:
             INSERT OR IGNORE INTO observations
             (observation_id, observed_at, observation_type, observer_principal,
              observer_side, provenance, project_id, tool, surface_id, surface_namespace,
-             caller_type, caller_runtime, caller_identity_strength, tool_call_id, trace_id,
+             provider_claim, capability_claim, caller_type, caller_runtime,
+             caller_identity_strength, tool_call_id, trace_id,
              session_key, outcome, duration_bucket, duration_ms, lifecycle_stage,
              signature, key_id, source_event_id, source_sequence, source_instance_id,
              sequence_epoch, dropped_since_last_report, buffer_overflow, trust_domain,
              sampling, usage_context, validity, context_source, validity_source,
              operation_id, task_id)
-            VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+            VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
             """,
             tuple(obs.get(k) for k in OBSERVATION_KEYS),
         )

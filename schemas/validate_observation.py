@@ -44,6 +44,21 @@ def main() -> int:
             errors += schema_validate(payload, payload_schemas[key], f"observation.{oid}.payload")
         else:
             errors.append(f"observation.{oid}: 未知 observation_type {otype!r}")
+        # Caller Claim 自洽性（type ↔ strength 必须兼容）
+        caller = obs.get("caller") or {}
+        ctype = caller.get("type", "unknown")
+        strength = caller.get("identity_strength", "unknown")
+        compatible = {
+            "unknown": {"unknown"},
+            "claimed_agent": {"declared"},
+            "correlated_agent": {"correlated"},
+            "platform_attested": {"attested"},
+        }.get(ctype, set())
+        if strength not in compatible:
+            errors.append(
+                f"observation.{oid}: caller type={ctype!r} 与 strength={strength!r} 矛盾"
+                f"（claimed→declared / correlated_agent→correlated / platform_attested→attested）")
+        # 非法时间戳已由 schema pattern 拒绝
         if errors:
             failed += 1
             for e in errors:
