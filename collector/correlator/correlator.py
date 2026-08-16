@@ -53,7 +53,8 @@ def connect(db_path: Path = DB_DEFAULT) -> sqlite3.Connection:
             key_id TEXT,
             source_event_id TEXT,
             trust_domain TEXT,
-            sampling TEXT
+            sampling TEXT,
+            usage_context TEXT
         )
         """
     )
@@ -97,8 +98,8 @@ def store_observation(conn, obs: dict) -> bool:
             (observation_id, observed_at, observer_principal, observer_side, provenance,
              project_id, tool, tool_call_id, trace_id, session_key, outcome,
              duration_bucket, lifecycle_stage, signature, key_id, source_event_id,
-             trust_domain, sampling)
-            VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+             trust_domain, sampling, usage_context)
+            VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
             """,
             tuple(obs.get(k) for k in OBSERVATION_KEYS),
         )

@@ -85,6 +85,20 @@ def compute(conn, project_id: str, days: int = DAYS) -> dict:
     ).fetchone()
     active_clients = row[0] or 0
 
+    # ---- Qualified Usage（排除 benchmark/test/synthetic/ci） ----
+    row = conn.execute(
+        """
+        SELECT COUNT(DISTINCT i.invocation_id) FROM invocations i
+        JOIN observation_links l ON l.invocation_id = i.invocation_id
+        JOIN observations o ON o.observation_id = l.observation_id
+        WHERE i.project_id=? AND i.started_at>=? AND i.eligible=1
+          AND o.usage_context IN ('production', 'unknown')
+        """,
+        (project_id, since),
+    ).fetchone()
+    qualified_invocations = row[0] or 0
+    qualified_rate = round(qualified_invocations / eligible_invocations, 3) if eligible_invocations else 0.0
+
     # ---- execution success（invocation 级） ----
     row = conn.execute(
         """
@@ -129,6 +143,8 @@ def compute(conn, project_id: str, days: int = DAYS) -> dict:
         "eligible_invocations": eligible_invocations,
         "corroborated_invocations": corroborated,
         "corroborated_share": corroborated_share,
+        "qualified_invocations": qualified_invocations,
+        "qualified_rate": qualified_rate,
         "success_rate": success_rate,
         "evidence": [{"grade": e, "invocations": c} for e, c in evidence],
         "observers": [{"principal": p, "invocations": c} for p, c in hosts],

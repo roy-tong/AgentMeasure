@@ -44,7 +44,12 @@ OBSERVATION_KEYS = (
     "source_event_id",      # adapter 自身事件 id（去重用）
     "trust_domain",         # 观察者信任域（AUAS-TRUST；独立佐证判定的关键）
     "sampling",             # {"method": "fixed", "probability": 0.1} 等（AUAS-COVERAGE）
+    "usage_context",        # production|development|test|benchmark|evaluation|synthetic|ci|unknown
 )
+
+USAGE_CONTEXTS = ("production", "development", "test", "benchmark",
+                  "evaluation", "synthetic", "ci", "unknown")
+QUALIFIED_CONTEXTS = ("production", "unknown")  # 公开 adoption 默认口径
 
 LIFECYCLE_STAGES = ("L0", "L1", "L2", "L3")
 SIDES = ("client", "server", "platform")
