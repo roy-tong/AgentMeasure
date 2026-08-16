@@ -25,7 +25,7 @@ const inject = [];
 /** Runtime schema. */
 const Config = z.object({
 	eventsDir: z.string().default(join(homedir(), ".agentmeasure", "events")),
-	projectId: z.string().default("github.com/roy-tong/agent-measure"),
+	projectId: z.string().default("github.com/roy-tong/AgentMeasure"),
 	doNotTrack: z.boolean().default(false),
 	agentHost: z.string().default("deepseek-harness"),
 });

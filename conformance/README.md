@@ -16,7 +16,7 @@
 > 未发布 vectors 的部分不得宣称覆盖。例：Choice Conformant 目前 = M2.2 + M2.5
 > vectors 全过 + presented 可观察声明，不等于 M2.1-M2.5 全部验证。
 
-认证声明示例：`agent-measure compatible — AgentMeasure Choice Conformant (Draft 0.3)`
+认证声明示例：`<your implementation> — AgentMeasure Choice Conformant (Draft 0.3)`
 
 ## 运行
 

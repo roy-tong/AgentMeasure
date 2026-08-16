@@ -1,11 +1,11 @@
 {
-  "project_id": "github.com/roy-tong/agent-measure",
-  "name": "agent-measure",
+  "project_id": "github.com/roy-tong/AgentMeasure",
+  "name": "AgentMeasure",
   "aliases": {
     "skill": "agentmeasure",
     "cli": "agentmeasure"
   },
   "tools": ["agentmeasure.wrap", "agentmeasure.hook", "agentmeasure.collect"],
-  "declared_by": "github.com/roy-tong/agent-measure",
+  "declared_by": "github.com/roy-tong/AgentMeasure",
   "verified": false
 }

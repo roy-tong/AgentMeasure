@@ -3,7 +3,7 @@
 **An Industry Methodology — Agent Usage Attribution Standard (AgentMeasure), Draft 0.2**
 
 > Roy Tong
-> The reference implementation lives in the agent-measure repository.
+> The reference implementation lives in the AgentMeasure repository.
 
 ## 0. Abstract
 
@@ -292,7 +292,7 @@ expire when the technology changes.
 ---
 
 *The normative specification (Measurement Objects, Lifecycle, Metric Families,
-Quality, Reporting) and the reference implementation (agent-measure) are published
+Quality, Reporting) and the reference implementation (AgentMeasure) are published
 openly. Graduation to AgentMeasure 1.0 requires two independent implementations, three
 runtime profiles, two tool-side implementations, a public conformance suite with
 canonical test vectors, 5–10 real projects, a published discrepancy report, and

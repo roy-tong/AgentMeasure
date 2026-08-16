@@ -47,7 +47,7 @@ Useful ≠ Incremental Value
 ## Repository map
 
 ```text
-agent-measure/
+AgentMeasure/
 ├── standard/          # the standard itself (CORE/METRICS/QUALITY/DATA/...)
 ├── whitepaper/        # methodology papers (EN/CN)
 ├── conformance/       # language-neutral test vectors + runners

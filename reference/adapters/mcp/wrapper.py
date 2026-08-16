@@ -7,7 +7,7 @@
 
 环境变量:
   AGENTMEASURE_EVENTS_DIR  事件目录（默认 ~/.agentmeasure/events）
-  AGENTMEASURE_TARGET      被包装项目的标识（默认 github.com/roy-tong/agent-measure）
+  AGENTMEASURE_TARGET      被包装项目的标识（默认 github.com/roy-tong/AgentMeasure）
   AGENTMEASURE_OPTIN=1     允许上传聚合（当前版本仅记录，不实现上传）
   DO_NOT_TRACK=1         完全禁用记录
 
@@ -30,7 +30,7 @@ from pathlib import Path
 EVENTS_DIR = Path(
     os.environ.get("AGENTMEASURE_EVENTS_DIR", str(Path.home() / ".agentmeasure" / "events"))
 ).expanduser()
-TARGET = os.environ.get("AGENTMEASURE_TARGET", "github.com/roy-tong/agent-measure")
+TARGET = os.environ.get("AGENTMEASURE_TARGET", "github.com/roy-tong/AgentMeasure")
 DO_NOT_TRACK = os.environ.get("DO_NOT_TRACK", "0") == "1"
 SIGNING_SECRET = os.environ.get("AGENTMEASURE_SECRET", "")  # 空 = 本地无签名模式
 KEY_ID = os.environ.get("AGENTMEASURE_KEY_ID", "local")

@@ -66,7 +66,7 @@ AgentMeasure 回答五个问题：**Reach → Choice → Use → Utility → Val
 ## Repository map
 
 ```text
-agent-measure/
+AgentMeasure/
 ├── standard/          # 标准本体（CORE / METRICS / QUALITY / DATA / ...）
 ├── whitepaper/        # 方法论论文（中英）
 ├── conformance/       # 语言无关 test vectors + runners
@@ -84,8 +84,8 @@ agent-measure/
 ## Quickstart
 
 ```bash
-git clone https://github.com/roy-tong/agent-measure && cd agent-measure
-python3 conformance/runners/run_metrics.py   # 运行指标 vectors（9/9）
+git clone https://github.com/roy-tong/AgentMeasure && cd AgentMeasure
+python3 conformance/runners/run_metrics.py   # 运行指标 vectors（16/16）
 ```
 
 喂入 Decision Opportunity 事件后，参考实现输出示例：

@@ -3,7 +3,7 @@
 **一份行业方法论 — Agent Usage Attribution Standard（AgentMeasure），Draft 0.2**
 
 > 作者：Roy Tong（仝夏瑞）
-> 参考实现：agent-measure 仓库（GitHub）。
+> 参考实现：AgentMeasure 仓库（GitHub）。
 
 ## 摘要
 
@@ -217,4 +217,4 @@ Identity coverage:  91%
 
 ---
 
-*规范全文（测量对象、生命周期、指标家族、质量、报告）与参考实现（agent-measure）均已开源。AgentMeasure 1.0 毕业标准：2 个独立实现、3 个 runtime profiles、2 个 tool-side 实现、公开 conformance + canonical test vectors、5-10 个真实项目、已发布的 discrepancy report、安全与隐私审查。*
+*规范全文（测量对象、生命周期、指标家族、质量、报告）与参考实现（AgentMeasure）均已开源。AgentMeasure 1.0 毕业标准：2 个独立实现、3 个 runtime profiles、2 个 tool-side 实现、公开 conformance + canonical test vectors、5-10 个真实项目、已发布的 discrepancy report、安全与隐私审查。*
