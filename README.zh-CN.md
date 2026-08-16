@@ -19,6 +19,16 @@ AgentMeasure 定义一套共同语言，衡量 AI Agent 如何发现、选择、
 
 **从这里开始读故事：** [当软件的消费者变成 Agent](https://roy-tong.github.io/notes/when-the-software-consumer-becomes-an-agent/)（中文）· [When the Software Consumer Becomes an Agent](https://roy-tong.github.io/en/notes/when-the-software-consumer-becomes-an-agent/)（EN）
 
+## 2 分钟上手
+
+```bash
+./examples/demo-e2e.sh
+```
+
+Mock MCP server → canonical observations → 本地指标，全程本机运行、无云依赖。
+再看看我们如何审计生态的 usage 声称：[Benchmark Run #001](reports/benchmark-run-001.md)——
+六个真实声称按证据阶梯分级，结论：每个数字都是自报的。
+
 ---
 
 ## 为什么 Capability 需要新的测量层
