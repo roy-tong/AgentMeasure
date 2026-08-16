@@ -10,37 +10,37 @@ Discussions 是 AgentMeasure 的社区讨论区。它不是一个问答论坛，
 
 ## 分类与议题种子
 
+> 分类命名与 [GITHUB_LAUNCH.md](../GITHUB_LAUNCH.md) 保持一致（设置 Discussions 时按此创建）。
+
 ### Metric Semantics（计量语义）
 
 - "使用量"到底应该包含哪五环？Reach / Choice / Use / Utility / Value 的边界争议
 - 一个 MCP 调用失败后重试 3 次，算几次 Use？
 - Choice 是否应该只统计"候选集中被选中"的比例，而不是"被展示"？
+- "Is Strict Qualified Usage the right default for public metrics?"（首帖种子）
 
-### Measurement Quality（测量质量）
-
-- Context × Validity 是否足够？还需要哪些维度？
-- E0–E5 证据分级的实际判定案例（把一个真实声称贴上来，大家一起定级）
-- Fail-closed 语义：观测不到时，应该记为 0 还是"未知"？
-
-### Runtime Profiles（运行时画像）
+### Runtime Observation（运行时观测）
 
 - 每个 Agent 运行时（Claude Code / Cursor / Codex / Gemini CLI / DeepSeek Harness…）能观测到什么、观测不到什么
 - 网关层观测（Glama 等）与服务端自报的偏差如何披露
-
-### Proposals（提案）
-
-- 新测量对象、新指标族的提案讨论（正式提案走 `proposals/` AUP 流程）
-- 0.5 效用与经济语义的草案讨论
+- Fail-closed 语义：观测不到时，应该记为 0 还是"未知"？
 
 ### Experiments（实验）
 
-- 基准审计周期 1 的实验设计（skills.sh + MCP registry + llms.txt）
+- 基准审计周期 1 的实验设计（skills.sh + MCP registry + llms.txt，见 `benchmark/BENCHMARK-DRAFT.md`）
 - 灵巧手/网页浏览等新型交互面的观测实验
+- E0–E5 证据分级的实际判定案例（把一个真实声称贴上来，大家一起定级）
 
-### General（综合）
+### Capability Economy（能力经济）
 
-- CaaS、Agentic Commerce（x402 / ACP / ACP-like）与计量层的关系
+- CaaS、Agentic Commerce（x402 / ACP）与计量层的关系
 - "被 Agent 使用"的社会证明与徽章生态（可验证性优先）
+- 0.5 效用与经济语义的草案讨论
+
+### Implementers（实现者）
+
+- 第三方实现者互通与 conformance 问题
+- Provider SDK 接入经验、adapter 边界
 - 维护者自述：你们如何度量自己的 MCP server 被使用？
 
 ---
@@ -70,8 +70,8 @@ AgentMeasure Discussions is a public workshop on measurement semantics and evide
 discipline — where spec disputes, calibration disputes, benchmark audits, and real
 deployment cases get discussed, rebutted, and revised in the open.
 
-**Categories:** Metric Semantics · Measurement Quality · Runtime Profiles ·
-Proposals · Experiments · General (seed topics above).
+**Categories (per GITHUB_LAUNCH.md):** Metric Semantics · Runtime Observation ·
+Experiments · Capability Economy · Implementers (seed topics above).
 
 **Ground rules:**
 
@@ -81,5 +81,6 @@ Proposals · Experiments · General (seed topics above).
 4. Standard changes go through the `proposals/` AUP; Discussions is where they start.
 5. No token-price talk, no promotion — this is a workshop, not a marketing channel.
 
-**Once Discussions is enabled:** create the categories, pin a welcome post, pin the
-Benchmark Draft 0.1 review thread, and pin the Measurement Report #001 feedback thread.
+**Once Discussions is enabled:** create the five categories, pin a welcome post,
+pin the Benchmark Draft 0.1 review thread, and pin the Measurement Report #001
+feedback thread.

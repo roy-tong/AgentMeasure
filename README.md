@@ -257,8 +257,7 @@ The roadmap runs on two tracks — the standard (0.4 objects & quality → 0.5 u
 
 ## Contribute
 
-- **Join the community**: [Discussions](https://github.com/roy-tong/AgentMeasure/discussions) — topics and ground rules in [docs/DISCUSSIONS.md](docs/DISCUSSIONS.md)
-- **Discuss measurement semantics**: GitHub Issues（Discussions categories：Metric Semantics / Measurement Quality / Runtime Profiles / Proposals / Experiments / General）
+- **Join the community**: [Discussions](https://github.com/roy-tong/AgentMeasure/discussions) — categories: Metric Semantics · Runtime Observation · Experiments · Capability Economy · Implementers; ground rules in [docs/DISCUSSIONS.md](docs/DISCUSSIONS.md)
 - **Propose standard changes**: `proposals/` (AUP: Draft → Discussion → Accepted → Experimental → Stable)
 - **Report measurement discrepancies**: `reports/` (Discrepancy Report template)
 - **Fix the reference implementation**: PRs must pass all `conformance/` vectors

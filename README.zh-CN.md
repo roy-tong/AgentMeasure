@@ -260,8 +260,7 @@ metrics.yaml 单一事实源；四维正交（Evidence/Caller/Use Profile/Billin
 
 ## 参与
 
-- **加入社区**：[Discussions](https://github.com/roy-tong/AgentMeasure/discussions) —— 议题与讨论守则见 [docs/DISCUSSIONS.md](docs/DISCUSSIONS.md)
-- **讨论测量语义**：GitHub Issues（Discussions categories：Metric Semantics / Measurement Quality / Runtime Profiles / Proposals / Experiments / General）
+- **加入社区**：[Discussions](https://github.com/roy-tong/AgentMeasure/discussions) —— 分类：Metric Semantics · Runtime Observation · Experiments · Capability Economy · Implementers；讨论守则见 [docs/DISCUSSIONS.md](docs/DISCUSSIONS.md)
 - **提标准变更**：`proposals/`（AUP：Draft → Discussion → Accepted → Experimental → Stable）
 - **报告测量偏差**：`reports/`（Discrepancy Report 模板）
 - **修参考实现**：PR 必须通过 `conformance/` 全部 vectors

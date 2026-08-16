@@ -10,10 +10,10 @@
 Open measurement infrastructure for the Agent Capability Economy — how AI agents discover, choose, use, and derive value from software capabilities (Reach → Choice → Use → Utility → Value). A proposed open measurement standard.
 ```
 
-**Website（homepage）**：
+**Website（homepage）**（旗舰文章——叙事入口，白皮书帖可从文章内到达）：
 
 ```text
-https://roy-tong.github.io/en/notes/how-agent-usage-should-be-measured/
+https://roy-tong.github.io/en/notes/when-the-software-consumer-becomes-an-agent/
 ```
 
 **Topics**（逐个添加，共 10 个）：
