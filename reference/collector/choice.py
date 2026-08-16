@@ -93,14 +93,17 @@ def connect(db_path: Path = DB_DEFAULT) -> sqlite3.Connection:
 
 
 def ingest_choice_events(conn, path: Path) -> dict:
-    """导入选择事件 JSONL（Draft 0.4 载荷）：
-      {"type":"presented","decision_id":"d1","candidate_set_id":"c1","project_id":"p",
-       "tool":"Exa","choice_mode":"exclusive","category_id":"search","ts":"...",
-       "context":"production","validity":"normal"}
-      {"type":"selected","decision_id":"d1","candidate_set_id":"c1","project_id":"p",
-       "tool":"Exa","rank":1,"choice_mode":"exclusive","category_id":"search",
+    """导入 Canonical Observation JSONL（Draft 0.4.3：Choice 从同一 Envelope 派生）。
+
+    Canonical 载荷（推荐）：
+      {"observation_type":"presentation","decision_id":"d1","candidate_set_id":"c1",
+       "project_id":"p","tool":"Exa","choice_mode":"exclusive","category_id":"search",
+       "ts":"...","context":"production","validity":"normal"}
+      {"observation_type":"selection","decision_id":"d1","candidate_set_id":"c1",
+       "project_id":"p","tool":"Exa","rank":1,"choice_mode":"exclusive","category_id":"search",
        "decision_authority":"model","selection_constraint":"autonomous","ts":"...",
        "context":"production","validity":"normal"}
+    旧字段 "type":"presented|selected" 兼容读取（LEGACY-MIGRATION.md §2）。
     """
     presented = selected = 0
     for line in Path(path).read_text(encoding="utf-8").splitlines():
@@ -120,7 +123,8 @@ def ingest_choice_events(conn, path: Path) -> dict:
                   ev.get("choice_mode"), ev.get("category_id"),
                   ev.get("decision_authority"), ev.get("selection_constraint"),
                   ev.get("ts"), ev.get("context"), ev.get("validity"))
-        if ev.get("type") == "presented":
+        etype = ev.get("observation_type") or ev.get("type")
+        if etype == "presentation" or etype == "presented":
             conn.execute(
                 """INSERT OR IGNORE INTO presentations
                    (decision_id, candidate_set_id, project_id, tool, choice_mode,
@@ -130,7 +134,7 @@ def ingest_choice_events(conn, path: Path) -> dict:
                 common,
             )
             presented += 1
-        elif ev.get("type") == "selected":
+        elif etype == "selection" or etype == "selected":
             conn.execute(
                 """INSERT OR IGNORE INTO selections
                    (decision_id, candidate_set_id, project_id, tool, rank, choice_mode,
