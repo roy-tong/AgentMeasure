@@ -83,21 +83,47 @@ def ingest_consumption_events(conn, path: Path, project_id: str) -> dict:
 
 
 def consumed_rate(conn, project_id: str, days: int = 30) -> dict:
-    """S4 rate：consumed links / 同 project 的 eligible invocations。"""
+    """AUAS-M4.1：consumed links ÷ consumption-observable eligible invocations。
+
+    分母纪律（不变量 17）：consumption 不可观察的 runtime 不进入分母——
+    UNOBSERVABLE 绝不记为未消费。observable 判定：调用来自 consumption 可观察
+    的 observer（本实现：claude-otel 主；其他 runtime 单列披露）。
+    """
     row = conn.execute(
         "SELECT COUNT(*) FROM consumption_links WHERE project_id=?",
         (project_id,),
     ).fetchone()
     consumed = row[0] or 0
+    # 分母 = eligible invocations 中 consumption 可观察的部分
+    # （判定基于 client 侧观察者：consumption 是 agent-side 信号）
     row = conn.execute(
         """
-        SELECT COUNT(*) FROM invocations WHERE project_id=? AND eligible=1
+        SELECT COUNT(DISTINCT i.invocation_id) FROM invocations i
+        JOIN observation_links l ON l.invocation_id = i.invocation_id
+        JOIN observations o ON o.observation_id = l.observation_id
+        WHERE i.project_id=? AND i.eligible=1
+          AND o.observer_side='client' AND o.observer_principal LIKE 'claude-otel%'
         """,
         (project_id,),
     ).fetchone()
-    invocations = row[0] or 0
+    observable = row[0] or 0
+    # 披露：不可观察的 eligible invocations（不并入分母，单独报告）
+    row = conn.execute(
+        """
+        SELECT COUNT(DISTINCT i.invocation_id) FROM invocations i
+        WHERE i.project_id=? AND i.eligible=1
+          AND NOT EXISTS (
+              SELECT 1 FROM observation_links l
+              JOIN observations o ON o.observation_id = l.observation_id
+              WHERE l.invocation_id = i.invocation_id
+                AND o.observer_side='client' AND o.observer_principal LIKE 'claude-otel%')
+        """,
+        (project_id,),
+    ).fetchone()
+    unobservable = row[0] or 0
     return {
         "consumed_results": consumed,
-        "eligible_invocations": invocations,
-        "consumed_rate": round(consumed / invocations, 3) if invocations else 0.0,
+        "consumption_observable_invocations": observable,
+        "consumption_unobservable_invocations": unobservable,
+        "consumed_rate": round(consumed / observable, 3) if observable else 0.0,
     }
