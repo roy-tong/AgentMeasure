@@ -87,6 +87,9 @@ def connect(db_path: Path = DB_DEFAULT) -> sqlite3.Connection:
 
 
 def store_observation(conn, obs: dict) -> bool:
+    # fail-closed（AUAS-CORE 不变量）：无 observation_id 的观察拒绝入库
+    if not obs.get("observation_id"):
+        return False
     try:
         conn.execute(
             """
