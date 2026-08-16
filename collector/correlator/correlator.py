@@ -199,9 +199,15 @@ def _make_invocation(conn, obs_list: list, matched_by: str) -> None:
     """由一组 observations 创建 invocation 并链接。"""
     invocation_id = str(uuid.uuid4())
     obs_ids = [o["observation_id"] for o in obs_list]
-    # outcome：优先取成功（任一 success 即 success）；否则取多数
-    outcomes = [o.get("outcome") for o in obs_list if o.get("outcome")]
-    outcome = "success" if "success" in outcomes else (outcomes[0] if outcomes else "unknown")
+    # outcome：冲突保留（AUAS-CORE 不变量 12）——client success + server failure
+    # → derived_outcome = "inconsistent"，绝不压平为 success
+    outcomes = set(o.get("outcome") for o in obs_list if o.get("outcome"))
+    if len(outcomes) > 1:
+        outcome = "inconsistent"
+    elif outcomes:
+        outcome = next(iter(outcomes))
+    else:
+        outcome = "unknown"
     lifecycle = "L0"
     for o in obs_list:
         ls = o.get("lifecycle_stage")

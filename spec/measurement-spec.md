@@ -1,102 +1,117 @@
-# Agent Usage Measurement Spec v0.1（草案）
+# AUAS-CORE — Agent Usage Attribution Standard（Draft 0.1）
 
-> agent-used 的核心规范。回答一个问题：**对 AI Agent 使用的软件，什么才算一次"真实使用"？**
-> 原则：不重复定义 OTel/MCP 已有字段；只定义它们不覆盖的语义层。
-> 状态：草案，随白皮书 v1 与外部讨论演进。
+> **agent-used 是 AUAS 的参考实现。** AUAS 定义 AI Agent 软件使用证据如何被表示、
+> 认证、关联、定级与聚合，使不同主体能够在不依赖单一平台、不采集用户内容的
+> 前提下，对 Agent 软件使用情况进行可验证、可比较的测量。
+>
+> **AUAS 不定义谁是真相来源，而定义什么证据、按照什么规则，可以支持什么结论。**
+>
+> 本文件是 Core：vendor-neutral、transport-neutral。MCP/OTel 是 Transport/Telemetry
+> Binding；Codex/Claude/DSH 是 Agent Runtime Profile——都不是协议成立的前提。
+
+## 0. 版本与状态
+
+- 版本：**Draft 0.1**（未稳定；Evidence/Identity/Correlation/Receipt 仍在演进）
+- 毕业到 AUAS 1.0 的标准（Graduation Criteria）：2 个独立实现 + 3 个 agent runtime
+  profiles + 2 个 tool-side 实现 + 公开 conformance + canonical test vectors +
+  5-10 个真实项目 + discrepancy report + security/privacy review
+- 变更机制：AUP（Agent Usage Proposal）：Draft → Discussion → Accepted →
+  Experimental → Stable → Deprecated
 
 ## 1. 定位
 
-**OpenTelemetry tells us how telemetry travels. agent-used defines what counts as usage.**
+**协议目标**：在不信任工具作者自报数据、不依赖单一 Agent 平台、又不能收集用户
+内容的情况下，产生可验证、可比较的 Agent 软件使用数据。
 
-本规范定义 Agent 生态中"使用归因"（Usage Attribution）的语义模型：
+**核心机制**（详见 AUAS-DATA/TRUST/CORR）：
 
-- 什么算一次使用（Selection → Execution → Success → Consumption → Contribution）
-- 使用属于谁（Identity）
-- 使用有多可信（Evidence Level）
-- 不同 Agent / Tool 之间如何可比（Normalization + Metrics）
-- 如何公开统计而不泄露用户信息（Privacy）
-
-agent-used 是 OTel 之上的语义层，不是替代品。
-
-## 2. 使用漏斗（The Usage Funnel）
-
-**Install ≠ Usage。** 任何一层都不能替代下一层。**Observable fact 与 inferred value 严格分离**——
-能观测的才叫事实，需要推断的一律标注为推断（不能推断就 unknown）。
-
-| 阶段 | 定义 | 事实还是推断 | 谁可观察 |
-| --- | --- | --- | --- |
-| **D0 Available** | 工具进入 Agent 可见集合（注册/挂载） | 事实（配置面） | Registry / runtime |
-| **D1 Discovered** | Agent/runtime 检索或加载了定义（tools/list 命中、skill 加载） | 事实 | Agent runtime |
-| **S0 Selected** | 模型/runtime 生成 tool_use、决定调用 | 事实 | Agent runtime |
-| **S1 Execution Started** | runtime 开始执行 | 事实 | 双侧 |
-| **S2 Execution Completed** | 返回 success / failure / denied | 事实 | 双侧 |
-| **S3 Result Delivered** | 结果进入 Agent context | 事实 | Agent runtime |
-| **S4 Result Consumed** | 后续模型请求实际消费结果（如 Claude Code 的 mcp_tool.name 信号） | 事实（部分平台可观测） | Agent runtime（部分） |
-| **S5 Task Contribution** | 结果影响最终任务结果 | **推断**（causal inference / eval） | 研究方向 |
-
-**注意**：D1（discovered）≠ S0（selected）——tools/list 命中只证明可用/被发现，
-不证明被选中。lifecycle L0-L3 与 S 漏斗的关系：L1≈S1、L2≈S2（L 是简化生命周期，
-S 是完整漏斗；证据 E0-E3 是第三个独立维度）。
-
-**度量纪律**：
-- 一次任务内的 6 次重复调用 ≠ 6 倍使用（见 metrics.md 的 Engagement 层）
-- 失败重试链 `call → fail → retry → success` ≠ 3 次使用（invocation 归一）
-- 公开指标以 **VACD（Verified Active Client-Days）** 为首要口径，invocation 为计数单位
-
-## 3. 证据等级（Evidence Level）
-
-**签名 ≠ 真实。** HMAC 只证明"数据来自持 key 主体且未被篡改"，不证明"真的有 Agent 调用"。因此用证据等级取代"调用是真的"这种二元判断：
-
-| 等级 | 名称 | 来源 | 能证明什么 | 公共统计可信度 |
-| --- | --- | --- | --- | --- |
-| **E0 Observed** | 单边本地日志 | 某一方声称发生调用 | 低 |
-| **E1 Source-authenticated** | 签名事件（Tool 或 Agent 侧） | 数据来源与完整性 | 中低 |
-| **E2 Correlated** | Agent-side + Tool-side 双边匹配（同一 trace_id / tool_use_id） | 双边独立观察到同一次真实调用 | 高 |
-| **E3 Platform-attested** | Agent 平台 / trusted runtime 直接证明 | 平台确认调用发生 | 很高 |
-
-**corroborated usage（E2+）是本项目的核心可信度指标。** MCP 2026-07-28 RC 将 OTel trace context（traceparent/tracestate/baggage）纳入 `_meta` 传递，使 client/server 双边关联首次成为协议级现实——这是 E2 的技术基础。
-
-```
-Tool Server                 MCP                    Agent Host
-  span A                  trace_id=abc              span B
-  trace_id=abc                                      tool_use_id=X
+```text
+Signed Observations (Usage Receipts)
+        │
+        ▼
+Identity Verification
+        │
+        ▼
+Invocation Reconstruction
+        │
+        ▼
+Evidence Qualification
+        │
+        ▼
+Privacy-preserving Aggregation
+        │
+        ▼
+Usage Metrics（必须携带 Policy + Scope）
 ```
 
-当 agent-used 同时获得 `{codex: tool_use_id=X, trace_id=abc, tool=foo.search}` 与 `{mcp server: trace_id=abc, tool=foo.search, success}`，即构成 **corroborated usage**。
+**确定性**：同一组输入 + 同一个 Measurement Policy，任何符合规范的实现必须得到
+相同结果（见 §5 不变量）。
 
-## 4. 统一使用模型（Unified Usage Model）
+## 2. 参与者（Actors）
 
-所有 adapter 输出统一映射到以下模型（跨 Agent 归一化的目标）：
-
-| 字段 | 说明 | 来源示例 |
+| Actor | 职责 | 信任假设 |
 | --- | --- | --- |
-| `project` | 归一的项目身份（见 identity.md） | github.com/foo/bar |
-| `agent.host` | 宿主标识 | codex / claude-code / deepseek-harness |
-| `session` | 伪匿名会话标识（旋转） | pid-xxxxx |
-| `tool` | 工具名（跨实现归一） | foo.search |
-| `stage` | S0-S4 漏斗阶段 | S1 / S2 |
-| `evidence` | E0-E3 | E2 |
-| `outcome` | success / failure / retry / denied | success |
-| `duration` | 粗粒度耗时 | 10s-60s |
-| `trace_id` | OTel trace 关联 | abc |
-| `observer.side` | client / server / platform | client |
+| Agent Runtime | 执行 agent；产生调用 | 不假设可信（可能被刷） |
+| Tool Runtime | 执行工具；服务调用 | 不假设可信（可能自刷） |
+| Observer | 在 runtime 边界产生观察（发出 Receipt） | 有可验证身份（公钥） |
+| Verifier | 验签、判定观察有效性 | 诚实执行验证规则 |
+| Correlator | 把观察确定性合并为 Invocation | 诚实执行匹配规则 |
+| Attestor | 平台级背书（E3/attestation） | 受信任平台 |
+| Aggregator | 按 Policy 聚合 | 只拿到聚合/收据，无内容 |
+| Registry | 项目身份、observer 身份声明 | 认证 claim |
 
-## 5. 规范范围与边界
+**信任最小化**：任何单一主体都不能伪造"被独立佐证的使用"。E2 需要 ≥2 个
+independently controlled observer（AUAS-TRUST：trust domain 判定）。
 
-**本规范定义**：语义、证据、身份、指标、隐私、威胁模型。
+## 3. 使用漏斗（Usage Funnel）
 
-**不定义**（复用已有标准）：
-- 传输格式与 trace 传播：OpenTelemetry / MCP `_meta` trace context
-- 工具调用协议：MCP tools/call
-- 基础指标字段：`gen_ai.tool.name`、`mcp.method.name`、`error.type`、`service.name`、`trace_id`、`span_id`（见 otel-mapping.md）
+**Install ≠ Usage。** Observable fact 与 inferred value 严格分离——能观测的才叫
+事实；需要推断的一律标注为推断（不能推断就 unknown）。
 
-**明确不做**：任何形式的自动 star/follow、内容采集、排名激励（防拆 API 刷榜，见 metrics.md）。
+| 阶段 | 定义 | 事实/推断 | 可观察者 |
+| --- | --- | --- | --- |
+| D0 Available | 工具进入 Agent 可见集合 | 事实 | Registry / runtime |
+| D1 Discovered | Agent/runtime 检索或加载定义（tools/list、skill 加载） | 事实 | Agent runtime |
+| S0 Selected | 模型/runtime 生成 tool_use、决定调用 | 事实 | Agent runtime |
+| S1 Execution Started | runtime 开始执行 | 事实 | 双侧 |
+| S2 Execution Completed | 返回 success/failure/denied | 事实 | 双侧 |
+| S3 Result Delivered | 结果进入 Agent context | 事实 | Agent runtime |
+| S4 Result Consumed | 后续模型请求实际消费结果 | 事实（部分平台可观测） | Agent runtime（部分） |
+| S5 Task Contribution | 结果影响最终任务结果 | **推断** | 研究 |
 
-## 6. 配套文档
+**注意**：D1（discovered）≠ S0（selected）——tools/list 命中只证明可用/被发现。
+lifecycle（AUAS-DATA 的 L0-L3）是简化生命周期；证据（AUAS-TRUST）是独立维度。
 
-- `otel-mapping.md` — agent-used 在 OTel 之上的最小扩展字段
-- `evidence-model.md` — E0-E3 详细定义与判定规则
-- `metrics.md` — 四层指标（Execution / Adoption / Engagement / Contribution）
-- `privacy.md` — Raw stays local, aggregates by default
-- `identity.md` — Canonical Identity Graph
-- `threat-model.md` — 攻击面与缓解
+## 4. 标准不变量（Standard Invariants）
+
+> 任何 AUAS 实现必须遵守。相当于协议的 consensus rules。
+
+1. **Same input + same policy = same result**（确定性）
+2. **One invocation MUST be counted at most once**
+3. **Duplicate observations MUST NOT increase invocation count**
+4. **Evidence MUST NOT be self-declared**（adapter 只报事实）
+5. **Unsigned fields MUST NOT affect authenticated claims**（签名字段覆盖见 AUAS-TRUST）
+6. **Ambiguous observations MUST NOT be promoted to corroborated**（fail-closed）
+7. **Unknown MUST NOT be inferred as success**
+8. **Metrics MUST declare scope + policy + window**（AUAS-COVERAGE + AUAS-METRICS）
+9. **Public receipts MUST NOT contain user content**
+10. **Corroboration MUST NOT assume independent = different strings**（trust domain 判定）
+11. **E3/platform attestation 未验证时 = UNSUPPORTED，绝不由字符串授予**
+12. **Outcome 冲突 MUST 被保留**（derived_outcome = inconsistent），不得压平
+
+## 5. AUAS 文档结构
+
+| 文档 | 负责 |
+| --- | --- |
+| AUAS-CORE（本文） | Actors、漏斗、不变量 |
+| AUAS-DATA | Receipt / Manifest / Aggregate schemas（含 canonical JSON） |
+| AUAS-TRUST | Principal、Key、Signature、Trust Domain、Attestation、Evidence Profile |
+| AUAS-CORR | Observation → Invocation 的确定性规则（含 ambiguity fail-closed） |
+| AUAS-METRICS | ACD、Invocation、Consumption、窗口、denominator |
+| AUAS-COVERAGE | Scope、sampling、coverage、uncertainty |
+| AUAS-PRIVACY | Identifier、retention、aggregation、redaction |
+| AUAS-SECURITY | Sybil、collusion、replay、forgery、malicious aggregator |
+| AUAS-BIND-* | MCP / OTel 如何承载 AUAS（transport binding） |
+| AUAS-PROFILE-* | Codex / Claude / DSH 具体实现（agent runtime profile） |
+| Verification | Conformance + Test Vectors（语言无关） |
+| Evolution | AUP 流程 |

@@ -1,42 +1,47 @@
 #!/usr/bin/env python3
-"""agent-used collector — verifier（证据引擎）。
+"""agent-used collector — verifier（证据引擎 v2：Evidence Profile 方向）。
 
-核心原则：**Evidence is derived, never self-declared.**
-adapter 只报告观察事实；本引擎从事实计算证据等级：
+**Evidence is derived, never self-declared.** adapter 只报告观察事实。
 
-  E0 Observed            有观察，但无认证
-  E1 Source-authenticated  观察带有效 Ed25519 签名（非对称：验签公钥可公开）
-  E2 Correlated          同一 invocation 有 ≥2 条独立 observer 的观察
-  E3 Platform-attested   provenance=platform 且带平台 attestation（未来）
+显示等级由 evidence vector 派生（AUAS-TRUST）：
+  - Observed                有观察
+  - Authenticated           至少一条观察带有效 Ed25519 签名
+  - Corroborated            ≥2 条观察（独立 observer）
+  - Independently Corroborated   ≥2 条独立 observer 且 trust domain 不同
+  - Platform Attested       平台 attestation 验证通过（当前 UNSUPPORTED）
 
-E1 密码学：Ed25519（私钥签名 / 公钥验证）。HMAC 是对称密钥——验签密钥公开即等于
-公开签名密钥，不满足 public verification。E1 只证明"某主体确实签发了这条观察"，
-不证明真实使用（signature ≠ usage truth）。
+fail-closed 原则：
+  - 验签失败/无法验证 → 不提升等级
+  - provenance="platform" 字符串绝不授予 Platform Attested（未验证 = UNSUPPORTED）
 """
 from __future__ import annotations
 
 import base64
-import json
 import sys
 from pathlib import Path
 from typing import Optional
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+from collector.verifier.canonical import canonical_json  # noqa: E402
 from collector.verifier.ed25519 import verify  # noqa: E402
 
 PUBLIC_KEYS_DIR = Path(__file__).resolve().parents[1] / "keys"
 
-CANONICAL_FIELDS = ("observation_id", "observed_at", "observer_principal", "observer_side",
-                    "project_id", "tool", "outcome")
+# 影响 attribution / correlation / qualification 的全部字段（MUST 被签名）。
+# signature / key_id 除外（key_id 是验签密钥选择器，不影响归因语义）。
+SIGNED_FIELDS = (
+    "receipt_id", "spec_version", "observed_at", "observer_principal",
+    "observer_side", "provenance", "project_id", "tool", "tool_call_id",
+    "trace_id", "session_key", "outcome", "lifecycle_stage",
+    "source_event_id", "sampling", "trust_domain",
+)
 
 
-def canonical(obs: dict) -> bytes:
-    return json.dumps({k: obs.get(k) for k in CANONICAL_FIELDS},
-                      sort_keys=True, separators=(",", ":")).encode()
+def canonical(receipt: dict) -> bytes:
+    return canonical_json({k: receipt.get(k) for k in SIGNED_FIELDS if receipt.get(k) is not None}).encode()
 
 
 def load_public_key(key_id: str) -> Optional[bytes]:
-    """从 keys/ 目录加载公钥（key_id → <key_id>.pub，base64 Ed25519）。"""
     path = PUBLIC_KEYS_DIR / f"{key_id}.pub"
     if not path.exists():
         return None
@@ -46,36 +51,61 @@ def load_public_key(key_id: str) -> Optional[bytes]:
         return None
 
 
-def verify_signature(observation: dict) -> bool:
-    """验证 observation 的 Ed25519 签名（canonical fields）。fail-closed。"""
-    sig = observation.get("signature")
-    key_id = observation.get("key_id")
+def verify_signature(receipt: dict) -> bool:
+    """验证 Receipt 的 Ed25519 签名（canonical JSON over SIGNED_FIELDS）。fail-closed。"""
+    sig = receipt.get("signature")
+    key_id = receipt.get("key_id")
     if not sig or not key_id:
         return False
     pub = load_public_key(key_id)
     if pub is None:
         return False
     try:
-        return verify(pub, canonical(observation), base64.b64decode(sig))
+        return verify(pub, canonical(receipt), base64.b64decode(sig))
     except Exception:
         return False
 
 
-def grade_invocation(observations: list) -> str:
-    """由 observations 计算 invocation 的证据等级（derived，不信任任何自声明）。"""
+PLATFORM_ATTESTATION = "UNSUPPORTED"  # 平台 attestation 未实现前，不授予
+
+
+def evidence_vector(observations: list) -> dict:
+    """由 observations 计算多轴证据向量（底层模型，上层才压缩为显示等级）。"""
     if not observations:
-        return "E0"
+        return {"class": "none"}
     authenticated = any(o.get("signature") and verify_signature(o) for o in observations)
-    principals = {o.get("observer_principal") for o in observations if o.get("observer_principal")}
-    independent = len(principals) >= 2
-    platform = any(
-        o.get("provenance") == "platform" and o.get("observer_side") == "platform"
-        for o in observations
-    )
-    if platform:
-        return "E3"  # 平台 attestation（未来：需平台签名验证）
-    if independent:
-        return "E2"
+    principals = {
+        (o.get("observer_principal"), o.get("trust_domain"))
+        for o in observations if o.get("observer_principal")
+    }
+    distinct_observers = len(principals)
+    domains = {td for _, td in principals if td}
+    independent_domains = len(domains) >= 2
+
+    display = "observed"
     if authenticated:
-        return "E1"
-    return "E0"
+        display = "authenticated"
+    if distinct_observers >= 2:
+        display = "corroborated"
+    if distinct_observers >= 2 and independent_domains:
+        display = "independently-corroborated"
+    return {
+        "class": display,
+        "authentication": "signed" if authenticated else "none",
+        "corroboration": f"{distinct_observers} observers",
+        "independence": "distinct-domains" if independent_domains else (
+            "single-domain" if domains else "unknown"),
+        "attestation": PLATFORM_ATTESTATION,
+    }
+
+
+def grade_invocation(observations: list) -> str:
+    """兼容显示等级（E0-E3 的替代：由 evidence_vector 派生简单标签）。"""
+    vec = evidence_vector(observations)
+    return {
+        "independently-corroborated": "E2",
+        "corroborated": "E2",
+        "authenticated": "E1",
+        "observed": "E0",
+        "none": "E0",
+    }[vec["class"]]

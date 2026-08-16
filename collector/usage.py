@@ -39,9 +39,11 @@ OBSERVATION_KEYS = (
     "outcome",              # success | failure | retry | denied | unknown
     "duration_bucket",      # <1s | 1s-10s | ... | None（未知）
     "lifecycle_stage",      # L0-L3（观察到的生命周期阶段，非证据）
-    "signature",            # Ed25519 签名（E1 能力，可选）
+    "signature",            # Ed25519 签名（可选）
     "key_id",               # 签名密钥标识（可选）
     "source_event_id",      # adapter 自身事件 id（去重用）
+    "trust_domain",         # 观察者信任域（AUAS-TRUST；独立佐证判定的关键）
+    "sampling",             # {"method": "fixed", "probability": 0.1} 等（AUAS-COVERAGE）
 )
 
 LIFECYCLE_STAGES = ("L0", "L1", "L2", "L3")
