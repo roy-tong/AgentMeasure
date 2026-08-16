@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""agent-used collector — aggregator（证据分级统计 + 徽章）。
+"""agent-used collector — aggregator v3（基于 invocations，证据分级）。
 
-数据源：collector.db（unified_events + correlations，由 correlator 写入）。
-指标口径（spec/metrics.md）：
-  - verified calls      = E1+ 事件数（supporting）
-  - corroborated usage  = E2 关联数（核心可信度）
-  - active sessions     = 30 天内有 verified usage 的伪匿名会话数（首要指标）
-  - success rate / host 分布 / stage 分布
+核心修复（measurement-integrity review）：
+  - 统计对象是 invocation（一次逻辑调用），不是 observation
+  - corroborated share = corroborated invocations / eligible invocations
+    （100% 双边关联的数据 → 显示 100%，不再被 observation 双计拉低到 50%）
+  - VACD（Verified Active Client-Days）：某 project 某 UTC 日被某伪匿名 client
+    产生 ≥1 次 eligible invocation = 1 client-day。跨 Codex/Claude/DSH 可比。
 
 用法:
   python3 aggregator.py stats --project github.com/foo/bar
@@ -27,78 +27,116 @@ DAYS = 30
 
 
 def compute(conn, project_id: str, days: int = DAYS) -> dict:
-    since = (datetime.now(timezone.utc) - timedelta(days=days)).isoformat()
+    since_dt = datetime.now(timezone.utc) - timedelta(days=days)
+    since = since_dt.isoformat()
 
+    # ---- invocation 级指标（核心） ----
     row = conn.execute(
-        "SELECT COUNT(*) FROM unified_events WHERE project_id=? AND occurred_at>=? AND evidence_level!='E0'",
+        """
+        SELECT COUNT(*), SUM(eligible) FROM invocations
+        WHERE project_id=? AND started_at>=?
+        """,
         (project_id, since),
     ).fetchone()
-    verified_calls = row[0] or 0
+    total_invocations = row[0] or 0
+    eligible_invocations = row[1] or 0
 
     row = conn.execute(
-        "SELECT COUNT(*) FROM correlations WHERE project_id=? AND correlated_at>=?",
+        """
+        SELECT COUNT(*) FROM invocations
+        WHERE project_id=? AND started_at>=? AND evidence='E2'
+        """,
         (project_id, since),
     ).fetchone()
     corroborated = row[0] or 0
 
+    # ---- VACD：伪匿名 client × UTC 日（有 eligible invocation） ----
     row = conn.execute(
         """
-        SELECT COUNT(DISTINCT session_id) FROM unified_events
-        WHERE project_id=? AND occurred_at>=? AND evidence_level!='E0'
-          AND session_id IS NOT NULL AND session_id != ''
+        SELECT COUNT(DISTINCT substr(started_at, 1, 10) || '|' || client_day)
+        FROM (
+            SELECT i.started_at,
+                   (SELECT o.session_key FROM observation_links l
+                    JOIN observations o ON o.observation_id = l.observation_id
+                    WHERE l.invocation_id = i.invocation_id
+                      AND o.session_key != '' AND o.session_key IS NOT NULL
+                    LIMIT 1) AS client_day
+            FROM invocations i
+            WHERE i.project_id=? AND i.started_at>=? AND i.eligible=1
+        )
         """,
         (project_id, since),
     ).fetchone()
-    active_sessions = row[0] or 0
+    vacd = row[0] or 0
 
+    # ---- 活跃 clients（30 天内有 eligible invocation 的伪匿名 client） ----
     row = conn.execute(
         """
-        SELECT COUNT(*), SUM(outcome='success') FROM unified_events
-        WHERE project_id=? AND occurred_at>=? AND evidence_level!='E0'
+        SELECT COUNT(DISTINCT o.session_key)
+        FROM observation_links l
+        JOIN observations o ON o.observation_id = l.observation_id
+        JOIN invocations i ON i.invocation_id = l.invocation_id
+        WHERE i.project_id=? AND i.started_at>=? AND i.eligible=1
+          AND o.session_key != '' AND o.session_key IS NOT NULL
+        """,
+        (project_id, since),
+    ).fetchone()
+    active_clients = row[0] or 0
+
+    # ---- execution success（invocation 级） ----
+    row = conn.execute(
+        """
+        SELECT COUNT(*), SUM(outcome='success') FROM invocations
+        WHERE project_id=? AND started_at>=? AND eligible=1
         """,
         (project_id, since),
     ).fetchone()
     total, success = row
     success_rate = round(success / total, 3) if total else 0.0
 
+    # ---- 证据分布 / 宿主分布（invocation 级） ----
+    evidence = conn.execute(
+        """
+        SELECT evidence, COUNT(*) FROM invocations
+        WHERE project_id=? AND started_at>=? AND eligible=1
+        GROUP BY evidence ORDER BY 2 DESC
+        """,
+        (project_id, since),
+    ).fetchall()
+
     hosts = conn.execute(
         """
-        SELECT agent_host, COUNT(*) FROM unified_events
-        WHERE project_id=? AND occurred_at>=? AND evidence_level!='E0'
-        GROUP BY agent_host ORDER BY 2 DESC
+        SELECT o.observer_principal, COUNT(DISTINCT i.invocation_id) FROM invocations i
+        JOIN observation_links l ON l.invocation_id = i.invocation_id
+        JOIN observations o ON o.observation_id = l.observation_id
+        WHERE i.project_id=? AND i.started_at>=? AND i.eligible=1
+        GROUP BY o.observer_principal ORDER BY 2 DESC
         """,
         (project_id, since),
     ).fetchall()
 
-    stages = conn.execute(
-        """
-        SELECT stage, COUNT(*) FROM unified_events
-        WHERE project_id=? AND occurred_at>=? AND evidence_level!='E0'
-        GROUP BY stage ORDER BY 2 DESC
-        """,
-        (project_id, since),
-    ).fetchall()
-
-    corroborated_share = round(corroborated / verified_calls, 3) if verified_calls else 0.0
+    corroborated_share = round(corroborated / eligible_invocations, 3) if eligible_invocations else 0.0
 
     return {
         "project": project_id,
         "days": days,
-        "active_agent_sessions": active_sessions,
-        "verified_calls": verified_calls,
-        "corroborated_usage": corroborated,
+        "active_clients": active_clients,
+        "vacd": vacd,
+        "logical_invocations": total_invocations,
+        "eligible_invocations": eligible_invocations,
+        "corroborated_invocations": corroborated,
         "corroborated_share": corroborated_share,
         "success_rate": success_rate,
-        "agent_hosts": [{"host": h, "calls": c} for h, c in hosts],
-        "stages": [{"stage": s, "calls": c} for s, c in stages],
+        "evidence": [{"grade": e, "invocations": c} for e, c in evidence],
+        "observers": [{"principal": p, "invocations": c} for p, c in hosts],
     }
 
 
 def badge_svg(s: dict) -> str:
-    label = f"{s['verified_calls']:,} verified calls · {s['active_agent_sessions']:,} sessions"
-    sub = f"{int(s['corroborated_share'] * 100)}% corroborated"
+    label = f"{s['active_clients']:,} active clients · {s['vacd']:,} client-days"
+    sub = f"{s['logical_invocations']:,} invocations · {int(s['corroborated_share'] * 100)}% corroborated"
     lw = 128
-    rw = max(150, 40 + len(label) * 6.5)
+    rw = max(170, 40 + len(label) * 6.2)
     w = lw + rw
     return f"""<svg xmlns="http://www.w3.org/2000/svg" width="{w}" height="20" role="img" aria-label="agent-used: {label}">
   <title>agent-used: {label} · {sub}</title>

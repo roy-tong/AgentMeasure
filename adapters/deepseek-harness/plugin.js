@@ -67,6 +67,8 @@ function apply(ctx, config) {
 			if (!meta) return; // 无配对（证据不足），跳过
 			pending.delete(callSeq);
 			const outcome = event.message?.isError ? "failure" : "success";
+			// 注意：tool/call + tool/result 只证明生命周期完成（L2 Returned），
+			// 不构成独立佐证——evidence 由 verifier 计算，此处绝不自声明
 			const record = {
 				event_id: randomUUID(),
 				occurred_at: new Date().toISOString(),
@@ -74,10 +76,9 @@ function apply(ctx, config) {
 				observer_side: "client",
 				agent_host: config.agentHost,
 				provenance: "platform",
-				evidence_level: "E2", // harness 原生配对（tool/call ↔ tool/result）
 				session_id: pseudo(session?.id ?? "unknown"),
 				tool: meta.name,
-				stage: outcome === "success" ? "S2" : "S1",
+				lifecycle_stage: "L2", // Returned（生命周期，非证据）
 				outcome,
 				duration_bucket: bucket((Date.now() - meta.startedAt) / 1000),
 				trace_id: null,
