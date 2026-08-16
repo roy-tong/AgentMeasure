@@ -22,6 +22,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from collector.correlator.correlator import connect  # noqa: E402
+from collector.policy import describe  # noqa: E402
+from collector.policy import CORE_POLICY_V1  # noqa: E402
 
 DAYS = 30
 
@@ -50,7 +52,7 @@ def compute(conn, project_id: str, days: int = DAYS) -> dict:
     ).fetchone()
     corroborated = row[0] or 0
 
-    # ---- VACD：伪匿名 client × UTC 日（有 eligible invocation） ----
+    # ---- ACD：伪匿名 client × UTC 日（有 eligible invocation；口径由 Policy 限定） ----
     row = conn.execute(
         """
         SELECT COUNT(DISTINCT substr(started_at, 1, 10) || '|' || client_day)
@@ -67,7 +69,7 @@ def compute(conn, project_id: str, days: int = DAYS) -> dict:
         """,
         (project_id, since),
     ).fetchone()
-    vacd = row[0] or 0
+    acd = row[0] or 0
 
     # ---- 活跃 clients（30 天内有 eligible invocation 的伪匿名 client） ----
     row = conn.execute(
@@ -120,8 +122,9 @@ def compute(conn, project_id: str, days: int = DAYS) -> dict:
     return {
         "project": project_id,
         "days": days,
+        "policy": describe(CORE_POLICY_V1),
         "active_clients": active_clients,
-        "vacd": vacd,
+        "acd": acd,
         "logical_invocations": total_invocations,
         "eligible_invocations": eligible_invocations,
         "corroborated_invocations": corroborated,
@@ -133,7 +136,7 @@ def compute(conn, project_id: str, days: int = DAYS) -> dict:
 
 
 def badge_svg(s: dict) -> str:
-    label = f"{s['active_clients']:,} active clients · {s['vacd']:,} client-days"
+    label = f"{s['active_clients']:,} active clients · {s['acd']:,} client-days"
     sub = f"{s['logical_invocations']:,} invocations · {int(s['corroborated_share'] * 100)}% corroborated"
     lw = 128
     rw = max(170, 40 + len(label) * 6.2)
