@@ -1,5 +1,5 @@
 /**
- * agent-used — DeepSeek Harness adapter plugin（Cordis）。
+ * AgentMeasure — DeepSeek Harness adapter plugin（Cordis）。
  *
  * 订阅 DSH session 事件流，在工具调用边界记录 usage 元数据：
  *   - tool/call    → S1 起点（callId/name）
@@ -17,15 +17,15 @@ import { homedir } from "node:os";
 import z from "@deepseek-ai/schemastery";
 
 /** Cordis plugin name. */
-const name = "agent-used";
+const name = "agentmeasure";
 
 /** Required services: 无（session/event 是 ctx 级事件）。 */
 const inject = [];
 
 /** Runtime schema. */
 const Config = z.object({
-	eventsDir: z.string().default(join(homedir(), ".agent-used", "events")),
-	projectId: z.string().default("github.com/roy-tong/agent-used"),
+	eventsDir: z.string().default(join(homedir(), ".agentmeasure", "events")),
+	projectId: z.string().default("github.com/roy-tong/agent-measure"),
 	doNotTrack: z.boolean().default(false),
 	agentHost: z.string().default("deepseek-harness"),
 });

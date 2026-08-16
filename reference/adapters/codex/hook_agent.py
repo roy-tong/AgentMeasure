@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""agent-used — Codex PostToolUse hook adapter（v3，measurement-integrity）。
+"""AgentMeasure — Codex PostToolUse hook adapter（v3，measurement-integrity）。
 
 能力边界（诚实声明）：
   - 可可靠提供：tool_name / tool_use_id / session_id / model / turn_id
@@ -22,7 +22,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from collector.usage import pseudonymize  # noqa: E402
 
 EVENTS_DIR = Path(
-    os.environ.get("AGENTMEASURE_EVENTS_DIR", str(Path.home() / ".agent-used" / "events"))
+    os.environ.get("AGENTMEASURE_EVENTS_DIR", str(Path.home() / ".agentmeasure" / "events"))
 ).expanduser()
 DO_NOT_TRACK = os.environ.get("DO_NOT_TRACK", "0") == "1"
 AGENT_HOST = os.environ.get("AGENTMEASURE_HOST", "codex")

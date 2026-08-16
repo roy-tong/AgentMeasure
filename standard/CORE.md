@@ -4,7 +4,7 @@
 > 独立实现且算出同一个数字。本版本解决"怎么算"——Decision Opportunity、
 > Measurement Grain、Observability、Metric Eligibility、Denominator 纪律。
 >
-> agent-used 是参考实现。**AgentMeasure 不定义谁是真相来源，而定义什么证据、按照什么
+> 参考实现（`reference/`）与标准文档同仓演进。**AgentMeasure 不定义谁是真相来源，而定义什么证据、按照什么
 > 规则，可以支持什么结论。**
 
 ## 0. 版本与治理

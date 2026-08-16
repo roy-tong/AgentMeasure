@@ -1,12 +1,12 @@
 {
-  "spec_version": "auas-0.1",
+  "spec_version": "agentmeasure-0.1",
   "vectors": [
     {
       "id": "receipt-valid",
       "description": "合法收据：字段完整、canonical 可序列化",
       "input": {
         "receipt_id": "r-1",
-        "spec_version": "auas-0.1",
+        "spec_version": "agentmeasure-0.1",
         "observed_at": "2026-08-16T03:00:00Z",
         "observer_principal": "codex-hook@acme",
         "observer_side": "client",
@@ -25,7 +25,7 @@
       "description": "收据含内容字段 → 无效（隐私不变量）",
       "input": {
         "receipt_id": "r-2",
-        "spec_version": "auas-0.1",
+        "spec_version": "agentmeasure-0.1",
         "observed_at": "2026-08-16T03:00:00Z",
         "observer_principal": "codex-hook@acme",
         "observer_side": "client",

@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""agent-used collector — verifier（证据引擎 v2：Evidence Profile 方向）。
+"""AgentMeasure collector — verifier（证据引擎 v2：Evidence Profile 方向）。
 
 **Evidence is derived, never self-declared.** adapter 只报告观察事实。
 
-显示等级由 evidence vector 派生（AUAS-TRUST）：
+显示等级由 evidence vector 派生（AgentMeasure-TRUST）：
   - Observed                有观察
   - Authenticated           至少一条观察带有效 Ed25519 签名
   - Corroborated            ≥2 条观察（独立 observer）

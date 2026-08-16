@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""agent-used collector — 数据模型 v3。
+"""AgentMeasure collector — 数据模型 v3。
 
 核心原则（measurement-integrity review）：
   1. Observation ≠ Invocation。adapter 只产生 observation（观察事实）；
@@ -42,8 +42,8 @@ OBSERVATION_KEYS = (
     "signature",            # Ed25519 签名（可选）
     "key_id",               # 签名密钥标识（可选）
     "source_event_id",      # adapter 自身事件 id（去重用）
-    "trust_domain",         # 观察者信任域（AUAS-TRUST；独立佐证判定的关键）
-    "sampling",             # {"method": "fixed", "probability": 0.1} 等（AUAS-COVERAGE）
+    "trust_domain",         # 观察者信任域（AgentMeasure-TRUST；独立佐证判定的关键）
+    "sampling",             # {"method": "fixed", "probability": 0.1} 等（AgentMeasure-COVERAGE）
     "usage_context",        # production|development|test|benchmark|evaluation|synthetic|ci|unknown
     "validity",             # normal|retry|duplicate|replay|agent_loop|health_check|load_test|suspected_invalid|unknown
 )
@@ -58,7 +58,7 @@ PROVENANCES = ("hook", "otel", "wrapper", "platform")
 OUTCOMES = ("success", "failure", "retry", "denied", "unknown")
 
 # ---- 伪匿名（spec/privacy.md：HMAC(epoch_secret, host:raw) 按月轮换） ----
-_SECRET_PATH = Path(os.environ.get("AGENTMEASURE_IDENTITY_DIR", str(Path.home() / ".agent-used"))) / "identity"
+_SECRET_PATH = Path(os.environ.get("AGENTMEASURE_IDENTITY_DIR", str(Path.home() / ".agentmeasure"))) / "identity"
 
 
 def _epoch() -> str:

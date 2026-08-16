@@ -1,6 +1,6 @@
 # Governance（草案）
 
-agent-used 的目标是成为社区标准。当前由 Roy Tong 发起并维护，向以下治理形态演进：
+AgentMeasure 的目标是成为社区标准。当前由 Roy Tong 发起并维护，向以下治理形态演进：
 
 ## 决策机制（AUP）
 

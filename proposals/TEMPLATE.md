@@ -11,7 +11,7 @@
 
 ## 提案
 
-（新的定义/规则/指标合同；用 AUAS-METRICS 的 Contract 模板）
+（新的定义/规则/指标合同；用 AgentMeasure-METRICS 的 Contract 模板）
 
 ## 影响
 

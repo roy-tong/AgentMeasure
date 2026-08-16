@@ -7,7 +7,7 @@
 
 ```jsonc
 {
-  "spec_version": "auas-0.3",
+  "spec_version": "agentmeasure-0.3",
   "observation_id": "uuid",
   "observation_type": "presentation | selection | invocation | completion | consumption | task_outcome",
   "observer": {"principal": "codex-hook@acme", "trust_domain": "acme", "side": "client"},

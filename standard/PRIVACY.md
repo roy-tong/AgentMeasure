@@ -38,6 +38,6 @@ stdin raw payload → 内存内 REDACT + PSEUDONYMIZE → safe receipt → disk
 
 ## 5. 法律边界
 
-- agent-used 设计目标是最小化个人数据收集；**部署者自行承担适用的隐私与数据
+- AgentMeasure 设计目标是最小化个人数据收集；**部署者自行承担适用的隐私与数据
   保护义务**（EDPB：pseudonymised data 仍可能属于 personal data）
 - 本文件不做"GDPR 不适用"的法律判断

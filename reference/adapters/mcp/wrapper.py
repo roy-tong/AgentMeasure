@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
-"""agent-used — MCP wrapper（M0 骨架，零依赖 stdlib）。
+"""AgentMeasure — MCP wrapper（M0 骨架，零依赖 stdlib）。
 
 在真实调用边界（被调方）记录 agent 工具调用事件，输出本地 JSONL。
 用法:
-  agent-used wrap -- <mcp-server-command> [args...]
+  agentmeasure wrap -- <mcp-server-command> [args...]
 
 环境变量:
-  AGENTMEASURE_EVENTS_DIR  事件目录（默认 ~/.agent-used/events）
-  AGENTMEASURE_TARGET      被包装项目的标识（默认 github.com/roy-tong/agent-used）
+  AGENTMEASURE_EVENTS_DIR  事件目录（默认 ~/.agentmeasure/events）
+  AGENTMEASURE_TARGET      被包装项目的标识（默认 github.com/roy-tong/agent-measure）
   AGENTMEASURE_OPTIN=1     允许上传聚合（当前版本仅记录，不实现上传）
   DO_NOT_TRACK=1         完全禁用记录
 
@@ -28,9 +28,9 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 EVENTS_DIR = Path(
-    os.environ.get("AGENTMEASURE_EVENTS_DIR", str(Path.home() / ".agent-used" / "events"))
+    os.environ.get("AGENTMEASURE_EVENTS_DIR", str(Path.home() / ".agentmeasure" / "events"))
 ).expanduser()
-TARGET = os.environ.get("AGENTMEASURE_TARGET", "github.com/roy-tong/agent-used")
+TARGET = os.environ.get("AGENTMEASURE_TARGET", "github.com/roy-tong/agent-measure")
 DO_NOT_TRACK = os.environ.get("DO_NOT_TRACK", "0") == "1"
 SIGNING_SECRET = os.environ.get("AGENTMEASURE_SECRET", "")  # 空 = 本地无签名模式
 KEY_ID = os.environ.get("AGENTMEASURE_KEY_ID", "local")
@@ -95,7 +95,7 @@ def main(argv) -> int:
     if argv and argv[0] == "--":
         argv = argv[1:]
     if not argv:
-        print("usage: agent-used wrap -- <mcp-server-command> [args...]", file=sys.stderr)
+        print("usage: agentmeasure wrap -- <mcp-server-command> [args...]", file=sys.stderr)
         return 2
 
     try:
@@ -107,7 +107,7 @@ def main(argv) -> int:
             bufsize=1,
         )
     except OSError as exc:
-        print(f"agent-used: cannot start {argv[0]}: {exc}", file=sys.stderr)
+        print(f"agentmeasure: cannot start {argv[0]}: {exc}", file=sys.stderr)
         return 2
 
     pending: dict = {}  # jsonrpc id -> (tool, start_ts)

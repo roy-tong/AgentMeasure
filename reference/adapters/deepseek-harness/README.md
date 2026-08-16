@@ -1,6 +1,6 @@
-# agent-used-dsh — DeepSeek Harness Adapter
+# agentmeasure-dsh — DeepSeek Harness Adapter
 
-> DSH 是 agent-used 的第一方深集成目标（spec/measurement-spec.md 的 E2/E3 能力来源）。
+> DSH 是 AgentMeasure 的第一方深集成目标（E2/E3 证据能力的来源）。
 > 本文件基于 DSH 实际源码（@deepseek-ai/dsh-agent-loop）确认的事件流编写。
 
 ## 1. 架构
@@ -10,7 +10,7 @@ DSH session event stream（dsh-agent-loop 持久化事件流）
   ├─ tool/call     {turn, step, callId, name, arguments}   ← S1 起点
   ├─ tool/result   {turn, step, message, error, meta}      ← S2 + outcome（经 sourceEventSeqs 关联）
   ├─ turn/start / step/start / step/end / turn/end         ← session 级归一
-  └─ agent-used plugin（Cordis）
+  └─ agentmeasure plugin（Cordis）
         ├─ 监听 tool/call + tool/result
         ├─ 只提取: name / callId / turn / step / outcome / 时间差
         ├─ DROP: arguments / message 内容 / 路径
@@ -19,16 +19,16 @@ DSH session event stream（dsh-agent-loop 持久化事件流）
 
 ## 2. 已确认的事件结构（源码核实，`dsh-agent-loop/lib/index.js`）
 
-| 事件 | 字段 | agent-used 用途 | 处理 |
+| 事件 | 字段 | AgentMeasure 用途 | 处理 |
 | --- | --- | --- | --- |
 | `tool/call` | `turn, step, callId, name, arguments` | stage=S1, tool=name, tool_use_id=callId | `arguments` **DROP** |
 | `tool/result` | `turn, step, message{content,isError}, error, meta` | stage=S2, outcome=isError?failure:success, 耗时=tool/call→tool/result 时间差 | `message.content` **DROP** |
 | `turn/start` | `turn` | 会话内归一边界 | 计数用 |
 | `step/start` | `{turn, step, ...}` | 同上 | 计数用 |
 
-关联机制：`tool/result` 通过 `sourceEventSeqs: [callSeq]` 引用其 `tool/call` 事件——**DSH 原生提供配对关系**（等价于 agent-side 的 E2 半边）。
+关联机制：`tool/result` 通过 `sourceEventSeqs: [callSeq]` 引用其 `tool/call` 事件——**DSH 原生提供配对关系**（agent-side 的 E2 半边）。
 
-## 3. 事件映射（spec/otel-mapping.md）
+## 3. 事件映射（standard/BIND.md）
 
 | DSH 字段 | agentmeasure.* |
 | --- | --- |
@@ -38,21 +38,20 @@ DSH session event stream（dsh-agent-loop 持久化事件流）
 | — | `agentmeasure.agent.host = "deepseek-harness"` |
 | — | `agentmeasure.observer.side = "client"` |
 | — | `agentmeasure.provenance = "platform"`（harness 原生） |
-| — | `agentmeasure.evidence.level`：初始 E2（harness 原生配对）；工具侧同 trace 时升级 |
 
 ## 4. 证据说明
 
 - DSH 插件运行在 harness 内、事件来自持久化 session 流——**provenance=platform，天然强于 hooks 观察**
-- `tool/call ↔ tool/result` 的 sourceEventSeqs 配对是 harness 原生证明 → 本 adapter 产出事件直接标记 E2（harness 内配对）
+- `tool/call ↔ tool/result` 的 sourceEventSeqs 配对是 harness 原生证明；**证据等级由 verifier 派生（本 adapter 绝不自声明）**——verifier 可据此判 E2
 - 若工具侧（MCP wrapper）同 trace_id 关联，构成真正的双边 E2（跨 harness 与工具）
 
 ## 5. 实现计划
 
 | 步骤 | 内容 | 状态 |
 | --- | --- | --- |
-| P1 | Cordis plugin 骨架：订阅 session 事件（tool/call、tool/result） | 待开发（事件名已确认） |
-| P2 | 归一化 + 伪匿名 + 本地 JSONL（复用 collector/normalizer 的 codex 分支模式） | 待开发 |
-| P3 | sourceEventSeqs 配对 → E2 记录 | 待开发 |
+| P1 | Cordis plugin 骨架：订阅 session 事件（tool/call、tool/result） | 已实现（plugin.js） |
+| P2 | 归一化 + 伪匿名 + 本地 JSONL（复用 collector/normalizer 模式） | 已实现 |
+| P3 | sourceEventSeqs 配对 → verifier 派生 E2 | 已实现（lifecycle L2 配对） |
 | P4 | 泄漏测试（arguments/message 零落盘）+ 与 collector 打通 | 待开发 |
 | P5 | 公开 demo：DSH 真实使用数据 → 徽章 | 待开发 |
 

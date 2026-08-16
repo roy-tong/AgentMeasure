@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""agent-used collector — aggregator v3（基于 invocations，证据分级）。
+"""AgentMeasure collector — aggregator v3（基于 invocations，证据分级）。
 
 核心修复（measurement-integrity review）：
   - 统计对象是 invocation（一次逻辑调用），不是 observation
@@ -111,7 +111,7 @@ def compute(conn, project_id: str, days: int = DAYS) -> dict:
     ).fetchone()
     unknown_share_invocations = row[0] or 0
 
-    # ---- success rate（AUAS-M3.3：Successful Completed ÷ Completed；
+    # ---- success rate（AgentMeasure-M3.3：Successful Completed ÷ Completed；
     #      unknown/inconsistent 不进分母，单列披露） ----
     row = conn.execute(
         """
@@ -182,8 +182,8 @@ def badge_svg(s: dict) -> str:
     lw = 128
     rw = max(170, 40 + len(label) * 6.2)
     w = lw + rw
-    return f"""<svg xmlns="http://www.w3.org/2000/svg" width="{w}" height="20" role="img" aria-label="agent-used: {label}">
-  <title>agent-used: {label} · {sub}</title>
+    return f"""<svg xmlns="http://www.w3.org/2000/svg" width="{w}" height="20" role="img" aria-label="agentmeasure: {label}">
+  <title>agentmeasure: {label} · {sub}</title>
   <linearGradient id="s" x2="0" y2="100%">
     <stop offset="0" stop-color="#bbb" stop-opacity=".1"/>
     <stop offset="1" stop-opacity=".1"/>
@@ -195,7 +195,7 @@ def badge_svg(s: dict) -> str:
     <rect width="{w}" height="20" fill="url(#s)"/>
   </g>
   <g fill="#fff" text-anchor="middle" font-family="Verdana,Geneva,DejaVu Sans,sans-serif" font-size="11">
-    <text x="{lw/2}" y="14">agent-used</text>
+    <text x="{lw/2}" y="14">agentmeasure</text>
     <text x="{lw + rw/2}" y="14">{label}</text>
   </g>
 </svg>"""

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""agent-used collector — consumption chain（S4 Result Consumed 检测）。
+"""AgentMeasure collector — consumption chain（S4 Result Consumed 检测）。
 
 Claude Code 是 S4 的第一个实证平台（docs/adapters.md）：
   - claude_code.tool_result span：{tool_name, tool_use_id, success, duration_ms}

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""agent-used collector — normalizer（adapter 原始载荷 → 观察事实）。
+"""AgentMeasure collector — normalizer（adapter 原始载荷 → 观察事实）。
 
 原则（measurement-integrity review）：
   - 只输出 observation 事实（无 evidence_level——证据由 verifier 计算）

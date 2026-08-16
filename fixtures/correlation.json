@@ -1,5 +1,5 @@
 {
-  "spec_version": "auas-0.1",
+  "spec_version": "agentmeasure-0.1",
   "vectors": [
     {
       "id": "correlation-exact-call-id",

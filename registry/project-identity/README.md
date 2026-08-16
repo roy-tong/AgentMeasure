@@ -17,15 +17,15 @@
   },
   "tools": ["bar.search", "bar.fetch", "bar.create"],
   "declared_by": "github.com/foo/bar",   // 声明来源
-  "verified": false                       // 由 agent-used 验证后置 true
+  "verified": false                       // 由 AgentMeasure 验证后置 true
 }
 ```
 
 ## 提交方式
 
 - 工具作者 fork 本仓库 → `registry/project-identity/<owner>-<repo>.json` → PR
-- 或通过 `agent-used register --project github.com/foo/bar --npm @foo/bar-mcp`（待实现）
+- 或通过 `agentmeasure register --project github.com/foo/bar --npm @foo/bar-mcp`（待实现）
 
 ## 示例
 
-- [roy-tong-agent-used.json](roy-tong-agent-used.json)：agent-used 自身（dogfooding）
+- [roy-tong-agent-measure.json](roy-tong-agent-measure.json)：AgentMeasure 自身（dogfooding）

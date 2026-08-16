@@ -10,9 +10,9 @@
 ```text
 同一测试 MCP Tool（foo.search）
 
-Claude Code ──OTLP──▶ agent-used collector（client 侧观察）
+Claude Code ──OTLP──▶ AgentMeasure collector（client 侧观察）
    │
-   └──MCP──▶ 测试 MCP server ──wrapper──▶ agent-used collector（server 侧观察）
+   └──MCP──▶ 测试 MCP server ──wrapper──▶ AgentMeasure collector（server 侧观察）
 ```
 
 100 个任务，每个任务 3-8 次工具调用（含故意失败样本 10%）。

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# agent-used — 安装 Codex PostToolUse hook（M0.5 PoC）
+# AgentMeasure — 安装 Codex PostToolUse hook（M0.5 PoC）
 # 用法: bash install_hook.sh [--repo]   # 默认用户级 ~/.codex/hooks.json，--repo 装到当前仓库 .codex/
 set -euo pipefail
 
@@ -17,7 +17,7 @@ HOOKS_FILE="$TARGET_DIR/hooks.json"
 
 cat > "$HOOKS_FILE" <<EOF
 {
-  "description": "agent-used: record agent tool calls (metadata only, privacy-first)",
+  "description": "agentmeasure: record agent tool calls (metadata only, privacy-first)",
   "hooks": {
     "$EVENT": [
       {
@@ -25,7 +25,7 @@ cat > "$HOOKS_FILE" <<EOF
           {
             "type": "command",
             "command": "/usr/bin/env python3 $HOOK_SCRIPT",
-            "statusMessage": "agent-used: recording tool call"
+            "statusMessage": "agentmeasure: recording tool call"
           }
         ]
       }
@@ -36,5 +36,5 @@ EOF
 
 echo "已写入 $HOOKS_FILE"
 echo "Codex 会要求你 review + trust 这个 hook（/hooks 命令）。"
-echo "事件写入 ~/.agent-used/events/agent-use-events.jsonl"
+echo "事件写入 ~/.agentmeasure/events/agent-use-events.jsonl"
 echo "环境变量: AGENTMEASURE_TARGET=<你的项目标识> AGENTMEASURE_HOST=codex DO_NOT_TRACK=1(禁用)"

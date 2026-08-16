@@ -1,23 +1,27 @@
-# AUAS Conformance
+# AgentMeasure Conformance
 
 ## Conformance Levels（Draft 0.3）
 
 一个平台可能根本观察不到 Presented——不能要求它支持全部标准。按能力分层认证：
 
-| Level | 覆盖 | 要求 |
+| Level | 覆盖 | 当前 vectors 状态 |
 | --- | --- | --- |
-| **AUAS Core Conformant** | 收据格式、签名、隐私、不变量 1-20 | core vectors 全过 |
-| **AUAS Choice Conformant** | M2.1-M2.5 | choice vectors 全过 + presented 可观察 |
-| **AUAS Execution Conformant** | M3.1-M3.3 | execution vectors 全过 |
-| **AUAS Utility Conformant** | M4.1 | consumption vectors 全过 |
-| **AUAS Reporting Conformant** | Measurement Label + 口径披露 | reporting fixtures 全过 |
+| **AgentMeasure Core Conformant** | 收据格式、签名、隐私、不变量 1-20 | receipt/correlation fixtures 已发布（`verify_vectors.py`） |
+| **AgentMeasure Choice Conformant** | M2.1-M2.5 | M2.2 / M2.5 vectors 已发布；M2.1 / M2.3 / M2.4 待发布 |
+| **AgentMeasure Execution Conformant** | M3.1-M3.3 | 待发布 |
+| **AgentMeasure Utility Conformant** | M4.1 | consumption vectors 已发布 |
+| **AgentMeasure Reporting Conformant** | Measurement Label + 口径披露 | 待发布 |
 
-认证声明示例：`agent-used compatible — AUAS Choice Conformant (Draft 0.3)`
+> **声称纪律**：通过某一 Level 只代表该 Level **已发布**的 vectors 全过；
+> 未发布 vectors 的部分不得宣称覆盖。例：Choice Conformant 目前 = M2.2 + M2.5
+> vectors 全过 + presented 可观察声明，不等于 M2.1-M2.5 全部验证。
+
+认证声明示例：`agent-measure compatible — AgentMeasure Choice Conformant (Draft 0.3)`
 
 ## 运行
 
 ```bash
-python3 conformance/runners/run_metrics.py    # 指标 vectors
+python3 conformance/runners/run_metrics.py    # 指标 vectors（M2.2 / M2.5 / M4.1）
 python3 verify_vectors.py                      # receipt/correlation vectors
 ```
 

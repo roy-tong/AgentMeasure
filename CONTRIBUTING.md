@@ -1,6 +1,6 @@
 # Contributing
 
-agent-used 是一个 measurement 标准项目。**问题定义和测量严谨性优先于功能数量。**
+AgentMeasure 是一个 measurement 标准项目。**问题定义和测量严谨性优先于功能数量。**
 
 ## 参与方式
 

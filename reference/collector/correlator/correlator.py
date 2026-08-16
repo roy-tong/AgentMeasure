@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""agent-used collector — invocation matcher（观察 → 逻辑调用）。
+"""AgentMeasure collector — invocation matcher（观察 → 逻辑调用）。
 
 数据模型（measurement-integrity review）：
   observations        adapter 观察事实（唯一输入）
@@ -89,7 +89,7 @@ def connect(db_path: Path = DB_DEFAULT) -> sqlite3.Connection:
 
 
 def store_observation(conn, obs: dict) -> bool:
-    # fail-closed（AUAS-CORE 不变量）：无 observation_id 的观察拒绝入库
+    # fail-closed（AgentMeasure-CORE 不变量）：无 observation_id 的观察拒绝入库
     if not obs.get("observation_id"):
         return False
     try:
@@ -207,7 +207,7 @@ def _make_invocation(conn, obs_list: list, matched_by: str) -> None:
     """由一组 observations 创建 invocation 并链接。"""
     invocation_id = str(uuid.uuid4())
     obs_ids = [o["observation_id"] for o in obs_list]
-    # outcome：冲突保留（AUAS-CORE 不变量 12）——client success + server failure
+    # outcome：冲突保留（AgentMeasure-CORE 不变量 12）——client success + server failure
     # → derived_outcome = "inconsistent"，绝不压平为 success
     outcomes = set(o.get("outcome") for o in obs_list if o.get("outcome"))
     if len(outcomes) > 1:

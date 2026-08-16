@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""AUAS test vectors runner（参考实现侧验证；fixtures 本身语言无关）。
+"""AgentMeasure test vectors runner（参考实现侧验证；fixtures 本身语言无关）。
 
 用法: python3 verify_vectors.py
-任何 AUAS 实现（Go/Rust/TS...）应对同一 fixtures 产生同一结果。
+任何 AgentMeasure 实现（Go/Rust/TS...）应对同一 fixtures 产生同一结果。
 """
 from __future__ import annotations
 

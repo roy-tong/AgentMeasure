@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""AUAS conformance runner（Draft 0.3，按指标运行 vectors）。
+"""AgentMeasure conformance runner（Draft 0.3，按指标运行 vectors）。
 
 用法: python3 conformance/runners/run_metrics.py
 读 conformance/vectors/*.json，对每个 metric 的 vectors 跑参考实现，
-断言输出与 expect 一致。任何 AUAS 实现应对同一 vectors 产生同一结果。
+断言输出与 expect 一致。任何 AgentMeasure 实现应对同一 vectors 产生同一结果。
 """
 from __future__ import annotations
 
@@ -41,6 +41,32 @@ def _run_selection_rate(vector: dict) -> bool:
     return (tool["presented_opportunities"] == exp["presented"]
             and tool["selections"] == exp["selected"]
             and tool["selection_rate"] == exp["selection_rate"])
+
+
+def _run_conditional_choice_share(vector: dict) -> bool:
+    from collector.choice import connect, ingest_choice_events, conditional_choice_share
+
+    conn = connect(Path(tempfile.mkdtemp()) / "v.db")
+    path = Path(tempfile.mkdtemp()) / "events.jsonl"
+    events = []
+    for e in vector["input"]["events"]:
+        ev = dict(e)
+        # 事件自带 project_id 时（跨项目向量）不覆盖；否则用向量级 project
+        ev.setdefault("project_id", vector["input"].get("project"))
+        events.append(ev)
+    path.write_text("\n".join(json.dumps(e) for e in events), encoding="utf-8")
+    ingest_choice_events(conn, path)
+    inp = vector["input"]
+    s = conditional_choice_share(
+        conn, inp["tool_a"], inp["tool_b"],
+        project_id=inp.get("project"),
+        choice_mode=inp.get("choice_mode"),
+        category_id=inp.get("category_id"))
+    exp = vector["expect"]
+    return (s["co_presented_decisions"] == exp["co_presented"]
+            and s["a_selected"] == exp["a_selected"]
+            and s["b_selected"] == exp["b_selected"]
+            and s["conditional_choice_share_a"] == exp["share_a"])
 
 
 def _run_consumed_rate(vector: dict) -> bool:
@@ -82,6 +108,7 @@ def _run_consumed_rate(vector: dict) -> bool:
 
 RUNNERS = {
     "M2.2 Selection Rate": _run_selection_rate,
+    "M2.5 Conditional Choice Share": _run_conditional_choice_share,
     "M4.1 Result Consumed Rate": _run_consumed_rate,
 }
 

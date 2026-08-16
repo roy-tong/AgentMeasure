@@ -2,7 +2,7 @@
 """AgentMeasure — Observer Capability Manifest（标准取代 observer 名称猜测）。
 
 原则：系统不能靠 observer 名字（如 LIKE 'claude-otel%'）判断某信号是否可观察。
-可观察性必须由 runtime 显式声明（AUAS-QUALITY §3）。
+可观察性必须由 runtime 显式声明（AgentMeasure-QUALITY §3）。
 
 Manifest 格式（YAML/JSON，随 runtime profile 发布）：
   runtime / runtime_version / collector_profile / valid_from /

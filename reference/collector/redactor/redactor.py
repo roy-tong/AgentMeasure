@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""agent-used collector — redactor（隐私守卫）。
+"""AgentMeasure collector — redactor（隐私守卫）。
 
 原则（spec/privacy.md）：Raw telemetry stays local；敏感字段代码级默认 DROP。
 本模块在写入统一事件前强制执行：

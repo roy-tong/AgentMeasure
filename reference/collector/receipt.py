@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""AUAS Usage Receipt Protocol（AUAS-DATA/TRUST 的实现核心）。
+"""AgentMeasure Usage Receipt Protocol（AgentMeasure-DATA/TRUST 的实现核心）。
 
 Usage Receipt = 某个可验证 Observer 对一次 Agent-tool interaction 所做的
 最小、签名、隐私安全声明。

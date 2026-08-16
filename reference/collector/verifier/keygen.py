@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""agent-used — Ed25519 keygen（E1 source-authenticated 密钥管理）。
+"""AgentMeasure — Ed25519 keygen（E1 source-authenticated 密钥管理）。
 
 用法:
   python3 keygen.py <key_id>
-    → 私钥: ~/.agent-used/keys/<key_id>.key（chmod 600，本地）
+    → 私钥: ~/.agentmeasure/keys/<key_id>.key（chmod 600，本地）
     → 公钥: <repo>/collector/keys/<key_id>.pub（base64，可公开提交）
 
 签名工具（adapter 用）:
@@ -22,7 +22,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from collector.verifier.ed25519 import publickey, sign  # noqa: E402
 from collector.verifier.verifier import canonical  # noqa: E402
 
-KEYS_DIR = Path(os.environ.get("AGENTMEASURE_KEYS_DIR", str(Path.home() / ".agent-used" / "keys")))
+KEYS_DIR = Path(os.environ.get("AGENTMEASURE_KEYS_DIR", str(Path.home() / ".agentmeasure" / "keys")))
 PUBLIC_DIR = Path(__file__).resolve().parents[2] / "keys"
 
 def load_secret(key_id: str) -> bytes:

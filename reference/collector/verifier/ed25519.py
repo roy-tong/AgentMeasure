@@ -1,6 +1,6 @@
 """Pure-python Ed25519（public domain，基于 ref10 参考实现）。
 
-保持 agent-used 零依赖承诺；仅用于 E1 source-authenticated 的签名/验签。
+保持 AgentMeasure 零依赖承诺；仅用于 E1 source-authenticated 的签名/验签。
 生产建议：可用 libsodium/cryptography 替换（接口一致：sign/verify/publickey）。
 """
 from __future__ import annotations
