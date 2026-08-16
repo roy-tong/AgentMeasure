@@ -1,3 +1,5 @@
+> ⚠️ **SUPERSEDED** — 规范章节已并入 spec/auas-security.md。本文件保留供历史参考，不再作为规范依据。
+
 # Threat Model（威胁模型）
 
 > 回答：谁会攻击这套体系、怎么攻击、怎么缓解。Evidence model 的配套文档。

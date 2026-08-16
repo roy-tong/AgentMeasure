@@ -1,3 +1,5 @@
+> ⚠️ **SUPERSEDED** — 规范章节已并入 spec/auas-privacy.md。本文件保留供历史参考，不再作为规范依据。
+
 # Privacy（隐私体系）
 
 > 架构原则：**Raw telemetry stays local. Public infrastructure receives aggregates by default.**

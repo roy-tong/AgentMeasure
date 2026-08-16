@@ -1,3 +1,5 @@
+> ⚠️ **SUPERSEDED** — 规范章节已并入 spec/auas-bind.md。本文件保留供历史参考，不再作为规范依据。
+
 # OTel Mapping（agent-used 最小扩展字段）
 
 > agent-used 站在 OpenTelemetry 之上。已有 OTel 标准字段一律复用，不重复发明。

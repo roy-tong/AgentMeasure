@@ -1,3 +1,5 @@
+> ⚠️ **SUPERSEDED** — 规范章节已并入 spec/auas-trust.md。本文件保留供历史参考，不再作为规范依据。
+
 # Evidence Model（证据模型）
 
 > 回答：这条 usage 记录有多可信？二元"真/假"在开放生态里不成立，证据是分级的。

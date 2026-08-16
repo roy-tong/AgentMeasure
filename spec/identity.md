@@ -1,3 +1,5 @@
+> ⚠️ **SUPERSEDED (non-normative)** — 身份图实现细节保留供参考；规范依据见 spec/auas-data.md 与 registry/project-identity/。
+
 # Identity（Canonical Identity Graph）
 
 > 回答：这条 usage 属于哪个项目？同一项目的不同形态（repo/npm/MCP server/tool/CLI/skill）如何归一？

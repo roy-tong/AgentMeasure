@@ -1,3 +1,5 @@
+> ⚠️ **SUPERSEDED** — 规范章节已并入 spec/auas-metrics.md。本文件保留供历史参考，不再作为规范依据。
+
 # Metrics（指标模型 v3）
 
 > **统计对象是 invocation（一次逻辑调用），不是 observation（一次观察）。**
