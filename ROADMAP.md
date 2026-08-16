@@ -12,7 +12,7 @@
 | **Next** | Draft 0.5 — Utility & Economic Semantics（Result/Effect 双元 Utility、Interaction Classes 指标化） | Provider SDK + Hosted Analytics（SDK 产出 observations，托管 collector/分析） |
 | **Then** | Draft 0.6 — External Validation（5-10 外部项目、第一份《Measurement Discrepancy Report》） | Runtime 集成 + Optimize（跨 runtime 信号、效果确认） |
 | **Later** | Commercial Measurement Profile（COMMERCIAL 转正：Billable Event/Unit/Metering Policy） | Metering（计费事实输出，对接外部支付 rails） |
-| **Long term** | CaaS Measurement Standard（1.0 毕业：2 独立实现 + 3 profiles + conformance + 5-10 项目 + 双 review） | Intelligence / Ecosystem（跨能力比较信号、生态数据面） |
+| **Long term** | **AgentMeasure Core 1.0 独立毕业**（2 独立实现 + 3 profiles + conformance + 5-10 项目 + 双 review；**不依赖任何商业化**）＋ Commercial Measurement Profile 0.x 独立毕业 | Intelligence / Ecosystem（跨能力比较信号、生态数据面） |
 
 ## 三种资产（从第一天分开）
 
