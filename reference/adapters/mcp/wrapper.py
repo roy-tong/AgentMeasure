@@ -46,7 +46,7 @@ def duration_bucket(seconds: float) -> str:
 
 
 def _sign(event: dict) -> dict:
-    """L2 证明：对事件规范字段做 HMAC 签名（防篡改/防重放，nonce 为 event_id）。"""
+    """Completed 生命周期证明：对事件规范字段做 HMAC 签名（防篡改/防重放，nonce 为 event_id）。"""
     if not SIGNING_SECRET:
         return event
     canonical = json.dumps(

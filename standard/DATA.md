@@ -1,9 +1,10 @@
-# AgentMeasure Data — Observation Envelope（Draft 0.4）
+# AgentMeasure Data — Observation Envelope（Draft 0.4.1）
 
-> Receipt 是系统间流动的最小签名单位；本版本定义六类观察的 Envelope，
-> 使 schema 真正表达 Presented/Selected/Invoked/Completed/Consumed。
-> Draft 0.4：Envelope 承载 AgentMeasure Core §2 的谱系字段（entity/capability/
-> surface、decision_authority、selection_constraint、operation_id）。
+> Observation Envelope 是 Core 的系统间交换对象（interchange object）。
+> 签名与认证是 **Verified Measurement Profile** 的可选能力（Core §10），
+> Core-conformant 实现不实现 Ed25519 也成立。
+> Draft 0.4.1：Envelope 拆分 raw surface 层与 derived 解析层——原始观察不携带
+> 看似权威的实体标识（Entity fail-closed，见 AgentMeasure Entity §2）。
 
 ## 1. Observation Envelope（统一外壳）
 
@@ -14,15 +15,24 @@
   "observation_type": "presentation | selection | invocation | completion | consumption | task_outcome",
   "observer": {"principal": "codex-hook@acme", "trust_domain": "acme", "side": "client"},
   "observed_at": "2026-08-16T03:00:00Z",
-  "project_id": "github.com/foo/bar",
-  "surface_id": "mcp_tool:bar.search",    // 观察发生在 surface 层（Core §2.3）
-  "client_key": "p-...",                   // 伪匿名，内存内生成
-  "usage_context": "production",           // 见 AgentMeasure Core §7
-  "validity": "normal",                    // 见 AgentMeasure Core §7
+  "deployment_context": {
+    "project_id": "github.com/foo/bar"      // 采集方内部数据组织的标识；
+                                            // 不是实体权威（见 surface 层与 Entity §2）
+  },
+  "surface": {                              // RAW 层：观察发生在 surface（Core §2.3）
+    "surface_id": "mcp_tool:bar.search",
+    "surface_namespace": "io.github.foo",   // surface 的注册/命名空间（尽力而为）
+    "provider_claim": null,                 // 可选：provider 自声明（不视为权威）
+    "capability_claim": null                // 可选：capability 自声明（不视为权威）
+  },
+  "client_key": "p-...",                    // 伪匿名，内存内生成
+  "usage_context": "production",            // 见 AgentMeasure Core §7
+  "validity": "normal",                     // 见 AgentMeasure Core §7
   "sampling": null,
   "provenance": "hook",
   "payload": { /* 类型特有字段 */ },
-  "signature": "base64", "key_id": "k1"
+  "signature": null,                        // OPTIONAL — Verified Measurement Profile
+  "key_id": null                            // OPTIONAL — Verified Measurement Profile
 }
 ```
 
@@ -30,7 +40,25 @@
 > operation_id …）；不知道的字段留 null，MUST NOT 编造。谱系完整度是
 > 指标的披露维度（Measurement Label：lineage coverage）。
 
-## 2. 六类 Payload
+## 2. Derived 层（解析结果，不在 adapter 产生）
+
+entity / capability 归属由统计层（registry 解析）产生，**不是观察的一部分**：
+
+```jsonc
+// Derived resolution（aggregator/解析器写入；adapter 永不产生）
+{
+  "resolved_entity_id": "github.com/foo/bar",
+  "resolved_capability_id": "github.com/foo/bar:search",
+  "registry_version": "2026.1",
+  "resolution_status": "resolved | ambiguous | unknown"
+}
+```
+
+- 无匹配 → `resolution_status=unknown`（不猜测）
+- 多 registry 条目冲突 → `ambiguous`，该观察不计入任何 entity 计数（不变量 21）
+- 公开指标 MUST 披露 `registry_version` 与 resolution 分布
+
+## 3. 六类 Payload
 
 ### presentation
 ```jsonc
@@ -70,17 +98,23 @@
   "task_type": "research", "ended_at": "..." }
 ```
 
-## 3. 签名与 canonical（不变）
+## 4. Canonical 序列化（Core 确定性要求）
 
-- SIGNED_FIELDS 覆盖全部 attribution 字段（AgentMeasure Core 不变量 5）
-- canonical JSON：排序键、无空白、NFC（确定性字节）
-- 六类 payload 的 attribution 字段全部入签名
+- canonical JSON：排序键、无空白、NFC（确定性字节）——所有实现 MUST 对同一
+  Envelope 产生完全相同的字节（可复现性，不变量 1）
+- `SIGNED_FIELDS` 覆盖全部 attribution 字段（Core 不变量 5）
 - Draft 0.4：`surface_id` / `decision_authority` / `selection_constraint` /
-  `operation_id` 属于 attribution 字段，入签名
+  `operation_id` 属于 attribution 字段
 
-## 4. Manifest / Aggregate Statement（不变，见 Draft 0.1 版）
+## 5. 签名与认证（Verified Measurement Profile，可选）
 
-## 5. 纪律
+- 签名（Ed25519 等）是 **Verified Measurement Profile** 的能力，不是 Core 前置
+- 未签名的 Observation 是合法 Core 对象：证据等级为 E0，Label 披露即可
+- 认证观察（Signed Observation）承载：来源（principal）、完整性（canonical 签名）、
+  防重放（nonce/时间窗）
+- 签名不证明事件事实绝对真实——只证明来源与完整性（见 AgentMeasure Quality）
+
+## 6. 纪律
 
 - 一类观察一个 Envelope；不把多类塞进一条
 - 不可观察的状态不产生观察（UNOBSERVABLE 是元级信息，在 Profile 能力矩阵声明，

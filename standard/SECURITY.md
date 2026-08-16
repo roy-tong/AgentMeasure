@@ -4,16 +4,16 @@
 
 | # | 攻击 | 缓解 |
 | --- | --- | --- |
-| S1 | 工具作者自签刷量（E1 合法） | E1 不计入 corroborated；E2 需独立 trust domain；行为异常检测；与独立信号交叉验证 |
-| S2 | 双侧合谋（作者控制 agent + server） | 无法完全防御；跨 trust domain 判定 + 样本审计；平台 attestation（T1）是唯一强对抗 |
-| S3 | Sybil observer（字符串不同实则一人） | trust_domain + identity claims 认证；principal 注册制 |
-| S4 | 重放旧收据 | receipt_id 唯一性 + 时间窗 |
-| S5 | 篡改未签名语义字段 | SIGNED_FIELDS 全覆盖（AgentMeasure Data §2）；篡改即验签失败 |
-| S6 | 伪 commitment 关联 | commitment 输入字段全部被签名；同侧永不佐证 |
-| S7 | 恶意聚合器（误报/漏报） | 聚合规则公开 + test vectors + 独立实现交叉验证；未来：signed aggregate + Merkle commitment + transparency log |
-| S8 | 隐私反推 | 只发布聚合与比率；最小样本量门槛；伪匿名轮换；本地 cohort 聚合 |
-| S9 | 重试链刷量 | invocation 归一 + retry 折叠 |
-| S10 | 拆 API 刷榜 | 按 project roll-up；排名按 ACD 而非 raw calls |
+| TH1 | 工具作者自签刷量（E1 合法） | E1 不计入 corroborated；cross-side corroborated 需独立 trust domain；行为异常检测；与独立信号交叉验证 |
+| TH2 | 双侧合谋（作者控制 agent + server） | 无法完全防御；跨 trust domain 判定 + 样本审计；平台 attestation（T1）是唯一强对抗 |
+| TH3 | Sybil observer（字符串不同实则一人） | trust_domain + identity claims 认证；principal 注册制 |
+| TH4 | 重放旧观察 | observation_id 唯一性 + 时间窗 |
+| TH5 | 篡改未签名语义字段 | SIGNED_FIELDS 全覆盖（AgentMeasure Data §5）；篡改即验签失败 |
+| TH6 | 伪 commitment 关联 | commitment 输入字段全部被签名；同侧永不佐证 |
+| TH7 | 恶意聚合器（误报/漏报） | 聚合规则公开 + test vectors + 独立实现交叉验证；未来：signed aggregate + Merkle commitment + transparency log |
+| TH8 | 隐私反推 | 只发布聚合与比率；最小样本量门槛；伪匿名轮换；本地 cohort 聚合 |
+| TH9 | 重试链刷量 | Operation 归一（同 operation 多 attempt 只计 1 逻辑使用） |
+| TH10 | 拆 API 刷榜 | 按 entity roll-up；排名按 ACD 而非 raw calls |
 
 ## 2. fail-closed 原则
 

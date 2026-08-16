@@ -2,8 +2,8 @@
  * AgentMeasure — DeepSeek Harness adapter plugin（Cordis）。
  *
  * 订阅 DSH session 事件流，在工具调用边界记录 usage 元数据：
- *   - tool/call    → S1 起点（callId/name）
- *   - tool/result  → S2 + outcome（经 sourceEventSeqs 配对）
+ *   - tool/call    → 执行起点（callId/name）
+ *   - tool/result  → 完成 + outcome（经 sourceEventSeqs 配对）
  *
  * 隐私红线（代码级）：arguments / message 内容 / 路径 一律不落盘。
  * 输出：unified usage JSONL（与 collector/normalizer 同构），供本地 collector 消费。
@@ -52,7 +52,7 @@ function apply(ctx, config) {
 
 	ctx.on("session/event", (session, event) => {
 		if (event.type === "tool/call") {
-			// S1：只取 name/callId；arguments 一律不落盘。以事件 seq 为键，
+			// 执行：只取 name/callId；arguments 一律不落盘。以事件 seq 为键，
 			// 因为 tool/result 通过 sourceEventSeqs:[callSeq] 引用
 			pending.set(event.seq, {
 				name: String(event.name ?? "unknown").slice(0, 120),
@@ -67,7 +67,7 @@ function apply(ctx, config) {
 			if (!meta) return; // 无配对（证据不足），跳过
 			pending.delete(callSeq);
 			const outcome = event.message?.isError ? "failure" : "success";
-			// 注意：tool/call + tool/result 只证明生命周期完成（L2 Returned），
+			// 注意：tool/call + tool/result 只证明生命周期完成（completed），
 			// 不构成独立佐证——evidence 由 verifier 计算，此处绝不自声明
 			const record = {
 				event_id: randomUUID(),
@@ -78,7 +78,7 @@ function apply(ctx, config) {
 				provenance: "platform",
 				session_id: pseudo(session?.id ?? "unknown"),
 				tool: meta.name,
-				lifecycle_stage: "L2", // Returned（生命周期，非证据）
+				lifecycle_stage: "L2", // completed（生命周期阶段，非证据）
 				outcome,
 				duration_bucket: bucket((Date.now() - meta.startedAt) / 1000),
 				trace_id: null,

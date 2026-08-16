@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """AgentMeasure Measurement Policy（AgentMeasure-METRICS）。
 
-Metric 不能脱离 Policy：两个网站都显示 "Agent Usage = 12,000" 但一个只算 E2、
+Metric 不能脱离 Policy：两个网站都显示 "Agent Usage = 12,000" 但一个只算 cross-side corroborated（E2）、
 另一个 E0 都算——不可比。本对象使指标携带完整口径：
 
   12,481 ACD @ policy=AgentMeasure/Core-1

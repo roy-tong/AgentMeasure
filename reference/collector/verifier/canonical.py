@@ -1,6 +1,6 @@
 """AgentMeasure canonical JSON（AgentMeasure-DATA 规定的确定性序列化）。
 
-目的：所有实现必须对同一 Receipt 产生完全相同的签名字节。
+目的：所有实现必须对同一 Signed Observation 产生完全相同的签名字节。
 规则（对 signed 字段集）：
   1. 对象键按 UTF-8 字节序排序
   2. 无空白分隔

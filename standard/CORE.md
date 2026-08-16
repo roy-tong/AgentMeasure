@@ -150,7 +150,7 @@ Capability 按交互性质分类，决定 Utility 的度量方式：
 | `unknown` | 无法判定 | — | — |
 
 **Result / Effect 双元 Utility**（Draft 0.5 前置）：
-- Result = 能力返回的直接产物（可被 S4 Consumption 观察）
+- Result = 能力返回的直接产物（可由 Consumption observation 观察）
 - Effect = 世界状态的实际改变（需要 Consumption 之外的验证）
 - Utility 指标 MUST 声明度量的是 Result 还是 Effect（不变量 22）
 
@@ -253,7 +253,7 @@ Observable population / Qualified population / Runtime coverage / Choice mode
 6. Ambiguous observations never promoted to corroborated
 7. `unknown` never inferred as `success`
 8. Metrics always declare scope + policy + window + **grain** + label
-9. Public receipts never contain user content
+9. Public observations never contain user content
 10. Corroboration never assumes different strings = independent control
 11. Platform attestation UNSUPPORTED until verified
 12. Outcome conflicts preserved (inconsistent)
@@ -277,7 +277,7 @@ Observable population / Qualified population / Runtime coverage / Choice mode
 | **Core**（本文） | Objects、Grain、Observability、Eligibility、Qualification、Lineage、不变量 | **采用前置**（MUST 满足） |
 | **Data** | Observation Envelope schema | 采用前置 |
 | **Reporting** | Measurement Label / Policy / Profiles | 采用前置（公开指标 MUST） |
-| **Verified Measurement Profile** | Ed25519 签名、Evidence Profile、Usage Receipt、E0-E3 | **高级符合性，非采用前置** |
+| **Verified Measurement Profile** | Ed25519 签名、Evidence Profile（E0-E3）、Signed Observation（可选认证载体） | **高级符合性，非采用前置** |
 | **Bindings** | OTel / MCP / CLI 映射 | 随实现 |
 
 **不变量（P0-7）：验证是高级符合性，不是采用前置条件。** 一个不签名的采集器

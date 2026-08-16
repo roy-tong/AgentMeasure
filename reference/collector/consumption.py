@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""AgentMeasure collector — consumption chain（S4 Result Consumed 检测）。
+"""AgentMeasure collector — consumption chain（Consumption / Result Consumed 检测）。
 
-Claude Code 是 S4 的第一个实证平台（docs/adapters.md）：
+Claude Code 是 Consumption 的第一个实证平台（docs/adapters.md）：
   - claude_code.tool_result span：{tool_name, tool_use_id, success, duration_ms}
   - API request telemetry：在实际消费了某个 MCP tool result 时才带
     {mcp_server.name, mcp_tool.name}

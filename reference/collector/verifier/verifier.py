@@ -37,7 +37,7 @@ SIGNED_FIELDS = (
 )
 
 
-def canonical(receipt: dict) -> bytes:
+def canonical(receipt: dict) -> bytes:  # receipt = signed observation（Verified Profile）
     return canonical_json({k: receipt.get(k) for k in SIGNED_FIELDS if receipt.get(k) is not None}).encode()
 
 
@@ -52,7 +52,7 @@ def load_public_key(key_id: str) -> Optional[bytes]:
 
 
 def verify_signature(receipt: dict) -> bool:
-    """验证 Receipt 的 Ed25519 签名（canonical JSON over SIGNED_FIELDS）。fail-closed。"""
+    """验证 Signed Observation 的 Ed25519 签名（canonical JSON over SIGNED_FIELDS）。fail-closed。"""
     sig = receipt.get("signature")
     key_id = receipt.get("key_id")
     if not sig or not key_id:

@@ -2,7 +2,7 @@
 
 > **Status: Experimental / Informative.** 本文件**不是**规范性标准的一部分，不参与
 > conformance 认证。它定义 CaaS 所需的*经济语义*（economic semantics），为未来的
-> Metering Profile 铺路——**不定义任何支付机制**。
+> Commercial Measurement Profile 铺路——**不定义任何支付机制**。
 >
 > 核心原则：**AgentMeasure 标准化经济事实，不移动金钱。**
 > Payment rails、wallets、settlement currencies、merchant-of-record relationships、
@@ -17,84 +17,198 @@ CORE 的测量对象回答"发生了什么"（Core，规范性）；Commercial E
 - 计费口径是商业决策（`3 attempts` 是否等于 `3 billable operations` 由 Metering
   Policy 决定），不是测量事实
 - Marketplace / 支付方可以各自实现自己的 Metering Profile，共享同一批测量事实
+- **CaaS 是项目的 Vision，不是 Core Standard 成立的必要条件**：AgentMeasure Core
+  即使没有任何商业化，也应成立为 Agent 软件测量标准（独立毕业，见 §9）
 
-## 2. 对象模型
+## 2. 对象模型（关系模型，不是树）
+
+CORE 的测量对象链（规范性）：
+
+```text
+Software Entity = 身份容器
+Capability      = 功能 / 能力单元（主要测量对象）
+Interaction Surface = 交付界面
+```
+
+Commercial Extension 在其上加一层商业关系（实验性）：
 
 ```text
 Provider
-    ↓
+  ↓ owns
 Software Entity
-    ↓
-Capability            ← 经济对象（CORE §2.2）
-    ↓
-Offering             ← 本扩展新增：可售形态
-    ↓
-Interaction Surface  ← 交付界面（CORE §2.3）
+  ↓ exposes
+Capability
+  ↓ available through
+Interaction Surface
+
+Provider
+  ↓ publishes
+Offering
+  ↓ references
+Capability(s)           ← 一个 Offering 可含多个 Capability
+  ↓ permits
+Surface(s)              ← 一个 Capability 可经多个 Surface 提供
+```
+
+**Offering 不插入 Core lineage**——它是商业包装，不是测量对象。
+
+> **Capability 是主要的功能与测量对象；Offering 是一个或多个 Capability 的商业包装。**
+
+示例：
+
+```text
+Capability: company.research
+
+Offering A  Basic  / per_operation / $0.05
+Offering B  Deep   / per_quantity / $0.50 / 100 records
+
+同一 Capability、不同商业条款；Basic/Pro 可共享同一 API surface
 ```
 
 ### Provider
 
-- 提供 Capability 的法律/商业主体；`provider_id`（registry 可选字段）
+- 定义：**发布或商业化提供能力的已识别主体**（an identified party that publishes
+  or commercially offers capabilities）
+- `legal_identity_verified: true/false` 是**可选**信息（不提前卷入 KYC / 法律主体验证）
 - 一个 Provider 可以有多个 Software Entity；一个 Entity 可以有多个 Capability
 
 ### Offering
 
-一个 Capability 的一种**可售形态**：
+一个或多个 Capability 的**可售形态**：
 
 ```yaml
 offering_id: com.example.research:basic
-capability_id: com.example.research
+offering_version: "1.2"
+capability_ids: [com.example.research]
 provider_id: com.example
-pricing_model: per_operation        # per_operation | per_quantity | per_effect | per_outcome | revenue_share
-billable_unit: successful_search
-price: 0.05
+permitted_surfaces: [mcp_tool:research, http_endpoint:/v1/research]
+pricing_policy_id: com.example:pp-2026.1
 currency: USD
-sla: {availability: "0.99", latency_p95_ms: 2000}
+service_level_objectives:
+  availability_target: "0.99"
+  p95_latency_ms: 2000
 commercial_constraints: {min_commitment: null, credits: true}
 ```
 
 | 字段 | 定义 |
 | --- | --- |
-| `pricing_model` | 计费方式：按操作 / 按数量 / 按效应 / 按结果 / 收入分成 |
-| `billable_unit` | 计量单位（operation、record、GPU-second、confirmed effect…） |
-| `price` + `currency` | 单价与币种（仅声明，不结算） |
-| `sla` | 服务等级承诺（可用于 Reliability 类测量对照） |
-| `commercial_constraints` | 最低承诺、信用额度等商业约束 |
+| `capability_ids` | 本 Offering 引用的 Capability（可多个） |
+| `permitted_surfaces` | 本 Offering 允许的交付界面 |
+| `pricing_policy_id` | 引用的定价政策（见 §4），价格不直接挂在 Offering 上 |
+| `service_level_objectives` | 可用性 / 延迟目标（SLO，不是合同 SLA：不涉及 credits/remedies） |
+| `commercial_constraints` | 最低承诺、信用额度等 |
 
-## 3. 计量语义（Metering Semantics）
+### Purchasing Principal / Consumer Account（消费侧）
 
-### 核心不变量：Measurement Unit ≠ Billable Unit
+Agent 自己不一定是付款主体。商业语义（**不含个人 PII**）：
 
-| Capability | Measurement（Core） | Billable（Offering 决定） |
-| --- | --- | --- |
-| Search | Operation | Successful Search |
-| Data | Query | 1,000 Records |
-| Compute | Job | GPU-second |
-| Action | Operation | Confirmed Effect |
-| Booking | Transaction | Successful Booking |
-| Lead Generation | Task | Qualified Lead |
-| Commerce | Transaction | % of Transaction |
-
-### 定义
-
-```text
-Billable Event         哪个测量事实触发计费
-Billable Unit          计量单位
-Billable Quantity      单位如何计数（按 Metering Policy：attempts、确认、排除…）
-Pricing Model          per_operation · per_quantity · per_effect · per_outcome · revenue_share
-Metering Policy        测量事实 → 计费事实的确定性映射（规则、排除、取整）
-Commercial Attribution 哪些参与方贡献了 discovery / selection / revenue
+```yaml
+consumer_account_ref: acct_9f2c        # 商业账户引用（伪匿名 / 由调用方提供）
+principal_type: user | company | agent_principal | unknown
+delegation_context: direct | delegated_by_user | delegated_by_company | unknown
+billing_scope: project | department | account | unknown
 ```
 
-### Metering Policy 的纪律（与 CORE 一致的 fail-closed）
+用途：回答"这次 Capability Usage 应该计入谁的账单"。原始标识符不进 Core；
+`consumer_account_ref` 由 Provider 侧维护，不要求 AgentMeasure 认识真实身份。
 
-1. 计费数量 MUST 可追溯到已发布的测量事实（operation_id / effect confirmation）
+## 3. 计量语义：Event / Unit / Quantity 三分离
+
+### 三个概念必须绝对分开
+
+> **Event = 为什么计费**（哪个测量事实触发）
+> **Unit = 按什么单位计**（计量单位）
+> **Quantity = 多少单位**
+
+| Capability | billable_event | billable_unit | billable_quantity |
+| --- | --- | --- | --- |
+| Search | `operation_succeeded` | `operation` | 1 |
+| Data API | `result_delivered` | `record` | 1,382 |
+| Compute | `compute_completed` | `gpu_second` | 47.2 |
+| Booking | `effect_confirmed` | `booking` | 1 |
+| Lead Generation | `outcome_qualified` | `qualified_lead` | 5 |
+| Commerce | `transaction_settled` | `transaction` | 0.03（收入分成份额） |
+
+**Measurement Unit ≠ Billable Unit**：`successful_search` 是事件条件，不是单位。
+测量事实（Core）永远是计费语义的输入，计费折算 MUST 在 Metering Policy 中声明。
+
+### Metering Policy
+
+```yaml
+metering_policy_id: com.example:mp-2026.1
+metering_policy_version: "2026.1"
+rules:
+  - billable_event: operation_succeeded
+    billable_unit: operation
+    billable_quantity: 1
+    exclusions: [replay, duplicate, suspected_invalid]
+  - billable_event: effect_confirmed
+    billable_unit: booking
+    billable_quantity: 1
+rounding: round_down_half_up
+bundling: null
+```
+
+纪律（与 CORE 一致的 fail-closed）：
+
+1. Billable Quantity MUST 可追溯到已发布的测量事实（operation_id / effect confirmation）
 2. 未确认的 Effect 不得计为成功交付（UNOBSERVABLE ≠ FALSE，不变量 17）
 3. 重试（同 operation 的多 attempt）默认不计为多次计费，除非 Policy 明示
-4. Policy 本身 MUST 公开（版本化），作为 Measurement Label 的一部分披露
-5. 测量与计费之间的任何折算（rounding、bundling）MUST 在 Policy 中声明
+4. **Policy MUST 版本化，并对依赖其结果收费的各方可用**（versioned and available
+   to all parties relying on the resulting charge）
+5. 公共 Marketplace / 公共 Offering 的 Policy **SHOULD** 公开或提供稳定的公开
+   policy 标识符；企业合同价（Company A ≠ Company B）无需公开
+6. 测量与计费之间的任何折算（rounding、bundling）MUST 在 Policy 中声明
 
-## 4. Commercial Attribution（商业归因）
+### Quote / Pricing Policy
+
+价格规则与单次调用适用条款分开：
+
+```yaml
+# Pricing Policy = 怎么定价（版本化）
+pricing_policy_id: com.example:pp-2026.1
+pricing_policy_version: "2026.1"
+model: volume_tiered | flat | dynamic | enterprise_agreement | free_quota | surge
+tiers: [{unit_from: 0, unit_price: "0.050000"}, {unit_from: 10000, unit_price: "0.030000"}]
+
+# Quote = 本次调用实际适用什么商业条件
+quote_id: q-8f31
+offering_id: com.example.research:basic
+pricing_policy_version: "2026.1"
+unit_price: "0.050000"
+currency: USD
+valid_until: "2026-08-31T00:00:00Z"
+commercial_scope: {region: null, model: null, account: acct_9f2c}
+```
+
+**价格一律用字符串**（`"0.050000"`），避免商业系统中的浮点误差。
+
+AgentMeasure 不负责付款；但可靠的 Metering 必须知道**当时适用的是哪个价格规则**
+（quote_id / pricing_policy_version）。
+
+## 4. Metering Ledger（计量账本）
+
+现实账单最麻烦的是重放与纠错。Metering Ledger 是 measurement facts →
+commercial facts 之间**可重放、可纠错的账本**（不是付款账本）：
+
+```yaml
+meter_event_id: me-71c2
+measurement_event_ref: obs-8f31       # 引用的测量事实
+operation_id: op-3
+metering_policy_version: "2026.1"
+pricing_policy_version: "2026.1"
+quantity: 1
+event_time: "2026-08-16T03:00:05Z"
+revision: 1
+supersedes: null                       # 纠错：指向被取代的 meter event
+reversal_of: null                      # 冲销：指向被撤销的 meter event
+```
+
+**核心不变量：同一个 Meter Event 重放 100 次，Billable Quantity 不能增加 100 倍。**
+幂等键 = `meter_event_id`；纠错走 `revision` / `supersedes` / `reversal_of`，
+而不是删除历史事实。
+
+## 5. Commercial Attribution（商业归因）
 
 ```text
 GitHub Skill → Registry → Agent Recommendation → Capability → Payment
@@ -103,10 +217,25 @@ GitHub Skill → Registry → Agent Recommendation → Capability → Payment
 - 归因对象：discovery / selection / revenue
 - **Commercial attribution ≠ causal incrementality**（CORE 不变量 14）
 - 归属规则（first-touch / last-touch / 按贡献分成）是商业决策，由各方协议决定；
-  本扩展只定义**事实字段**：`attribution_hop_id`、`hop_type`、`participant_id`、
-  `conversion_scope`
+  本扩展只定义**事实字段**：`attribution_hop_id`、`hop_type`（published |
+  listed | discovered | presented | selected）、`participant_id`、`conversion_scope`
+- 分布侧事实（Published / Listed / Discovered / Presented）见 Whitepaper
+  Distribution Events；**Presented 仍是 Choice 的分母，Discovered 只是分布归因事件**
 
-## 5. 与 Core 的关系
+## 6. 商业 Measurement Label（未来 Billable Metric 的披露）
+
+所有可计费数字至少披露：
+
+```text
+offering_id · offering_version
+metering_policy_id · metering_policy_version
+pricing_policy_id / quote_id
+measurement_policy
+```
+
+否则同一个 "$100 revenue" 无法知道按哪一版规则计算。
+
+## 7. 与 Core 的关系
 
 | 层 | 文档 | 状态 |
 | --- | --- | --- |
@@ -114,14 +243,20 @@ GitHub Skill → Registry → Agent Recommendation → Capability → Payment
 | 经济语义 | 本文件（extensions/COMMERCIAL.md） | **Experimental / Informative** |
 | 支付机制 | 不存在于本仓库 | 由外部支付基础设施提供 |
 
-## 6. 明确的 Non-goals
+## 8. 明确的 Non-goals
 
 - ❌ 不定义支付轨道 / 钱包 / 结算币种 / 商户记录关系 / 金融托管
 - ❌ 不实现任何计费执行（billing execution）
 - ❌ 不定义通用定价（每个 Provider 自定）
 - ❌ 不进入 conformance 认证范围（在转正为 Profile 之前）
+- ❌ 不采集或解析购买者个人身份（PII）——`consumer_account_ref` 由 Provider 侧维护
 
-## 7. 转正标准（Experimental → Profile）
+## 9. 毕业路径（与 Core 独立）
+
+**AgentMeasure Core 1.0 与商业扩展独立毕业**：Core 1.0 是 Agent 软件测量标准，
+不依赖任何商业化成立；Commercial Measurement Profile 走自己的 0.x 路径。
+
+Commercial Extension（Experimental → Profile）转正标准：
 
 1. ≥2 个真实 Provider 用同一套测量事实 + 各自 Metering Policy 产出可对账账单
 2. 与 ≥1 个支付/Marketplace 方完成字段级对接评审

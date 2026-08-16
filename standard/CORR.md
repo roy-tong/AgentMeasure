@@ -62,7 +62,7 @@ result/effect → outcome`
   "evidence": {"vector": {...}, "display": "independently-corroborated"},
   "matched_by": "exact-call-id | structural-trace | commitment | none",
   "lineage": {"task_id": "tk-1", "decision_id": "d1", "selection_id": "s1"},
-  "observations": ["receipt_id", "..."]
+  "observations": ["observation_id", "..."]
 }
 ```
 

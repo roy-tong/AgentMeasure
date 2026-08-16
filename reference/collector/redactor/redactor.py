@@ -39,7 +39,7 @@ def leak_test() -> bool:
         "event_id": "e1", "occurred_at": "2026-08-16T00:00:00Z",
         "project_id": "github.com/foo/bar", "observer_side": "client",
         "agent_host": "codex", "provenance": "hook", "evidence_level": "E1",
-        "session_id": "s-abc", "tool": "Bash", "stage": "S2", "outcome": "success",
+        "session_id": "s-abc", "tool": "Bash", "stage": "completed", "outcome": "success",
         "duration_bucket": "1s-10s", "trace_id": "t1",
         "prompt": "rm -rf /home/secret", "tool_input": {"command": "cat /etc/passwd"},
         "tool_response": "root:x:0:0:root", "cwd": "/private/secret",

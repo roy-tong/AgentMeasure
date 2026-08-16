@@ -13,6 +13,8 @@ AgentMeasure defines a common language for measuring how AI agents discover, cho
 > AgentMeasure is **not** a payment protocol, marketplace, or universal ranking system.
 > It standardizes the facts and measurement semantics those systems can build on.
 
+[Whitepaper](whitepaper/measuring-software-used-by-ai-agents.md) · [白皮书（中文）](whitepaper/measuring-software-used-by-ai-agents.zh-CN.md) · [Core Specification](standard/CORE.md) · [中文](README.zh-CN.md)
+
 ---
 
 ## Why capabilities need a new measurement layer
@@ -64,6 +66,10 @@ Measured Usage ≠ Billable Usage
 ```
 
 The last inequality is why the Operation/Attempt model matters commercially: 3 attempts of one operation are not 3 billable operations — unless the metering policy says so.
+
+> The extended thesis — economic units, scarcity, measurement before monetization,
+> metering semantics, and the evidence that commerce is arriving before measurement —
+> lives in [docs/CAPABILITY-ECONOMY.md](docs/CAPABILITY-ECONOMY.md).
 
 ## The measurement view: Reach → Choice → Use → Utility → Value
 
@@ -123,29 +129,33 @@ Four things a real developer needs to know:
 >
 > AgentMeasure is **not** on the critical request path.
 
+Product architecture (Provider SDK → local buffer → hosted ingestion → dashboard):
+[product/ARCHITECTURE.md](product/ARCHITECTURE.md).
+
 ## What AgentMeasure measures today
 
 - **Decision Opportunity / Candidate Set / Presentation / Selection** — the four objects of choice; the Observed Selection Rate denominator is Presented, not Available
 - **Software Entity → Capability → Interaction Surface** — what exists, what it can do, and the observable interface; observation happens on surfaces, attribution resolves to entities through the machine-readable registry
 - **Operation / Attempt** — one logical use vs. one execution; **retries are multiple attempts of one operation**, not a validity class (they are kept as reliability signals, not counted as distinct logical uses)
 - **Qualified Usage** — production usage after excluding test, benchmark, synthetic, replay, duplicate and other invalid traffic according to policy
-- **Result Consumption / Effect Confirmation** — the result was used by the task, or the intended world-state change was confirmed (Interaction Classes: Information / Action / Transaction / Computation / Communication / …)
+- **Result Consumption** — *defined, reference partial*: the result was used by the task
+- **Effect Confirmation** — *domain model defined, metric planned for Draft 0.5*: the intended world-state change was confirmed
 - **Measurement Label** — a nutrition label for every public number (coverage / sampling / policy / method)
 
 The full model lives in the [Core Specification](standard/CORE.md), [Metrics](standard/METRICS.md), [Entity](standard/ENTITY.md), and [Quality](standard/QUALITY.md). The README is not a spec summary.
 
 ## From measurement to CaaS
 
-```text
-Capability
-    │
-    ▼
-Discover → Choose → Use → Deliver Value → Measure → Meter → Price / Pay / Settle
-```
-
-AgentMeasure standardizes the data and semantics of the **first five steps** — discovery through measurement. Metering and commercial attribution are future extensions; payment rails can be provided by existing payment infrastructure.
+AgentMeasure is **progressively standardizing** the measurement chain from discovery
+and choice through execution, utility and value: core usage semantics are defined
+today; utility/value and commercial metering remain active drafts. Metering and
+commercial attribution are future extensions; payment rails can be provided by
+existing payment infrastructure.
 
 > **AgentMeasure standardizes economic facts, not money movement.**
+>
+> Extended thesis: [docs/CAPABILITY-ECONOMY.md](docs/CAPABILITY-ECONOMY.md) ·
+> Economic semantics: [extensions/COMMERCIAL.md](extensions/COMMERCIAL.md)（Experimental）
 
 ## What AgentMeasure is / is not
 
@@ -173,13 +183,20 @@ AgentMeasure standardizes the data and semantics of the **first five steps** —
 ```bash
 git clone https://github.com/roy-tong/AgentMeasure && cd AgentMeasure
 python3 conformance/runners/run_metrics.py   # metric vectors (M2.2 / M2.5 / M4.1)
-python3 verify_vectors.py                     # receipt / correlation / operation vectors
+python3 verify_vectors.py                     # verification / correlation / operation vectors
 python3 registry/validate_entities.py         # validate the machine-readable registry
 ```
 
 ## Product MVP — in development
 
-The first product path is **Remote MCP / API Capability Measurement**: an AgentMeasure Provider SDK that emits observations from the provider side (no agent-side install), feeding a collector and hosted analytics. The SDK and hosted analytics are not implemented yet — the standard, reference collector, and conformance suite are.
+The first product path is **Remote MCP / API Capability Measurement**: an AgentMeasure
+Provider SDK that emits observations from the provider side (no agent-side install),
+feeding a collector and hosted analytics. The SDK and hosted analytics are not
+implemented yet — the standard, reference collector, and conformance suite are.
+
+Scope and acceptance: [product/MVP.md](product/MVP.md) · SDK contract:
+[product/PROVIDER-SDK.md](product/PROVIDER-SDK.md) · Deployment:
+[product/DEPLOYMENT.md](product/DEPLOYMENT.md)
 
 ## Repository map
 
@@ -187,6 +204,7 @@ The first product path is **Remote MCP / API Capability Measurement**: an AgentM
 AgentMeasure/
 ├── standard/          # the normative standard (CORE / METRICS / QUALITY / DATA / ...)
 ├── extensions/        # experimental, non-normative profiles (COMMERCIAL.md)
+├── product/           # product architecture (SDK / hosted analytics, in development)
 ├── whitepaper/        # methodology papers (EN/CN)
 ├── conformance/       # language-neutral test vectors + runners
 ├── reference/         # reference implementation (collector + adapters)

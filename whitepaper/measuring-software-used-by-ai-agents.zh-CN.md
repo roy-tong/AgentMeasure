@@ -9,9 +9,9 @@
 
 ## 摘要
 
-AI Agent 正在同时成为软件消费者与自主经济行动者。当 Skill、MCP server、API、CLI
-这些接口越来越容易创建与分发时，经济价值日益向它们背后的稀缺能力集中：专有数据、
-算力、执行、权限、交易与真实世界的履约。
+AI Agent 越来越多地**代表用户与组织**选择、调用并与软件交易。当 Skill、MCP server、
+API、CLI 这些接口越来越容易创建与分发时，经济价值日益向它们背后的稀缺能力集中：
+专有数据、算力、执行、权限、交易与真实世界的履约。
 
 这在产生支付问题之前，先产生了计量问题。一个能力要能被可靠地定价、比较、计费与
 优化，生态必须先就"什么算选择、什么算一次操作、什么算成功交付、什么算结果被消费、
@@ -20,11 +20,13 @@ AI Agent 正在同时成为软件消费者与自主经济行动者。当 Skill�
 AgentMeasure 为这个正在形成的 Capability Economy 提出一套开放计量标准：Reach →
 Choice → Use → Utility → Value 的共同数据语言，加上未来 Metering、Marketplace 与
 支付轨道可以构建其上的测量语义。目标不是仪表盘，而是让 **Capability as a Service
-（CaaS）成为可能的计量基础**。
+（CaaS，本文用法）成为可能的计量基础**。
 
 ## 一、从 SaaS 到 Capability Economy
 
-软件分发曾有一条可读的链路：下载、安装、使用。每个时代有自己的经济单元：
+软件分发曾有一条可读的链路：下载、安装、使用。每个时代有自己的经济单元。下面描述
+的转变是**增量，不是替代**：与 seat-based SaaS、request-based API 并存的，
+callable capabilities 正在成为 Agent 中介的软件消费的一种新经济单元。
 
 ```text
 SaaS
@@ -57,6 +59,17 @@ Agent → Capability → 操作 / 结果
 
 **如果 Capability 成为经济单元，Capability 计量就变成基础设施。** 这是本文的论点。
 
+### 论点与假设（Thesis and assumptions）
+
+AgentMeasure 建立在三个**尚未完全证实**的趋势判断上：
+
+1. Agent 将中介越来越多的软件选择与执行。
+2. 更多软件能力将脱离其人类 UI 被独立暴露。
+3. 基于使用、效应与结果的商业模型将与 seat-based 定价并存。
+
+即使这些趋势发展不均衡，测量标准依然有用：对象、质量规则与声称纪律本身成立为
+一套 Agent 软件测量标准。
+
 ## 二、先计量，后变现（Measurement Before Monetization）
 
 CaaS 要能定价、计费与建立声誉，先要有共同的测量语义。四个问题说明这一点：
@@ -80,6 +93,20 @@ Provider 能主张价值吗？
 *operation / attempt / delivery / consumption / effect / outcome* 的一致定义，以及
 把观察转化为这些对象的一致规则。这个共识就是切入点：**先计量，后变现**。
 
+### 现实证据：商业先于计量到来
+
+这并非假设——Agent 中介商业的支付与发现基础设施已经存在：
+
+- **Cloudflare Agents SDK** 允许 MCP Tool 按单次调用定价并经 x402 收费
+  （[Charge for MCP tools](https://developers.cloudflare.com/agents/agentic-payments/x402/charge-for-mcp-tools/)）。
+- **Coinbase x402 Bazaar** 是发现层：Agent 搜索带价格与 schema 的服务，并经 MCP
+  完成付费调用（[x402 Bazaar](https://docs.cdp.coinbase.com/x402/bazaar)）。
+- **OpenAI 与 Stripe 的 Agentic Commerce Protocol（ACP）** 已在真实 agentic
+  commerce 流程中使用（[报道](https://www.digitaltransactions.net/openai-and-stripe-are-the-latest-fintechs-to-enable-agentic-commerce/)）。
+
+这证明本节的论点：**支付与发现基础设施先于共同的 capability 测量语义到来**——
+这正是 AgentMeasure 要填补的空缺。
+
 ## 三、测量对象
 
 **Observation 是证据单位，不是业务测量单位。** AgentMeasure 先定义业务单位：
@@ -94,12 +121,13 @@ Capability
 Interaction Surface
 ```
 
-> **Capability 是经济对象。Interaction Surface 是交付界面。Software Entity 是身份与容器。**
+> **Capability 是主要的功能与测量对象。Offering 是一个或多个 Capability 的商业包装**
+> ——定义于 Commercial Extension（实验性），绝不插入 Core 测量谱系。
 
 | 对象 | 定义 | 层 |
 | --- | --- | --- |
 | Software Entity | 被度量的软件：Tool、Skill、API、Data Source、Agent、Application、Runtime Capability | Market |
-| Capability | 实体的具名功能——经济对象 | Market |
+| Capability | 实体的具名功能——主要的功能与测量对象 | Market |
 | Interaction Surface | 能力的可观察调用界面（mcp_tool、cli_command、http_endpoint…） | Market |
 | Decision Opportunity | 一次工具选择决策 | Behavior |
 | Candidate Set | 该次决策真正提供的候选集合 | Behavior |
@@ -112,14 +140,25 @@ Interaction Surface
 | Client | 独立 Agent runtime / installation | Market |
 | Project | package/MCP/skill 归属的软件项目 | Market |
 | Category | 可比较的能力类别（搜索、预订…） | Market |
-| Observation | 对上述行为的证据性观察（签名收据） | **Evidence** |
+| Observation | 测量事实的证据记录（认证与签名可选，由 verification profiles 定义） | **Evidence** |
 
 观察发生在 **Interaction Surface** 层；归属到 **Software Entity** 经机器可读
 registry 解析——观察时绝不猜测。
 
-**定价不是核心模型的对象。** `Offering`（定价模型、计费单位、价格、SLA、商业约束）
-定义在 Commercial Extension（实验性、非规范性）中，使测量语义的演进不被任何支付
-设计绑架。
+**定价不是核心模型的对象。** `Offering`——引用一个或多个 Capability 的商业包装，
+含允许的 surface、定价政策、服务级别目标与商业约束——定义在 Commercial Extension
+（实验性、非规范性）中，使测量语义的演进不被任何支付设计绑架。
+
+### 分布事件（Distribution events）
+
+商业归因进入范围后，discovery 重新获得商业意义——但不成为选择分母：
+
+```text
+Published → Listed → Retrieved / Discovered → Presented
+```
+
+`Presented` 仍是选择指标的分母；`Discovered` 是分布归因事件，回答
+*哪个 Skill / Registry / Marketplace 带来了 Capability 使用*。
 
 ## 四、Agent–Capability 交互模型
 
@@ -195,17 +234,18 @@ Measurement Quality
 
 ## 七、测量与计量（Measurement and Metering）
 
-从测量标准通向 CaaS 的桥是语义的：**测量单位 ≠ 计费单位**。
+从测量标准通向 CaaS 的桥是语义的：**测量单位 ≠ 计费单位**，且三个计量概念必须
+绝对分开——**Event** 是为什么计费，**Unit** 是按什么单位计，**Quantity** 是多少单位：
 
-| 能力 | 测量 | 可计费 |
-| --- | --- | --- |
-| 搜索 | Operation | 成功搜索 |
-| 数据 | Query | 1,000 条记录 |
-| 算力 | Job | GPU-秒 |
-| 动作 | Operation | 已确认的效应 |
-| 预订 | Transaction | 成功预订 |
-| 线索 | Task | 合格线索 |
-| 电商 | Transaction | 交易额的 % |
+| 能力 | billable_event | billable_unit | billable_quantity |
+| --- | --- | --- | --- |
+| 搜索 | `operation_succeeded` | operation | 1 |
+| 数据 | `result_delivered` | record | 1,382 |
+| 算力 | `compute_completed` | gpu_second | 47.2 |
+| 动作 | `effect_confirmed` | operation | 1 |
+| 预订 | `effect_confirmed` | booking | 1 |
+| 线索 | `outcome_qualified` | qualified_lead | 5 |
+| 电商 | `transaction_settled` | transaction | 0.03（收入分成） |
 
 因此，计量语义按 Offering 定义：
 
@@ -214,7 +254,10 @@ Billable Event        哪个测量事实触发计费
 Billable Unit         计量单位（操作、记录、GPU-秒、效应…）
 Billable Quantity     单位如何计数（按策略：attempts、确认…）
 Pricing Model         按操作 · 按数量 · 按效应 · 按结果 · 收入分成
-Metering Policy       测量事实如何映射到计费事实（规则、排除）
+Pricing Policy        版本化的价格规则（flat、阶梯、企业协议、surge…）
+Quote                 单次调用实际适用的条款（quote_id、policy 版本、单价）
+Metering Policy       测量事实 → 计费事实的映射（规则、排除），版本化
+Metering Ledger       可重放、可纠错的计量事实账本（revision / supersedes / reversal）
 Commercial Attribution  哪些参与方贡献了发现 / 选择 / 收入
 ```
 
@@ -229,7 +272,18 @@ Commercial Attribution  哪些参与方贡献了发现 / 选择 / 收入
 **能力参与了成功任务，不等于它导致了成功。**
 
 - **归因测量**（observational）：哪些能力参与了任务链——只能支持"关联"与"参与执行链"的结论。
-- **增量测量**（counterfactual）：能力的存在创造了多少额外价值——随机对照（有 / 无），比较任务成功、时间、成本与质量。
+- **增量测量**（counterfactual）：能力的存在创造了多少额外价值——随机对照是最强
+  证据，但许多能力无法随机关闭。因此因果声称遵循 **Value Evidence Ladder**：
+
+```text
+V0 Association            任务成功时参与过
+V1 Matched / Observational 控制已知混淆变量比较
+V2 Offline Ablation       重放任务、移除能力
+V3 Quasi-experiment       switchback / 自然变异
+V4 Randomized Holdout     最强因果证据
+```
+
+只允许用实际产出的证据等级支持对应的因果声称强度——与测量质量的纪律一致。
 
 商业归因扩展观察侧到分发链：
 
@@ -242,7 +296,9 @@ GitHub Skill → Registry → Agent 推荐 → Capability → 支付
 
 ## 九、能力信任与可比性（Capability Trust and Comparability）
 
-能力消费者（Agent、Marketplace 或人）比较的是信号，不是品牌：
+能力消费者的选择受多种因素塑造。Agent 与 Marketplace 可以在品牌、政策、价格、
+用户偏好与平台约束**之外**越来越多地比较机器可读的性能信号——这正是 AgentMeasure
+的 Decision Authority / Selection Constraint 模型描述的轴：
 
 ```text
 Capability Signals
@@ -320,7 +376,11 @@ Economy 的统一计量基础。**
 3. Model Context Protocol (MCP) 规范 — 工具发现与调用 surface。
 4. MCP Registry — 实体解析的 server 身份入口。
 5. EDPB — 伪匿名化指引（伪匿名数据仍可能属于 personal data）。
-6. AgentMeasure 规范 — Core / Metrics / Data / Entity / Quality / Correlation
+6. Cloudflare — [Charge for MCP tools（x402 / Agentic Payments）](https://developers.cloudflare.com/agents/agentic-payments/x402/charge-for-mcp-tools/)。
+7. Coinbase — [x402 Bazaar：Discover & pay over MCP](https://docs.cdp.coinbase.com/x402/bazaar)。
+8. OpenAI / Stripe — Agentic Commerce Protocol（ACP），2025 年 9 月发布；见
+   [Digital Transactions 报道](https://www.digitaltransactions.net/openai-and-stripe-are-the-latest-fintechs-to-enable-agentic-commerce/)。
+9. AgentMeasure 规范 — Core / Metrics / Data / Entity / Quality / Correlation
    （`standard/`）；Commercial Extension（`extensions/COMMERCIAL.md`，实验性）；
    机器可读 registry（`schemas/`、`registry/`）；参考实现与 conformance vectors
    同仓发布。

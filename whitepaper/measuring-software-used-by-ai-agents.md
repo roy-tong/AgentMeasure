@@ -9,11 +9,11 @@
 
 ## 0. Abstract
 
-AI agents are becoming both software consumers and autonomous economic actors. As
-interfaces such as Skills, MCP servers, APIs and CLIs become easier to create and
-distribute, economic value increasingly shifts toward the scarce capabilities behind
-them: proprietary data, compute, execution, permissions, transactions and real-world
-fulfillment.
+AI agents increasingly select, invoke, and transact with software on behalf of
+users and organizations. As interfaces such as Skills, MCP servers, APIs and CLIs
+become easier to create and distribute, economic value increasingly shifts toward
+the scarce capabilities behind them: proprietary data, compute, execution,
+permissions, transactions and real-world fulfillment.
 
 This creates a measurement problem before it creates a payment problem. A capability
 cannot be reliably priced, compared, billed or optimized until the ecosystem agrees
@@ -24,12 +24,15 @@ AgentMeasure proposes an open measurement standard for this emerging capability
 economy: a common data language — reach, choice, use, utility, value — plus the
 measurement semantics that metering, marketplaces and payment rails can later build
 on. The goal is not a dashboard. It is the measurement foundation that makes
-Capability as a Service (CaaS) possible.
+Capability as a Service (CaaS, as used in this paper) possible.
 
 ## 1. From SaaS to Capability Economy
 
 Software distribution once had a readable chain: downloaded, installed, used. Each
-era has had its own economic unit:
+era has had its own economic unit. The shift described below is **additive, not
+replacement**: alongside seat-based SaaS and request-based APIs, callable
+capabilities are emerging as a new economic unit for agent-mediated software
+consumption.
 
 ```text
 SaaS
@@ -68,6 +71,19 @@ them.
 **If capability becomes the economic unit, capability measurement becomes
 infrastructure.** That is the thesis of this paper.
 
+### Thesis and assumptions
+
+AgentMeasure is built on three trend judgments that are **not yet fully established**:
+
+1. Agents will mediate a growing share of software selection and execution.
+2. More software capabilities will be exposed independently of their human UI.
+3. Usage-, effect-, and outcome-based commercial models will coexist with seat-based
+   pricing.
+
+The measurement standard remains useful even if these trends progress unevenly:
+the objects, quality rules and claim discipline stand on their own as an agent
+software measurement standard.
+
 ## 2. Measurement Before Monetization
 
 Before CaaS can have pricing, billing and reputation, it needs common measurement
@@ -93,6 +109,23 @@ answered by a payment rail. They require agreed definitions of *operation*, *att
 observations into those objects. That agreement is the wedge: **measurement before
 monetization**.
 
+### Emerging evidence: commerce is arriving before measurement
+
+The premise is not hypothetical — payment and discovery infrastructure for
+agent-mediated commerce already exists:
+
+- **Cloudflare Agents SDK** allows MCP tools to be priced per call and charged via
+  x402 ([Charge for MCP tools](https://developers.cloudflare.com/agents/agentic-payments/x402/charge-for-mcp-tools/)).
+- **Coinbase x402 Bazaar** is a discovery layer where agents search services with
+  price and schema, and complete paid calls over MCP
+  ([x402 Bazaar](https://docs.cdp.coinbase.com/x402/bazaar)).
+- **OpenAI and Stripe's Agentic Commerce Protocol (ACP)** is being used in real
+  agentic commerce flows ([announcement coverage](https://www.digitaltransactions.net/openai-and-stripe-are-the-latest-fintechs-to-enable-agentic-commerce/)).
+
+These prove the thesis of this section: **payment and discovery infrastructure is
+arriving before common capability measurement semantics** — the gap AgentMeasure
+fills.
+
 ## 3. Measurement Objects
 
 An observation is an *evidence unit*, not a *business measurement unit*. AgentMeasure
@@ -108,13 +141,14 @@ Capability
 Interaction Surface
 ```
 
-> **Capability is the economic object. Interaction Surface is the delivery interface.
-> Software Entity is the identity/container.**
+> **Capability is the primary functional and measurement object. An Offering is the
+> commercial packaging of one or more capabilities** — defined in the Commercial
+> Extension (experimental), never inserted into the core measurement lineage.
 
 | Object | Definition | Layer |
 | --- | --- | --- |
 | Software Entity | the software being measured: tool, skill, API, data source, agent, application, runtime capability | Market |
-| Capability | a named function of an entity — the economic object | Market |
+| Capability | a named function of an entity — the primary functional and measurement object | Market |
 | Interaction Surface | the observable calling interface of a capability (mcp_tool, cli_command, http_endpoint, …) | Market |
 | Decision Opportunity | one tool-choice decision | Behavior |
 | Candidate Set | the set actually offered in that decision | Behavior |
@@ -127,15 +161,29 @@ Interaction Surface
 | Client | an independent agent runtime / installation | Market |
 | Project | the software entity packages/tools/skills roll up to | Market |
 | Category | a comparable capability class (search, booking, …) | Market |
-| Observation | evidence of one of the above (a signed receipt) | Evidence |
+| Observation | an evidence record of a measurement fact (authentication and signatures are optional, defined by verification profiles) | Evidence |
 
 Observation happens on **Interaction Surfaces**; attribution resolves to **Software
 Entities** through a machine-readable registry — never guessed at observation time.
 
-Pricing is deliberately **not** an object of the core model. An `Offering` — pricing
-model, billable unit, price, SLA, commercial constraints — is defined in the
-Commercial Extension (experimental, non-normative), so that measurement semantics
-can evolve without being coupled to any payment design.
+Pricing is deliberately **not** an object of the core model. An `Offering` —
+commercial packaging referencing one or more capabilities, with permitted surfaces,
+pricing policy, service level objectives and commercial constraints — is defined in
+the Commercial Extension (experimental, non-normative), so that measurement
+semantics can evolve without being coupled to any payment design.
+
+### Distribution events
+
+With commercial attribution in scope, discovery regains business meaning — without
+becoming the choice denominator:
+
+```text
+Published → Listed → Retrieved / Discovered → Presented
+```
+
+`Presented` remains the denominator of choice metrics; `Discovered` is a
+distribution-attribution event, answering *which Skill / Registry / Marketplace
+brought capability usage*.
 
 ## 4. Agent–Capability Interaction Model
 
@@ -225,17 +273,18 @@ never interpreted as negative.
 ## 7. Measurement and Metering
 
 The bridge from measurement standard to CaaS is semantic: **measurement unit ≠
-billable unit**.
+billable unit**, and the three metering concepts must stay separated — **Event** is
+why billing triggers, **Unit** is what is counted, **Quantity** is how many:
 
-| Capability | Measurement | Billable |
-| --- | --- | --- |
-| Search | Operation | Successful Search |
-| Data | Query | 1,000 Records |
-| Compute | Job | GPU-second |
-| Action | Operation | Confirmed Effect |
-| Booking | Transaction | Successful Booking |
-| Lead Generation | Task | Qualified Lead |
-| Commerce | Transaction | % of Transaction |
+| Capability | billable_event | billable_unit | billable_quantity |
+| --- | --- | --- | --- |
+| Search | `operation_succeeded` | operation | 1 |
+| Data | `result_delivered` | record | 1,382 |
+| Compute | `compute_completed` | gpu_second | 47.2 |
+| Action | `effect_confirmed` | operation | 1 |
+| Booking | `effect_confirmed` | booking | 1 |
+| Lead Generation | `outcome_qualified` | qualified_lead | 5 |
+| Commerce | `transaction_settled` | transaction | 0.03（revenue share） |
 
 Metering semantics therefore define, per Offering:
 
@@ -244,7 +293,10 @@ Billable Event       which measured fact triggers a charge
 Billable Unit        the unit of quantity (operation, record, GPU-second, effect…)
 Billable Quantity    how the unit is counted (per policy: attempts, confirmations…)
 Pricing Model        per-operation · per-quantity · per-effect · per-outcome · revenue share
-Metering Policy      how measurement facts map to billable facts (rules, exclusions)
+Pricing Policy       versioned price rules (flat, volume tiers, enterprise agreement, surge…)
+Quote                the terms actually applicable to one call (quote_id, policy version, unit price)
+Metering Policy      how measurement facts map to billable facts (rules, exclusions), versioned
+Metering Ledger      replayable, correctable record of metered facts (revision / supersedes / reversal)
 Commercial Attribution  which parties contributed to discovery / selection / revenue
 ```
 
@@ -264,9 +316,20 @@ the success.**
   the task chain. It supports claims of *association* and *contribution to the
   execution chain* — nothing more.
 - **Incrementality measurement** is counterfactual: how much additional value did the
-  capability create? The method is randomized comparison — treatment (capability
-  available) vs control (capability invisible) — across task success, time, cost,
-  and quality.
+  capability create? Randomized comparison is the strongest evidence, but many
+  capabilities cannot be randomly switched off. Claims therefore follow a **Value
+  Evidence Ladder**:
+
+```text
+V0 Association             participated when the task succeeded
+V1 Matched / Observational known confounders controlled
+V2 Offline Ablation        replay tasks with the capability removed
+V3 Quasi-experiment        switchback / natural variation
+V4 Randomized Holdout      strongest causal evidence
+```
+
+Only the evidence actually produced may support the corresponding causal claim
+strength — the same discipline as measurement quality.
 
 Commercial attribution extends the observational side along the distribution chain:
 
@@ -280,7 +343,10 @@ causal incrementality.
 
 ## 9. Capability Trust and Comparability
 
-A capability consumer (agent, marketplace, or human) compares signals, not brands:
+A capability consumer's choice is shaped by many factors. Agents and marketplaces
+can increasingly compare machine-readable performance signals **alongside** brand,
+policy, price, user preference, and platform constraints — exactly the axes
+AgentMeasure's Decision Authority / Selection Constraint model describes:
 
 ```text
 Capability Signals
@@ -374,7 +440,10 @@ term.**
 3. Model Context Protocol (MCP) specification — tool discovery and invocation surfaces.
 4. MCP Registry — server identity as the entry point for entity resolution.
 5. EDPB — guidance on pseudonymisation (pseudonymised data may still be personal data).
-6. AgentMeasure specification — Core, Metrics, Data, Entity, Quality, Correlation
+6. Cloudflare — [Charge for MCP tools (x402 / Agentic Payments)](https://developers.cloudflare.com/agents/agentic-payments/x402/charge-for-mcp-tools/).
+7. Coinbase — [x402 Bazaar: discover & pay over MCP](https://docs.cdp.coinbase.com/x402/bazaar).
+8. OpenAI / Stripe — Agentic Commerce Protocol (ACP), announced September 2025; see [Digital Transactions coverage](https://www.digitaltransactions.net/openai-and-stripe-are-the-latest-fintechs-to-enable-agentic-commerce/).
+9. AgentMeasure specification — Core, Metrics, Data, Entity, Quality, Correlation
    (`standard/`); Commercial Extension (`extensions/COMMERCIAL.md`, experimental);
    machine-readable registry (`schemas/`, `registry/`); reference implementation and
    conformance vectors in the same repository.

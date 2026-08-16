@@ -7,8 +7,8 @@
 
 ```text
 DSH session event stream（dsh-agent-loop 持久化事件流）
-  ├─ tool/call     {turn, step, callId, name, arguments}   ← S1 起点
-  ├─ tool/result   {turn, step, message, error, meta}      ← S2 + outcome（经 sourceEventSeqs 关联）
+  ├─ tool/call     {turn, step, callId, name, arguments}   ← 执行起点
+  ├─ tool/result   {turn, step, message, error, meta}      ← 完成 + outcome（经 sourceEventSeqs 关联）
   ├─ turn/start / step/start / step/end / turn/end         ← session 级归一
   └─ agentmeasure plugin（Cordis）
         ├─ 监听 tool/call + tool/result
@@ -21,8 +21,8 @@ DSH session event stream（dsh-agent-loop 持久化事件流）
 
 | 事件 | 字段 | AgentMeasure 用途 | 处理 |
 | --- | --- | --- | --- |
-| `tool/call` | `turn, step, callId, name, arguments` | stage=S1, tool=name, tool_use_id=callId | `arguments` **DROP** |
-| `tool/result` | `turn, step, message{content,isError}, error, meta` | stage=S2, outcome=isError?failure:success, 耗时=tool/call→tool/result 时间差 | `message.content` **DROP** |
+| `tool/call` | `turn, step, callId, name, arguments` | 执行起点, tool=name, tool_use_id=callId | `arguments` **DROP** |
+| `tool/result` | `turn, step, message{content,isError}, error, meta` | 完成 + outcome=isError?failure:success, 耗时=tool/call→tool/result 时间差 | `message.content` **DROP** |
 | `turn/start` | `turn` | 会话内归一边界 | 计数用 |
 | `step/start` | `{turn, step, ...}` | 同上 | 计数用 |
 
@@ -57,7 +57,7 @@ DSH session event stream（dsh-agent-loop 持久化事件流）
 
 ## 6. 验证标准
 
-- [ ] 插件安装后每次工具调用产生 1 条 S1+S2 配对记录（含耗时）
+- [ ] 插件安装后每次工具调用产生 1 条执行+完成配对记录（含耗时）
 - [ ] arguments / message 内容零泄漏（断言）
 - [ ] 与 Codex / Claude 数据并入同一统计（跨宿主统一）
 - [ ] 工具侧接入时升级为跨侧 E2

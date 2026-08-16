@@ -89,33 +89,40 @@ Counterexamples
   混轴时 MUST 披露（如 64% 是 model 自主竞争下的偏好，policy 强制场景另计）
 - **Counterexample**：全局 SoC 高不意味直接竞争中胜出（Exa vs Tavily 同台 10,000 次选 6,400 → 64%）
 
-## 2. Execution Family（M3，Grain = Attempt，对象 = Operation / Attempt）
+## 2. Execution Family（M3，对象 = Operation 与 Attempt；Grain 按指标声明）
 
-> Draft 0.4：**重试 = 同一 Operation 的多个 Attempt**（Core §2.4）。
-> Operation 是逻辑调用计数对象；Attempt 是执行计数对象。
+> Draft 0.4.1：**重试 = 同一 Operation 的多个 Attempt**（Core §2.4）。
+> 本家族不声明统一 Grain——M3.1 以 Operation 计数，M3.2/M3.3 以 Attempt 计数。
 
-### M3.1 — Logical Invocations
+### M3.1 — Operation Count
 
-- **Purpose**：实际执行的逻辑调用数（重试/重复归一后）
+- **Purpose**：实际执行的逻辑使用数（重试/重复归一后）
 - **Object**：Operation；**Grain**：Operation
 - **公式**：`COUNT(DISTINCT operation_id)`；无 operation_id 的旧数据回退
   `COUNT(DISTINCT invocation_id)`（0.3 兼容，Label 披露 `operation_resolution`）
 - **Eligibility**：Strict Qualified；**Dedup**：结构性——同 operation 多 attempt 只计 1
 - **Label 要求**：`attempts_per_operation`（均值/分布，公开披露）
+- 历史名：Logical Invocations（参考实现输出键 `logical_invocations` 保持不变）
 
-### M3.2 — Completion Rate
+### M3.2 — Attempt Completion Rate
 
 - **公式**：`Completed Attempts ÷ Invoked Attempts`
-- **Grain**：Attempt；Operation 级完成率可由 attempt 聚合（须声明口径）
+- **Grain**：Attempt
 - **Observability**：UNOBSERVABLE 的完成状态不计入分母（不视为未完成）
 
-### M3.3 — Success Rate
+### M3.3 — Attempt Success Rate
 
 - **公式**：`Successful Completed Attempts ÷ Completed Attempts`
 - **注意**：outcome=inconsistent（双侧冲突）不计入 success，单列披露
 - **Unknown**：outcome=unknown 不计入分母，披露 Unknown Outcome Share
-- **重试**：同一 operation 的失败 attempt 与成功 attempt 分别计数；
-  operation 级成功率（至少一次成功）另列披露
+- **重试**：同一 operation 的失败 attempt 与成功 attempt 分别计数
+
+### M3.4 — Operation Success Rate
+
+- **公式**：`Operations with ≥1 successful attempt ÷ Completed Operations`
+- **Grain**：Operation
+- **Purpose**：逻辑使用层面的成败（对 Metering 的 `operation_succeeded` 事件
+  最有意义：3 attempts 中 1 次成功 = 1 个成功 operation）
 
 ## 3. Utility Family（M4，Grain = Result / Invocation）
 
@@ -129,7 +136,11 @@ Counterexamples
 - **Draft 0.4**：本指标度量 **Result**（返回值被消费）；Effect（世界改变）属于
   0.5 的验证型 Utility 指标（Core §2.7 不变量 22）
 
-## 4. Distribution Family（M1，Grain = Client / Client-Day）
+## 4. Adoption & Relationship Family（M1，Grain = Client / Client-Day）
+
+> Active Clients 是**采用 / 关系**指标（使用已发生），不是 Reach。
+> Reach / Distribution 指标（Eligible Opportunities、Presentation Rate、
+> Distribution Coverage）挂靠 M2（Presented）与 Taxonomy，不另设家族。
 
 ### M1.1 — Active Clients
 
@@ -137,6 +148,16 @@ Counterexamples
 - **公式**：`COUNT(DISTINCT client_key)`（窗口内 ≥1 次 Strict Qualified eligible invocation）
 - **Grain**：Client；**Eligibility**：Strict Qualified
 - **Unknown**：client 不可解析/无标识的调用不计入，披露 Identity Coverage
+
+### M1.2 — Repeat Clients（定义，待向量）
+
+- **公式**：跨 ≥2 个窗口有 eligible usage 的 clients
+- **Grain**：Client × Window
+
+### M1.3 — Active Client-Days（= ACD，定义，待向量）
+
+- **公式**：`COUNT(DISTINCT client × UTC-day)`（窗口内 ≥1 次 eligible invocation）
+- **Grain**：Client-Day；跨 Codex/Claude/DSH 可比
 
 ## 5. 指标之间的纪律
 

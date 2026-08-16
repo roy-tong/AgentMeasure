@@ -13,6 +13,8 @@ AgentMeasure 定义一套共同语言，衡量 AI Agent 如何发现、选择、
 > AgentMeasure **不是**支付协议、市场或通用排名系统。
 > 它标准化的是这些系统可以构建于其上的事实与测量语义。
 
+[Whitepaper](whitepaper/measuring-software-used-by-ai-agents.md) · [中文白皮书](whitepaper/measuring-software-used-by-ai-agents.zh-CN.md) · [Core Specification](standard/CORE.md) · [English](README.md)
+
 ---
 
 ## 为什么 Capability 需要新的测量层
@@ -65,6 +67,9 @@ Agent → Capability → 执行 → 结果
 
 最后一个不等式正是 Operation/Attempt 模型的商业意义：一次 Operation 的 3 次
 Attempt ≠ 3 次可计费操作——除非计量策略如此规定。
+
+> 完整论点——经济单元、稀缺性、先计量后变现、计量语义，以及"商业先于计量到来"
+> 的证据——见 [docs/CAPABILITY-ECONOMY.md](docs/CAPABILITY-ECONOMY.md)。
 
 ## Measurement View：Reach → Choice → Use → Utility → Value
 
@@ -128,13 +133,17 @@ Claude / Codex
 >
 > AgentMeasure **不在请求关键路径上**。
 
+产品架构（Provider SDK → 本地缓冲 → 托管 ingestion → 面板）：
+[product/ARCHITECTURE.md](product/ARCHITECTURE.md)。
+
 ## 今天测量什么
 
 - **Decision Opportunity / Candidate Set / Presentation / Selection** —— 选择的四个对象；Observed Selection Rate 的分母是 Presented，不是 Available
 - **Software Entity → Capability → Interaction Surface** —— 存在什么、能做什么、怎么交互；观察发生在 surface 层，归属经机器可读 registry 解析到 entity
 - **Operation / Attempt** —— 一次逻辑使用 vs 一次执行；**重试 = 同一 Operation 的多个 Attempt，不再是 validity 分类**（作为可靠性信号保留，不当作多次逻辑使用计数）
 - **Qualified Usage** —— 按策略排除 test / benchmark / synthetic / replay / duplicate 等无效流量后的生产使用
-- **Result Consumption / Effect Confirmation** —— 结果被任务使用，或预期的世界状态改变被确认（Interaction Classes：Information / Action / Transaction / Computation / Communication / …）
+- **Result Consumption** —— *已定义，参考实现部分*：结果被任务使用
+- **Effect Confirmation** —— *领域模型已定义，指标计划于 Draft 0.5*：预期的世界状态改变被确认
 - **Measurement Label** —— 每个公开数字的营养成分表（覆盖 / 采样 / 口径 / 方法）
 
 完整模型见 [Core Specification](standard/CORE.md) / [Metrics](standard/METRICS.md) /
@@ -142,17 +151,14 @@ Claude / Codex
 
 ## 从 Measurement 到 CaaS
 
-```text
-Capability
-    │
-    ▼
-Discover → Choose → Use → Deliver Value → Measure → Meter → Price / Pay / Settle
-```
-
-AgentMeasure 标准化**前五步**——从发现到测量——产生的数据与语义。计量与商业归因
-是未来扩展；支付轨道可以由现有支付基础设施提供。
+AgentMeasure 正在**渐进标准化**从发现与选择、经执行到效用与价值的测量链：核心使用
+语义今天已定义；效用/价值与商业计量仍是活跃草案。计量与商业归因是未来扩展；支付
+轨道可以由现有支付基础设施提供。
 
 > **AgentMeasure 标准化经济事实，不移动金钱。**
+>
+> 完整论点：[docs/CAPABILITY-ECONOMY.md](docs/CAPABILITY-ECONOMY.md) ·
+> 经济语义：[extensions/COMMERCIAL.md](extensions/COMMERCIAL.md)（Experimental）
 
 ## AgentMeasure 是 / 不是
 
@@ -180,7 +186,7 @@ AgentMeasure 标准化**前五步**——从发现到测量——产生的数据
 ```bash
 git clone https://github.com/roy-tong/AgentMeasure && cd AgentMeasure
 python3 conformance/runners/run_metrics.py   # 指标 vectors（M2.2 / M2.5 / M4.1）
-python3 verify_vectors.py                     # receipt / correlation / operation vectors
+python3 verify_vectors.py                     # verification / correlation / operation vectors
 python3 registry/validate_entities.py         # 校验机器可读 registry
 ```
 
@@ -190,12 +196,17 @@ python3 registry/validate_entities.py         # 校验机器可读 registry
 SDK 在 Provider 侧产出 observations（无需 Agent 侧安装），接入 collector 与托管分析。
 SDK 与托管分析尚未实现——标准、参考 collector 与 conformance 套件已就绪。
 
+范围与验收：[product/MVP.md](product/MVP.md) · SDK 契约：
+[product/PROVIDER-SDK.md](product/PROVIDER-SDK.md) · 部署：
+[product/DEPLOYMENT.md](product/DEPLOYMENT.md)
+
 ## 仓库结构
 
 ```text
 AgentMeasure/
 ├── standard/          # 规范性标准本体（CORE / METRICS / QUALITY / DATA / ...）
 ├── extensions/        # 实验性、非规范性 profile（COMMERCIAL.md）
+├── product/           # 产品架构（SDK / 托管分析，in development）
 ├── whitepaper/        # 方法论论文（中英）
 ├── conformance/       # 语言无关 test vectors + runners
 ├── reference/         # 参考实现（collector + adapters）

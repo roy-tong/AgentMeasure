@@ -31,7 +31,7 @@ Stable local key（永不离开设备）
 ## 4. Redaction 管线（代码级）
 
 ```text
-stdin raw payload → 内存内 REDACT + PSEUDONYMIZE → safe receipt → disk
+stdin raw payload → 内存内 REDACT + PSEUDONYMIZE → safe observation → disk
 ```
 
 禁止 `raw → disk → redact`。泄漏测试是 adapter 的必选项。

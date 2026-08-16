@@ -1,7 +1,7 @@
-# Experiment: Cross-side E2 & Discrepancy Report #1（设计）
+# Experiment: Cross-side Corroboration & Discrepancy Report #1（设计）
 
-> 目的：在真实 runtime 上验证 E2 双边关联，并产出第一份
-> 《Agent Usage Measurement Discrepancy Report》。
+> 目的：在真实 runtime 上验证 cross-side corroborated（双侧独立观察）关联，
+> 并产出第一份《Agent Usage Measurement Discrepancy Report》。
 > 前置：Claude Code 可用（OTLP）+ 一个测试 MCP server（双侧插桩）。
 > 本设计 fixture 可先行（consumption.py 已实现消费链）；真实数据待运行时。
 
@@ -19,14 +19,13 @@ Claude Code ──OTLP──▶ AgentMeasure collector（client 侧观察）
 
 ## 采集矩阵（预期输出）
 
-| Signal | Claude (client) | MCP Server (server) | 双侧关联 |
+| 阶段 | Claude (client) | MCP Server (server) | 双侧关联 |
 | --- | --- | --- | --- |
-| S0 Selected | N | — | — |
-| S1 Executed | N | N | tool_call_id 匹配 |
-| S2 Completed | success/failure | success/failure | 一致性 |
-| S3 Delivered | N | — | — |
-| S4 Consumed | mcp_tool.name 信号 | — | 消费链 |
-| Correlated (E2) | — | — | 双侧独立观察数 |
+| Selection | N | — | — |
+| Executed | N | N | tool_call_id 匹配 |
+| Completed | success/failure | success/failure | 一致性 |
+| Consumption | mcp_tool.name 信号 | — | 消费链 |
+| cross-side corroborated | — | — | 双侧独立观察数 |
 
 ## Discrepancy Report #1 模板
 
@@ -39,7 +38,7 @@ Claude Code ──OTLP──▶ AgentMeasure collector（client 侧观察）
 - 任务：100 个，3-8 次调用/任务，10% 故意失败
 
 ## 观察结果
-| Signal | Claude | Server | Delta | 原因假设 |
+| 阶段 | Claude | Server | Delta | 原因假设 |
 | --- | --- | --- | --- | --- |
 | Executed | ? | ? | ? | ? |
 
@@ -57,7 +56,7 @@ Claude Code ──OTLP──▶ AgentMeasure collector（client 侧观察）
 
 - [ ] 双侧 tool_call_id 匹配率 ≥ 95%
 - [ ] 失败样本在双侧一致（或差异可解释）
-- [ ] S4 consumed 链在 Claude 侧可复现
+- [ ] 消费链（Consumption）在 Claude 侧可复现
 - [ ] 报告发布到 whitepaper/ + 站点 + HN/X（M4）
 
 ## 状态
