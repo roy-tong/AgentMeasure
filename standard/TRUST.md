@@ -57,6 +57,10 @@
 
 四个维度正交，**不再新增任何字母阶梯**（M 码只存在于过去的文档，见 LEGACY-MIGRATION.md）。
 
+![Caller Identity — Evidence Ladder](../assets/quality-ladder.png)
+
+> 阶梯图（assets/quality-ladder.png）：Unknown（默认）→ Declared（自述）→ Correlated（独立佐证）→ Attested（平台背书）。身份由证据升级，不由字符串授予。
+
 ## 6. Attestation（未实现）
 
 - 需要平台私钥签名或平台官方 API 确认
