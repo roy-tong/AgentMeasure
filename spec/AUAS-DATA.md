@@ -1,85 +1,75 @@
-# AUAS-DATA — Receipt / Manifest / Aggregate Schemas（Draft 0.1）
+# AUAS-DATA — Observation Envelope（Draft 0.3）
 
-## 1. Usage Receipt（一等公民）
+> Receipt 是系统间流动的最小签名单位；本版本定义六类观察的 Envelope，
+> 使 schema 真正表达 Presented/Selected/Invoked/Completed/Consumed。
 
-Receipt 是系统间流动的最小单位：某个可验证 Observer 对一次 Agent-tool interaction
-所做的签名、隐私安全声明。
+## 1. Observation Envelope（统一外壳）
 
 ```jsonc
 {
-  "spec_version": "auas-0.1",
-  "receipt_id": "uuid",
+  "spec_version": "auas-0.3",
+  "observation_id": "uuid",
+  "observation_type": "presentation | selection | invocation | completion | consumption | task_outcome",
+  "observer": {"principal": "codex-hook@acme", "trust_domain": "acme", "side": "client"},
   "observed_at": "2026-08-16T03:00:00Z",
-  "observer_principal": "codex-hook@acme",
-  "observer_side": "client",            // client | server | platform
-  "provenance": "hook",                  // hook | otel | wrapper | platform
-  "trust_domain": "acme",                // 独立佐证判定的关键（AUAS-TRUST）
   "project_id": "github.com/foo/bar",
-  "tool": "foo.search",
-  "tool_call_id": "tc-9",                // 精确关联键（如可得）
-  "trace_id": "trace-9",                 // 结构关联键（如可得）
-  "session_key": "p-...",                // 伪匿名（内存内生成，绝不落原始值）
-  "outcome": "success",                  // success|failure|retry|denied|unknown
-  "lifecycle_stage": "L2",               // L0-L3（生命周期，非证据）
-  "correlation_commitment": "c-...",     // H(protocol||project||trace||call_id)
-  "sampling": null,                      // 或 {"method":"fixed","probability":0.1}
-  "signature": "base64",                 // Ed25519 over canonical(SIGNED_FIELDS)
-  "key_id": "receipt-key"
+  "tool_id": "foo.search",
+  "client_key": "p-...",              // 伪匿名，内存内生成
+  "usage_context": "production",      // 见 AUAS-CORE §7
+  "validity": "normal",               // 见 AUAS-CORE §7
+  "sampling": null,
+  "provenance": "hook",
+  "payload": { /* 类型特有字段 */ },
+  "signature": "base64", "key_id": "k1"
 }
 ```
 
-**MUST NOT 包含**：prompt、tool input/output、path、conversation、user identity。
+## 2. 六类 Payload
 
-## 2. Canonical Serialization（签名字节确定性）
-
-规范：AUAS canonical JSON（RFC 8785 精神）：
-1. 对象键按 UTF-8 字节序排序
-2. 无空白
-3. 字符串 UTF-8 + NFC 归一化 + JSON 转义（ensure_ascii=False）
-4. 数字：整数原样；浮点 ES6 风格（规范字段限整数/字符串/null）
-5. 递归嵌套
-
-**SIGNED_FIELDS**（影响 attribution/correlation/qualification，MUST 签名）：
-`receipt_id, spec_version, observed_at, observer_principal, observer_side,
-provenance, project_id, tool, tool_call_id, trace_id, session_key, outcome,
-lifecycle_stage, source_event_id, sampling, trust_domain`
-
-`signature` 与 `key_id` 不参与签名（key_id 是验签密钥选择器）。
-
-## 3. Manifest（批量传输）
-
+### presentation
 ```jsonc
-{
-  "spec_version": "auas-0.1",
-  "manifest_id": "uuid",
-  "observer_principal": "...",
-  "created_at": "...",
-  "receipts": [ ...UsageReceipt... ],
-  "signature": "..."
-}
+{ "decision_id": "d1", "candidate_set_id": "cs1", "category_id": "search.web.general",
+  "category_version": "v1", "choice_mode": "exclusive", "rank_in_candidate_set": 3 }
 ```
 
-## 4. Aggregate Statement（公开数据面）
-
+### selection
 ```jsonc
-{
-  "spec_version": "auas-0.1",
-  "policy": "AUAS/Core-1",
-  "project_id": "github.com/foo/bar",
-  "window": {"start": "...", "end": "...", "days": 30},
-  "coverage": {"hosts": ["codex"], "observer_population": "participating",
-               "sampling": "unsampled-only", "coverage_claim": "partial"},
-  "metrics": {
-    "acd": 2841,
-    "attributed_invocations": 18321,
-    "corroborated_share": 0.73,
-    "success_rate": 0.97
-  },
-  "signed_by": "aggregator-key"
-}
+{ "decision_id": "d1", "selection_id": "s1", "rank": 1,
+  "selection_reason_observable": false }
 ```
 
-## 5. 版本与演进
+### invocation
+```jsonc
+{ "tool_call_id": "tc-9", "trace_id": "t-9", "started_at": "..." }
+```
 
-- 任何字段变更走 AUP；`spec_version` 递增
-- 不向后兼容的字段变更 → 新 spec_version；实现必须显式声明支持版本
+### completion
+```jsonc
+{ "tool_call_id": "tc-9", "outcome": "success|failure|denied", "duration_ms": 1200,
+  "error_type": null }
+```
+
+### consumption
+```jsonc
+{ "tool_call_id": "tc-9", "consumed_by_request_seq": 42 }   // 后续请求实际使用
+```
+
+### task_outcome
+```jsonc
+{ "task_id": "tk-1", "task_success": true, "model": "gpt-5.6",
+  "task_type": "research", "ended_at": "..." }
+```
+
+## 3. 签名与 canonical（不变）
+
+- SIGNED_FIELDS 覆盖全部 attribution 字段（AUAS-CORE 不变量 5）
+- canonical JSON：排序键、无空白、NFC（确定性字节）
+- 六类 payload 的 attribution 字段全部入签名
+
+## 4. Manifest / Aggregate Statement（不变，见 Draft 0.1 版）
+
+## 5. 纪律
+
+- 一类观察一个 Envelope；不把多类塞进一条
+- 不可观察的状态不产生观察（UNOBSERVABLE 是元级信息，在 Profile 能力矩阵声明，
+  不伪造 FALSE 观察）

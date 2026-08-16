@@ -1,47 +1,69 @@
-# AUAS-COVERAGE — Scope、Sampling、Coverage、Uncertainty（Draft 0.1）
+# AUAS-QUALITY — Measurement Quality（Draft 0.3）
 
-> **Evidence 和 Coverage 是两个不同问题。** 数据真实 ≠ 数据有代表性。
-> 任何公开 Metric 必须携带 Measurement Scope。
+> **证据 ≠ 覆盖 ≠ 限定 ≠ 方法。** 一组 100% 真实但只覆盖 2% Agent 的事件不是
+> 市场数据。本文件定义质量四维 + Measurement Label 披露要求。
 
-## 1. Measurement Scope（每个公开指标必须声明）
+## 1. 质量四维
 
-```jsonc
-{
-  "hosts": ["claude-code", "codex"],        // 覆盖了哪些 Agent runtime
-  "observer_population": "participating",   // 参与观察网络的主体
-  "time_window": {"start": "...", "end": "...", "days": 30},
-  "sampling": {"method": "unsampled-only"},
-  "coverage_claim": "partial"               // partial | platform-complete
-}
-```
-
-**展示纪律**：不显示"这个 MCP 本月有 12,347 个 Agent 用户"，而显示
-"在参与 AUAS 观察网络的 Claude Code + Codex observers 中，过去 30 天观察到
-12,347 个 qualified active clients（coverage: partial）"。
-
-## 2. Sampling（Receipt 可携带）
-
-```jsonc
-"sampling": {"method": "fixed", "probability": 0.1, "unit": "call"}
-```
-
-| sampling_policy | 语义 |
-| --- | --- |
-| `unsampled-only` | 只接受未采样数据（当前默认；保守） |
-| `weighted-estimate` | 按概率加权估计；**必须报告 uncertainty**（置信区间） |
-
-收到 `probability=0.1` 的 100 条记录 ≠ 100 次调用——是"约 1000 次的 10% 样本"。
-不声明 sampling 的聚合是无意义聚合。
-
-## 3. Coverage 层级
-
-| coverage_claim | 含义 | 能否做总体推断 |
+| 维 | 问题 | 披露 |
 | --- | --- | --- |
-| partial | 参与网络的部分 observers | 不能 |
-| platform-complete | 某平台全量 telemetry | 可以（该平台范围内） |
+| Evidence | 事件真实吗 | 签名比例、corroborated 比例 |
+| Coverage | 看到多少世界 | Runtime/Client/Invocation 覆盖 |
+| Qualification | 算不算真实生产使用 | Context/Validity 分布 |
+| Observability | 信号能测多少 | 每信号的可观察率 |
 
-## 4. Uncertainty
+## 2. Coverage（多维，不再只有 partial/complete）
 
-- weighted-estimate 必须报告：样本量、概率、估计值、95% 置信区间
-- partial coverage 必须声明：观察面列表与缺口（如"未接入 DSH"）
-- Discrepancy Report 是 coverage 差异的实证载体
+```text
+Runtime Coverage        各 runtime 的观察覆盖
+Client Coverage         覆盖的伪匿名 client 占比
+Invocation Coverage     调用级覆盖
+Opportunity Observability    Presented 可观察率
+Consumption Observability    Consumed 可观察率
+Identity Coverage       身份可解析率
+Context Classification Coverage   context 可分类率
+Category Classification Coverage  category 可分类率
+```
+
+**Population Coverage（覆盖多少总体）≠ Signal Observability（覆盖内某信号能测多少）**：
+
+```text
+Claude user coverage = 20%
+但在这 20% 内：Invocation observable 100% · Presented observable 5% · Consumed observable 70%
+```
+
+## 3. Observability 披露（每指标）
+
+每指标必须声明各状态的可观察率：TRUE / FALSE / UNKNOWN / UNOBSERVABLE。
+UNOBSERVABLE 必须单列——绝不并入 FALSE（不变量 17）。
+
+## 4. Measurement Label v1（披露要求）
+
+```text
+Agent Usage Measurement Label
+Standard version:   0.3
+Metric:             AUAS-M2.2 Selection Rate
+Window:             30 days
+Grain:              decision-opportunity
+Usage context:      production
+Validity:           normal
+Agent hosts:        Claude Code, Codex
+Coverage:           partial
+Collection:         client + server
+Corroborated:       68%
+Sampling:           none
+Unknown context:    8%
+Unknown validity:   3%
+Observability:      presented 可观察率 15%
+Identity coverage:  91%
+Category:           search.web.general/v1
+Choice mode:        exclusive
+```
+
+## 5. Claim Discipline（陈述纪律）
+
+| 覆盖 | 可说的 | 不可说 |
+| --- | --- | --- |
+| partial | Observed Selection Share | Agent Market Share |
+| 单平台完整 | Claude Code Selection Share | Global Agent Selection Share |
+| 总体推断条件满足 | Estimated Agent Ecosystem Share | — |
