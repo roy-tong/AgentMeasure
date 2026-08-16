@@ -87,6 +87,17 @@ agent-used/
 
 prompt / tool_input / tool_output / path / raw session id——代码级默认 DROP（adapter 含泄漏测试）。伪匿名 installation id（本地 secret + 按月轮换）支持 unique installations 与 repeat usage，云端无法反推身份。`DO_NOT_TRACK=1` 全程生效。
 
+## 当前状态（M1-M2）
+
+跨宿主统一已跑通：codex hook（client）+ MCP wrapper（server）+ DSH plugin（harness 原生 E2）
+三类事件可并入同一 project 统计——`verified calls / corroborated usage (E2) / active sessions / host 分布`。
+
+```bash
+# 导入三类事件 → 关联 → 统计
+python3 -m collector.correlator.correlator   # 见测试：correlate() 生成 E2
+python3 collector/aggregator/aggregator.py stats --project github.com/foo/bar
+```
+
 ## 路线图
 
 | Stage | 目标 | 关键产物 |
