@@ -1,0 +1,55 @@
+{
+  "spec_version": "agentmeasure-0.4",
+  "note": "Operation/Attempt（Core §2.4）：重试 = 同一 operation 的多个 attempt；无证据不归并（不变量 23）。resolution: explicit | structural | none。",
+  "vectors": [
+    {
+      "id": "op-explicit",
+      "description": "3 次 attempt 同一 operation_id（两次失败后成功）→ M3.1 = 1，attempts = 3，resolution=explicit",
+      "input": {
+        "project": "github.com/foo/bar",
+        "observations": [
+          {"side": "server", "principal": "mcp-wrapper@td-b", "tool": "foo.search", "call_id": "tc-a", "outcome": "failure", "ts": "2026-08-16T03:00:00Z", "operation_id": "op-1", "task_id": "tk-1"},
+          {"side": "server", "principal": "mcp-wrapper@td-b", "tool": "foo.search", "call_id": "tc-b", "outcome": "failure", "ts": "2026-08-16T03:00:05Z", "operation_id": "op-1", "task_id": "tk-1"},
+          {"side": "server", "principal": "mcp-wrapper@td-b", "tool": "foo.search", "call_id": "tc-c", "outcome": "success", "ts": "2026-08-16T03:00:10Z", "operation_id": "op-1", "task_id": "tk-1"}
+        ]
+      },
+      "expect": {"logical_invocations": 1, "attempts": 3, "attempts_per_operation": 3.0, "resolution": {"explicit": 1}}
+    },
+    {
+      "id": "op-structural-retry",
+      "description": "无 operation_id，同 task 失败后重试成功 → 结构性归并（resolution=structural，M3.1 = 1）",
+      "input": {
+        "project": "github.com/foo/bar",
+        "observations": [
+          {"side": "server", "principal": "mcp-wrapper@td-b", "tool": "foo.search", "call_id": "tc-a", "outcome": "failure", "ts": "2026-08-16T03:00:00Z", "task_id": "tk-1"},
+          {"side": "server", "principal": "mcp-wrapper@td-b", "tool": "foo.search", "call_id": "tc-b", "outcome": "success", "ts": "2026-08-16T03:00:05Z", "task_id": "tk-1"}
+        ]
+      },
+      "expect": {"logical_invocations": 1, "attempts": 2, "resolution": {"structural": 1}}
+    },
+    {
+      "id": "op-no-merge-after-success",
+      "description": "同 task 两次成功调用（第二次不是失败后的重试）→ 不归并，2 个 operation",
+      "input": {
+        "project": "github.com/foo/bar",
+        "observations": [
+          {"side": "server", "principal": "mcp-wrapper@td-b", "tool": "foo.search", "call_id": "tc-a", "outcome": "success", "ts": "2026-08-16T03:00:00Z", "task_id": "tk-1"},
+          {"side": "server", "principal": "mcp-wrapper@td-b", "tool": "foo.search", "call_id": "tc-b", "outcome": "success", "ts": "2026-08-16T03:00:05Z", "task_id": "tk-1"}
+        ]
+      },
+      "expect": {"logical_invocations": 2, "attempts": 2, "resolution": {"structural": 2}}
+    },
+    {
+      "id": "op-fail-closed-no-task",
+      "description": "无 task_id → 无法判定重试链，fail-closed 不归并（2 个独立 operation，resolution=none）",
+      "input": {
+        "project": "github.com/foo/bar",
+        "observations": [
+          {"side": "server", "principal": "mcp-wrapper@td-b", "tool": "foo.search", "call_id": "tc-a", "outcome": "failure", "ts": "2026-08-16T03:00:00Z"},
+          {"side": "server", "principal": "mcp-wrapper@td-b", "tool": "foo.search", "call_id": "tc-b", "outcome": "success", "ts": "2026-08-16T03:00:05Z"}
+        ]
+      },
+      "expect": {"logical_invocations": 2, "attempts": 2, "resolution": {"none": 2}}
+    }
+  ]
+}

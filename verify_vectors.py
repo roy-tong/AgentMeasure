@@ -105,12 +105,61 @@ def run_correlation_vectors() -> int:
     return failed
 
 
+def run_operation_vectors() -> int:
+    """Draft 0.4：Operation/Attempt 归并（Core §2.4 / CORR §3，fail-closed）。"""
+    from collector.correlator.correlator import connect, store_observation, match_invocations
+    from collector.aggregator.aggregator import compute
+    from collector.usage import empty_observation, new_observation_id
+
+    data = json.loads((FIXTURES / "operations.json").read_text(encoding="utf-8"))
+    failed = 0
+    for v in data["vectors"]:
+        tmp = tempfile.mkdtemp()
+        conn = connect(Path(tmp) / "v.db")
+        for o in v["input"]["observations"]:
+            obs = empty_observation()
+            obs.update(dict(
+                observation_id=new_observation_id(),
+                observed_at=o["ts"],
+                observer_principal=o["principal"],
+                observer_side=o["side"],
+                provenance="wrapper",
+                trust_domain=o["principal"].split("@")[-1],
+                project_id=v["input"]["project"],
+                tool=o["tool"],
+                tool_call_id=o["call_id"],
+                outcome=o["outcome"],
+                lifecycle_stage="L2",
+                operation_id=o.get("operation_id"),
+                task_id=o.get("task_id")))
+            store_observation(conn, obs)
+        match_invocations(conn)
+        s = compute(conn, v["input"]["project"])
+        exp = v["expect"]
+        ok = (s["logical_invocations"] == exp["logical_invocations"]
+              and s["attempts"] == exp["attempts"])
+        if "attempts_per_operation" in exp and s["attempts_per_operation"] != exp["attempts_per_operation"]:
+            ok = False
+        for key, val in exp.get("resolution", {}).items():
+            if s["operation_resolution"].get(key, 0) != val:
+                ok = False
+        if not ok:
+            print(f"  ✗ {v['id']} (logical={s['logical_invocations']} attempts={s['attempts']} "
+                  f"res={s['operation_resolution']})")
+            failed += 1
+        else:
+            print(f"  ✓ {v['id']}")
+    return failed
+
+
 def main() -> int:
     failed = 0
     print("receipt vectors:")
     failed += run_receipt_vectors()
     print("correlation/aggregation vectors:")
     failed += run_correlation_vectors()
+    print("operation/attempt vectors:")
+    failed += run_operation_vectors()
     print(f"\n{'ALL VECTORS PASS' if failed == 0 else f'{failed} VECTORS FAILED'}")
     return 0 if failed == 0 else 1
 

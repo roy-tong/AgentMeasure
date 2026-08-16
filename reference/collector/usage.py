@@ -46,6 +46,8 @@ OBSERVATION_KEYS = (
     "sampling",             # {"method": "fixed", "probability": 0.1} 等（AgentMeasure-COVERAGE）
     "usage_context",        # production|development|test|benchmark|evaluation|synthetic|ci|unknown
     "validity",             # normal|retry|duplicate|replay|agent_loop|health_check|load_test|suspected_invalid|unknown
+    "operation_id",         # 逻辑使用（Core §2.4）；未知留 null（不变量 23：无证据不归并）
+    "task_id",              # 任务单位（谱系起点）；未知留 null
 )
 
 USAGE_CONTEXTS = ("production", "development", "test", "benchmark",

@@ -32,7 +32,7 @@ def compute(conn, project_id: str, days: int = DAYS) -> dict:
     since_dt = datetime.now(timezone.utc) - timedelta(days=days)
     since = since_dt.isoformat()
 
-    # ---- invocation 级指标（核心） ----
+    # ---- attempt 级（M3.2/M3.3 的计数单位；attempt = invocation，Core §2.4） ----
     row = conn.execute(
         """
         SELECT COUNT(*), SUM(eligible) FROM invocations
@@ -40,8 +40,33 @@ def compute(conn, project_id: str, days: int = DAYS) -> dict:
         """,
         (project_id, since),
     ).fetchone()
-    total_invocations = row[0] or 0
-    eligible_invocations = row[1] or 0
+    attempts = row[0] or 0
+    eligible_attempts = row[1] or 0
+
+    # ---- operation 级（M3.1 Logical Invocations；Draft 0.4 结构性 dedup） ----
+    # 重试 = 同一 operation 的多个 attempt；无 operation 证据时 attempt 独立成
+    # operation（resolution=none，0.3 兼容），故 COALESCE 兜底。
+    row = conn.execute(
+        """
+        SELECT COUNT(DISTINCT COALESCE(NULLIF(operation_id, ''), invocation_id))
+        FROM invocations
+        WHERE project_id=? AND started_at>=?
+        """,
+        (project_id, since),
+    ).fetchone()
+    logical_invocations = row[0] or 0
+
+    row = conn.execute(
+        """
+        SELECT COALESCE(NULLIF(operation_resolution, ''), 'none') AS r,
+               COUNT(DISTINCT COALESCE(NULLIF(operation_id, ''), invocation_id)) AS n
+        FROM invocations
+        WHERE project_id=? AND started_at>=?
+        GROUP BY r
+        """,
+        (project_id, since),
+    ).fetchall()
+    operation_resolution = {r["r"]: r["n"] for r in row}
 
     row = conn.execute(
         """
@@ -97,7 +122,7 @@ def compute(conn, project_id: str, days: int = DAYS) -> dict:
         (project_id, since),
     ).fetchone()
     qualified_invocations = row[0] or 0
-    qualified_rate = round(qualified_invocations / eligible_invocations, 3) if eligible_invocations else 0.0
+    qualified_rate = round(qualified_invocations / eligible_attempts, 3) if eligible_attempts else 0.0
     # 披露：context/validity 未知份额（Strict 口径的激励漏洞防护）
     row = conn.execute(
         """
@@ -154,7 +179,8 @@ def compute(conn, project_id: str, days: int = DAYS) -> dict:
         (project_id, since),
     ).fetchall()
 
-    corroborated_share = round(corroborated / eligible_invocations, 3) if eligible_invocations else 0.0
+    corroborated_share = round(corroborated / eligible_attempts, 3) if eligible_attempts else 0.0
+    attempts_per_operation = round(attempts / logical_invocations, 2) if logical_invocations else 0.0
 
     return {
         "project": project_id,
@@ -162,8 +188,11 @@ def compute(conn, project_id: str, days: int = DAYS) -> dict:
         "policy": describe(CORE_POLICY_V1),
         "active_clients": active_clients,
         "acd": acd,
-        "logical_invocations": total_invocations,
-        "eligible_invocations": eligible_invocations,
+        "logical_invocations": logical_invocations,   # M3.1：Operation 数（结构性 dedup）
+        "attempts": attempts,                          # attempt 数（M3.2/M3.3 单位）
+        "attempts_per_operation": attempts_per_operation,
+        "operation_resolution": operation_resolution,  # explicit | structural | none
+        "eligible_invocations": eligible_attempts,
         "corroborated_invocations": corroborated,
         "corroborated_share": corroborated_share,
         "qualified_invocations": qualified_invocations,

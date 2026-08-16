@@ -55,7 +55,9 @@ def connect(db_path: Path = DB_DEFAULT) -> sqlite3.Connection:
             trust_domain TEXT,
             sampling TEXT,
             usage_context TEXT,
-            validity TEXT
+            validity TEXT,
+            operation_id TEXT,
+            task_id TEXT
         )
         """
     )
@@ -70,7 +72,10 @@ def connect(db_path: Path = DB_DEFAULT) -> sqlite3.Connection:
             lifecycle TEXT,
             evidence TEXT,
             eligible INTEGER DEFAULT 0,
-            matched_by TEXT
+            matched_by TEXT,
+            operation_id TEXT,
+            task_id TEXT,
+            operation_resolution TEXT
         )
         """
     )
@@ -85,6 +90,18 @@ def connect(db_path: Path = DB_DEFAULT) -> sqlite3.Connection:
     )
     conn.execute("CREATE INDEX IF NOT EXISTS idx_obs_callid ON observations(tool_call_id)")
     conn.execute("CREATE INDEX IF NOT EXISTS idx_obs_trace ON observations(trace_id)")
+    conn.execute("CREATE INDEX IF NOT EXISTS idx_obs_oper ON observations(operation_id)")
+    # 旧库迁移：补谱系列（Draft 0.4，Core §2.4）
+    for table, cols in (
+        ("observations", {"operation_id": "TEXT", "task_id": "TEXT"}),
+        ("invocations", {"operation_id": "TEXT", "task_id": "TEXT",
+                         "operation_resolution": "TEXT"}),
+    ):
+        existing = {row[1] for row in conn.execute(f"PRAGMA table_info({table})")}
+        for col, ddl in cols.items():
+            if col not in existing:
+                conn.execute(f"ALTER TABLE {table} ADD COLUMN {col} {ddl}")
+    conn.commit()
     return conn
 
 
@@ -99,8 +116,8 @@ def store_observation(conn, obs: dict) -> bool:
             (observation_id, observed_at, observer_principal, observer_side, provenance,
              project_id, tool, tool_call_id, trace_id, session_key, outcome,
              duration_bucket, lifecycle_stage, signature, key_id, source_event_id,
-             trust_domain, sampling, usage_context, validity)
-            VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+             trust_domain, sampling, usage_context, validity, operation_id, task_id)
+            VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
             """,
             tuple(obs.get(k) for k in OBSERVATION_KEYS),
         )
@@ -199,14 +216,93 @@ def match_invocations(conn, window_seconds: int = WINDOW_SECONDS) -> dict:
         _make_invocation(conn, [dict(r)], matched_by="none")
         created += 1
 
+    derive_operations(conn)
     conn.commit()
     return {"invocations_created": created}
+
+
+RETRY_OUTCOMES = ("failure", "retry", "denied")
+
+
+def derive_operations(conn) -> dict:
+    """Operation 归并（AgentMeasure-CORE §2.4 / CORR §3，fail-closed）。
+
+    只处理 operation_resolution IS NULL 的 invocation（幂等）：
+      1. explicit   观察自带 operation_id → 直接归组
+      2. structural 同 (project, tool, task_id) 内按 started_at 排序的连续
+                    attempt，且前一次 outcome ∈ {failure, retry, denied}
+                    （重试链）→ 同一 operation（operation_id = 链首 invocation_id）
+      3. none       其余：每个 attempt 独立成 operation（operation_id = invocation_id）
+    """
+    explicit = structural = none = 0
+
+    # 1) explicit：任一关联观察携带 operation_id
+    rows = conn.execute(
+        """
+        SELECT i.invocation_id, o.operation_id FROM invocations i
+        JOIN observation_links l ON l.invocation_id = i.invocation_id
+        JOIN observations o ON o.observation_id = l.observation_id
+        WHERE i.operation_resolution IS NULL
+          AND o.operation_id IS NOT NULL AND o.operation_id != ''
+        GROUP BY i.invocation_id
+        """
+    ).fetchall()
+    for r in rows:
+        conn.execute(
+            "UPDATE invocations SET operation_id=?, operation_resolution='explicit' WHERE invocation_id=?",
+            (r["operation_id"], r["invocation_id"]),
+        )
+        explicit += 1
+
+    # 2) structural：同 (project, tool, task_id) 重试链（task_id 缺失 → 不归并）
+    rows = conn.execute(
+        """
+        SELECT invocation_id, project_id, tool, task_id, started_at, outcome
+        FROM invocations
+        WHERE operation_resolution IS NULL AND task_id IS NOT NULL AND task_id != ''
+          AND started_at IS NOT NULL
+        ORDER BY project_id, tool, task_id, started_at
+        """
+    ).fetchall()
+    groups: dict = {}
+    for r in rows:
+        groups.setdefault((r["project_id"], r["tool"], r["task_id"]), []).append(r)
+    for group in groups.values():
+        chain = group[0]["invocation_id"]
+        prev_outcome = None
+        for cur in group:
+            if prev_outcome is not None and prev_outcome not in RETRY_OUTCOMES:
+                chain = cur["invocation_id"]  # 前一次成功 → 新链（无选择介入证据，fail-closed）
+            conn.execute(
+                "UPDATE invocations SET operation_id=?, operation_resolution='structural' WHERE invocation_id=?",
+                (chain, cur["invocation_id"]),
+            )
+            structural += 1
+            prev_outcome = cur["outcome"]
+
+    # 3) none：其余 attempt 独立成 operation
+    rows = conn.execute(
+        "SELECT invocation_id FROM invocations WHERE operation_resolution IS NULL"
+    ).fetchall()
+    for r in rows:
+        conn.execute(
+            "UPDATE invocations SET operation_id=?, operation_resolution='none' WHERE invocation_id=?",
+            (r["invocation_id"], r["invocation_id"]),
+        )
+        none += 1
+
+    conn.commit()
+    return {"explicit": explicit, "structural": structural, "none": none}
 
 
 def _make_invocation(conn, obs_list: list, matched_by: str) -> None:
     """由一组 observations 创建 invocation 并链接。"""
     invocation_id = str(uuid.uuid4())
     obs_ids = [o["observation_id"] for o in obs_list]
+    # 谱系（Core §2.4）：显式 operation_id / task_id 透传；未知留 null
+    # （不变量 23：无 Operation 证据时不得归并，由 derive_operations 按规则处理）
+    operation_id = next((o.get("operation_id") for o in obs_list if o.get("operation_id")), None)
+    task_id = next((o.get("task_id") for o in obs_list if o.get("task_id")), None)
     # outcome：冲突保留（AgentMeasure-CORE 不变量 12）——client success + server failure
     # → derived_outcome = "inconsistent"，绝不压平为 success
     outcomes = set(o.get("outcome") for o in obs_list if o.get("outcome"))
@@ -229,8 +325,9 @@ def _make_invocation(conn, obs_list: list, matched_by: str) -> None:
     conn.execute(
         """
         INSERT OR IGNORE INTO invocations
-        (invocation_id, project_id, tool, started_at, outcome, lifecycle, evidence, eligible, matched_by)
-        VALUES (?,?,?,?,?,?,?,?,?)
+        (invocation_id, project_id, tool, started_at, outcome, lifecycle, evidence,
+         eligible, matched_by, operation_id, task_id)
+        VALUES (?,?,?,?,?,?,?,?,?,?,?)
         """,
         (
             invocation_id,
@@ -242,6 +339,8 @@ def _make_invocation(conn, obs_list: list, matched_by: str) -> None:
             evidence,
             1 if evidence != "E0" else 0,
             matched_by,
+            operation_id,
+            task_id,
         ),
     )
     for oid in obs_ids:
