@@ -1,5 +1,6 @@
-__pycache__/
-*.pyc
-agent-used.db
-events/
-adapters/deepseek-harness/node_modules/
+# SDK
+sdk/node_modules/
+sdk/dist/*.js.map
+# 本地数据
+*.db
+.agentmeasure/

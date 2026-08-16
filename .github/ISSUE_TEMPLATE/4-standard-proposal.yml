@@ -1,0 +1,29 @@
+name: Standard Proposal (AUP)
+description: 标准变更提案（先 Discussion/Issue 共识 → proposals/）
+title: "[Proposal] "
+labels: [proposal]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: 问题
+      description: 什么测量语义不清晰/不成立/缺失（用反例说明）
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: 提案
+      description: 新的定义/规则/指标合同（AgentMeasure-METRICS Contract 模板）
+    validations:
+      required: true
+  - type: textarea
+    id: impact
+    attributes:
+      label: 影响
+      description: 哪些 standard 文档 / reference / conformance vectors 受影响
+  - type: input
+    id: author
+    attributes:
+      label: 作者
+      description: GitHub handle（可选）

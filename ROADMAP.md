@@ -8,7 +8,7 @@
 
 | 阶段 | Standard Track | Product Track |
 | --- | --- | --- |
-| **Now** | Draft 0.4.3 — Canonicalization & Convergence（唯一 Canonical Observation、M3.1 无回退、metric-specific eligibility、Qualification Resolution、metrics.yaml 单一事实源、四维正交） | **Remote Capability Analytics**（Provider 侧测量 Remote MCP / API 的请求与结果） |
+| **Now** | Draft 0.4.3 — Canonicalization & Convergence（唯一 Canonical Observation、M3.1 无回退、metric-specific eligibility、Qualification Resolution、metrics.yaml 单一事实源、四维正交） | **Product Gate A — First Real Measurement**：Provider SDK（@agentmeasure/mcp）+ Local Analytics + 第一个真实外部 Provider + 第一份 Measurement Report；**完成后才进入 Draft 0.5** |
 | **Next** | Draft 0.5 — Utility & Economic Semantics（Result/Effect 双元 Utility、Interaction Classes 指标化） | Provider SDK + Hosted Analytics（SDK 产出 observations，托管 collector/分析） |
 | **Then** | Draft 0.6 — External Validation（5-10 外部项目、第一份《Measurement Discrepancy Report》） | Runtime 集成 + Optimize（跨 runtime 信号、效果确认） |
 | **Later** | Commercial Measurement Profile（COMMERCIAL 转正：Billable Event/Unit/Metering Policy） | Metering（计费事实输出，对接外部支付 rails） |

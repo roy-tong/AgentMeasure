@@ -1,0 +1,32 @@
+{
+  "name": "@agentmeasure/mcp",
+  "version": "0.1.0",
+  "description": "AgentMeasure Provider SDK — observe-first capability usage measurement for MCP servers. Emits canonical observations (AgentMeasure Draft 0.4.3); never on the request critical path; no content captured.",
+  "license": "Apache-2.0",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "example": "node examples/server.js",
+    "test": "node --test test/"
+  },
+  "devDependencies": {
+    "@types/node": "^26.2.0",
+    "typescript": "^5.5.0"
+  },
+  "keywords": [
+    "agent",
+    "mcp",
+    "measurement",
+    "analytics",
+    "agentmeasure",
+    "observability"
+  ],
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.30.0"
+  }
+}

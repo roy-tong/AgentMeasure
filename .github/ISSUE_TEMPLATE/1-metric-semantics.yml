@@ -1,0 +1,30 @@
+name: Metric Semantics
+description: 指标定义/公式/分母/eligibility 的讨论与提案
+title: "[Metric Semantics] "
+labels: [metric-semantics]
+body:
+  - type: textarea
+    id: metric
+    attributes:
+      label: 指标 / 定义
+      description: 涉及哪个 metric（M2.x/M3.x/M4.x）或哪个概念（grain/denominator/eligibility）
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: 不成立的反例（Counterexample）
+      description: 什么输入下该定义会产生误导性数字？（反例驱动）
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: 提案
+      description: 新的公式/分母/规则；最好附 metric contract 字段
+  - type: checkboxes
+    id: aup
+    attributes:
+      label: 流程
+      options:
+        - label: 需要转为 AUP（proposals/）正式变更

@@ -1,0 +1,30 @@
+name: Measurement Discrepancy
+description: 双侧观察不一致 / 数字对不上 / 疑似计量错误（Discrepancy Report 素材）
+title: "[Discrepancy] "
+labels: [discrepancy]
+body:
+  - type: textarea
+    id: setup
+    attributes:
+      label: 设置
+      description: 观察面（client/server）、工具、窗口、期望 vs 实际
+    validations:
+      required: true
+  - type: textarea
+    id: delta
+    attributes:
+      label: 差异
+      description: 数字、时间窗、样本量；两侧各自看到了什么
+    validations:
+      required: true
+  - type: textarea
+    id: hypothesis
+    attributes:
+      label: 原因假设
+      description: 超时/断连/重试/时区/去重规则差异…
+  - type: checkboxes
+    id: public
+    attributes:
+      label: 发布
+      options:
+        - label: 同意作为公开 Discrepancy Report 素材（脱敏后）

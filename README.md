@@ -187,12 +187,24 @@ python3 verify_vectors.py                     # verification / correlation / ope
 python3 registry/validate_entities.py         # validate the machine-readable registry
 ```
 
-## Product MVP — in development
+## Product MVP — first real measurement (in development)
 
-The first product path is **Remote MCP / API Capability Measurement**: an AgentMeasure
-Provider SDK that emits observations from the provider side (no agent-side install),
-feeding a collector and hosted analytics. The SDK and hosted analytics are not
-implemented yet — the standard, reference collector, and conformance suite are.
+The first product path is **Remote MCP / API Capability Measurement**: an
+[AgentMeasure Provider SDK](sdk/) (`@agentmeasure/mcp`) that emits observations from
+the provider side (no agent-side install), feeding a local collector. Local analytics
+run without any cloud:
+
+```bash
+npm install @agentmeasure/mcp
+# wrap your MCP server's tool handlers: server.tool = (name, schema, mw.wrapTool(name, handler))
+node examples/mcp-integration.js          # synthetic traffic → local JSONL
+python3 product/local-analytics.py ~/.agentmeasure/events/agentmeasure-events.jsonl
+```
+
+Status: SDK v0.1.0 (canonical output, fail-open, no content, unknown defaults,
+caller declared, loss accounting) + local analytics implemented; hosted ingestion
+and dashboard next. First real external Provider = Product Gate A
+([ROADMAP.md](ROADMAP.md), [MVP.md](product/MVP.md)).
 
 Scope and acceptance: [product/MVP.md](product/MVP.md) · SDK contract:
 [product/PROVIDER-SDK.md](product/PROVIDER-SDK.md) · Deployment:

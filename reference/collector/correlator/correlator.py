@@ -182,11 +182,15 @@ def _grade(conn, obs_ids: list) -> str:
 def match_invocations(conn, window_seconds: int = WINDOW_SECONDS) -> dict:
     """把未归类的 observations 匹配为 invocations。幂等：已链接的不重复处理。"""
     created = 0
+    # 只匹配 attempt 事件（canonical 0.4.3）：presentation/selection/result_consumed/
+    # task_outcome 服务各自指标，不进入 invocations；legacy 无 observation_type 兼容
     # 1) 精确 tool_call_id 分组（同 project + tool）
     rows = conn.execute(
         """
         SELECT o.* FROM observations o
         WHERE o.tool_call_id IS NOT NULL AND o.tool_call_id != ''
+          AND (o.observation_type IS NULL
+     OR o.observation_type IN ('attempt_started', 'attempt_completed'))
           AND NOT EXISTS (SELECT 1 FROM observation_links l WHERE l.observation_id = o.observation_id)
         ORDER BY o.observed_at
         """
@@ -204,6 +208,8 @@ def match_invocations(conn, window_seconds: int = WINDOW_SECONDS) -> dict:
         """
         SELECT o.* FROM observations o
         WHERE o.trace_id IS NOT NULL AND o.trace_id != ''
+          AND (o.observation_type IS NULL
+     OR o.observation_type IN ('attempt_started', 'attempt_completed'))
           AND NOT EXISTS (SELECT 1 FROM observation_links l WHERE l.observation_id = o.observation_id)
         ORDER BY o.observed_at
         """
@@ -242,7 +248,9 @@ def match_invocations(conn, window_seconds: int = WINDOW_SECONDS) -> dict:
     rows = conn.execute(
         """
         SELECT o.* FROM observations o
-        WHERE NOT EXISTS (SELECT 1 FROM observation_links l WHERE l.observation_id = o.observation_id)
+        WHERE (o.observation_type IS NULL
+     OR o.observation_type IN ('attempt_started', 'attempt_completed'))
+          AND NOT EXISTS (SELECT 1 FROM observation_links l WHERE l.observation_id = o.observation_id)
         """
     ).fetchall()
     for r in rows:

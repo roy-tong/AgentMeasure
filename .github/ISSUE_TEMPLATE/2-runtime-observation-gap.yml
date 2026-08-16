@@ -1,0 +1,31 @@
+name: Runtime Observation Gap
+description: 某个 runtime / adapter 观察不到某个信号（能力边界声明）
+title: "[Observation Gap] "
+labels: [runtime-observation]
+body:
+  - type: input
+    id: runtime
+    attributes:
+      label: Runtime / Adapter
+      description: 如 Claude Code OTLP、Codex hook、DSH plugin、自定义 wrapper
+    validations:
+      required: true
+  - type: input
+    id: signal
+    attributes:
+      label: 缺失的信号
+      description: 如 presentation、selection、consumption、trace_id、精确时间戳
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: 证据
+      description: 官方 schema / 源码 / 实测——证明"官方不可能提供"
+    validations:
+      required: true
+  - type: textarea
+    id: impact
+    attributes:
+      label: 对指标的影响
+      description: 哪些指标因此只能 UNOBSERVABLE / 部分可观察

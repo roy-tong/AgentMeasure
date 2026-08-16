@@ -190,11 +190,22 @@ python3 verify_vectors.py                     # verification / correlation / ope
 python3 registry/validate_entities.py         # 校验机器可读 registry
 ```
 
-## 产品 MVP —— 开发中
+## 产品 MVP —— 第一次真实测量（开发中）
 
-第一条产品路径是 **Remote MCP / API Capability Measurement**：AgentMeasure Provider
-SDK 在 Provider 侧产出 observations（无需 Agent 侧安装），接入 collector 与托管分析。
-SDK 与托管分析尚未实现——标准、参考 collector 与 conformance 套件已就绪。
+第一条产品路径是 **Remote MCP / API Capability Measurement**：[AgentMeasure Provider
+SDK](sdk/)（`@agentmeasure/mcp`）在 Provider 侧产出 observations（无需 Agent 侧
+安装），接入本地 collector。本地分析无需任何云：
+
+```bash
+npm install @agentmeasure/mcp
+# 包装你的 MCP server 的 tool handler：server.tool = (name, schema, mw.wrapTool(name, handler))
+node examples/mcp-integration.js          # 合成流量 → 本地 JSONL
+python3 product/local-analytics.py ~/.agentmeasure/events/agentmeasure-events.jsonl
+```
+
+状态：SDK v0.1.0（canonical 输出、fail-open、零内容、unknown 默认、caller declared、
+丢失记账）+ 本地分析已实现；托管 ingestion 与面板下一步。第一个真实外部 Provider
+= Product Gate A（[ROADMAP.md](ROADMAP.md)、[MVP.md](product/MVP.md)）。
 
 范围与验收：[product/MVP.md](product/MVP.md) · SDK 契约：
 [product/PROVIDER-SDK.md](product/PROVIDER-SDK.md) · 部署：
