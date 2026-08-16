@@ -38,19 +38,37 @@ Agent 正在成为软件的新消费者，但行业没有统一的方法衡量 A
 
 ## 二、测量对象
 
-**Observation（观察）是证据单位，不是业务测量单位。** AgentMeasure 先定义业务单位：
+**Observation（观察）是证据单位，不是业务测量单位。** AgentMeasure 先定义业务单位（Draft 0.4 模型）：
 
 | 对象 | 定义 | 层 |
 | --- | --- | --- |
-| Opportunity | Agent 的决策上下文里有这个 Tool | Behavior |
-| Invocation | Tool 实际执行了调用 | Behavior |
-| Task | Invocation 所服务的任务单位 | Behavior |
+| Software Entity | 被度量的软件：Tool、Skill、API、Data Source、Agent、Application、Runtime Capability | Market |
+| Capability | 实体的具名功能 | Market |
+| Interaction Surface | 能力的可观察调用界面（mcp_tool、cli_command、http_endpoint…） | Market |
+| Decision Opportunity | 一次工具选择决策 | Behavior |
+| Candidate Set | 该次决策真正提供的候选集合 | Behavior |
+| Presentation | 某 selectable 出现在候选集 | Behavior |
+| Selection | Agent 选择某 selectable | Behavior |
+| Operation | 为某任务对某 Capability 的一次**逻辑使用** | Behavior |
+| Attempt | Operation 的一次实际执行（**重试 = 多个 Attempt**） | Behavior |
+| Result / Effect | 能力返回了什么 / 世界改变了什么 | Behavior |
+| Task | Operation 所服务的任务单位 | Behavior |
 | Client | 独立 Agent runtime / installation | Market |
 | Project | package/MCP/skill 归属的软件项目 | Market |
 | Category | 可比较的能力类别（搜索、编码…） | Market |
 | Observation | 对上述行为的证据性观察（签名收据） | **Evidence** |
 
-把 observation 当成 usage 计数，会双计每一次被佐证的调用；把 invocation 当成价值，会混淆行为与效用。层级不可互换。
+```text
+Evidence 层:   Observation
+                    ↓ 重构
+Behavior 层:   Decision Opportunity · Selection · Operation · Attempt · Task
+                    ↓ 聚合
+Market 层:     Software Entity · Capability · Surface · Client · Project · Category
+```
+
+观察发生在 **Interaction Surface** 层；归属到 **Software Entity** 通过机器可读
+registry 解析——观察时绝不猜测。把 observation 当成 usage 计数，会双计每一次被
+佐证的调用；把 invocation 当成价值，会混淆行为与效用。层级不可互换。
 
 ## 三、Agent Tool 交互生命周期
 
@@ -69,7 +87,7 @@ Agent 正在成为软件的新消费者，但行业没有统一的方法衡量 A
 
 ```text
 可用 ✓ 被呈现 ✓ 被选择 ✓   ← 被选中
-可用 ✓ 被呈现 ✓ 被选择 ✗   ← 错过的机会（Selection Rate 的分母）
+可用 ✓ 被呈现 ✓ 被选择 ✗   ← 错过的机会（Observed Selection Rate 的分母）
 可用 ✓ 被呈现 ✗            ← 根本没上场（分发缺口）
 ```
 
@@ -81,7 +99,7 @@ Agent 正在成为软件的新消费者，但行业没有统一的方法衡量 A
 `可用 Clients · 被呈现机会数 · Presentation Rate · Agent Host 覆盖 · 模型覆盖`
 
 **M2 Choice（选择）— 最 Agent-native。** Agent 有机会时会不会选我？
-`选择数 · Selection Rate（Selected÷Presented）· Share of Choice · 首选率 · 替代率 · 切换率`
+`选择数 · Observed Selection Rate（Observed Selected÷Presented）· Share of Choice · 首选率 · 替代率 · 切换率`
 
 **M3 Execution（执行）— Use。** 选了以后好不好用？
 `逻辑调用数 · 完成率 · 成功率 · 错误/重试率 · 延迟 · 成本`
@@ -92,13 +110,17 @@ Agent 正在成为软件的新消费者，但行业没有统一的方法衡量 A
 **M5 Outcome（价值）— Value。** 最终是否改善任务？
 `任务成功关联 · 贡献 · 增量提升 · 节省时间 · 节省成本 · 减少人工干预`
 
-### Selection Rate（选择率）
+### Observed Selection Rate（观测选择率）
 
 \[
-Selection\ Rate = \frac{Selected}{Presented}
+Observed\ Selection\ Rate = \frac{Observed\ Selected}{Presented}
 \]
 
 Tool A：呈现 100,000、选择 5,000 → 5%。Tool B：呈现 10,000、选择 4,000 → 40%。绝对调用量偏向 A，但 Agent 明显更偏好 B。这才是开发者真正关心的数据。
+
+**Observed ≠ Preference。** 该指标只报告"观测到的选择"；required/forced 约束下的
+"选择"（策略强制、用户点名）不是偏好。比较 MUST 声明 Choice Mode（决策结构）与
+Decision Authority / Selection Constraint（决策主体与约束程度）三轴。
 
 ### Share of Agent Choice（Agent 选择份额）
 
@@ -112,7 +134,7 @@ SoC = \frac{该工具的选择数}{类别内全部选择数}
 
 ```text
 Search 类别
-Exa       呈现份额 31% · 选择份额 44% · 选择率 58% · 重复选择 71%
+Exa       呈现份额 31% · 选择份额 44% · Observed 选择率 58% · 重复选择 71%
 ```
 
 这是 Agent 软件的市场数据，不是遥测。
@@ -162,13 +184,21 @@ Measurement Quality
 
 ### Qualified Agent Usage（限定使用）
 
-**Raw Invocation ≠ Qualified Usage。** 未来大量工具流量不代表采用：开发者自测、CI、benchmark、eval、synthetic agent、health check、重试风暴、agent loop、replay、压测、demo。AgentMeasure 要求每条观察携带 **Usage Context**：
+**Raw Invocation ≠ Qualified Usage。** 未来大量工具流量不代表采用：开发者自测、CI、benchmark、eval、synthetic agent、health check、重试风暴、agent loop、replay、压测、demo。AgentMeasure 在两条轴上限定每条观察——**Usage Context**（流量来自哪里）与 **Validity**（观察是否真实）：
 
 ```text
-production · development · test · benchmark · evaluation · synthetic · ci · unknown
+Usage Context:  production · development · test · benchmark · evaluation · synthetic · ci · unknown
+Validity:       normal · retry · duplicate · replay · agent_loop · health_check · load_test · suspected_invalid · unknown
 ```
 
-公开采用指标默认为 `production` + 单独披露的 `unknown`；benchmark/eval/test/CI/synthetic **绝不混入 qualified usage**。在决定排行榜是否可信上，上下文限定可能比证据分级更直接。
+**Strict Qualified Usage** = `production` + `validity=normal`——公共排行榜与
+market metric 的默认口径。`unknown` 的 context/validity **绝不静默计入**（防止
+"报 unknown → 进排行榜"的激励漏洞），单独披露 *Unknown Context Share* /
+*Unknown Validity Share*。benchmark/eval/test/CI/synthetic **绝不混入 qualified
+usage**。在决定排行榜是否可信上，上下文限定可能比证据分级更直接。
+
+> Draft 0.4：Operation/Attempt 拆分后，重试 = 同一 operation 的另一个 attempt
+> （共享 `operation_id`），不再是 validity 分类。
 
 ## 八、标准报告（Standard Reporting）
 
@@ -178,9 +208,13 @@ production · development · test · benchmark · evaluation · synthetic · ci 
 
 ```text
 Agent Usage Measurement Label
-Standard version:   0.2
+Standard version:   0.4
 Window:             30 days
+Grain:              decision-opportunity
 Usage context:      production
+Validity:           normal
+Decision authority: model
+Selection constraint: autonomous
 Agent hosts:        Claude Code, Codex
 Coverage:           partial
 Collection:         client + server
@@ -197,7 +231,7 @@ Identity coverage:  91%
 
 | Profile | North Star | Guardrails | Diagnostics |
 | --- | --- | --- | --- |
-| Adoption | Active Clients | Qualified Usage Rate, Coverage | Presented, Selection Rate, Repeat |
+| Adoption | Active Clients | Qualified Usage Rate, Coverage | Presented, Observed Selection Rate, Repeat |
 | Reliability | 成功完成调用数 | p95 延迟, 成本, 重试 | 错误类型, host, 版本 |
 | Utility | Consumed Results | 纠错率, 回退率 | 完成→消费转化 |
 | Value | 增量任务成功 | 成本, 延迟, 安全 | 任务类型, 模型, 替代工具 |
@@ -214,6 +248,20 @@ Identity coverage:  91%
 4. **候选集可观测性**：Presented 是关键分母，但多数 runtime 尚未暴露 routing 层信号。
 5. **隐私**：伪匿名下关联与留存能走多远？
 6. **跨 Agent 身份**：同一 client 跨 Codex/Claude/DSH——何时可知？
+
+## 十一、参考文献
+
+1. RFC 2119 / BCP 14 — *Key words for use in RFCs to Indicate Requirement Levels*。
+   本标准规范语言（MUST / SHOULD / MAY）的依据。
+2. OpenTelemetry GenAI semantic conventions — AgentMeasure bindings 复用的
+   `gen_ai.*` 工具调用遥测字段。
+3. Model Context Protocol (MCP) 规范 — Agent runtime 的工具发现与调用 surface。
+4. MCP Registry — 实体解析的 server 身份入口。
+5. EDPB — 伪匿名化相关指引：伪匿名数据仍可能属于 personal data；伪匿名是
+   保障措施，不是法律豁免。
+6. AgentMeasure 规范 — Core / Metrics / Data / Entity / Quality / Correlation
+   （`standard/`）、机器可读 registry（`schemas/`、`registry/`）与参考实现、
+   conformance vectors 同仓发布。
 
 ---
 

@@ -52,13 +52,21 @@ ecosystem can adopt the discipline on day one. AgentMeasure answers five questio
 ## 2. Measurement Objects
 
 An observation is an *evidence unit*, not a *business measurement unit*. AgentMeasure
-defines the business units first:
+defines the business units first (Draft 0.4 model):
 
 | Object | Definition | Layer |
 | --- | --- | --- |
-| Opportunity | an agent had the tool in its decision context | Behavior |
-| Invocation | the tool actually executed | Behavior |
-| Task | the unit of work an invocation serves | Behavior |
+| Software Entity | the software being measured: tool, skill, API, data source, agent, application, runtime capability | Market |
+| Capability | a named function of an entity | Market |
+| Interaction Surface | the observable calling interface of a capability (mcp_tool, cli_command, http_endpoint, …) | Market |
+| Decision Opportunity | one tool-choice decision | Behavior |
+| Candidate Set | the set actually offered in that decision | Behavior |
+| Presentation | a selectable appearing in the candidate set | Behavior |
+| Selection | the agent choosing a selectable | Behavior |
+| Operation | one logical use of a capability for a task | Behavior |
+| Attempt | one execution of an operation (**retries = multiple attempts**) | Behavior |
+| Result / Effect | what the capability returned / what changed in the world | Behavior |
+| Task | the unit of work an operation serves | Behavior |
 | Client | an independent agent runtime / installation | Market |
 | Project | the software entity packages/tools/skills roll up to | Market |
 | Category | a comparable capability class (search, coding, …) | Market |
@@ -67,14 +75,16 @@ defines the business units first:
 ```
 Evidence Layer:   Observation
                       ↓ reconstruct
-Behavior Layer:   Opportunity · Invocation · Task
+Behavior Layer:   Decision Opportunity · Selection · Operation · Attempt · Task
                       ↓ aggregate
-Market Layer:     Client · Project · Category
+Market Layer:     Software Entity · Capability · Surface · Client · Project · Category
 ```
 
-Counting observations as usage double-counts every corroborated call; counting
-invocations as value confuses behavior with utility. The layers are not
-interchangeable.
+Observation happens on **Interaction Surfaces**; attribution resolves to
+**Software Entities** through a machine-readable registry — never guessed at
+observation time. Counting observations as usage double-counts every corroborated
+call; counting invocations as value confuses behavior with utility. The layers are
+not interchangeable.
 
 ## 3. Agent Tool Interaction Lifecycle
 
@@ -98,7 +108,7 @@ business meaning:
 
 ```text
 Available ✓ Presented ✓ Selected ✓   ← chosen
-Available ✓ Presented ✓ Selected ✗   ← missed opportunity (Selection Rate denominator)
+Available ✓ Presented ✓ Selected ✗   ← missed opportunity (Observed Selection Rate denominator)
 Available ✓ Presented ✗              ← never in the game (distribution gap)
 ```
 
@@ -114,8 +124,8 @@ Coverage · Model/Runtime Coverage`
 
 **M2 Choice — the most agent-native family.** When the agent had a chance, did it
 choose me?
-`Selections · Selection Rate (Selected ÷ Presented) · Share of Choice ·
-First-choice Rate · Substitution Rate · Switch Rate`
+`Selections · Observed Selection Rate (Observed Selected ÷ Presented) · Share of
+Choice · First-choice Rate · Substitution Rate · Switch Rate`
 
 **M3 Execution — Use.** Was it usable after selection?
 `Logical Invocations · Completion Rate · Success Rate · Error/Retry Rate ·
@@ -129,16 +139,21 @@ Rate · Fallback Rate`
 `Task Success Association · Contribution · Incremental Lift · Time Saved · Cost
 Saved · Human Intervention Reduced`
 
-### Selection Rate
+### Observed Selection Rate
 
 \[
-Selection\ Rate = \frac{Selected\ Opportunities}{Presented\ Opportunities}
+Observed\ Selection\ Rate = \frac{Observed\ Selected\ Opportunities}{Presented\ Opportunities}
 \]
 
 Tool A: presented 100,000, selected 5,000 → 5%. Tool B: presented 10,000, selected
-4,000 → 40%. Absolute calls favor A; agent preference strongly favors B. Selection
-Rate answers the question developers actually care about: *when the agent had the
-chance, how often did it choose me?*
+4,000 → 40%. Absolute calls favor A; agent preference strongly favors B. Observed
+Selection Rate answers the question developers actually care about: *when the agent
+had the chance, how often did it choose me?*
+
+**Observed ≠ preference.** The metric reports what was observed as selected; a
+selection made under `required`/`forced` constraint (policy-mandated, user-requested)
+is not a preference. Comparisons MUST declare the choice axis (Choice Mode) and the
+decision axes (Decision Authority, Selection Constraint), or standardize them.
 
 ### Share of Agent Choice
 
@@ -152,7 +167,7 @@ A developer would then see not "1.2M calls" but:
 
 ```text
 Search category
-Exa       Presented Share 31% · Selection Share 44% · Selection Rate 58% · Repeat Selection 71%
+Exa       Presented Share 31% · Selection Share 44% · Observed Selection Rate 58% · Repeat Selection 71%
 ```
 
 This is agent-software market data, not telemetry.
@@ -217,16 +232,24 @@ Measurement Quality
 Raw invocations are not qualified usage. A large share of future tool traffic
 will not represent adoption: developer self-testing, CI, benchmarks, evals,
 synthetic agents, health checks, retry storms, agent loops, replays, load tests,
-demos. AgentMeasure requires a **Usage Context** on every observation:
+demos. AgentMeasure qualifies every observation on two axes — **Usage Context**
+(where the traffic came from) and **Validity** (whether the observation is genuine):
 
 ```text
-production · development · test · benchmark · evaluation · synthetic · ci · unknown
+Usage Context:  production · development · test · benchmark · evaluation · synthetic · ci · unknown
+Validity:       normal · retry · duplicate · replay · agent_loop · health_check · load_test · suspected_invalid · unknown
 ```
 
-Public adoption metrics default to `production` plus separately disclosed
-`unknown`; benchmark, eval, test, CI, and synthetic usage are never mixed into
-qualified usage. Context qualification may matter more than evidence grading in
-deciding whether a leaderboard is believable.
+**Strict Qualified Usage** = `production` + `validity=normal` — the default for
+public leaderboards and market metrics. `unknown` context/validity is never silently
+included (no "report unknown → make the leaderboard" incentive); it is disclosed
+separately as *Unknown Context Share* / *Unknown Validity Share*. Benchmark, eval,
+test, CI, and synthetic usage are never mixed into qualified usage. Context
+qualification may matter more than evidence grading in deciding whether a
+leaderboard is believable.
+
+> Draft 0.4: with the Operation/Attempt split, a retry is modeled as another
+> attempt of the same operation (sharing `operation_id`), not as a validity class.
 
 ## 8. Standard Reporting
 
@@ -237,9 +260,13 @@ quality score:
 
 ```text
 Agent Usage Measurement Label
-Standard version:   0.2
+Standard version:   0.4
 Window:             30 days
+Grain:              decision-opportunity
 Usage context:      production
+Validity:           normal
+Decision authority: model
+Selection constraint: autonomous
 Agent hosts:        Claude Code, Codex
 Coverage:           partial
 Collection:         client + server
@@ -259,7 +286,7 @@ AgentMeasure defines standard profiles instead of a universal north star:
 
 | Profile | North Star | Guardrails | Diagnostics |
 | --- | --- | --- | --- |
-| Adoption | Active Clients | Qualified Usage Rate, Coverage | Presented, Selection Rate, Repeat |
+| Adoption | Active Clients | Qualified Usage Rate, Coverage | Presented, Observed Selection Rate, Repeat |
 | Reliability | Successful Completed Invocations | p95 latency, cost, retry | error type, host, version |
 | Utility | Consumed Results | Correction Rate, Fallback Rate | completion→consumption conversion |
 | Value | Incremental Task Success | Cost, Latency, Safety | task type, model, alternatives |
@@ -288,6 +315,21 @@ expire when the technology changes.
 5. **Privacy.** How far can correlation and retention go under pseudonymity?
 6. **Cross-agent identity.** Same client across Codex, Claude, and DSH — when is
    that knowable?
+
+## 11. References
+
+1. RFC 2119 / BCP 14 — *Key words for use in RFCs to Indicate Requirement Levels*.
+   Normative language of this standard (MUST / SHOULD / MAY).
+2. OpenTelemetry GenAI semantic conventions — `gen_ai.*` tool-call telemetry
+   fields reused by AgentMeasure bindings.
+3. Model Context Protocol (MCP) specification — tool discovery and invocation
+   surfaces for agent runtimes.
+4. MCP Registry — server identity as the entry point for entity resolution.
+5. EDPB — guidance on pseudonymisation: pseudonymised data may still qualify as
+   personal data; pseudonymisation is a safeguard, not a legal exemption.
+6. AgentMeasure specification — Core, Metrics, Data, Entity, Quality, Correlation
+   (`standard/`), machine-readable registry (`schemas/`, `registry/`), and the
+   reference implementation with conformance vectors in the same repository.
 
 ---
 
