@@ -1,73 +1,53 @@
 # agent-used
 
-**An open measurement standard for agent tool calls: standard + middleware + badge.**
+**An open usage attribution standard for software used by AI agents.**
 
-```bash
-# Wrap any MCP server; start recording agent calls with one command
-agent-used wrap -- npx @your/mcp-server
+> OpenTelemetry tells us how telemetry travels.
+> **agent-used defines what counts as usage.**
 
-# Aggregate locally → README badge ("agent calls N/mo")
-python3 aggregator.py import --events ~/.agent-used/events/agent-use-events.jsonl
-python3 aggregator.py serve --port 8787   # GET /badge/{owner}/{repo}.svg
+agent-used is an open Usage Attribution standard and infrastructure for the AI-agent software ecosystem. It collects call evidence from both the agent side and the tool side, normalizes usage across Codex, Claude Code, DeepSeek Harness and MCP, correlates and deduplicates both sides, and publishes privacy-preserving aggregate metrics with explicit evidence levels.
+
+**Not another observability tool.** Langfuse/Grafana answer "how is my agent running?"; agent-used answers "which third-party tools are actually used by agents across the ecosystem?"
+
+[Whitepaper: How to Measure the Agent Tool Economy](whitepaper/agent-tool-economy-zh.md) · [Measurement Spec](spec/measurement-spec.md)
+
+## Core concepts
+
+### The usage funnel: Install != Usage
+S0 Selected → S1 Executed → S2 Execution Success → S3 Result Consumed → S4 Task Contribution (S0-S2 MVP, S3 partial, S4 research).
+
+### Evidence levels: signature != truth
+E0 Observed (one-sided claim) · E1 Source-authenticated (signed) · **E2 Correlated (both sides, same trace_id — the core)** · E3 Platform-attested.
+HMAC proves origin and integrity, not that a real agent called. `corroborated usage` (E2) is the credibility core; MCP 2026-07-28 RC makes trace context propagation protocol-level.
+
+### Metrics: raw calls are not the north star
+Adoption (Active Agent Sessions — primary) · Engagement (repeat usage) · Quality (success / consumption) · Trust (corroborated share). Rankings by sessions, never by raw calls.
+
+## Architecture
+
+```
+Public Usage Layer (dashboard/api/badge/rankings)
+        ▲  aggregated only
+Attribution Layer (identity · dedup · correlation · evidence · privacy · normalization)
+        ▲                    ▲
+ Agent Adapters            Tool Adapters
+  codex / claude / dsh       mcp / http / cli
+        ▲                    ▲
+   OTel / MCP existing standards
 ```
 
-[Whitepaper: The Tool Economy Needs Objective Data](https://roy-tong.github.io/) · [Event standard v1](agent_event_schema.json)
+Standing **on top of OTel**: reuse `gen_ai.tool.name`, `mcp.method.name`, trace fields; add only 6 `agentused.*` extensions ([otel-mapping](spec/otel-mapping.md)).
 
-## The problem
+## Privacy
 
-In 2026, agents are becoming the most important new distribution channel for software — yet tool authors have no idea how often their tools are called by agents, whether calls succeed, or who is calling. skills.sh counts are self-reported telemetry (gameable, no API); the official MCP registry explicitly provides no adoption data; GitHub exposes no repo-level agent metrics. **The agent economy is being played without a scoreboard.**
-
-## Three-layer measurement standard
-
-| Layer | Question | Implementation |
-| --- | --- | --- |
-| L1 Identify | Who is calling | MCP `clientInfo` / HTTP `X-Agent-Name` / CLI `AGENT_HOST` |
-| L2 Attest | The call is real | Callee-side HMAC-signed receipts (nonce anti-replay) |
-| L3 Aggregate | The totals are credible | Open event format + aggregation API + badge + anomaly detection |
-
-**The core difference**: counting happens on the callee side (the wrapper sits at the real call boundary), so callers cannot self-report — unlike every self-reported telemetry system.
-
-## Components
-
-| Component | Status | Description |
-| --- | --- | --- |
-| `agent_event_schema.json` | ✅ v1 | Open event standard (JSONL, metadata only) |
-| `mcp_wrapper.py` | ✅ tested | MCP wrapper: stdio proxy, tools/call interception, clientInfo host ID, L2 signing |
-| `aggregator.py` | ✅ tested | Import / verify / stats / badge SVG (stdlib only) |
-| CLI wrapper | roadmap | `agent-used run -- <cmd>` |
-| HTTP middleware | roadmap | Web service counting |
-| Cloud aggregator | roadmap | Cloudflare Workers |
-
-## Privacy & compliance (enforced in code)
-
-- Records only: tool name, outcome, coarse duration, host, time. **Never arguments, content, paths, or identity**
-- `DO_NOT_TRACK=1` honored end-to-end; local by default, opt-in aggregation upload
-- **Never incentivizes agents to star/follow** (GitHub AUP prohibits automated starring); data comes from the user's own tool events, not GitHub scraping
-
-## Quick start
-
-```bash
-# 1. Wrap your MCP server (recording begins)
-AGENT_USED_TARGET=github.com/you/your-repo \
-  python3 mcp_wrapper.py wrap -- npx @your/mcp-server
-
-# 2. Inspect local events
-cat ~/.agent-used/events/agent-use-events.jsonl
-
-# 3. Aggregate locally + badge
-python3 aggregator.py import --events ~/.agent-used/events/agent-use-events.jsonl
-python3 aggregator.py seed-demo        # optional demo data
-python3 aggregator.py serve --port 8787
-open http://127.0.0.1:8787/badge/you/your-repo
-```
+**Raw telemetry stays local. Public infrastructure receives aggregates by default.**
+prompt / tool_input / tool_output / path / raw session id — dropped at code level (leak tests). Pseudonymous installation ids (local secret, rotating epochs). `DO_NOT_TRACK=1` honored end-to-end.
 
 ## Roadmap
 
-- M0 ✅ Event standard + MCP wrapper (identification + signing)
-- M1 ✅ Local aggregator → ☁️ cloud (Workers)
-- M2 CLI wrapper + HTTP middleware + SPEC.md
-- M3 3 external adopters + Stage Gate
-- Research: native hooks integration with Codex / Claude Code / DeepSeek Harness (agent-platform path)
+M0 Definition ✅ (spec + whitepaper + threat model) · M1 Cross-Agent Proof (codex/claude/dsh adapters) · M2 OTel Native (collector + mapping) · M3 Attribution (identity graph + correlation) · M4 Public Network (api/dashboard/badge) · M5 External Validation (real adopters + discrepancy report) · M6 Ecosystem (MCP/OTel/platform/registry cooperation)
+
+**Explicitly not doing**: replacing OTel, automated starring, content collection, raw-call rankings, cloud aggregation before M3.
 
 ## License
 
