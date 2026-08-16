@@ -124,6 +124,16 @@ Counterexamples
 - **Purpose**：逻辑使用层面的成败（对 Metering 的 `operation_succeeded` 事件
   最有意义：3 attempts 中 1 次成功 = 1 个成功 operation）
 
+### M3.5 — Operation Resolution Coverage
+
+- **公式**：`Attempts with resolved operation_id ÷ All attempts`
+- **Grain**：Attempt
+- **Purpose**：Provider-only 拓扑下 Operation 是否可证的透明度指标——覆盖率低时
+  M3.1/M3.4 不得突出显示（fail-closed，不把 unresolved attempts 伪装成 operations）
+- **Resolution**：explicit（observation 自带 operation_id）· structural（重试链证据）·
+  unknown（无证据，不归并）
+- **Label 要求**：resolution 分布（explicit/structural/unknown）随 M3.1 一起披露
+
 ## 3. Utility Family（M4，Grain = Result / Invocation）
 
 ### M4.1 — Result Consumed Rate

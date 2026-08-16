@@ -58,7 +58,7 @@ result/effect → outcome`
   "tool": "...",
   "started_at": "...",
   "outcome": "success|failure|inconsistent|unknown",
-  "lifecycle": "L0-L3",
+  "lifecycle": "selected|invoked|completed|consumed",
   "evidence": {"vector": {...}, "display": "independently-corroborated"},
   "matched_by": "exact-call-id | structural-trace | commitment | none",
   "lineage": {"task_id": "tk-1", "decision_id": "d1", "selection_id": "s1"},

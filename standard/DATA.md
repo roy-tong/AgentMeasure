@@ -8,6 +8,8 @@
 
 ## 1. Observation Envelope（统一外壳）
 
+### Canonical 示例：**默认 unknown**（只有证据才升级）
+
 ```jsonc
 {
   "spec_version": "agentmeasure-0.4",
@@ -26,13 +28,32 @@
     "capability_claim": null                // 可选：capability 自声明（不视为权威）
   },
   "client_key": "p-...",                    // 伪匿名，内存内生成
-  "usage_context": "production",            // 见 AgentMeasure Core §7
-  "validity": "normal",                     // 见 AgentMeasure Core §7
+  "usage_context": "unknown",               // 默认 unknown（Draft 0.4.2）
+  "validity": "unknown",                    // 默认 unknown（Draft 0.4.2）
+  "context_source": "none",                 // none | provider_configuration | collector_derived | runtime_propagated
+  "validity_source": "none",                // none | collector_derived | runtime_propagated
+  "source_sequence": 1007,                  // 单调递增；云端据此检出丢失缺口
   "sampling": null,
   "provenance": "hook",
   "payload": { /* 类型特有字段 */ },
   "signature": null,                        // OPTIONAL — Verified Measurement Profile
   "key_id": null                            // OPTIONAL — Verified Measurement Profile
+}
+```
+
+> **默认 unknown 是纪律，不是缺陷。** CI、benchmark、health check、cron、人工调用
+> 只要进了 production server 就可能污染 Strict Qualified；只有证据（部署配置 /
+> collector 派生的重复/重放/合成检测）才允许升级，且必须携带
+> `context_source` / `validity_source`。
+
+### Fully classified 示例（证据齐备时）
+
+```jsonc
+{
+  "usage_context": "production",            // 部署者配置 deployment_environment=production
+  "validity": "normal",                     // collector 派生：无重复/重放/合成标记
+  "context_source": "provider_configuration",
+  "validity_source": "collector_derived"
 }
 ```
 
@@ -109,7 +130,7 @@ entity / capability 归属由统计层（registry 解析）产生，**不是观�
 ## 5. 签名与认证（Verified Measurement Profile，可选）
 
 - 签名（Ed25519 等）是 **Verified Measurement Profile** 的能力，不是 Core 前置
-- 未签名的 Observation 是合法 Core 对象：证据等级为 E0，Label 披露即可
+- 未签名的 Observation 是合法 Core 对象：证据等级为 observed（最低显示等级），Label 披露即可
 - 认证观察（Signed Observation）承载：来源（principal）、完整性（canonical 签名）、
   防重放（nonce/时间窗）
 - 签名不证明事件事实绝对真实——只证明来源与完整性（见 AgentMeasure Quality）

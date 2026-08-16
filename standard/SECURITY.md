@@ -4,7 +4,7 @@
 
 | # | 攻击 | 缓解 |
 | --- | --- | --- |
-| TH1 | 工具作者自签刷量（E1 合法） | E1 不计入 corroborated；cross-side corroborated 需独立 trust domain；行为异常检测；与独立信号交叉验证 |
+| TH1 | 工具作者自签刷量（authenticated 合法） | authenticated 不计入 corroborated；cross-side corroborated 需独立 trust domain；行为异常检测；与独立信号交叉验证 |
 | TH2 | 双侧合谋（作者控制 agent + server） | 无法完全防御；跨 trust domain 判定 + 样本审计；平台 attestation（T1）是唯一强对抗 |
 | TH3 | Sybil observer（字符串不同实则一人） | trust_domain + identity claims 认证；principal 注册制 |
 | TH4 | 重放旧观察 | observation_id 唯一性 + 时间窗 |
@@ -28,7 +28,7 @@
 - Unsigned fields MUST NOT affect authenticated claims
 - Ambiguous observations MUST NOT be promoted to corroborated
 - Unknown MUST NOT be inferred as success
-- E3 未验证时绝不由字符串授予
+- 平台 attestation 未验证时绝不由字符串授予
 
 ## 4. 未来（无区块链）
 

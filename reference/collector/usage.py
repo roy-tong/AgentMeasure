@@ -1,17 +1,20 @@
 #!/usr/bin/env python3
-"""AgentMeasure collector — 数据模型 v3。
+"""AgentMeasure collector — 数据模型 v3（Draft 0.4.2）。
 
 核心原则（measurement-integrity review）：
-  1. Observation ≠ Invocation。adapter 只产生 observation（观察事实）；
-     invocation（一次逻辑调用）由 correlator 推导，usage aggregate 由 aggregator 计算。
+  1. Observation ≠ Attempt ≠ Operation。adapter 只产生 observation（观察事实）；
+     attempt（一次真实执行）由 correlator 匹配；operation（逻辑使用）由
+     derive_operations 按证据归并（fail-closed，无证据不归并）。
   2. Evidence is derived, never self-declared。
-     adapter 不设 evidence；verifier 从 observation 事实计算证据等级。
+     adapter 不设证据；verifier 从 observation 事实计算证据等级。
   3. Raw stays local：pseudonymization 在落盘前、内存内完成。
+  4. usage_context / validity 默认 unknown；只有证据（部署配置 / collector 派生）
+     才升级，且必须携带 context_source / validity_source。
 
 实体：
   observations       adapter 观察事实（唯一的 ingestion 输入）
-  invocations        推导的逻辑调用（由 observation 聚合）
-  observation_links  invocation ↔ observation 多对多
+  invocations        推导的 attempt（由 observation 聚合）
+  observation_links  attempt ↔ observation 多对多
 """
 from __future__ import annotations
 
@@ -31,28 +34,36 @@ OBSERVATION_KEYS = (
     "observer_principal",   # adapter 身份，如 codex-hook@roy-tong
     "observer_side",        # client | server | platform
     "provenance",           # hook | otel | wrapper | platform
-    "project_id",
-    "tool",                 # 归一工具名
+    "project_id",           # 部署上下文标识（DATA §1 deployment_context），非实体权威
+    "tool",                 # 归一 surface 工具名（观察发生在 surface 层）
+    "surface_id",           # 具体调用界面标识（Core §2.3）
+    "surface_namespace",    # surface 的注册/命名空间（尽力而为）
     "tool_call_id",         # 精确关联键（若 adapter 能提供）
     "trace_id",             # OTel trace（若 adapter 能提供）
     "session_key",          # 伪匿名会话（内存内生成，绝不落原始值）
     "outcome",              # success | failure | retry | denied | unknown
     "duration_bucket",      # <1s | 1s-10s | ... | None（未知）
-    "lifecycle_stage",      # L0-L3（观察到的生命周期阶段，非证据）
-    "signature",            # Ed25519 签名（可选）
+    "lifecycle_stage",      # 生命周期阶段数据码：L0 选择 · L1 执行 · L2 完成 · L3 消费（非证据）
+    "signature",            # Ed25519 签名（可选，Verified Profile）
     "key_id",               # 签名密钥标识（可选）
     "source_event_id",      # adapter 自身事件 id（去重用）
+    "source_sequence",      # 单调递增序号；云端据此检出丢失缺口（Draft 0.4.2）
     "trust_domain",         # 观察者信任域（AgentMeasure-TRUST；独立佐证判定的关键）
-    "sampling",             # {"method": "fixed", "probability": 0.1} 等（AgentMeasure-COVERAGE）
+    "sampling",             # {"method": "fixed", "probability": 0.1} 等（AgentMeasure-QUALITY）
     "usage_context",        # production|development|test|benchmark|evaluation|synthetic|ci|unknown
     "validity",             # normal|retry|duplicate|replay|agent_loop|health_check|load_test|suspected_invalid|unknown
+    "context_source",       # none|provider_configuration|collector_derived|runtime_propagated（Draft 0.4.2）
+    "validity_source",      # none|collector_derived|runtime_propagated（Draft 0.4.2）
     "operation_id",         # 逻辑使用（Core §2.4）；未知留 null（不变量 23：无证据不归并）
     "task_id",              # 任务单位（谱系起点）；未知留 null
 )
 
 USAGE_CONTEXTS = ("production", "development", "test", "benchmark",
                   "evaluation", "synthetic", "ci", "unknown")
-QUALIFIED_CONTEXTS = ("production", "unknown")  # 公开 adoption 默认口径
+# Strict Qualified Usage = production + validity=normal（Core §7）；unknown 单独披露
+STRICT_QUALIFIED = {"context": "production", "validity": "normal"}
+CONTEXT_SOURCES = ("none", "provider_configuration", "collector_derived", "runtime_propagated")
+VALIDITY_SOURCES = ("none", "collector_derived", "runtime_propagated")
 
 LIFECYCLE_STAGES = ("L0", "L1", "L2", "L3")
 SIDES = ("client", "server", "platform")

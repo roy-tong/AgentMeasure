@@ -112,6 +112,11 @@ billing_scope: project | department | account | unknown
 用途：回答"这次 Capability Usage 应该计入谁的账单"。原始标识符不进 Core；
 `consumer_account_ref` 由 Provider 侧维护，不要求 AgentMeasure 认识真实身份。
 
+**隐私硬约束：`consumer_account_ref` MUST 以 Provider 或 Offering 为作用域
+（provider_scoped_account_ref），不得成为跨 Provider 的生态级身份。**
+跨 Provider 的计费身份应由 payment/commerce infrastructure 处理，不由
+AgentMeasure 建立——否则托管层可能重建"一个账户跨不同 Provider 的消费轨迹"。
+
 ## 3. 计量语义：Event / Unit / Quantity 三分离
 
 ### 三个概念必须绝对分开
@@ -208,7 +213,45 @@ reversal_of: null                      # 冲销：指向被撤销的 meter event
 幂等键 = `meter_event_id`；纠错走 `revision` / `supersedes` / `reversal_of`，
 而不是删除历史事实。
 
-## 5. Commercial Attribution（商业归因）
+## 5. Billability Evidence Requirement（计费资格证据要求）
+
+**什么等级的 measurement fact 有资格成为 billable fact？** 仅"可追溯到已发布
+measurement fact"不够——Provider 自己生成、自己声明 production、自己声明
+operation 的事实，不能天然成为中立的结算依据。
+
+每个 Metering Policy 必须声明 `billing_basis` 与 `minimum_resolution`：
+
+```yaml
+billing_basis: attempt | operation | effect | outcome
+
+minimum_resolution:
+  explicit_operation_id | idempotency_key | correlated | provider_policy
+```
+
+**没有达到 minimum_resolution 的 Attempt：不可生成 invoice-grade Meter Event。**
+
+示例：
+
+```text
+3 attempts（无 operation 证据）
+  ≠ 3 billable operations
+  ≠ 1 billable operation
+  = 不可计费，直到 resolution evidence 出现
+```
+
+### Metering Assurance Profile（计量保证等级）
+
+| 等级 | 定义 | 适用 |
+| --- | --- | --- |
+| **M0 Provider-declared** | Provider 自己观察、自己声明 | first-party analytics / 内部对账 |
+| **M1 Authenticated provider** | Provider 观察带来源认证（签名/密钥） | 防抵赖的 provider 数据 |
+| **M2 Bilaterally correlated** | Provider + Runtime 双侧独立观察 + 共享关联键 | 可审计的 Agent 计量 |
+| **M3 Platform/third-party attested** | 受信任平台/第三方证言 | 最高等级（当前 UNSUPPORTED，不变量 11） |
+
+**双方合同自行决定 `minimum_metering_assurance`**（如 M2）；AgentMeasure 只定义
+等级与判定规则——这就是商业系统里的 auditability requirement。
+
+## 6. Commercial Attribution（商业归因）
 
 ```text
 GitHub Skill → Registry → Agent Recommendation → Capability → Payment
@@ -222,7 +265,7 @@ GitHub Skill → Registry → Agent Recommendation → Capability → Payment
 - 分布侧事实（Published / Listed / Discovered / Presented）见 Whitepaper
   Distribution Events；**Presented 仍是 Choice 的分母，Discovered 只是分布归因事件**
 
-## 6. 商业 Measurement Label（未来 Billable Metric 的披露）
+## 7. 商业 Measurement Label（未来 Billable Metric 的披露）
 
 所有可计费数字至少披露：
 
@@ -235,7 +278,7 @@ measurement_policy
 
 否则同一个 "$100 revenue" 无法知道按哪一版规则计算。
 
-## 7. 与 Core 的关系
+## 8. 与 Core 的关系
 
 | 层 | 文档 | 状态 |
 | --- | --- | --- |
@@ -243,15 +286,19 @@ measurement_policy
 | 经济语义 | 本文件（extensions/COMMERCIAL.md） | **Experimental / Informative** |
 | 支付机制 | 不存在于本仓库 | 由外部支付基础设施提供 |
 
-## 8. 明确的 Non-goals
+## 9. 明确的 Non-goals
 
 - ❌ 不定义支付轨道 / 钱包 / 结算币种 / 商户记录关系 / 金融托管
+- ❌ **测量永远不进支付关键路径**：AgentMeasure 是异步的
+  metering / reconciliation / audit 层，不是 transaction authorization 层——
+  quote/authorization/payment 的同步链路由支付基础设施负责，AgentMeasure 的
+  Metering Ledger 在其后异步对账
 - ❌ 不实现任何计费执行（billing execution）
 - ❌ 不定义通用定价（每个 Provider 自定）
 - ❌ 不进入 conformance 认证范围（在转正为 Profile 之前）
 - ❌ 不采集或解析购买者个人身份（PII）——`consumer_account_ref` 由 Provider 侧维护
 
-## 9. 毕业路径（与 Core 独立）
+## 10. 毕业路径（与 Core 独立）
 
 **AgentMeasure Core 1.0 与商业扩展独立毕业**：Core 1.0 是 Agent 软件测量标准，
 不依赖任何商业化成立；Commercial Measurement Profile 走自己的 0.x 路径。

@@ -9,7 +9,7 @@
 | --- | --- |
 | `tools/call`（协议调用） | 执行/完成生命周期事件的传输载体 |
 | `_meta` trace context（2026-07-28 正式规范） | trace_id 传播 → Structural match（AgentMeasure Correlation） |
-| `clientInfo {name, version}` | observer 身份线索（L1 识别，尽力而为） |
+| `clientInfo {name, version}` | observer 身份线索（declared 级识别，尽力而为） |
 | MCP Registry | project/server 身份声明来源（非唯一） |
 
 ## B2. OTel Binding（Telemetry）

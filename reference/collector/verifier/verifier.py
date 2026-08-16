@@ -100,12 +100,9 @@ def evidence_vector(observations: list) -> dict:
 
 
 def grade_invocation(observations: list) -> str:
-    """兼容显示等级（E0-E3 的替代：由 evidence_vector 派生简单标签）。"""
-    vec = evidence_vector(observations)
-    return {
-        "independently-corroborated": "E2",
-        "corroborated": "E2",
-        "authenticated": "E1",
-        "observed": "E0",
-        "none": "E0",
-    }[vec["class"]]
+    """派生显示等级（TRUST §4 单词等级；替代遗留 E0-E3 码）。
+
+    返回：none | observed | authenticated | corroborated | independently-corroborated
+    （platform-attested 当前 UNSUPPORTED，永不返回）
+    """
+    return evidence_vector(observations)["class"]

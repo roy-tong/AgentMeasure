@@ -7,11 +7,29 @@
       "input": {
         "project": "github.com/foo/bar",
         "observations": [
-          {"side": "client", "principal": "codex-hook@td-a", "tool": "foo.search", "call_id": "tc-1", "outcome": "success", "ts": "2026-08-16T03:00:00Z"},
-          {"side": "server", "principal": "mcp-wrapper@td-b", "tool": "foo.search", "call_id": "tc-1", "outcome": "success", "ts": "2026-08-16T03:00:05Z"}
+          {
+            "side": "client",
+            "principal": "codex-hook@td-a",
+            "tool": "foo.search",
+            "call_id": "tc-1",
+            "outcome": "success",
+            "ts": "2026-08-16T03:00:00Z"
+          },
+          {
+            "side": "server",
+            "principal": "mcp-wrapper@td-b",
+            "tool": "foo.search",
+            "call_id": "tc-1",
+            "outcome": "success",
+            "ts": "2026-08-16T03:00:05Z"
+          }
         ]
       },
-      "expect": {"invocations": 1, "evidence": "E2", "outcome": "success"}
+      "expect": {
+        "invocations": 1,
+        "evidence": "independently-corroborated",
+        "outcome": "success"
+      }
     },
     {
       "id": "correlation-outcome-conflict",
@@ -19,11 +37,28 @@
       "input": {
         "project": "github.com/foo/bar",
         "observations": [
-          {"side": "client", "principal": "codex-hook@td-a", "tool": "foo.search", "call_id": "tc-2", "outcome": "success", "ts": "2026-08-16T03:00:00Z"},
-          {"side": "server", "principal": "mcp-wrapper@td-b", "tool": "foo.search", "call_id": "tc-2", "outcome": "failure", "ts": "2026-08-16T03:00:05Z"}
+          {
+            "side": "client",
+            "principal": "codex-hook@td-a",
+            "tool": "foo.search",
+            "call_id": "tc-2",
+            "outcome": "success",
+            "ts": "2026-08-16T03:00:00Z"
+          },
+          {
+            "side": "server",
+            "principal": "mcp-wrapper@td-b",
+            "tool": "foo.search",
+            "call_id": "tc-2",
+            "outcome": "failure",
+            "ts": "2026-08-16T03:00:05Z"
+          }
         ]
       },
-      "expect": {"invocations": 1, "outcome": "inconsistent"}
+      "expect": {
+        "invocations": 1,
+        "outcome": "inconsistent"
+      }
     },
     {
       "id": "correlation-ambiguous",
@@ -31,11 +66,28 @@
       "input": {
         "project": "github.com/foo/bar",
         "observations": [
-          {"side": "client", "principal": "codex-hook@td-a", "tool": "foo.search", "call_id": null, "outcome": "success", "ts": "2026-08-16T03:00:00Z"},
-          {"side": "server", "principal": "mcp-wrapper@td-b", "tool": "foo.search", "call_id": null, "outcome": "success", "ts": "2026-08-16T03:00:05Z"}
+          {
+            "side": "client",
+            "principal": "codex-hook@td-a",
+            "tool": "foo.search",
+            "call_id": null,
+            "outcome": "success",
+            "ts": "2026-08-16T03:00:00Z"
+          },
+          {
+            "side": "server",
+            "principal": "mcp-wrapper@td-b",
+            "tool": "foo.search",
+            "call_id": null,
+            "outcome": "success",
+            "ts": "2026-08-16T03:00:05Z"
+          }
         ]
       },
-      "expect": {"invocations": 2, "evidence_none_E2": true}
+      "expect": {
+        "invocations": 2,
+        "evidence_not_corroborated": true
+      }
     },
     {
       "id": "aggregation-duplicate-observations",
@@ -43,12 +95,35 @@
       "input": {
         "project": "github.com/foo/bar",
         "observations": [
-          {"side": "client", "principal": "codex-hook@td-a", "tool": "foo.search", "call_id": "tc-3", "outcome": "success", "ts": "2026-08-16T03:00:00Z"},
-          {"side": "server", "principal": "mcp-wrapper@td-b", "tool": "foo.search", "call_id": "tc-3", "outcome": "success", "ts": "2026-08-16T03:00:05Z"},
-          {"side": "server", "principal": "mcp-wrapper-2@td-c", "tool": "foo.search", "call_id": "tc-3", "outcome": "success", "ts": "2026-08-16T03:00:06Z"}
+          {
+            "side": "client",
+            "principal": "codex-hook@td-a",
+            "tool": "foo.search",
+            "call_id": "tc-3",
+            "outcome": "success",
+            "ts": "2026-08-16T03:00:00Z"
+          },
+          {
+            "side": "server",
+            "principal": "mcp-wrapper@td-b",
+            "tool": "foo.search",
+            "call_id": "tc-3",
+            "outcome": "success",
+            "ts": "2026-08-16T03:00:05Z"
+          },
+          {
+            "side": "server",
+            "principal": "mcp-wrapper-2@td-c",
+            "tool": "foo.search",
+            "call_id": "tc-3",
+            "outcome": "success",
+            "ts": "2026-08-16T03:00:06Z"
+          }
         ]
       },
-      "expect": {"invocations": 1}
+      "expect": {
+        "invocations": 1
+      }
     },
     {
       "id": "aggregation-retry-chain",
@@ -56,11 +131,28 @@
       "input": {
         "project": "github.com/foo/bar",
         "observations": [
-          {"side": "server", "principal": "mcp-wrapper@td-b", "tool": "foo.search", "call_id": "tc-4", "outcome": "failure", "ts": "2026-08-16T03:00:00Z"},
-          {"side": "server", "principal": "mcp-wrapper@td-b", "tool": "foo.search", "call_id": "tc-4", "outcome": "success", "ts": "2026-08-16T03:00:05Z"}
+          {
+            "side": "server",
+            "principal": "mcp-wrapper@td-b",
+            "tool": "foo.search",
+            "call_id": "tc-4",
+            "outcome": "failure",
+            "ts": "2026-08-16T03:00:00Z"
+          },
+          {
+            "side": "server",
+            "principal": "mcp-wrapper@td-b",
+            "tool": "foo.search",
+            "call_id": "tc-4",
+            "outcome": "success",
+            "ts": "2026-08-16T03:00:05Z"
+          }
         ]
       },
-      "expect": {"invocations": 1, "outcome": "inconsistent"}
+      "expect": {
+        "invocations": 1,
+        "outcome": "inconsistent"
+      }
     }
   ]
 }

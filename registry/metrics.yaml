@@ -1,0 +1,174 @@
+# AgentMeasure Metric Registry（机器可读；Draft 0.4.2）
+# 单一事实源：METRICS.md 的 Metric Contract。本文件由
+# registry/validate_metrics.py 校验；任何实现（SQL/Go/TS）按此口径计算。
+# status: defined | draft | proposed | research
+
+metrics:
+  - id: M1.1
+    name: Active Clients
+    family: adoption-relationship
+    grain: client
+    object: client
+    status: defined
+    numerator: "COUNT(DISTINCT client_key) with >=1 strict qualified eligible attempt"
+    denominator: null
+    qualification:
+      context: production
+      validity: normal
+    dedup: client-unique
+  - id: M1.2
+    name: Repeat Clients
+    family: adoption-relationship
+    grain: client
+    object: client
+    status: draft
+    numerator: "clients with eligible usage across >=2 windows"
+    denominator: null
+    qualification:
+      context: production
+      validity: normal
+    dedup: client-unique
+  - id: M1.3
+    name: Active Client-Days
+    family: adoption-relationship
+    grain: client-day
+    object: client
+    status: defined
+    numerator: "COUNT(DISTINCT client x UTC-day) with >=1 eligible attempt"
+    denominator: null
+    qualification:
+      context: production
+      validity: normal
+    dedup: client-day-unique
+  - id: M2.1
+    name: Presented Opportunities
+    family: choice
+    grain: decision-opportunity
+    object: presentation
+    status: defined
+    numerator: "eligible presentations"
+    denominator: null
+    qualification:
+      context: production
+      validity: normal
+    dedup: decision-tool-unique
+  - id: M2.2
+    name: Observed Selection Rate
+    family: choice
+    grain: decision-opportunity
+    object: selection
+    status: defined
+    numerator: "observed selected opportunities"
+    denominator: "presented opportunities"
+    qualification:
+      context: production
+      validity: normal
+    dedup: decision-unique
+  - id: M2.3
+    name: Presentation Share
+    family: choice
+    grain: decision-opportunity
+    object: presentation
+    status: draft
+    numerator: "tool presentations"
+    denominator: "category presentations"
+    qualification:
+      context: production
+      validity: normal
+    dedup: decision-tool-unique
+  - id: M2.4
+    name: Selection Share
+    family: choice
+    grain: decision-opportunity
+    object: selection
+    status: draft
+    numerator: "tool selections"
+    denominator: "category selections"
+    qualification:
+      context: production
+      validity: normal
+    dedup: decision-unique
+  - id: M2.5
+    name: Conditional Choice Share
+    family: choice
+    grain: decision-opportunity
+    object: selection
+    status: defined
+    numerator: "A selected in same candidate set"
+    denominator: "A+B selected in same candidate set"
+    qualification:
+      context: production
+      validity: normal
+    dedup: decision-unique
+  - id: M3.1
+    name: Operation Count
+    family: execution
+    grain: operation
+    object: operation
+    status: defined
+    numerator: "COUNT(DISTINCT operation_id) with resolution evidence"
+    denominator: null
+    qualification:
+      context: production
+      validity: normal
+    dedup: operation-unique
+  - id: M3.2
+    name: Attempt Completion Rate
+    family: execution
+    grain: attempt
+    object: attempt
+    status: defined
+    numerator: "completed attempts"
+    denominator: "invoked attempts"
+    qualification:
+      context: production
+      validity: normal
+    dedup: attempt-unique
+  - id: M3.3
+    name: Attempt Success Rate
+    family: execution
+    grain: attempt
+    object: attempt
+    status: defined
+    numerator: "successful completed attempts"
+    denominator: "completed attempts"
+    qualification:
+      context: production
+      validity: normal
+    dedup: attempt-unique
+  - id: M3.4
+    name: Operation Success Rate
+    family: execution
+    grain: operation
+    object: operation
+    status: defined
+    numerator: "operations with >=1 successful attempt"
+    denominator: "completed operations"
+    qualification:
+      context: production
+      validity: normal
+    dedup: operation-unique
+  - id: M3.5
+    name: Operation Resolution Coverage
+    family: execution
+    grain: attempt
+    object: attempt
+    status: defined
+    numerator: "attempts with resolved operation_id"
+    denominator: "all attempts"
+    qualification:
+      context: production
+      validity: normal
+    dedup: attempt-unique
+  - id: M4.1
+    name: Result Consumed Rate
+    family: utility
+    grain: result / invocation
+    object: result
+    status: defined
+    numerator: "consumed results"
+    denominator: "consumption-observable eligible attempts"
+    qualification:
+      context: production
+      validity: normal
+    dedup: attempt-unique

@@ -43,6 +43,8 @@ def connect(db_path: Path = DB_DEFAULT) -> sqlite3.Connection:
             provenance TEXT,
             project_id TEXT,
             tool TEXT,
+            surface_id TEXT,
+            surface_namespace TEXT,
             tool_call_id TEXT,
             trace_id TEXT,
             session_key TEXT,
@@ -52,10 +54,13 @@ def connect(db_path: Path = DB_DEFAULT) -> sqlite3.Connection:
             signature TEXT,
             key_id TEXT,
             source_event_id TEXT,
+            source_sequence INTEGER,
             trust_domain TEXT,
             sampling TEXT,
             usage_context TEXT,
             validity TEXT,
+            context_source TEXT,
+            validity_source TEXT,
             operation_id TEXT,
             task_id TEXT
         )
@@ -91,9 +96,12 @@ def connect(db_path: Path = DB_DEFAULT) -> sqlite3.Connection:
     conn.execute("CREATE INDEX IF NOT EXISTS idx_obs_callid ON observations(tool_call_id)")
     conn.execute("CREATE INDEX IF NOT EXISTS idx_obs_trace ON observations(trace_id)")
     conn.execute("CREATE INDEX IF NOT EXISTS idx_obs_oper ON observations(operation_id)")
-    # 旧库迁移：补谱系列（Draft 0.4，Core §2.4）
+    # 旧库迁移：补谱系列与 0.4.2 字段（Draft 0.4，Core §2.4）
     for table, cols in (
-        ("observations", {"operation_id": "TEXT", "task_id": "TEXT"}),
+        ("observations", {"operation_id": "TEXT", "task_id": "TEXT",
+                          "surface_id": "TEXT", "surface_namespace": "TEXT",
+                          "source_sequence": "INTEGER",
+                          "context_source": "TEXT", "validity_source": "TEXT"}),
         ("invocations", {"operation_id": "TEXT", "task_id": "TEXT",
                          "operation_resolution": "TEXT"}),
     ):
@@ -114,10 +122,11 @@ def store_observation(conn, obs: dict) -> bool:
             """
             INSERT OR IGNORE INTO observations
             (observation_id, observed_at, observer_principal, observer_side, provenance,
-             project_id, tool, tool_call_id, trace_id, session_key, outcome,
-             duration_bucket, lifecycle_stage, signature, key_id, source_event_id,
-             trust_domain, sampling, usage_context, validity, operation_id, task_id)
-            VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+             project_id, tool, surface_id, surface_namespace, tool_call_id, trace_id,
+             session_key, outcome, duration_bucket, lifecycle_stage, signature, key_id,
+             source_event_id, source_sequence, trust_domain, sampling, usage_context,
+             validity, context_source, validity_source, operation_id, task_id)
+            VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
             """,
             tuple(obs.get(k) for k in OBSERVATION_KEYS),
         )
@@ -227,14 +236,15 @@ RETRY_OUTCOMES = ("failure", "retry", "denied")
 def derive_operations(conn) -> dict:
     """Operation 归并（AgentMeasure-CORE §2.4 / CORR §3，fail-closed）。
 
-    只处理 operation_resolution IS NULL 的 invocation（幂等）：
+    只处理 operation_resolution IS NULL 的 attempt（幂等）：
       1. explicit   观察自带 operation_id → 直接归组
       2. structural 同 (project, tool, task_id) 内按 started_at 排序的连续
                     attempt，且前一次 outcome ∈ {failure, retry, denied}
-                    （重试链）→ 同一 operation（operation_id = 链首 invocation_id）
-      3. none       其余：每个 attempt 独立成 operation（operation_id = invocation_id）
+                    （重试链）→ 同一 operation（operation_id = 链首 attempt_id）
+      3. unknown    其余：operation_id 保持 NULL，**不归并、不伪装**
+                    （Provider-only 拓扑的默认结果；M3.5 披露解析覆盖率）
     """
-    explicit = structural = none = 0
+    explicit = structural = unknown = 0
 
     # 1) explicit：任一关联观察携带 operation_id
     rows = conn.execute(
@@ -280,19 +290,19 @@ def derive_operations(conn) -> dict:
             structural += 1
             prev_outcome = cur["outcome"]
 
-    # 3) none：其余 attempt 独立成 operation
+    # 3) unknown：其余 attempt 无 operation 证据（fail-closed，不归并）
     rows = conn.execute(
         "SELECT invocation_id FROM invocations WHERE operation_resolution IS NULL"
     ).fetchall()
     for r in rows:
         conn.execute(
-            "UPDATE invocations SET operation_id=?, operation_resolution='none' WHERE invocation_id=?",
-            (r["invocation_id"], r["invocation_id"]),
+            "UPDATE invocations SET operation_resolution='unknown' WHERE invocation_id=?",
+            (r["invocation_id"],),
         )
-        none += 1
+        unknown += 1
 
     conn.commit()
-    return {"explicit": explicit, "structural": structural, "none": none}
+    return {"explicit": explicit, "structural": structural, "unknown": unknown}
 
 
 def _make_invocation(conn, obs_list: list, matched_by: str) -> None:
@@ -337,7 +347,7 @@ def _make_invocation(conn, obs_list: list, matched_by: str) -> None:
             outcome,
             lifecycle,
             evidence,
-            1 if evidence != "E0" else 0,
+            1 if evidence not in ("none", "observed") else 0,
             matched_by,
             operation_id,
             task_id,

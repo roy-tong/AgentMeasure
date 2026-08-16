@@ -26,7 +26,7 @@
 
 ## 3. Evidence Profile（多轴，底层模型）
 
-**不采用单一 E0-E3 阶梯**（不同概念不在同一轴）。底层保留证据向量，上层才压缩为显示标签：
+**不采用单一字母阶梯**（不同概念不在同一轴）。底层保留证据向量，上层才压缩为显示标签：
 
 | 轴 | 取值 | 含义 |
 | --- | --- | --- |
@@ -46,7 +46,7 @@
 | Independently Corroborated | C1 + I2（跨 trust domain） |
 | Platform Attested | T1（**当前 UNSUPPORTED**——未实现平台签名验证前，任何 `provenance="platform"` 字符串不授予） |
 
-## 5. Attestation（E3 路径，未实现）
+## 5. Attestation（未实现）
 
 - 需要平台私钥签名或平台官方 API 确认
 - 未实现前：`PLATFORM_ATTESTATION = UNSUPPORTED`（fail-closed，绝不由字符串授予）

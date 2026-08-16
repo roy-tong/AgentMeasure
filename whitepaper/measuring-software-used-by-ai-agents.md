@@ -122,9 +122,9 @@ agent-mediated commerce already exists:
 - **OpenAI and Stripe's Agentic Commerce Protocol (ACP)** is being used in real
   agentic commerce flows ([announcement coverage](https://www.digitaltransactions.net/openai-and-stripe-are-the-latest-fintechs-to-enable-agentic-commerce/)).
 
-These prove the thesis of this section: **payment and discovery infrastructure is
-arriving before common capability measurement semantics** — the gap AgentMeasure
-fills.
+These examples show that discovery and payment infrastructure is **emerging** while
+no widely adopted cross-platform capability measurement standard yet exists — the
+gap AgentMeasure fills.
 
 ## 3. Measurement Objects
 
@@ -204,37 +204,38 @@ pipeline would produce numbers that mean different things.
 
 ## 5. Measurement Framework
 
-AgentMeasure defines **metric families**, not a universal KPI.
+AgentMeasure defines **metric families**, not a universal KPI. Metric status is
+marked explicitly — **Defined**（正式指标合同）、**Draft**（草案）、
+**Research**（方向）——概念论文不冒充标准已全定义。
 
-**M1 Distribution — Reach.** Is the capability in the agent world?
-`Available Clients · Eligible Opportunities · Presentations · Presentation Rate ·
-Distribution Coverage`
+**M1 Adoption & Relationship — Reach.**
+`Active Clients (Defined) · Repeat Clients (Draft) · Active Client-Days (Defined)`
 
 **M2 Choice — the most agent-native family.** When the agent had the chance, did it
 choose the capability?
-`Selections · Observed Selection Rate (Observed Selected ÷ Presented) · Conditional
-Choice Share · First-choice Rate`
+`Observed Selection Rate (Defined) · Conditional Choice Share (Defined) ·
+First-choice Rate (Proposed)`
 
 **M3 Execution — Use.** Was it usable after selection? The Draft 0.4 model counts
 operations and attempts separately — the distinction that metering will eventually
 need:
 
 ```text
-Operations · Attempts · Attempts per Operation
-Operation Completion Rate · Operation Success Rate
-Attempt Failure Rate · Retry Rate · Latency
+Operation Count (Defined) · Attempt Completion (Defined) · Attempt Success (Defined)
+Operation Success Rate (Defined) · Operation Resolution Coverage (Defined)
+Attempts per Operation (Defined)
 ```
 
 **M4 Utility — effective use.** Did the capability deliver usable information or
 cause the intended effect?
 
 ```text
-Result Utility      Delivered · Consumed · Accepted
-Effect Utility      Applied · Confirmed · Reversed / Failed
+Result Consumption (Defined) · Effect Confirmation (Draft 0.5)
 ```
 
 **M5 Outcome — Value.** Did it improve the task?
-`Task Success Association · Incremental Lift · Time Saved · Cost Saved`
+`Task Success Association (Draft) · Incremental Lift (Research / Draft 0.5) ·
+Time Saved (Research) · Cost Saved (Research)`
 
 **Relationships** (formerly a separate chapter, now a subsection): Trial → Active →
 Repeated → Preferred → Dependent. Dependency — the least replaceable — remains the
@@ -377,7 +378,7 @@ Distribution Side → Agent Runtime Side → Provider Side → Effect / Outcome 
 | Target system | effect / transaction |
 | Experiment layer | incrementality |
 
-Two-sided observations (agent runtime + provider) enable corroboration (E2); the
+Two-sided observations (agent runtime + provider) enable cross-side corroboration; the
 provider side alone is sufficient for provider-scoped usage metrics. The standard is
 not on the critical request path: observations are emitted asynchronously, metadata
 only, pseudonymized before persistence.

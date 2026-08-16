@@ -104,8 +104,8 @@ Provider 能主张价值吗？
 - **OpenAI 与 Stripe 的 Agentic Commerce Protocol（ACP）** 已在真实 agentic
   commerce 流程中使用（[报道](https://www.digitaltransactions.net/openai-and-stripe-are-the-latest-fintechs-to-enable-agentic-commerce/)）。
 
-这证明本节的论点：**支付与发现基础设施先于共同的 capability 测量语义到来**——
-这正是 AgentMeasure 要填补的空缺。
+这些例子说明：发现与支付基础设施**正在出现**，而一个被广泛采用的跨平台
+capability 测量标准尚不存在——这正是 AgentMeasure 填补的空缺。
 
 ## 三、测量对象
 
@@ -177,21 +177,23 @@ communication / control / storage / sensing）决定适用哪条链路、哪些 
 
 ## 五、测量框架
 
-AgentMeasure 定义 **Metric Families**，不定义全局北极星。
+AgentMeasure 定义 **Metric Families**，不定义全局北极星。指标状态明确标注——
+**Defined**（正式指标合同）、**Draft**（草案）、**Research**（方向）——概念论文
+不冒充标准已全定义。
 
-**M1 Distribution — Reach。** 能力进入 Agent 世界了吗？
-`Available Clients · Eligible Opportunities · Presentations · Presentation Rate · Distribution Coverage`
+**M1 Adoption & Relationship — Reach。**
+`Active Clients (Defined) · Repeat Clients (Draft) · Active Client-Days (Defined)`
 
 **M2 Choice — 最 Agent-native。** Agent 有机会时会选它吗？
-`选择数 · Observed Selection Rate（Observed Selected ÷ Presented）· Conditional Choice Share · 首选率`
+`Observed Selection Rate (Defined) · Conditional Choice Share (Defined) · First-choice Rate (Proposed)`
 
 **M3 Execution — Use。** 选了以后好用吗？Draft 0.4 分开计数 Operation 与 Attempt——
 这正是未来 Metering 需要的区分：
 
 ```text
-Operations · Attempts · Attempts per Operation
-Operation 完成率 · Operation 成功率
-Attempt 失败率 · 重试率 · 延迟
+Operation Count (Defined) · Attempt Completion (Defined) · Attempt Success (Defined)
+Operation Success Rate (Defined) · Operation Resolution Coverage (Defined)
+Attempts per Operation (Defined)
 ```
 
 **M4 Utility — 有效使用。** 能力交付了可用信息，还是引发了预期效应？
@@ -325,7 +327,7 @@ Agent C 在乎隐私。排名是 Agent 与 Marketplace 的产品决策；标准�
 | 目标系统 | 效应 / 交易 |
 | 实验层 | 增量 |
 
-双侧观察（Agent runtime + provider）构成佐证（E2）；仅 Provider 侧也足以支持
+双侧观察（Agent runtime + provider）构成 cross-side corroborated；仅 Provider 侧也足以支持
 provider-scoped 的使用指标。标准不在请求关键路径上：观察异步产出、仅元数据、
 落盘前伪匿名。
 

@@ -21,7 +21,7 @@
 Dashboard 展示：Operations · Attempts · Success · Retry · Latency ·
 Caller runtime（declared / unknown）· Measurement Coverage。
 
-**不要** Selection Rate / Share of Choice / Metering（标准先行，产品后行）。
+**不要** Observed Selection Rate / Share of Choice / Metering（标准先行，产品后行）。
 
 ## 产品文档索引
 

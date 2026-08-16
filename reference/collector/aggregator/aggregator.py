@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
-"""AgentMeasure collector — aggregator v3（基于 invocations，证据分级）。
+"""AgentMeasure collector — aggregator v3（Draft 0.4.2，基于 attempts + operations）。
 
 核心修复（measurement-integrity review）：
-  - 统计对象是 invocation（一次逻辑调用），不是 observation
-  - corroborated share = corroborated invocations / eligible invocations
+  - 统计对象：attempt（一次真实执行）与 operation（逻辑使用，fail-closed 归并）
+  - Operation Resolution Coverage（M3.5）：无证据的 attempt 不伪装成 operation
+  - corroborated share = corroborated attempts / eligible attempts
     （100% 双边关联的数据 → 显示 100%，不再被 observation 双计拉低到 50%）
-  - VACD（Verified Active Client-Days）：某 project 某 UTC 日被某伪匿名 client
-    产生 ≥1 次 eligible invocation = 1 client-day。跨 Codex/Claude/DSH 可比。
+  - ACD（Active Client-Days）：某 project 某 UTC 日被某伪匿名 client
+    产生 ≥1 次 eligible attempt = 1 client-day。跨 Codex/Claude/DSH 可比。
 
 用法:
   python3 aggregator.py stats --project github.com/foo/bar
@@ -23,9 +24,12 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from collector.correlator.correlator import connect  # noqa: E402
 from collector.policy import describe  # noqa: E402
-from collector.policy import CORE_POLICY_V1  # noqa: E402
+from collector.policy import MEASUREMENT_POLICY  # noqa: E402
 
 DAYS = 30
+
+# 单词证据等级（TRUST §4）：corroborated 及以上计入 corroborated share
+CORROBORATED_LEVELS = ("corroborated", "independently-corroborated", "platform-attested")
 
 
 def compute(conn, project_id: str, days: int = DAYS) -> dict:
@@ -43,23 +47,32 @@ def compute(conn, project_id: str, days: int = DAYS) -> dict:
     attempts = row[0] or 0
     eligible_attempts = row[1] or 0
 
-    # ---- operation 级（M3.1 Logical Invocations；Draft 0.4 结构性 dedup） ----
-    # 重试 = 同一 operation 的多个 attempt；无 operation 证据时 attempt 独立成
-    # operation（resolution=none，0.3 兼容），故 COALESCE 兜底。
+    # ---- operation 级（M3.1 Operation Count；fail-closed 解析，Draft 0.4.2） ----
     row = conn.execute(
         """
-        SELECT COUNT(DISTINCT COALESCE(NULLIF(operation_id, ''), invocation_id))
-        FROM invocations
-        WHERE project_id=? AND started_at>=?
+        SELECT COUNT(DISTINCT operation_id) FROM invocations
+        WHERE project_id=? AND started_at>=? AND operation_id IS NOT NULL
         """,
         (project_id, since),
     ).fetchone()
-    logical_invocations = row[0] or 0
+    resolved_operations = row[0] or 0
+    # 0.3 兼容回退：无任何已解析 operation 时按 attempt 计（Label 披露 resolution）
+    logical_invocations = resolved_operations or attempts
 
     row = conn.execute(
         """
-        SELECT COALESCE(NULLIF(operation_resolution, ''), 'none') AS r,
-               COUNT(DISTINCT COALESCE(NULLIF(operation_id, ''), invocation_id)) AS n
+        SELECT COUNT(*) FROM invocations
+        WHERE project_id=? AND started_at>=? AND operation_id IS NOT NULL
+        """,
+        (project_id, since),
+    ).fetchone()
+    resolved_attempts = row[0] or 0
+    unresolved_attempts = attempts - resolved_attempts
+    operation_resolution_coverage = round(resolved_attempts / attempts, 3) if attempts else 0.0
+
+    row = conn.execute(
+        """
+        SELECT COALESCE(NULLIF(operation_resolution, ''), 'unknown') AS r, COUNT(*) AS n
         FROM invocations
         WHERE project_id=? AND started_at>=?
         GROUP BY r
@@ -71,7 +84,7 @@ def compute(conn, project_id: str, days: int = DAYS) -> dict:
     row = conn.execute(
         """
         SELECT COUNT(*) FROM invocations
-        WHERE project_id=? AND started_at>=? AND evidence='E2'
+        WHERE project_id=? AND started_at>=? AND evidence IN ('corroborated', 'independently-corroborated')
         """,
         (project_id, since),
     ).fetchone()
@@ -180,18 +193,21 @@ def compute(conn, project_id: str, days: int = DAYS) -> dict:
     ).fetchall()
 
     corroborated_share = round(corroborated / eligible_attempts, 3) if eligible_attempts else 0.0
-    attempts_per_operation = round(attempts / logical_invocations, 2) if logical_invocations else 0.0
+    attempts_per_operation = round(attempts / resolved_operations, 2) if resolved_operations else 0.0
 
     return {
         "project": project_id,
         "days": days,
-        "policy": describe(CORE_POLICY_V1),
+        "policy": describe(MEASUREMENT_POLICY),
         "active_clients": active_clients,
         "acd": acd,
-        "logical_invocations": logical_invocations,   # M3.1：Operation 数（结构性 dedup）
+        "logical_invocations": logical_invocations,   # M3.1：已解析 Operation 数（0.3 回退时 = attempts）
         "attempts": attempts,                          # attempt 数（M3.2/M3.3 单位）
+        "resolved_operations": resolved_operations,
+        "unresolved_attempts": unresolved_attempts,
+        "operation_resolution_coverage": operation_resolution_coverage,  # M3.5
         "attempts_per_operation": attempts_per_operation,
-        "operation_resolution": operation_resolution,  # explicit | structural | none
+        "operation_resolution": operation_resolution,  # explicit | structural | unknown
         "eligible_invocations": eligible_attempts,
         "corroborated_invocations": corroborated,
         "corroborated_share": corroborated_share,
@@ -207,7 +223,7 @@ def compute(conn, project_id: str, days: int = DAYS) -> dict:
 
 def badge_svg(s: dict) -> str:
     label = f"{s['active_clients']:,} active clients · {s['acd']:,} client-days"
-    sub = f"{s['logical_invocations']:,} invocations · {int(s['corroborated_share'] * 100)}% corroborated"
+    sub = f"{s['logical_invocations']:,} operations · {int(s['corroborated_share'] * 100)}% corroborated"
     lw = 128
     rw = max(170, 40 + len(label) * 6.2)
     w = lw + rw

@@ -8,18 +8,45 @@ on:
       - 'conformance/**'
       - 'schemas/**'
       - 'registry/**'
+      - 'scripts/**'
       - 'verify_vectors.py'
   pull_request:
 
 jobs:
-  test:
+  # ─── 套件 1：spec conformance（向量 + registry + metric registry） ───
+  spec-conformance:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - name: Core integrity tests
+      - name: AgentMeasure test vectors
+        env:
+          PYTHONPATH: reference
+        run: |
+          python3 verify_vectors.py
+      - name: Metric contract vectors
+        env:
+          PYTHONPATH: reference
+        run: |
+          python3 conformance/runners/run_metrics.py
+      - name: Registry validation (entities)
+        run: |
+          python3 registry/validate_entities.py
+      - name: Metric registry validation (metrics.yaml ↔ METRICS.md)
+        run: |
+          python3 registry/validate_metrics.py
+
+  # ─── 套件 2：reference implementation ───
+  reference-implementation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Core integrity tests (0.4.2 data model)
         env:
           PYTHONPATH: reference
         run: |
@@ -30,7 +57,7 @@ jobs:
           from collector.aggregator.aggregator import compute
           from collector.usage import empty_observation, new_observation_id
 
-          # 50% bug 修复：100 次双边调用 -> share=1.0
+          # 100 次双边调用 -> share=1.0；无 operation 证据 -> unknown resolution
           tmp = pathlib.Path(tempfile.mkdtemp())
           conn = connect(tmp / "collector.db")
           for n in range(100):
@@ -46,11 +73,13 @@ jobs:
                   store_observation(conn, o)
           match_invocations(conn)
           s = compute(conn, "github.com/foo/bar")
-          assert s["logical_invocations"] == 100, s
+          assert s["logical_invocations"] == 100, s          # 0.3 回退（无 operation 证据）
+          assert s["operation_resolution"]["unknown"] == 100, s
+          assert s["operation_resolution_coverage"] == 0.0, s
           assert s["corroborated_share"] == 1.0, s
-          print("core: 100 bilateral -> share 1.0 OK")
+          print("core: 100 bilateral -> share 1.0, resolution unknown (fail-closed) OK")
 
-          # 单侧 -> E0
+          # 单侧 -> observed（最低显示等级）
           o = empty_observation(); o.update(dict(
               observation_id=new_observation_id(), observed_at="2026-08-16T03:00:00Z",
               observer_principal="codex-hook@t", observer_side="client", provenance="hook",
@@ -59,19 +88,28 @@ jobs:
           store_observation(conn, o)
           match_invocations(conn)
           ev = conn.execute("SELECT evidence FROM invocations WHERE tool='foo.only'").fetchone()
-          assert ev["evidence"] == "E0", ev["evidence"]
-          print("core: single observation -> E0 OK")
+          assert ev["evidence"] == "observed", ev["evidence"]
+          print("core: single observation -> observed OK")
+
+          # 显式 operation_id -> 3 attempts 归并为 1 operation
+          conn2 = connect(pathlib.Path(tempfile.mkdtemp()) / "c.db")
+          for i, outcome in enumerate(("failure", "failure", "success")):
+              o = empty_observation(); o.update(dict(
+                  observation_id=new_observation_id(),
+                  observed_at=f"2026-08-16T03:00:0{i}Z",
+                  observer_principal="mcp-wrapper@t", observer_side="server",
+                  provenance="wrapper", project_id="github.com/foo/bar",
+                  tool="foo.search", tool_call_id=f"tc-op-{i}", outcome=outcome,
+                  lifecycle_stage="L2", operation_id="op-1", task_id="tk-1"))
+              store_observation(conn2, o)
+          match_invocations(conn2)
+          s2 = compute(conn2, "github.com/foo/bar")
+          assert s2["logical_invocations"] == 1, s2
+          assert s2["attempts"] == 3, s2
+          assert s2["operation_resolution"]["explicit"] == 3, s2
+          assert s2["operation_resolution_coverage"] == 1.0, s2
+          print("core: explicit operation -> 3 attempts / 1 operation, coverage 1.0 OK")
           PY
-      - name: AgentMeasure test vectors
-        env:
-          PYTHONPATH: reference
-        run: |
-          python3 verify_vectors.py
-      - name: Metric contract vectors
-        env:
-          PYTHONPATH: reference
-        run: |
-          python3 conformance/runners/run_metrics.py
       - name: Choice end-to-end (M2.2 / M2.5)
         env:
           PYTHONPATH: reference
@@ -103,9 +141,6 @@ jobs:
           assert cs["co_presented_decisions"] == 0, cs  # Tavily 未同台 -> fail-closed 空分母
           print("choice: M2.2=0.4, M2.5 fail-closed OK")
           PY
-      - name: Registry validation
-        run: |
-          python3 registry/validate_entities.py
       - name: Adapter privacy tests
         run: |
           python3 - <<'PY'
@@ -124,3 +159,15 @@ jobs:
           assert "p-" in raw
           print("adapter privacy OK")
           PY
+
+  # ─── 套件 3：documentation consistency（spec-drift） ───
+  documentation-consistency:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Spec-drift check (legacy vocabulary + version stamps)
+        run: |
+          python3 scripts/spec_drift.py

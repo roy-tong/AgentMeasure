@@ -224,17 +224,20 @@ AgentMeasure/
 
 ## 状态与路线图
 
-**Draft 0.4（Measurement Objects & Verification Decoupling）** —— 测量对象实体化、
-Operation/Attempt、Core 与 Verification Profile 解耦。
+**Draft 0.4.2（Measurement Integrity）** —— observe-first 数据模型：usage_context/
+validity 默认 unknown、Provider-only 只产生 Attempt（Operation 需解析证据，M3.5
+披露覆盖率）、MeasurementPolicy v2、Evidence 单词显示等级。参考实现已迁移到
+0.4.1/0.4.2 数据模型。
 
 | 能力 | 标准 | 参考实现 | 真实运行 |
 | --- | --- | --- | --- |
 | Observed Selection Rate | Defined | Implemented | Limited |
 | Conditional Choice Share | Defined | Implemented | Experimental |
 | Operations / Attempts | Defined | Implemented | Yes |
+| Operation Resolution Coverage | Defined | Implemented | No |
 | Result Consumption | Defined | Implemented | Claude partial |
 | Incrementality | Defined (formula) | Planned | No |
-| Qualified Usage | Defined | Implemented | Yes |
+| Qualified Usage (Strict) | Defined | Implemented | Yes |
 
 路线图双轨运行——标准轨（0.4 对象与质量 → 0.5 效用与经济语义 → 1.0）与产品轨
 （Remote Capability Analytics → Provider SDK + 托管分析 → Metering）。见

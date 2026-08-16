@@ -93,9 +93,13 @@ def run_correlation_vectors() -> int:
             row = conn.execute("SELECT outcome FROM invocations").fetchone()
             if not row or row["outcome"] != exp["outcome"]:
                 ok = False
-        if exp.get("evidence_none_E2"):
+        if "evidence" in exp:
             row = conn.execute("SELECT evidence FROM invocations").fetchone()
-            if row and row["evidence"] == "E2":
+            if not row or row["evidence"] != exp["evidence"]:
+                ok = False
+        if exp.get("evidence_not_corroborated"):
+            row = conn.execute("SELECT evidence FROM invocations").fetchone()
+            if row and row["evidence"] in ("corroborated", "independently-corroborated"):
                 ok = False
         if not ok:
             print(f"  ✗ {v['id']} (got invocations={s['logical_invocations']})")

@@ -194,7 +194,7 @@ Consumption Rate = Consumed ÷ Consumption-observable eligible invocations
 
 - **Qualified Usage**：这条数据是否值得统计的真实生产使用（Context × Validity × Policy）
 - **Metric Eligibility**：这条数据是否有资格进入**这个具体指标**的分母
-  （如：Presented 不可观察的 runtime 不进入 Selection Rate 分母；
+  （如：Presented 不可观察的 runtime 不进入 Observed Selection Rate 分母；
   Consumption 不可观察的不进入 Consumption Rate 分母）
 
 ## 6. Choice Mode、Decision Authority、Selection Constraint（三轴正交）
@@ -205,7 +205,7 @@ Consumption Rate = Consumed ÷ Consumption-observable eligible invocations
 | **Decision Authority** | 谁作出决策 | model · router · workflow · user · policy · platform · unknown |
 | **Selection Constraint** | 选择多自由 | autonomous · recommended · required · user_requested · fallback · forced · unknown |
 
-**不变量：不同 Choice Mode 默认不得直接比较 Selection Rate / Share of Choice**；
+**不变量：不同 Choice Mode 默认不得直接比较 Observed Selection Rate / Share of Choice**；
 authority 与 constraint 同样适用（不变量 24）。比较类指标 MUST 声明三轴。
 
 ## 7. Qualification：Context × Validity（不变）
@@ -259,7 +259,7 @@ Observable population / Qualified population / Runtime coverage / Choice mode
 12. Outcome conflicts preserved (inconsistent)
 13. Qualified usage never mixes with benchmark/test/synthetic/CI
 14. Attribution claims never stated as causation
-15. Selection Rate denominator = Presented, not Available
+15. Observed Selection Rate denominator = Presented, not Available
 16. **Different grains are not interchangeable**
 17. **Unobservable MUST NOT be interpreted as negative**
 18. **Presentations count per Decision Opportunity（presentation ≠ decision）**
@@ -277,11 +277,11 @@ Observable population / Qualified population / Runtime coverage / Choice mode
 | **Core**（本文） | Objects、Grain、Observability、Eligibility、Qualification、Lineage、不变量 | **采用前置**（MUST 满足） |
 | **Data** | Observation Envelope schema | 采用前置 |
 | **Reporting** | Measurement Label / Policy / Profiles | 采用前置（公开指标 MUST） |
-| **Verified Measurement Profile** | Ed25519 签名、Evidence Profile（E0-E3）、Signed Observation（可选认证载体） | **高级符合性，非采用前置** |
+| **Verified Measurement Profile** | Ed25519 签名、Evidence Profile（单词显示等级）、Signed Observation（可选认证载体） | **高级符合性，非采用前置** |
 | **Bindings** | OTel / MCP / CLI 映射 | 随实现 |
 
 **不变量（P0-7）：验证是高级符合性，不是采用前置条件。** 一个不签名的采集器
-也能产生有效的 AgentMeasure 指标——只是证据等级为 E0，MUST 在 Label 中声明。
+也能产生有效的 AgentMeasure 指标——只是证据等级为 observed（最低显示等级），MUST 在 Label 中声明。
 
 ## 11. 文档结构（Draft 0.4）
 

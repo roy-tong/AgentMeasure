@@ -222,16 +222,20 @@ AgentMeasure/
 
 ## Current status & roadmap
 
-**Draft 0.4（Measurement Objects & Verification Decoupling）** — entity-based measurement objects, Operation/Attempt, Core decoupled from the Verification Profile.
+**Draft 0.4.2（Measurement Integrity）** — observe-first 数据模型：usage_context/validity
+默认 unknown、Provider-only 只产生 Attempt（Operation 需解析证据，M3.5 披露覆盖率）、
+MeasurementPolicy v2、Evidence 单词显示等级。Reference implementation 已迁移到
+0.4.1/0.4.2 数据模型。
 
 | Capability | Standard | Reference | Real Runtime |
 | --- | --- | --- | --- |
 | Observed Selection Rate | Defined | Implemented | Limited |
 | Conditional Choice Share | Defined | Implemented | Experimental |
 | Operations / Attempts | Defined | Implemented | Yes |
+| Operation Resolution Coverage | Defined | Implemented | No |
 | Result Consumption | Defined | Implemented | Claude partial |
 | Incrementality | Defined (formula) | Planned | No |
-| Qualified Usage | Defined | Implemented | Yes |
+| Qualified Usage (Strict) | Defined | Implemented | Yes |
 
 The roadmap runs on two tracks — the standard (0.4 objects & quality → 0.5 utility & economic semantics → 1.0) and the product (Remote Capability Analytics → Provider SDK + hosted analytics → metering). See [ROADMAP.md](ROADMAP.md).
 

@@ -8,12 +8,46 @@
       "input": {
         "project": "github.com/foo/bar",
         "observations": [
-          {"side": "server", "principal": "mcp-wrapper@td-b", "tool": "foo.search", "call_id": "tc-a", "outcome": "failure", "ts": "2026-08-16T03:00:00Z", "operation_id": "op-1", "task_id": "tk-1"},
-          {"side": "server", "principal": "mcp-wrapper@td-b", "tool": "foo.search", "call_id": "tc-b", "outcome": "failure", "ts": "2026-08-16T03:00:05Z", "operation_id": "op-1", "task_id": "tk-1"},
-          {"side": "server", "principal": "mcp-wrapper@td-b", "tool": "foo.search", "call_id": "tc-c", "outcome": "success", "ts": "2026-08-16T03:00:10Z", "operation_id": "op-1", "task_id": "tk-1"}
+          {
+            "side": "server",
+            "principal": "mcp-wrapper@td-b",
+            "tool": "foo.search",
+            "call_id": "tc-a",
+            "outcome": "failure",
+            "ts": "2026-08-16T03:00:00Z",
+            "operation_id": "op-1",
+            "task_id": "tk-1"
+          },
+          {
+            "side": "server",
+            "principal": "mcp-wrapper@td-b",
+            "tool": "foo.search",
+            "call_id": "tc-b",
+            "outcome": "failure",
+            "ts": "2026-08-16T03:00:05Z",
+            "operation_id": "op-1",
+            "task_id": "tk-1"
+          },
+          {
+            "side": "server",
+            "principal": "mcp-wrapper@td-b",
+            "tool": "foo.search",
+            "call_id": "tc-c",
+            "outcome": "success",
+            "ts": "2026-08-16T03:00:10Z",
+            "operation_id": "op-1",
+            "task_id": "tk-1"
+          }
         ]
       },
-      "expect": {"logical_invocations": 1, "attempts": 3, "attempts_per_operation": 3.0, "resolution": {"explicit": 1}}
+      "expect": {
+        "logical_invocations": 1,
+        "attempts": 3,
+        "attempts_per_operation": 3.0,
+        "resolution": {
+          "explicit": 3
+        }
+      }
     },
     {
       "id": "op-structural-retry",
@@ -21,11 +55,33 @@
       "input": {
         "project": "github.com/foo/bar",
         "observations": [
-          {"side": "server", "principal": "mcp-wrapper@td-b", "tool": "foo.search", "call_id": "tc-a", "outcome": "failure", "ts": "2026-08-16T03:00:00Z", "task_id": "tk-1"},
-          {"side": "server", "principal": "mcp-wrapper@td-b", "tool": "foo.search", "call_id": "tc-b", "outcome": "success", "ts": "2026-08-16T03:00:05Z", "task_id": "tk-1"}
+          {
+            "side": "server",
+            "principal": "mcp-wrapper@td-b",
+            "tool": "foo.search",
+            "call_id": "tc-a",
+            "outcome": "failure",
+            "ts": "2026-08-16T03:00:00Z",
+            "task_id": "tk-1"
+          },
+          {
+            "side": "server",
+            "principal": "mcp-wrapper@td-b",
+            "tool": "foo.search",
+            "call_id": "tc-b",
+            "outcome": "success",
+            "ts": "2026-08-16T03:00:05Z",
+            "task_id": "tk-1"
+          }
         ]
       },
-      "expect": {"logical_invocations": 1, "attempts": 2, "resolution": {"structural": 1}}
+      "expect": {
+        "logical_invocations": 1,
+        "attempts": 2,
+        "resolution": {
+          "structural": 2
+        }
+      }
     },
     {
       "id": "op-no-merge-after-success",
@@ -33,11 +89,33 @@
       "input": {
         "project": "github.com/foo/bar",
         "observations": [
-          {"side": "server", "principal": "mcp-wrapper@td-b", "tool": "foo.search", "call_id": "tc-a", "outcome": "success", "ts": "2026-08-16T03:00:00Z", "task_id": "tk-1"},
-          {"side": "server", "principal": "mcp-wrapper@td-b", "tool": "foo.search", "call_id": "tc-b", "outcome": "success", "ts": "2026-08-16T03:00:05Z", "task_id": "tk-1"}
+          {
+            "side": "server",
+            "principal": "mcp-wrapper@td-b",
+            "tool": "foo.search",
+            "call_id": "tc-a",
+            "outcome": "success",
+            "ts": "2026-08-16T03:00:00Z",
+            "task_id": "tk-1"
+          },
+          {
+            "side": "server",
+            "principal": "mcp-wrapper@td-b",
+            "tool": "foo.search",
+            "call_id": "tc-b",
+            "outcome": "success",
+            "ts": "2026-08-16T03:00:05Z",
+            "task_id": "tk-1"
+          }
         ]
       },
-      "expect": {"logical_invocations": 2, "attempts": 2, "resolution": {"structural": 2}}
+      "expect": {
+        "logical_invocations": 2,
+        "attempts": 2,
+        "resolution": {
+          "structural": 2
+        }
+      }
     },
     {
       "id": "op-fail-closed-no-task",
@@ -45,11 +123,31 @@
       "input": {
         "project": "github.com/foo/bar",
         "observations": [
-          {"side": "server", "principal": "mcp-wrapper@td-b", "tool": "foo.search", "call_id": "tc-a", "outcome": "failure", "ts": "2026-08-16T03:00:00Z"},
-          {"side": "server", "principal": "mcp-wrapper@td-b", "tool": "foo.search", "call_id": "tc-b", "outcome": "success", "ts": "2026-08-16T03:00:05Z"}
+          {
+            "side": "server",
+            "principal": "mcp-wrapper@td-b",
+            "tool": "foo.search",
+            "call_id": "tc-a",
+            "outcome": "failure",
+            "ts": "2026-08-16T03:00:00Z"
+          },
+          {
+            "side": "server",
+            "principal": "mcp-wrapper@td-b",
+            "tool": "foo.search",
+            "call_id": "tc-b",
+            "outcome": "success",
+            "ts": "2026-08-16T03:00:05Z"
+          }
         ]
       },
-      "expect": {"logical_invocations": 2, "attempts": 2, "resolution": {"none": 2}}
+      "expect": {
+        "logical_invocations": 2,
+        "attempts": 2,
+        "resolution": {
+          "unknown": 2
+        }
+      }
     }
   ]
 }

@@ -1,18 +1,22 @@
-# AgentMeasure Quality — Measurement Quality（Draft 0.4.1）
+# AgentMeasure Quality — Measurement Quality Model（Draft 0.4.2）
 
 > **证据 ≠ 覆盖 ≠ 限定 ≠ 方法。** 一组来源强但只覆盖 2% Agent 的事件不是
-> 市场数据。本文件定义质量四维 + Measurement Label 披露要求。
+> 市场数据。本文件定义**七维质量模型**、Measurement Use Classes 与
+> Measurement Label 披露要求。
 
-## 1. 质量四维
+## 1. 七维质量模型（Measurement Quality Model）
 
-| 维 | 问题 | 披露 |
-| --- | --- | --- |
-| Provenance / Evidence Strength | 这条 observation 来自哪里，其来源能被支持到什么程度？（签名证明来源与完整性，**不证明事件事实绝对真实**） | 签名比例、corroborated 比例 |
-| Coverage | 看到多少世界 | Runtime/Client/Invocation 覆盖（含 coverage_basis） |
-| Qualification | 算不算真实生产使用 | Context/Validity 分布 |
-| Observability | 信号能测多少 | 每信号的可观察率 |
+| # | 维度 | 问题 | 披露 |
+| --- | --- | --- | --- |
+| 1 | **Provenance Strength** | 这条 observation 来自哪里，其来源能被支持到什么程度？（签名证明来源与完整性，**不证明事件事实绝对真实**） | 签名比例、corroborated 比例 |
+| 2 | **Representativeness / Coverage** | 看到多少世界（含 coverage_basis） | Runtime/Client/Invocation 覆盖 |
+| 3 | **Observability** | 信号能测多少 | 每信号的可观察率 |
+| 4 | **Qualification** | 算不算真实生产使用 | Context/Validity 分布（默认 unknown，只有证据升级） |
+| 5 | **Sampling & Uncertainty** | 采样了吗？不确定性多少 | sampling method、uncertainty |
+| 6 | **Identity Resolution** | 标识归一得怎么样（entity/caller） | 解析率、resolution 分布 |
+| 7 | **Method & Version** | 用什么统计、哪个 spec/registry 版本 | spec_version、registry_version、policy 版本 |
 
-## 2. Coverage（多维，不再只有 partial/complete）
+## 2. Coverage（多维）
 
 ```text
 Runtime Coverage        各 runtime 的观察覆盖
@@ -23,25 +27,29 @@ Consumption Observability    Consumed 可观察率
 Identity Coverage       身份可解析率
 Context Classification Coverage   context 可分类率
 Category Classification Coverage  category 可分类率
+Operation Resolution Coverage     attempts 中能解析出 operation 的比例（M3.5）
 ```
 
-**Population Coverage（覆盖多少总体）≠ Signal Observability（覆盖内某信号能测多少）**：
+### Composition ≠ Coverage（必须分开）
 
 ```text
-Observed Claude clients = 20%（participating_network 内的观察占比）
-但在这 20% 内：Invocation observable 100% · Presented observable 5% · Consumed observable 70%
+Composition（构成）
+  Claude = 20% of observed clients        ← Runtime Distribution，不是 Coverage
+
+Coverage（覆盖，只有已知总体才能算）
+  observed / eligible population
 ```
 
-### coverage_basis（覆盖基座，MUST 声明）
+参与式测量网络通常没有已知总体 → 只能说 **Observed clients / Participating
+installations / Observed runtimes**，不得包装成市场覆盖率。
 
-只有**已知分母**才能声称覆盖率百分比；否则只能说观察量，不能说覆盖：
+### coverage_basis（覆盖基座，MUST 声明）
 
 ```text
 coverage_basis
 ├── census              全量已知（可声称 x% coverage）
 ├── probability_sample  概率抽样（可声称带误差的 coverage）
-├── participating_network  参与式网络（只说 Observed clients / Participating
-│                          installations / Observed runtimes，不得包装为市场覆盖率）
+├── participating_network  参与式网络（只说 Observed / Participating）
 └── unknown
 ```
 
@@ -53,16 +61,32 @@ coverage_basis
 每指标必须声明各状态的可观察率：TRUE / FALSE / UNKNOWN / UNOBSERVABLE。
 UNOBSERVABLE 必须单列——绝不并入 FALSE（不变量 17）。
 
-## 4. Measurement Label v1（披露要求）
+## 4. Measurement Use Classes（测量使用等级：fit-for-purpose）
+
+同一批数据，用于内部趋势与用于对外收费，所需可信度完全不同。**Measurement
+Quality 按用途分级**：
+
+| Class | 名称 | 要求 | 可用于 |
+| --- | --- | --- | --- |
+| **A** | First-party Analytics | Provider 自己观察 | 产品分析、reliability、内部趋势 |
+| **B** | Comparative Measurement | 标准 metric + coverage 披露 + entity resolution + qualification | benchmark、public analytics |
+| **C** | Correlated Measurement | Provider + Runtime 双侧独立观察 | 更强的 Agent 归属、公共信任信号 |
+| **D** | Billable / Auditable Measurement | operation/effect 证据 + versioned metering policy + replay protection + immutable revisions + 双方协议（必要时第三方证言） | **真实账单**（见 extensions/COMMERCIAL.md §5） |
+
+**声称规则：数据的 Use Class 必须与其证据匹配。** Class A 数据不能发布为
+Class C 声称；Class D 还额外要求 Metering Assurance（M0-M3）。
+
+## 5. Measurement Label（披露要求）
 
 ```text
 Agent Usage Measurement Label
 Standard version:   0.4
 Metric:             M2.2 Observed Selection Rate
+Use class:          B (comparative)
 Window:             30 days
 Grain:              decision-opportunity
-Usage context:      production
-Validity:           normal
+Usage context:      production (context_source: provider_configuration)
+Validity:           normal (validity_source: collector_derived)
 Decision authority: model / router / policy   # 三轴披露（Core §6）
 Selection constraint: autonomous / forced
 Agent hosts:        Claude Code, Codex
@@ -75,14 +99,17 @@ Unknown context:    8%
 Unknown validity:   3%
 Observability:      presented 可观察率 15%
 Identity coverage:  91%
+Operation resolution coverage: 51.4%
 Category:           search.web.general/v1
 Choice mode:        exclusive
 ```
 
-## 5. Claim Discipline（陈述纪律）
+## 6. Claim Discipline（陈述纪律）
 
 | 覆盖 | 可说的 | 不可说 |
 | --- | --- | --- |
-| partial | Observed Selection Share | Agent Market Share |
+| partial / participating_network | Observed Selection Share | Agent Market Share |
 | 单平台完整 | Claude Code Selection Share | Global Agent Selection Share |
 | 总体推断条件满足 | Estimated Agent Ecosystem Share | — |
+| Use Class A 数据 | First-party analytics | Comparative / market 声称 |
+| UA/clientInfo 匹配 | Caller (declared) | Caller (correlated) / "Agent 使用量" |
