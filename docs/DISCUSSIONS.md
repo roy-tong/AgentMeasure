@@ -29,7 +29,7 @@ Discussions 是 AgentMeasure 的社区讨论区。它不是一个问答论坛，
 
 - 基准审计周期 1 的实验设计（skills.sh + MCP registry + llms.txt，见 `benchmark/BENCHMARK-DRAFT.md`）
 - 灵巧手/网页浏览等新型交互面的观测实验
-- E0–E5 证据分级的实际判定案例（把一个真实声称贴上来，大家一起定级）
+- 证据分级（Evidence Profile，多轴向量 → 单词显示等级，见 standard/TRUST.md）的实际判定案例（把一个真实声称贴上来，大家一起定级）
 
 ### Capability Economy（能力经济）
 
@@ -47,7 +47,7 @@ Discussions 是 AgentMeasure 的社区讨论区。它不是一个问答论坛，
 
 ## Ground Rules（讨论守则）
 
-1. **声称必须带证据等级**：讨论中给出数字时，标注 E0–E5 与观测上下文，否则按 E0 对待。
+1. **声称必须带证据等级**：讨论中给出数字时，标注证据分级（Evidence Profile，见 standard/TRUST.md）与观测上下文，否则按 unknown 对待。
 2. **反驳的是口径，不是人**：计量争议天然激烈，请针对定义与证据，不针对发言者。
 3. **结论可变**：任何讨论结论都可以被新证据推翻；被推翻的结论会记录在案（保留修订过程）。
 4. **提案走流程**：想改变标准本身，从 Discussion 开始，但正式变更走 `proposals/` 的 AUP。
@@ -75,7 +75,7 @@ Experiments · Capability Economy · Implementers (seed topics above).
 
 **Ground rules:**
 
-1. Claims in discussion must carry an evidence level (E0–E5) and observation context; otherwise they are treated as E0.
+1. Claims in discussion must carry an evidence level (Evidence Profile, see standard/TRUST.md) and observation context; otherwise they are treated as unknown.
 2. Rebut the semantics, not the speaker.
 3. Conclusions are revisable; revisions are recorded.
 4. Standard changes go through the `proposals/` AUP; Discussions is where they start.
