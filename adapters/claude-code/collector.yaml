@@ -1,0 +1,87 @@
+# agent-used Claude Code adapter — OTLP Collector 配置
+
+> Claude Code 原生输出 OTLP（metrics/events/traces）。agent-used 作为 OTel Processor/Exporter：
+> 同一 OTLP 流原样转发给用户现有 backend，agent-used 只消费 execute_tool / mcp 相关信号。
+
+## 部署形态
+
+```text
+Claude Code
+      │ OTLP (grpc/http)
+      ▼
+OpenTelemetry Collector（agent-used 发行版）
+      ├─→ 用户现有 backend（原样转发，不改动）
+      └─→ agent-used 本地 collector（normalizer→redactor→correlator→aggregator）
+```
+
+## 配置（collector.yaml）
+
+```yaml
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+
+processors:
+  # 全量数据原样转发给用户 backend（不干预）
+  passthrough:
+  # agent-used 只保留工具调用相关信号（元数据层）
+  agentused-filter:
+    error_mode: ignore
+    logs:
+      log_record:
+        - include:
+            match_type: regexp
+            log_record:
+              body: ".*(tool|mcp|execute).*"
+          # 敏感字段在输出前强制删除（privacy.md 默认 DROP）
+    attributes:
+      actions:
+        - key: prompt
+          action: delete
+        - key: tool_input
+          action: delete
+        - key: tool_output
+          action: delete
+        - key: file_path
+          action: delete
+        - key: cwd
+          action: delete
+  batch:
+
+exporters:
+  # 用户现有 backend（示例：可换成任意 OTLP 目标）
+  otlp/customer:
+    endpoint: ${env:CUSTOMER_OTLP_ENDPOINT}
+  # agent-used 本地 collector（默认端口）
+  otlp/agentused:
+    endpoint: localhost:14318
+
+service:
+  pipelines:
+    logs:
+      receivers: [otlp]
+      processors: [agentused-filter, batch]
+      exporters: [otlp/customer, otlp/agentused]
+```
+
+## 使用
+
+```bash
+# 1. 启动 agent-used collector（本地接收 OTLP）
+python3 collector/aggregator/aggregator.py serve --otlp-port 14318   # 待实现 OTLP 接收
+
+# 2. Claude Code 指向本 collector
+claude --telemetry-endpoint http://localhost:4318/v1/logs
+
+# 3. 数据分流：用户 backend 原样收到；agent-used 侧只收到脱敏后的工具调用信号
+```
+
+## 说明
+
+- **不要求用户放弃现有 backend**：passthrough 语义由 otlp/customer exporter 保证
+- **脱敏发生在 agent-used 消费侧**：filter processor 在导出到 agentused 前删除敏感属性（与 redactor 双保险）
+- 本配置是设计稿；OTLP 接收端（collector serve --otlp-port）实现于 M2 的 collector 演进
