@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""AgentMeasure — Ed25519 keygen（E1 source-authenticated 密钥管理）。
+"""AgentMeasure — Ed25519 keygen（source-authenticated 密钥管理）。
 
 用法:
   python3 keygen.py <key_id>
