@@ -1,81 +1,105 @@
 # agent-used
 
-**客观测量 Agent 调用工具的开放数据体系：标准 + 中间件 + 徽章。**
+**An open usage attribution standard for software used by AI agents.**
 
-```bash
-# 包装任意 MCP server，一行命令开始记录 Agent 调用
-agent-used wrap -- npx @your/mcp-server
+> OpenTelemetry tells us how telemetry travels.
+> **agent-used defines what counts as usage.**
 
-# 本地聚合 → README 徽章（"本月 N 次 Agent 调用"）
-python3 aggregator.py import --events ~/.agent-used/events/agent-use-events.jsonl
-python3 aggregator.py serve --port 8787   # GET /badge/{owner}/{repo}.svg
-```
+agent-used 是一套面向 AI Agent 软件生态的开放 **Usage Attribution 标准与基础设施**。它从 Agent 侧与 Tool 侧采集调用证据，在 Codex、Claude Code、DeepSeek Harness、MCP 等不同运行环境之间统一数据口径，对双边事件进行关联与去重，并以明确的证据等级发布隐私保护后的使用统计。
 
-[白皮书：《工具经济需要客观数据》](https://roy-tong.github.io/) · [事件标准 v1](agent_event_schema.json) · [English](README.en.md)
+**这不是又一个 Agent observability 工具。** Langfuse / Grafana 回答"我的 Agent 运行得怎么样"；agent-used 回答"整个生态里，哪些第三方工具真的被 Agent 使用"。
 
-## 问题
+[《如何测量 Agent Tool Economy》（白皮书）](whitepaper/) · [Measurement Spec](spec/measurement-spec.md) · [English](README.en.md)
 
-2026 年 Agent 正在成为软件分发最重要的新渠道，但工具作者对自己工具被 Agent 使用了多少次、成功与否、谁在用——一无所知。skills.sh 的计数是自报遥测（可刷、无 API）；MCP registry 明确不做采纳数据；GitHub 没有 repo 级 Agent 指标。**Agent 经济正在成为一场没有记分牌的比赛。**
+## 核心概念
 
-## 三层测量标准
+### 使用漏斗：Install ≠ Usage
 
-| 层 | 回答的问题 | 实现 |
+| 阶段 | 定义 | MVP |
 | --- | --- | --- |
-| L1 识别 | 谁在调用 | MCP `clientInfo` / HTTP `X-Agent-Name` / CLI `AGENT_HOST` |
-| L2 证明 | 调用是真的 | 被调方签发 HMAC 签名回执（nonce 防重放） |
-| L3 聚合 | 总量可信 | 开放事件格式 + 聚合 API + 徽章 + 异常检测 |
+| S0 Selected | Agent 选择了该工具 | ✅ |
+| S1 Executed | Runtime 实际执行了调用 | ✅ |
+| S2 Execution Success | 工具成功返回 | ✅ |
+| S3 Result Consumed | Agent 实际使用了返回结果 | 🔶 部分 |
+| S4 Task Contribution | 结果对下游任务有贡献 | 🔬 研究 |
 
-**核心差异**：计数发生在被调方（wrapper 在真实调用边界），调用方无法自报——这是与所有自报式遥测的本质区别。
+### 证据等级：签名 ≠ 真实
 
-## 组件
-
-| 组件 | 状态 | 说明 |
+| 等级 | 名称 | 能证明什么 |
 | --- | --- | --- |
-| `agent_event_schema.json` | ✅ v1 | 开放事件标准（JSONL，只含元数据） |
-| `mcp_wrapper.py` | ✅ 已测试 | MCP server 包装：stdio 代理 + tools/call 拦截 + clientInfo 识别 + L2 签名 |
-| `aggregator.py` | ✅ 已测试 | 事件导入/验签/统计/徽章 SVG（零依赖 stdlib） |
-| CLI wrapper | 路线图 | `agent-used run -- <cmd>` |
-| HTTP 中间件 | 路线图 | Web 服务计数 |
-| 聚合云服务 | 路线图 | Cloudflare Workers |
+| E0 Observed | 单边日志 | 某一方声称 |
+| E1 Source-authenticated | 签名事件 | 来源与完整性 |
+| **E2 Correlated** | 双边 trace 匹配（同一 trace_id） | **同一次真实调用（核心）** |
+| E3 Platform-attested | 平台直接证明 | 平台确认 |
 
-## 隐私与合规（写进代码）
+HMAC 只证明"数据来自持 key 主体且未被篡改"，不证明"真的有 Agent 调用"——所以证据是分级的，`corroborated usage`（E2）才是可信度核心。MCP 2026-07-28 RC 将 OTel trace context 纳入 `_meta`，使双边关联成为协议级现实。
 
-- 只记录：工具名、结果、粗粒度耗时、宿主、时间。**绝不记录参数、内容、路径、身份**
-- `DO_NOT_TRACK=1` 全程生效；默认只写本地，opt-in 才上传聚合
-- **永不激励 Agent star/follow**（GitHub AUP 明确禁止 automated starring）；数据来源是用户自有工具事件，不爬 GitHub
+### 指标：Raw Calls 不是北极星
 
-## 快速开始
+- **Adoption**（首要）：Active Agent Sessions
+- **Engagement**：Repeat Usage、7d/30d 回访率
+- **Quality**：Execution Success / Result Consumption
+- **Trust**：Corroborated Usage Share
 
-```bash
-# 1. 包装你的 MCP server（记录开始）
-AGENT_USED_TARGET=github.com/you/your-repo \
-  python3 mcp_wrapper.py wrap -- npx @your/mcp-server
+排名按 sessions 而非 calls——防拆 API 刷榜。一次任务 6 次调用 ≠ 6 倍使用。
 
-# 2. 看本地事件
-cat ~/.agent-used/events/agent-use-events.jsonl
+## 架构
 
-# 3. 本地聚合 + 徽章
-python3 aggregator.py import --events ~/.agent-used/events/agent-use-events.jsonl
-python3 aggregator.py seed-demo        # 可选：演示数据
-python3 aggregator.py serve --port 8787
-open http://127.0.0.1:8787/badge/you/your-repo
+```text
+Public Usage Layer（Dashboard / API / Badge / Rankings / Trends）
+        ▲   aggregated only
+agent-used Attribution Layer
+  Identity Resolution · Dedup · Cross-side Correlation
+  Evidence Grading · Privacy Aggregation · Metric Normalization
+        ▲               ▲
+ Agent Adapters        Tool Adapters
+  codex / claude / dsh   mcp / http / cli
+        ▲               ▲
+   OTel / MCP existing standards
 ```
 
-## 测试
+agent-used **站在 OTel 之上**：复用 `gen_ai.tool.name`、`mcp.method.name`、trace 字段；只增加 6 个 `agentused.*` 扩展字段（[otel-mapping](spec/otel-mapping.md)）。
 
-```bash
-python3 -m py_compile mcp_wrapper.py aggregator.py
-# 端到端已验证：JSON-RPC 全代理、事件精确（只记 tools/call）、
-# clientInfo → agent_host、签名验签 PASS、伪造事件拒绝、参数零泄漏
+## 目录
+
+```text
+agent-used/
+├── spec/          # 标准（测量/证据/指标/隐私/身份/威胁模型/OTel 映射）
+├── adapters/
+│   ├── codex/           # PostToolUse hooks → 本地事件
+│   ├── claude-code/     # OTLP → agent-used Collector（设计）
+│   ├── deepseek-harness/# DSH plugin（tools/pre-execute → post-execute，设计）
+│   └── mcp/             # legacy zero-config wrapper（wrapper.py）
+├── collector/
+│   ├── normalizer/      # 跨 Agent 统一口径（待实现）
+│   ├── correlator/      # 双边 trace 匹配 → E2（待实现）
+│   ├── redactor/        # 默认 DROP 敏感字段（待实现）
+│   └── aggregator/      # 本地统计 + 徽章 SVG（已有 aggregator.py）
+├── registry/
+│   └── project-identity/ # 项目身份映射（待填充）
+├── examples/
+└── whitepaper/          # 《如何测量 Agent Tool Economy》
 ```
+
+## 隐私
+
+**Raw telemetry stays local. Public infrastructure receives aggregates by default.**
+
+prompt / tool_input / tool_output / path / raw session id——代码级默认 DROP（adapter 含泄漏测试）。伪匿名 installation id（本地 secret + 按月轮换）支持 unique installations 与 repeat usage，云端无法反推身份。`DO_NOT_TRACK=1` 全程生效。
 
 ## 路线图
 
-- M0 ✅ 事件标准 + MCP wrapper（识别 + 签名）
-- M1 ✅ 聚合引擎本地版 → ☁️ 云端（Workers）
-- M2  CLI wrapper + HTTP 中间件 + SPEC.md
-- M3  3 个外部项目接入实验 + Stage Gate
-- 研究：Codex / Claude Code / DeepSeek Harness 的 hooks 原生集成（agent 平台路径）
+| Stage | 目标 | 关键产物 |
+| --- | --- | --- |
+| M0 Definition | 讲清"什么算 Agent Usage" | ✅ Whitepaper + Measurement Spec + Threat Model |
+| M1 Cross-Agent Proof | 证明跨 Agent 可统一 | Codex + Claude + DSH adapter |
+| M2 OTel Native | 标准采集链 | Collector + OTel mapping + MCP adapter |
+| M3 Attribution | 项目核心 | Identity Graph + Correlation + Evidence |
+| M4 Public Network | 公开数据 | API + Dashboard + Badge |
+| M5 External Validation | 指标是否真被需要 | 外部项目接入 + discrepancy report |
+| M6 Ecosystem | 公共基础设施 | MCP / OTel / Agent Platform / Registry 合作 |
+
+**不做的事**：不替代 OTel；不做自动 star/follow；不采集内容；不按 raw calls 排名；不在 M3 之前做聚合云。
 
 ## License
 
