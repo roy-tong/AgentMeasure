@@ -26,7 +26,7 @@ from typing import Optional
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from collector.usage import OBSERVATION_KEYS  # noqa: E402
 
-DB_DEFAULT = Path(__file__).resolve().parents[1] / "collector.db"
+DB_DEFAULT = Path(__file__).resolve().parents[2] / "collector.db"
 WINDOW_SECONDS = 300
 
 

@@ -25,7 +25,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from collector.verifier.canonical import canonical_json  # noqa: E402
 from collector.verifier.ed25519 import verify  # noqa: E402
 
-PUBLIC_KEYS_DIR = Path(__file__).resolve().parents[1] / "keys"
+PUBLIC_KEYS_DIR = Path(__file__).resolve().parents[2] / "keys"
 
 # 影响 attribution / correlation / qualification 的全部字段（MUST 被签名）。
 # signature / key_id 除外（key_id 是验签密钥选择器，不影响归因语义）。
