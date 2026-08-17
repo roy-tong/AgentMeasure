@@ -68,7 +68,7 @@ boundary." That overstated the guarantee. The accurate statement:
 ## Install
 
 ```bash
-npm install @agentmeasure/mcp   # publish in progress — see CHANGELOG
+npm install @agentmeasure/mcp   # publish pending npm token — see CHANGELOG
 # or: git clone https://github.com/roy-tong/AgentMeasure && cd sdk && npm install
 ```
 
