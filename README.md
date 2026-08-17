@@ -38,6 +38,20 @@ kept out of the ranking as a reference baseline.
 
 ---
 
+## External provider trials
+
+AgentMeasure is looking for **3 MCP/API providers** for short external measurement runs.
+
+The goal is not to prove the model works. It is to find where it breaks on real provider traffic.
+
+A trial can stay fully local, requires no agent-side install, and can start with one capability.
+
+**Best feedback:** a concrete trace, counterexample, or field that cannot be measured safely.
+
+→ See: **Looking for 3 MCP/API providers for external measurement runs** in Issues.
+
+---
+
 ## Why capabilities need a new measurement layer
 
 The software consumer is changing from humans to agents, and the economic unit is shifting from software seats toward callable capabilities.
