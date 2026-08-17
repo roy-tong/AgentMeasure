@@ -23,6 +23,7 @@ on:
       - 'CONTRIBUTING.md'
       - 'LEGACY-MIGRATION.md'
       - 'verify_vectors.py'
+  workflow_dispatch:
   pull_request:
 
 jobs:

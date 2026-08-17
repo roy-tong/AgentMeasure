@@ -130,3 +130,4 @@ First public release: the measurement layer for the Agent Capability Economy.
 
 - `0 stars at launch` is a feature of the honesty-first posture, not a bug.
 - Synthetic traffic only so far; every limitation is stated in the report.
+- 2026-08-17: v0.1.1 tag pushed; CI workflow fixed (quoted step name); publish steps pending npm token
