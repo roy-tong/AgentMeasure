@@ -23,9 +23,6 @@
     "typescript": "^5.5.0",
     "zod": "^4.0.0"
   },
-  "peerDependencies": {
-    "@modelcontextprotocol/sdk": "^1.30.0 || ^2.0.0"
-  },
   "keywords": [
     "agent",
     "mcp",

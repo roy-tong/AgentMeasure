@@ -139,6 +139,7 @@
         "evaluation",
         "synthetic",
         "ci",
+        "demo",
         "unknown"
       ]
     },
@@ -167,6 +168,7 @@
       "type": "string",
       "enum": [
         "none",
+        "provider_configuration",
         "collector_derived",
         "runtime_propagated"
       ]

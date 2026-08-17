@@ -6,23 +6,37 @@
     "url": "https://github.com/punkpeye/awesome-mcp-servers",
     "type": "registry"
   },
+  "primary_source": {
+    "url": "https://glama.ai",
+    "name": "Glama",
+    "resolved": true
+  },
   "retrieved_at": "2026-08-16T00:00:00Z",
-  "snapshot": "pending (README)",
+  "snapshot": {
+    "status": "claim-text-hash",
+    "excerpt": "glama.ai MCP server score badges listed in awesome-mcp-servers",
+    "excerpt_sha256": "9e2472017ff7a2b3f843866afdee917cc50490b3aa9fcf24e5f78d0e313dc3fb",
+    "retrieved_at": "2026-08-16T00:00:00Z"
+  },
   "evidence_profile": {
-    "auth": "A1",
+    "auth": "A0",
     "corroboration": "C0/C1",
     "independence": "I0",
     "attestation": "T0",
     "match": "heuristic"
   },
+  "source_attribution": "verified_organization",
   "provenance": {
     "surface": "third-party registry (aggregating)",
-    "coverage_basis": "servers listed in registry"
+    "coverage_basis": "servers listed in registry",
+    "population": "servers listed in awesome-mcp-servers",
+    "period": "unknown"
   },
-  "qualification": {
-    "unit_defined": false,
-    "method_disclosed": "partial",
-    "status": "unqualified"
+  "completeness": {
+    "definition_status": "undefined",
+    "method_disclosure": "partial",
+    "source_traceability": "primary-resolved",
+    "coverage_disclosure": "partial"
   },
   "replayability": "conditional",
   "reviewer": "roy-tong",

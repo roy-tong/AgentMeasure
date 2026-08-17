@@ -78,6 +78,41 @@ own Evidence Profile instead of a parallel ladder.
 - `@agentmeasure/mcp` v0.1.1 — package.json: MIT, devDeps vs peerDeps, `files`
   includes LICENSE
 
+### v0.1.1 RC → External Alpha（本版追加）
+
+- **Vocabulary single source of truth**: `registry/vocabularies.yaml` →
+  `scripts/gen_vocab.py` regenerates the observation schema enums and the
+  vocabulary table, and CI-checks TS unions + Python tuples (`--check`).
+  `usage_context` now includes `demo`; `validity_source` now includes
+  `provider_configuration` — the CORE/schema/TS/Python drift is closed
+- **Validity loophole closed**: providers can only claim validity values they
+  can know (`health_check` / `load_test` / `suspected_invalid` / `duplicate`);
+  `normal` is collector-derived. `validity_source=provider_configuration` is
+  never strong qualification (collector core-5 gate)
+- **Benchmark Draft 0.3**: Authentication strictly per TRUST (A0/A1/A2 —
+  "attributable" is no longer A1); new orthogonal Source Attribution axis;
+  Benchmark `Qualification` renamed **Claim Completeness** (Qualification is
+  returned to Measurement Core); primary-source rule added and demonstrated —
+  claim #003 corrected: primary source is **Ahrefs** (server-log/web-analytics
+  telemetry over 137,210 domains, May 2026), not originality.ai / independent
+  crawl; claims regenerated with real excerpt+sha256 snapshots
+- **Demo fully deterministic**: fixed failure pattern (callIndex%8==0 → 6/42)
+  and fixed latency sequence (20+(i*37)%280) via wrapTool `durationMs` override
+  (fixture-only; production records measured wall time). Two runs are now
+  bitwise-identical in semantic output; pipeline gate asserts success 0.857 and
+  the exact duration set
+- **Packaging**: `peerDependencies` removed — the SDK is MCP-version-agnostic
+  (examples/tests depend on v1/v2 packages themselves); `spoolFileName` option
+  with multi-process guidance; spool dir 0700 / files 0600; optional
+  `handleSignals` (SIGTERM/SIGINT drain) with documented crash boundary
+  ("up to one flush interval may be lost on abrupt termination");
+  `npm pack` + clean-install verified in a fresh project
+- **Outreach v2**: Pool A/B/C/D segmentation (first 10 = Pool A only);
+  email copy rewritten from "we answer both" to
+  "we show you what can be known — and what cannot"; Private Alpha default /
+  Public Alpha opt-in modes for first-wave providers; no `npm install`
+  instruction until the package is actually published
+
 ## [v0.1.0] - 2026-08-16
 
 First public release: the measurement layer for the Agent Capability Economy.

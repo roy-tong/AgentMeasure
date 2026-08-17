@@ -222,8 +222,9 @@ node examples/mcp-integration.js          # 合成流量 → 本地 JSONL
 python3 product/local-analytics.py ~/.agentmeasure/events/agentmeasure-events.jsonl
 ```
 
-状态：SDK v0.1.0（canonical 输出、fail-open、零内容、unknown 默认、caller declared、
-丢失记账）+ 本地分析已实现；托管 ingestion 与面板下一步。第一个真实外部 Provider
+状态：SDK v0.1.1 — External-Ready（canonical 输出、非阻塞 spool + 丢失记账、
+per-request caller、MCP v1/v2、21 测试、确定性 fixture）+ 本地分析已实现；
+托管 ingestion 与面板下一步。第一个真实外部 Provider
 = Product Gate A（[ROADMAP.md](ROADMAP.md)、[MVP.md](product/MVP.md)）。
 
 范围与验收：[product/MVP.md](product/MVP.md) · SDK 契约：

@@ -43,6 +43,13 @@ const mw = agentmeasure({
   // no server-level caller: per-request resolution below (fallback = unknown)
 });
 
+// Deterministic fixture: failure at callIndex%8==0, fixed latency sequence —
+// same fixture + same policy = bitwise-equivalent semantic output.
+// The middleware samples durationMs AFTER the handler returns, so
+// callIndex-1 is the current call's index.
+let callIndex = 0;
+const plannedLatency = () => 20 + (((callIndex - 1) * 37) % 280);
+
 const server = new McpServer({ name: "acme-weather", version: "1.0.0" });
 
 // registerTool (v2 API) wrapped through the same middleware. The v2 handler
@@ -51,14 +58,16 @@ server.registerTool(
   "get_weather",
   { inputSchema: z.object({ city: z.string() }) },
   mw.wrapTool("get_weather", async ({ city }) => {
-    await new Promise((r) => setTimeout(r, 20 + Math.random() * 300));
-    if (Math.random() < 0.12) {
+    const n = callIndex++;
+    await new Promise((r) => setTimeout(r, 20 + ((n * 37) % 280)));
+    if (n % 8 === 0) {
       return { content: [{ type: "text", text: "ERROR: upstream unavailable" }], isError: true };
     }
     return { content: [{ type: "text", text: `weather in ${city}: 22C partly cloudy` }] };
   }, {
     getCaller: (ctx) =>
       claimFromClientInfo(ctx?.mcpReq?._meta?.clientInfo),
+    durationMs: plannedLatency, // deterministic fixture; production omits this
   }),
 );
 

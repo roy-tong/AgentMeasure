@@ -6,25 +6,39 @@
     "url": "https://github.com/roy-tong/AgentMeasure/blob/main/reports/pipeline-validation-001.md",
     "type": "report"
   },
+  "primary_source": {
+    "url": "https://github.com/roy-tong/AgentMeasure",
+    "name": "AgentMeasure",
+    "resolved": true
+  },
   "retrieved_at": "2026-08-17T00:00:00Z",
-  "snapshot": "sha256(pipeline-validation-001.md)",
+  "snapshot": {
+    "status": "excerpt-hash",
+    "excerpt": "42 synthetic calls → 84 canonical observations, 0 rejected, 42 attempts, 0 qualified (synthetic), caller claude:14 codex:14 unknown:14",
+    "excerpt_sha256": "150711b238e9cdcb883c6feb7a0f5c18ea4b19989b2f928c6d1a1caab53cae14",
+    "retrieved_at": "2026-08-17T00:00:00Z"
+  },
   "evidence_profile": {
-    "auth": "A1",
+    "auth": "A0",
     "corroboration": "C0",
     "independence": "I0",
     "attestation": "T0",
     "match": "exact-call-id"
   },
+  "source_attribution": "verified_organization",
   "provenance": {
     "surface": "provider-side (own pipeline)",
-    "coverage_basis": "fixture only (no real usage)"
+    "coverage_basis": "fixture only (no real usage)",
+    "population": "the fixture itself",
+    "period": "single run"
   },
-  "qualification": {
-    "unit_defined": true,
-    "method_disclosed": true,
-    "status": "qualified"
+  "completeness": {
+    "definition_status": "defined",
+    "method_disclosure": "yes",
+    "source_traceability": "primary-resolved",
+    "coverage_disclosure": "yes"
   },
-  "replayability": "yes — ./examples/demo-e2e.sh (isolated workspace)",
+  "replayability": "yes — ./examples/demo-e2e.sh (isolated workspace, deterministic)",
   "reviewer": "roy-tong",
   "note": "Reference fixture only — NOT ranked (BENCHMARK-DRAFT.md §3)",
   "claim_id": "c-98757f1ef82b"

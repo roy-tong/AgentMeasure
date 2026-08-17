@@ -67,13 +67,16 @@ Caller attribution             : claude:14 codex:14 unknown:14 (declared=28 / un
 | Promise | Implementation |
 | --- | --- |
 | Observe first, qualify later | `usage_context` / `validity` default `unknown`; fixtures label themselves (`synthetic`) |
+| Validity discipline | providers can only claim validity they can know (`health_check` / `load_test` / `suspected_invalid` / `duplicate`); `normal` is collector-derived and never claimable from config |
 | Fail-open | `emit()` never throws into your handler; business errors propagate normally |
 | Not on critical path | `emit()` only enqueues; background flusher batches writes (no sync IO in the request path) |
-| Durable best-effort buffering | memory queue → batch flush → rotating spool files (default 5 MiB / keep 7) |
+| Durable best-effort buffering | memory queue → batch flush → rotating spool files (default 5 MiB / keep 7); spool dir 0700, files 0600 |
 | Loss accounting | `bufferHealth`: queueDepth · droppedTotal · droppedSinceLastFlush · flushFailures · spoolBytes · rotatedFiles |
+| Crash boundary | up to one flush interval of in-memory observations may be lost on abrupt termination (SIGKILL/crash); `await am.shutdown()` drains; optional `handleSignals` hooks SIGTERM/SIGINT |
 | No content | arguments/results/paths unreachable by design |
 | Caller per-request | `getCaller(ctx)` resolves per request (v2 `_meta.clientInfo` / v1 `_meta.sessionId` echo); server-level claim is a fallback for fixtures only |
-| Canonical output | validated against `schemas/observation.schema.json`; lineage snake_case (`operation_id` / `task_id` / `retry_of`) |
+| Canonical output | validated against `schemas/observation.schema.json` (vocab driven by `registry/vocabularies.yaml`); lineage snake_case (`operation_id` / `task_id` / `retry_of`) |
+| MCP-version-agnostic | the SDK imports no MCP package; v1/v2 adapters live in the examples (no peer dependency) |
 
 ## Buffer model
 
@@ -91,6 +94,16 @@ memory queue → batch → rotating spool files
 
 `bufferHealth` exposes the loss accounting the standard requires; the same numbers
 are stamped into each persisted batch's `collection_health` block.
+
+**Multi-process deployments**: `eventsDir` MUST NOT be shared between processes
+in 0.1.x. Give each process its own file, e.g.
+`agentmeasure({ spoolFileName: \`agentmeasure-events-${process.pid}.jsonl\` })`,
+and point the collector at the `agentmeasure-events-*.jsonl` glob.
+
+**Deterministic fixtures**: `wrapTool(..., { durationMs })` accepts a fixed value
+or a function sampled at completion time — used by the demo fixture so that
+same fixture + same policy = bitwise-identical semantic output. Production
+deployments omit it; the middleware then records measured wall time.
 
 ## Development
 

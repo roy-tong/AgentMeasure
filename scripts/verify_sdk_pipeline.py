@@ -119,6 +119,16 @@ def main(argv) -> int:
         lat = s.get("latency") or {}
         if lat.get("count") != EXPECTED["latency_count"]:
             failures.append(f"latency count {lat.get('count')} != {EXPECTED['latency_count']}")
+        # deterministic fixture: failures at callIndex%8==0 → 36/42 success
+        if round(s["success_rate"], 3) != 0.857:
+            failures.append(f"success_rate {s['success_rate']} != 0.857 (fixture must be deterministic)")
+        # deterministic latency sequence: 20 + ((i*37) % 280) for i in 0..41
+        planned = sorted(20 + ((i * 37) % 280) for i in range(42))
+        observed_durs = sorted(
+            json.loads(l)["payload"].get("duration_ms") for l in lines
+            if json.loads(l)["observation_type"] == "attempt_completed")
+        if observed_durs != planned:
+            failures.append(f"duration sequence not deterministic: {observed_durs[:5]}... != {planned[:5]}...")
 
         if failures:
             print("GATE FAIL:")

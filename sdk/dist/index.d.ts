@@ -1,6 +1,13 @@
 export declare const SPEC_VERSION = "agentmeasure-0.4";
-export type UsageContext = "production" | "development" | "test" | "benchmark" | "evaluation" | "synthetic" | "ci" | "unknown";
+export type UsageContext = "production" | "development" | "test" | "benchmark" | "evaluation" | "synthetic" | "ci" | "demo" | "unknown";
 export type Validity = "normal" | "duplicate" | "replay" | "health_check" | "load_test" | "suspected_invalid" | "unknown";
+/**
+ * Validity values a provider can honestly claim from configuration.
+ * `normal` is excluded on purpose: a provider cannot know an attempt is
+ * valid — that is derived by the collector (validity_source is
+ * provider_configuration, never strong qualification).
+ */
+export type ProviderValidity = "duplicate" | "health_check" | "load_test" | "suspected_invalid";
 export type CallerType = "unknown" | "claimed_agent" | "correlated_agent" | "platform_attested";
 export type CallerStrength = "unknown" | "declared" | "correlated" | "attested";
 export type ObservationType = "presentation" | "selection" | "attempt_started" | "attempt_completed" | "result_consumed" | "task_outcome";
@@ -41,8 +48,11 @@ export interface AgentMeasureConfig {
     surfacePrefix?: string;
     /** Usage context label (default "unknown" — observe first, qualify later). */
     usageContext?: UsageContext;
-    /** Validity label (default "unknown"). */
-    validity?: Validity;
+    /**
+     * Validity label the provider can honestly claim (default "unknown").
+     * `normal` is NOT settable here — it is derived by the collector.
+     */
+    validity?: ProviderValidity;
     /** Server-level caller claim — fallback only; per-request resolution wins. */
     caller?: CallerClaim;
     /** Disable all recording. */
@@ -55,6 +65,16 @@ export interface AgentMeasureConfig {
     maxSpoolBytes?: number;
     /** Keep at most this many rotated spool files (default 7). */
     maxSpoolFiles?: number;
+    /**
+     * Active spool file name (default "agentmeasure-events.jsonl").
+     * eventsDir MUST NOT be shared between processes in 0.1.x; for multi-process
+     * deployments use a per-instance name, e.g.
+     * `agentmeasure-events-${process.pid}.jsonl`, and point the collector at the
+     * glob `agentmeasure-events-*.jsonl`.
+     */
+    spoolFileName?: string;
+    /** Install SIGTERM/SIGINT handlers that drain the queue before exit (default false). */
+    handleSignals?: boolean;
 }
 interface EmitOptions {
     type: ObservationType;
@@ -62,7 +82,8 @@ interface EmitOptions {
     surfaceId?: string;
     durationMs?: number;
     usageContext?: UsageContext;
-    validity?: Validity;
+    /** Provider-claimable validity only — "normal" is derived by the collector. */
+    validity?: ProviderValidity;
     caller?: CallerClaim;
     /** Lineage (snake_case, per payload schemas). */
     operation_id?: string;
@@ -103,6 +124,7 @@ export declare class AgentMeasure {
     private readonly flushIntervalMs;
     private readonly maxSpoolBytes;
     private readonly maxSpoolFiles;
+    private readonly handleSignals;
     private seq;
     private queue;
     private flushing;
@@ -137,6 +159,12 @@ export declare class AgentMeasure {
     wrapTool<A extends unknown[], R>(name: string, handler: (...args: A) => Promise<R> | R, opts?: {
         caller?: CallerClaim;
         getCaller?: (ctx?: CallerContext) => CallerClaim | undefined;
+        /**
+         * Deterministic duration override for fixtures/tests: a fixed number or
+         * a function sampled at completion-emit time. Production deployments
+         * omit this — the middleware then records measured wall time.
+         */
+        durationMs?: number | (() => number);
     }): (...args: A) => Promise<R>;
     private ensureFlusher;
     private drop;
@@ -161,6 +189,12 @@ export declare function agentmeasure(config?: AgentMeasureConfig): {
     wrapTool: <A extends unknown[], R>(name: string, handler: (...args: A) => Promise<R> | R, opts?: {
         caller?: CallerClaim;
         getCaller?: (ctx?: CallerContext) => CallerClaim | undefined;
+        /**
+         * Deterministic duration override for fixtures/tests: a fixed number or
+         * a function sampled at completion-emit time. Production deployments
+         * omit this — the middleware then records measured wall time.
+         */
+        durationMs?: number | (() => number);
     }) => (...args: A) => Promise<R>;
 };
 export {};

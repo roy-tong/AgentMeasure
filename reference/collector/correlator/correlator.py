@@ -373,7 +373,7 @@ def resolve_qualification(conn) -> dict:
     """
     rows = conn.execute(
         """
-        SELECT i.invocation_id, o.usage_context, o.validity
+        SELECT i.invocation_id, o.usage_context, o.validity, o.validity_source
         FROM invocations i
         JOIN observation_links l ON l.invocation_id = i.invocation_id
         JOIN observations o ON o.observation_id = l.observation_id
@@ -382,21 +382,31 @@ def resolve_qualification(conn) -> dict:
     ).fetchall()
     grouped: dict = {}
     for r in rows:
-        grouped.setdefault(r["invocation_id"], []).append((r["usage_context"], r["validity"]))
+        grouped.setdefault(r["invocation_id"], []).append(
+            (r["usage_context"], r["validity"], r["validity_source"]))
     counts = {"qualified": 0, "partially_classified": 0, "inconsistent": 0, "unknown": 0}
     for inv_id, pairs in grouped.items():
-        ctxs = {c for c, _ in pairs if c and c != "unknown"}
-        validities = {v for _, v in pairs if v and v != "unknown"}
+        ctxs = {c for c, _, _ in pairs if c and c != "unknown"}
+        # provider-config validity is never strong qualification: a provider
+        # cannot claim "normal" (validity_source=provider_configuration is
+        # treated as unknown for qualification purposes)
+        raw_validities = {v for _, v, _ in pairs if v and v != "unknown"}
+        validities = {
+            v for _, v, src in pairs
+            if v and v != "unknown"
+            and not (v == "normal" and src == "provider_configuration")
+        }
         if len(ctxs) > 1:
             attempt_context, ctx_status = "inconsistent", "inconsistent"
         elif ctxs:
             attempt_context = next(iter(ctxs))
-            ctx_status = "partially_classified" if len(ctxs) < len({c for c, _ in pairs if c}) else "qualified"
+            ctx_status = "partially_classified" if len(ctxs) < len({c for c, _, _ in pairs if c}) else "qualified"
         else:
             attempt_context, ctx_status = "unknown", "unknown"
         if validities:
             attempt_validity = max(validities, key=lambda v: _VALIDITY_SEVERITY.get(v, 0))
-            v_status = "partially_classified" if len(validities) < len({v for _, v in pairs if v}) else "qualified"
+            v_status = ("partially_classified"
+                        if len(validities) < len(raw_validities) else "qualified")
         else:
             attempt_validity, v_status = "unknown", "unknown"
         if "inconsistent" in (ctx_status, v_status):

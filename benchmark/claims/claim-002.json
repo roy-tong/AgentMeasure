@@ -6,8 +6,19 @@
     "url": "https://x.com/402Signal/status/2089003333969154196",
     "type": "x-post"
   },
+  "primary_source": {
+    "url": null,
+    "name": null,
+    "resolved": false
+  },
   "retrieved_at": "2026-08-16T00:00:00Z",
-  "snapshot": "pending (X post)",
+  "snapshot": {
+    "status": "claim-text-hash",
+    "excerpt": "48k active merchants on Base x402 in 30 days",
+    "excerpt_sha256": "80fd0ddca76dd0b065135667ebf5d3ef5a56063da8787313584f7d9b17eb8f16",
+    "retrieved_at": "2026-08-16T00:00:00Z",
+    "note": "full post retrieval pending (X)"
+  },
   "evidence_profile": {
     "auth": "A0",
     "corroboration": "C0",
@@ -15,14 +26,18 @@
     "attestation": "T0",
     "match": "none"
   },
+  "source_attribution": "named",
   "provenance": {
     "surface": "provider-side aggregate (claimed)",
-    "coverage_basis": "unknown"
+    "coverage_basis": "unknown",
+    "population": "unknown",
+    "period": "30 days"
   },
-  "qualification": {
-    "unit_defined": false,
-    "method_disclosed": false,
-    "status": "unqualified"
+  "completeness": {
+    "definition_status": "undefined",
+    "method_disclosure": "no",
+    "source_traceability": "unresolved",
+    "coverage_disclosure": "no"
   },
   "replayability": "no",
   "reviewer": "roy-tong",

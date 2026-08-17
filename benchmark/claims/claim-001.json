@@ -6,8 +6,19 @@
     "url": "https://x.com/33xp_/status/2088915992336347639",
     "type": "x-post"
   },
+  "primary_source": {
+    "url": null,
+    "name": null,
+    "resolved": false
+  },
   "retrieved_at": "2026-08-16T00:00:00Z",
-  "snapshot": "pending (X post)",
+  "snapshot": {
+    "status": "claim-text-hash",
+    "excerpt": "x402 settled its 162-millionth payment; average ticket $0.25",
+    "excerpt_sha256": "3c0ad4b312e2334044dfc7abefdbe5628cc5403a9026964f339a07389c383f6f",
+    "retrieved_at": "2026-08-16T00:00:00Z",
+    "note": "full post retrieval pending (X)"
+  },
   "evidence_profile": {
     "auth": "A0",
     "corroboration": "C0",
@@ -15,14 +26,18 @@
     "attestation": "T0",
     "match": "none"
   },
+  "source_attribution": "named",
   "provenance": {
     "surface": "provider-side ledger (claimed)",
-    "coverage_basis": "unknown"
+    "coverage_basis": "unknown",
+    "population": "unknown",
+    "period": "unknown"
   },
-  "qualification": {
-    "unit_defined": false,
-    "method_disclosed": false,
-    "status": "unqualified"
+  "completeness": {
+    "definition_status": "undefined",
+    "method_disclosure": "no",
+    "source_traceability": "unresolved",
+    "coverage_disclosure": "no"
   },
   "replayability": "no",
   "reviewer": "roy-tong",

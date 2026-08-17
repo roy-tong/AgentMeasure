@@ -35,7 +35,8 @@ PROJECT = "github.com/foo/bar"
 
 def envelope(otype: str, payload: dict, principal: str, side: str, ts: str,
              ctx: str = "unknown", val: str = "unknown",
-             tool: str = "foo.search", provenance: str = "wrapper") -> dict:
+             tool: str = "foo.search", provenance: str = "wrapper",
+             ctx_source: str = "none", val_source: str = "none") -> dict:
     return {
         "spec_version": "agentmeasure-0.4",
         "observation_id": str(uuid.uuid4()),
@@ -47,8 +48,8 @@ def envelope(otype: str, payload: dict, principal: str, side: str, ts: str,
         "caller": {"type": "unknown", "runtime": "unknown", "identity_strength": "unknown"},
         "usage_context": ctx,
         "validity": val,
-        "context_source": "none",
-        "validity_source": "none",
+        "context_source": ctx_source,
+        "validity_source": val_source,
         "provenance": provenance,
         "payload": payload,
     }
@@ -138,6 +139,23 @@ def main() -> int:
     if row["attempt_context"] != "inconsistent" or row["qualification_status"] != "inconsistent":
         fails.append(f"qualification: {dict(row)} != inconsistent/inconsistent")
     print("core-4: qualification conflict production+test -> inconsistent OK")
+
+    # 5) provider_configuration validity 不是强资格（激励漏洞防护）：
+    #    production + validity=normal + validity_source=provider_configuration
+    #    → 不得派生为 qualified
+    events = [
+        envelope("attempt_started", {"tool_call_id": "tc-v"}, "p0@t", "server",
+                 "2026-08-16T04:00:00Z", ctx="production", val="normal",
+                 val_source="provider_configuration"),
+    ]
+    conn, _ = write_and_ingest(events, "validity-source")
+    row = conn.execute(
+        "SELECT attempt_validity, qualification_status FROM invocations").fetchone()
+    if row["attempt_validity"] == "normal":
+        fails.append(f"validity-source: attempt_validity normal (provider claim must not qualify)")
+    if row["qualification_status"] == "qualified":
+        fails.append(f"validity-source: qualified via provider_configuration validity")
+    print("core-5: provider_configuration validity=normal -> not qualified OK")
 
     if fails:
         print("CORE GATE FAIL:")

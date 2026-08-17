@@ -15,6 +15,9 @@
  *    caller claim is a fallback for fixtures only
  *  - durable best-effort buffering with explicit loss accounting:
  *    memory queue → batch flush → rotating spool files
+ *  - crash boundary: up to one flush interval of in-memory observations may
+ *    be lost on abrupt termination (SIGKILL/crash); call await am.shutdown()
+ *    for graceful drains, or set handleSignals to hook SIGTERM/SIGINT
  */
 import { randomUUID, createHash } from "node:crypto";
 import { mkdirSync, renameSync, statSync, unlinkSync } from "node:fs";
@@ -43,6 +46,7 @@ export class AgentMeasure {
     flushIntervalMs;
     maxSpoolBytes;
     maxSpoolFiles;
+    handleSignals;
     seq = 0;
     queue = [];
     flushing = false;
@@ -67,15 +71,23 @@ export class AgentMeasure {
         this.surfaceNamespace = config.surfaceNamespace ?? "mcp";
         this.surfacePrefix = config.surfacePrefix ?? "mcp_tool";
         this.usageContext = config.usageContext ?? "unknown";
-        this.validity = config.validity ?? "unknown";
+        this.validity = config.validity;
         this.caller = config.caller;
         this.doNotTrack = config.doNotTrack ?? false;
         this.bufferLimit = config.bufferLimit ?? DEFAULT_BUFFER_LIMIT;
         this.flushIntervalMs = config.flushIntervalMs ?? DEFAULT_FLUSH_INTERVAL_MS;
         this.maxSpoolBytes = config.maxSpoolBytes ?? DEFAULT_MAX_SPOOL_BYTES;
         this.maxSpoolFiles = config.maxSpoolFiles ?? DEFAULT_MAX_SPOOL_FILES;
+        this.handleSignals = config.handleSignals ?? false;
         this.instanceId = `am-${process.pid}-${randomUUID().slice(0, 8)}`;
-        this.file = join(this.eventsDir, ACTIVE_FILE);
+        this.file = join(this.eventsDir, config.spoolFileName ?? ACTIVE_FILE);
+        if (this.handleSignals && !this.doNotTrack) {
+            const drain = (signal) => {
+                void this.shutdown().finally(() => process.exit(signal === "SIGINT" ? 130 : 143));
+            };
+            process.on("SIGTERM", () => drain("SIGTERM"));
+            process.on("SIGINT", () => drain("SIGINT"));
+        }
     }
     /** Non-blocking observation emit: enqueue only. Never throws. */
     emit(opts) {
@@ -158,6 +170,11 @@ export class AgentMeasure {
                 payload: { tool_call_id: callId },
                 caller,
             });
+            const recordedDuration = () => {
+                if (opts?.durationMs === undefined)
+                    return undefined;
+                return typeof opts.durationMs === "function" ? opts.durationMs() : opts.durationMs;
+            };
             try {
                 const result = await handler(...args);
                 // isError is MCP metadata (not content); safe to inspect
@@ -167,7 +184,7 @@ export class AgentMeasure {
                     type: "attempt_completed",
                     surfaceId: `mcp_tool:${name}`,
                     payload: { tool_call_id: callId, outcome: isError ? "failure" : "success" },
-                    durationMs: Date.now() - startedAt,
+                    durationMs: recordedDuration() ?? Date.now() - startedAt,
                     caller,
                 });
                 return result;
@@ -177,7 +194,7 @@ export class AgentMeasure {
                     type: "attempt_completed",
                     surfaceId: `mcp_tool:${name}`,
                     payload: { tool_call_id: callId, outcome: "failure" },
-                    durationMs: Date.now() - startedAt,
+                    durationMs: recordedDuration() ?? Date.now() - startedAt,
                     caller,
                 });
                 throw err; // fail-open: business error propagates normally
@@ -202,7 +219,8 @@ export class AgentMeasure {
             return;
         this.flushing = true;
         try {
-            mkdirSync(this.eventsDir, { recursive: true });
+            // spool directory 0700, files 0600 (telemetry defaults)
+            mkdirSync(this.eventsDir, { recursive: true, mode: 0o700 });
             await this.maybeRotate(batch);
             // stamp the batch with loss accounting as of persistence time, so the
             // on-disk health block reflects what actually happened around it
@@ -215,7 +233,8 @@ export class AgentMeasure {
                 e.collection_health = { ...ch, ...health };
             }
             const lines = batch.map((e) => JSON.stringify(e)).join("\n") + "\n";
-            await appendFile(this.file, lines, "utf8");
+            // mode applies at file creation; existing spools keep their permissions
+            await appendFile(this.file, lines, { encoding: "utf8", mode: 0o600 });
             this.flushedTotal += batch.length;
             this.droppedSinceLastFlush = 0;
         }
@@ -288,7 +307,7 @@ export class AgentMeasure {
             payload.duration_ms = Math.round(opts.durationMs);
         const surfaceId = opts.surfaceId ?? `${this.surfacePrefix}:${String(payload.tool ?? "unknown")}`;
         const usageContext = opts.usageContext ?? this.usageContext;
-        const validity = opts.validity ?? this.validity;
+        const validity = opts.validity ?? this.validity ?? "unknown";
         const caller = opts.caller ?? this.caller;
         return {
             spec_version: SPEC_VERSION,
@@ -310,9 +329,9 @@ export class AgentMeasure {
             usage_context: usageContext,
             validity,
             context_source: usageContext === "unknown" ? "none" : "provider_configuration",
-            // validity_source enum: none | collector_derived | runtime_propagated;
-            // the SDK never derives validity itself
-            validity_source: "none",
+            // provider-config validity is honestly labeled; it is never strong
+            // qualification (collector treats it as non-"normal" evidence)
+            validity_source: validity === "unknown" ? "none" : "provider_configuration",
             collection_health: {
                 source_instance_id: this.instanceId,
                 source_sequence: this.seq,

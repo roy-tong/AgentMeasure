@@ -12,13 +12,17 @@
 
 - 被测面：`acme-weather`（MCP SDK 注册路径，42 次调用，3 类 caller）
 - 接入：`@agentmeasure/mcp` v0.1.1 中间件（注册时包装 handler，参数/结果零接触）
-- 流量：42 次合成调用（claude ×14 / codex ×14 / unknown ×14），~12% 上游失败
+- 流量：42 次合成调用（claude ×14 / codex ×14 / unknown ×14），失败模式固定
+  （callIndex % 8 == 0 → 6 次失败）
 - 语义：`usage_context=synthetic`（源头标注，绝不计入 production）
 - 采集：内存队列 → 批量落盘 → Canonical JSONL → reference collector（唯一 canonical 输入）
 - 窗口：单次运行；demo 使用隔离 workspace（`mktemp -d`），不触碰 `~/.agentmeasure`
-- 可复现：`./examples/demo-e2e.sh` —— 相同 fixture + 相同 policy = 相同结果（42 calls → 84 observations）
+- 可复现：`./examples/demo-e2e.sh` —— **确定性 fixture**（固定失败模式 +
+  固定延迟序列 20+(i×37)%280；duration_ms 由 fixture 的计划延迟记录，
+  生产路径记录真实墙钟耗时）。相同 fixture + 相同 policy =
+  **逐位一致的语义输出**（类型/outcome/caller/duration/context 全部相同）。
 
-## 结果（2026-08-17 单次运行示例）
+## 结果（确定性，任何一次运行均相同）
 
 ```text
 Canonical observations accepted : 84   rejected: 0
@@ -28,8 +32,8 @@ Observed attempts               : 42
 Strict Qualified attempts      : 0 (0.0%)
   qualification status         : {'unknown': 42}
 
-Success / Failure              : success-rate 88.1%  unknown/inconsistent 0
-Latency (duration_ms)          : n=42 mean=173.1ms p50=176ms p95=306ms min=29ms max=321ms
+Success / Failure              : success-rate 85.7%  unknown/inconsistent 0
+Latency (duration_ms)          : n=42 mean=151.8ms p50=147ms p95=279ms min=20ms max=295ms
 
 Operation resolution           : resolved 0 / 42 attempts (coverage 0.0%)
   resolution                   : {'unknown': 42}
@@ -38,7 +42,8 @@ Operation resolution           : resolved 0 / 42 attempts (coverage 0.0%)
 Caller attribution             : claude:14 codex:14 unknown:14 (strength: declared=28 / unknown=14)
 ```
 
-> 延迟数字随每次运行的随机延迟（20–320ms）变化；计数与分布是确定性的。
+> 上述数字全部确定：失败 6/42（85.7%）、延迟序列 `20+(i×37)%280`（i=0..41）、
+> caller 14/14/14。两次运行逐位一致（pipeline gate 断言）。
 
 ## 验证点（对 0.4.3 语义的验证）
 
@@ -56,8 +61,8 @@ Caller attribution             : claude:14 codex:14 unknown:14 (strength: declar
 5. **Operation Resolution Coverage = 0% 是正确的，不是缺陷**：Provider-only
    拓扑没有 operation 证据（无 runtime 传播的 operation_id），fail-closed 输出
    0 operations / 42 attempts。
-6. **Success 88.1%**：中间件通过异常 + MCP `isError` 元数据判定 outcome
-   （不读取内容）；模拟的 ~12% 失败被如实捕获。
+6. **Success 85.7%（确定性）**：中间件通过异常 + MCP `isError` 元数据判定 outcome
+   （不读取内容）；固定失败模式（callIndex % 8 == 0 → 6/42 失败）被如实捕获。
 7. **Latency 可披露**：attempt_completed 携带非敏感 `duration_ms`（p50/p95），
    不暴露请求内容。
 

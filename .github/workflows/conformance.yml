@@ -53,6 +53,9 @@ jobs:
       - name: Canonical observation schema validation
         run: |
           python3 schemas/validate_observation.py
+      - name: Vocabulary registry (single source of truth: yaml ↔ schema ↔ TS ↔ Python)
+        run: |
+          python3 scripts/gen_vocab.py --check
 
   # ─── 套件 2：reference implementation（canonical boundary gate） ───
   reference-implementation:

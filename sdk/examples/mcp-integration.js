@@ -44,6 +44,13 @@ const mw = agentmeasure({
   // no server-level caller: per-request resolution below (fallback = unknown)
 });
 
+// Deterministic fixture: failure at callIndex%8==0, fixed latency sequence —
+// same fixture + same policy = bitwise-equivalent semantic output.
+// The middleware samples durationMs AFTER the handler returns, so
+// callIndex-1 is the current call's index.
+let callIndex = 0;
+const plannedLatency = () => 20 + (((callIndex - 1) * 37) % 280);
+
 // A fresh server instance per connection (one MCP server = one transport
 // session), sharing the middleware and the session map.
 let sessionSeq = 0;
@@ -75,13 +82,15 @@ function makeServer() {
     origTool(name, schema, mw.wrapTool(name, handler, {
       getCaller: (ctx) =>
         sessions.get(String(ctx?._meta?.sessionId ?? ctx?.meta?.sessionId ?? ctx?.sessionId ?? "")),
+      durationMs: plannedLatency, // deterministic fixture; production omits this
     }));
 
   // Third-party style tool handler: takes args, returns results; zero content
   // captured by the middleware.
   server.tool("get_weather", { city: z.string() }, async ({ city }) => {
-    await new Promise((r) => setTimeout(r, 20 + Math.random() * 300));
-    if (Math.random() < 0.12) {
+    const n = callIndex++;
+    await new Promise((r) => setTimeout(r, 20 + ((n * 37) % 280)));
+    if (n % 8 === 0) {
       return { content: [{ type: "text", text: "ERROR: upstream unavailable" }], isError: true };
     }
     return { content: [{ type: "text", text: `weather in ${city}: 22C partly cloudy` }] };

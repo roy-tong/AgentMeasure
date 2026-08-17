@@ -11,7 +11,7 @@ test("canonical schema: every emitted observation validates (python single sourc
     eventsDir: dir,
     projectId: "t/schema",
     usageContext: "synthetic",
-    validity: "normal",
+    validity: "health_check", // provider-claimable only; "normal" is derived by the collector
   });
   am.emit({
     type: "attempt_started",
@@ -41,8 +41,8 @@ test("canonical schema: every emitted observation validates (python single sourc
   // usage context labeled from config with its evidence source
   assert.equal(started.usage_context, "synthetic");
   assert.equal(started.context_source, "provider_configuration");
-  assert.equal(started.validity, "normal");
-  assert.equal(started.validity_source, "none"); // SDK never derives validity
+  assert.equal(started.validity, "health_check");
+  assert.equal(started.validity_source, "provider_configuration");
 
   const file = join(dir, "agentmeasure-events.jsonl");
   const r = spawnSync(

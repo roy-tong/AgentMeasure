@@ -16,6 +16,15 @@
 > 更名为 **Observation Surface / Provenance**（CORE 的 `usage_context` 是另一概念，
 > 保留其原始语义）；取消 A/B/C/D 综合评分；AgentMeasure 自身不再参与排名，
 > 仅作为参考 fixture 单列。
+>
+> **Draft 0.3 变更（v0.1.1 RC → External Alpha）**：`Authentication` 严格遵守
+> TRUST（A0 none / A1 signed / A2 identity-verified），新增正交的
+> **Source Attribution** 轴（unknown / named / verified_organization）；
+> Benchmark 的 `Qualification` 更名为 **Claim Completeness**（`Qualification`
+> 一词归还给 Measurement Core：Usage Context × Attempt Validity）；
+> 新增 **primary-source 追溯规则**（secondary source MUST resolve primary
+> measurement source if available）。Benchmark 是 Standard 的消费者，
+> 不得重新解释 Standard。
 
 ---
 
@@ -43,7 +52,7 @@ evidence model, not a parallel one.
 Each claim passes through four stages:
 
 ```text
-Claim collection → Evidence Profile (multi-axis) → Provenance & qualification → Measurement Claim Label
+Claim collection → Evidence Profile (multi-axis) → Provenance & completeness → Measurement Claim Label
 ```
 
 ### 2.1 Claim collection（机器可读，可复现）
@@ -56,32 +65,54 @@ Every claim is captured as `benchmark/claims/claim-<NNN>.json` with:
   "claim": "exact quoted text",
   "metric_unit": "payment | merchant | AI request | call | …",   // null if undefined
   "grain": "count | rate | share | …",
-  "source": {"url": "...", "type": "x-post | registry | audit | readme | …"},
+  "source": {"url": "...", "type": "x-post | audit | report | readme | …"},
+  "primary_source": {"url": "...", "name": "...", "resolved": true},
   "retrieved_at": "2026-08-16T…Z",
-  "snapshot": "sha256 of the source page at retrieval (pending)",  // anti-tamper
+  "snapshot": {"status": "excerpt-hash | retrieval-pending",
+               "excerpt": "normalized excerpt proving the claim (minimal, no full-page mirror)",
+               "excerpt_sha256": "…", "retrieved_at": "…"},
   "reviewer": "github handle",
-  "evidence_profile": {…},       // §2.2
-  "provenance": {…},             // §2.3
-  "qualification": {…}           // §2.4
+  "evidence_profile": {…},         // §2.2
+  "source_attribution": "…",       // §2.2.1
+  "provenance": {…},               // §2.3
+  "completeness": {…}              // §2.4
 }
 ```
 
-If the source is deleted or edited later, the benchmark can still be replayed against
-the snapshot hash.
+**Primary-source rule**: if the claim was encountered through a secondary source,
+it MUST resolve to the primary measurement source when available and record
+`primary_source.resolved: true`. Attribution errors (secondary retold as primary,
+or the wrong surface) are themselves benchmark findings — this benchmark exists
+to catch exactly that.
 
 ### 2.2 Evidence Profile（多轴，与 standard/TRUST.md §3 一致）
 
-**不采用单一字母阶梯**。每条声称按 TRUST 的五轴独立评级：
+**不采用单一字母阶梯**。每条声称按 TRUST 的五轴独立评级，
+`Authentication` 的定义与 TRUST 逐字一致（**不得改写**）：
 
 | 轴 | 取值 | 回答 |
 | --- | --- | --- |
-| Authentication | A0 none / A1 signed or attributable / A2 identity-verified | 我知道是谁说的 |
+| Authentication | A0 none / A1 signed / A2 identity-verified | 我知道是谁说的（**签名/身份验证**，不是"可归因"） |
 | Corroboration | C0 single / C1 multiple | 有几方这么说 |
 | Independence | I0 unknown / I1 distinct runtime / I2 distinct trust domain | 是否同一主体控制 |
 | Attestation | T0 none / T1 platform-attested | 是否有受信任平台背书 |
 | Match | none / heuristic / exact-call-id / trace-verified | 数字与观测的关联强度 |
 
-五轴正交，不合并为一个分数（见 §2.5）。
+#### 2.2.1 Source Attribution（正交轴，与 Authentication 分离）
+
+"这篇文章明确是 Ahrefs 发的"是 **attributable provenance**，不是
+**cryptographically signed observation**。两者分开记录：
+
+| 取值 | 含义 |
+| --- | --- |
+| unknown | 无法确认来源身份 |
+| named | 可指认到具体账号/作者（未经组织验证） |
+| verified_organization | 可验证到组织身份（官网/组织仓库/公开身份） |
+
+一条声称可以同时是 `Authentication A0 + Source Attribution verified_organization`
+——被确认真实身份的发言者**没有签名**，Authentication 仍为 A0。
+
+五轴 + Source Attribution 均正交，不合并为一个分数（见 §2.5）。
 
 ### 2.3 Observation Surface / Provenance（不是 "Context"）
 
@@ -90,14 +121,22 @@ synthetic / ci / demo / unknown）描述**数据本身**的环境语义，本基
 声称级的"数字从哪里观测到"使用独立概念：
 
 - **Surface:** provider-side ledger · provider-side telemetry · gateway · registry ·
-  independent crawl · self-report · unknown
-- **Coverage basis:** what fraction of the claimed population the number actually covers
-  (e.g. "39k files of an unknown universe" vs "all servers in registry X")
+  independent crawl · server-log / web-analytics telemetry · self-report · unknown
+- **Coverage basis / population:** what fraction of the claimed population the number
+  actually covers（如 "137,210 Ahrefs Web Analytics 域" vs "39k 域 of an unknown universe"）
+- **Observed period:** 数字覆盖的时间窗（如 May 2026）
 
-### 2.4 Qualification（执行有效性）
+### 2.4 Claim Completeness（执行有效性；不用 `Qualification`）
 
-Does the number rest on a defined unit and a defined counting method?
-`qualified = metric_unit defined + method disclosed`；缺任一项 → `unqualified`。
+`Qualification` 是 Measurement Core 的术语（Usage Context × Attempt Validity），
+Benchmark 不再占用。声称级完整性使用独立概念：
+
+| 维度 | 取值 |
+| --- | --- |
+| definition_status | defined / partial / undefined（metric unit 是否有定义） |
+| method_disclosure | yes / partial / no（计数方法是否披露） |
+| source_traceability | primary / secondary-resolved / unresolved（能否追溯到 primary source） |
+| coverage_disclosure | yes / partial / no（population 与覆盖是否披露） |
 
 ### 2.5 Measurement Claim Label（输出；不做综合评分）
 
@@ -110,8 +149,10 @@ Grain            : count
 Surface          : provider-side ledger (claimed)
 Coverage basis   : unknown
 Method disclosed : no
-Corroboration    : C0 · Independence I0 · Authentication A0 · Attestation T0
+Authentication   : A0 (not signed)   Source Attribution: named
+Corroboration    : C0 · Independence I0 · Attestation T0
 Match            : none
+Completeness     : definition undefined · method no · traceability unresolved
 Replayability    : no (no public ledger, no raw data)
 ```
 

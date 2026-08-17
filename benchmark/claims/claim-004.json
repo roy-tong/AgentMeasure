@@ -6,23 +6,38 @@
     "url": "https://x.com/Ai_Trend_/status/2087657972180643914",
     "type": "x-post"
   },
+  "primary_source": {
+    "url": null,
+    "name": null,
+    "resolved": false
+  },
   "retrieved_at": "2026-08-16T00:00:00Z",
-  "snapshot": "pending (X post)",
+  "snapshot": {
+    "status": "claim-text-hash",
+    "excerpt": "ClaudeBot impersonation up 400% this quarter",
+    "excerpt_sha256": "398ad221a98ba79cc9b556a9621836a6e0bfd4bd135b4dcfd4eab3f99678447e",
+    "retrieved_at": "2026-08-16T00:00:00Z",
+    "note": "full post retrieval pending (X)"
+  },
   "evidence_profile": {
-    "auth": "A1",
+    "auth": "A0",
     "corroboration": "C0",
     "independence": "I0",
     "attestation": "T0",
     "match": "none"
   },
+  "source_attribution": "named",
   "provenance": {
     "surface": "self-reported telemetry",
-    "coverage_basis": "unknown (denominator undisclosed)"
+    "coverage_basis": "unknown (denominator undisclosed)",
+    "population": "unknown",
+    "period": "quarter"
   },
-  "qualification": {
-    "unit_defined": false,
-    "method_disclosed": false,
-    "status": "unqualified"
+  "completeness": {
+    "definition_status": "undefined",
+    "method_disclosure": "no",
+    "source_traceability": "unresolved",
+    "coverage_disclosure": "no"
   },
   "replayability": "no",
   "reviewer": "roy-tong",

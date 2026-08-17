@@ -70,7 +70,7 @@ OBSERVATION_KEYS = (
 )
 
 USAGE_CONTEXTS = ("production", "development", "test", "benchmark",
-                  "evaluation", "synthetic", "ci", "unknown")
+                  "evaluation", "synthetic", "ci", "demo", "unknown")
 VALIDITIES = ("normal", "duplicate", "replay", "health_check",
               "load_test", "suspected_invalid", "unknown")
 OBSERVATION_TYPES = ("presentation", "selection", "attempt_started",
@@ -78,7 +78,7 @@ OBSERVATION_TYPES = ("presentation", "selection", "attempt_started",
 # Strict Qualified Usage = production + validity=normal（Core §7）；unknown 单独披露
 STRICT_QUALIFIED = {"context": "production", "validity": "normal"}
 CONTEXT_SOURCES = ("none", "provider_configuration", "collector_derived", "runtime_propagated")
-VALIDITY_SOURCES = ("none", "collector_derived", "runtime_propagated")
+VALIDITY_SOURCES = ("none", "provider_configuration", "collector_derived", "runtime_propagated")
 CALLER_STRENGTHS = ("unknown", "declared", "correlated", "attested")
 
 LIFECYCLE_STAGES = ("L0", "L1", "L2", "L3")

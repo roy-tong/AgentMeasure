@@ -1,30 +1,45 @@
 {
-  "claim": "~39,000 llms.txt files; 97% had received zero AI requests",
+  "claim": "97% of llms.txt files never get read (~38,000 valid files of 137K domains)",
   "metric_unit": "AI request (partially defined)",
-  "grain": "rate over crawled files",
+  "grain": "rate over population",
   "source": {
-    "url": "https://www.originality.ai/blog/llms-txt-adoption-2026",
-    "type": "audit"
+    "url": "https://www.originality.ai/blog/llms-txt",
+    "type": "blog (secondary)"
   },
-  "retrieved_at": "2026-08-16T00:00:00Z",
-  "snapshot": "pending (page)",
+  "primary_source": {
+    "url": "https://ahrefs.com/blog/llmstxt-study/",
+    "name": "Ahrefs — We Analyzed 137K Sites: 97% of llms.txt Files Never Get Read",
+    "resolved": true
+  },
+  "retrieved_at": "2026-08-17T00:00:00Z",
+  "snapshot": {
+    "status": "excerpt-hash",
+    "excerpt": "Ahrefs (Louise Linehan, 2026-06-15): using Ahrefs Web Analytics and Bot Analytics, we analyzed the server logs and live traffic of 137K domains, plus the user agents hitting all of them. 28% of the 137K domains publish an llms.txt file (~38,000). 97% of those files received zero traffic in May 2026. 96% of requests that reached llms.txt files came from bots; 19.5% of fetches came from named AI tools.",
+    "excerpt_sha256": "e43f3b891eccfdc0f1202a91b1b1b6fbb98d37b909b3500a0d9bbb3d7445e57b",
+    "retrieved_at": "2026-08-17T00:00:00Z"
+  },
   "evidence_profile": {
-    "auth": "A1",
+    "auth": "A0",
     "corroboration": "C0",
     "independence": "I2",
     "attestation": "T0",
     "match": "heuristic"
   },
+  "source_attribution": "verified_organization",
   "provenance": {
-    "surface": "independent crawl",
-    "coverage_basis": "~39k files of unknown total universe"
+    "surface": "server-log / web-analytics telemetry",
+    "coverage_basis": "137,210 Ahrefs Web Analytics domains",
+    "population": "137,210 domains; ~38,000 with valid llms.txt (28%)",
+    "period": "May 2026"
   },
-  "qualification": {
-    "unit_defined": true,
-    "method_disclosed": true,
-    "status": "qualified"
+  "completeness": {
+    "definition_status": "partial",
+    "method_disclosure": "yes",
+    "source_traceability": "primary-resolved",
+    "coverage_disclosure": "yes"
   },
-  "replayability": "yes (method + tooling)",
+  "replayability": "partial (method described; raw logs not published)",
   "reviewer": "roy-tong",
-  "claim_id": "c-ad25402a0ec1"
+  "note": "Benchmark finding: secondary source (originality.ai) initially appeared as the observer; primary measurement source is Ahrefs (server-log/web-analytics telemetry, NOT independent crawl). Attribution error caught by the primary-source rule.",
+  "claim_id": "c-d82ece05e08f"
 }

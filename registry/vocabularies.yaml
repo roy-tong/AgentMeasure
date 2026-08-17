@@ -1,0 +1,105 @@
+# AgentMeasure — Machine-readable vocabulary registry（单一事实源）
+#
+# 本文件是下列枚举的单一事实源（Draft 0.4.3 · vocab revision 0.4.3-2）：
+#   - schemas/observation.schema.json 的 enum（由 scripts/gen_vocab.py --build 生成）
+#   - sdk/src/index.ts 的 TypeScript 联合类型（CI --check 校验一致）
+#   - reference/collector/usage.py 的 Python 元组（CI --check 校验一致）
+#   - registry/VOCABULARIES.md（由 --build 生成）
+#
+# 规则：
+#   1. 修改枚举必须先改本文件，再跑 scripts/gen_vocab.py --build
+#   2. CI 运行 scripts/gen_vocab.py --check，任何消费者漂移都会失败
+#   3. Benchmark / 文档层不得重新定义这些术语（Benchmark 是 Standard 的消费者）
+
+usage_context:
+  - production
+  - development
+  - test
+  - benchmark
+  - evaluation
+  - synthetic
+  - ci
+  - demo
+  - unknown
+
+validity:
+  - normal
+  - duplicate
+  - replay
+  - health_check
+  - load_test
+  - suspected_invalid
+  - unknown
+
+context_source:
+  - none
+  - provider_configuration
+  - collector_derived
+  - runtime_propagated
+
+validity_source:
+  - none
+  - provider_configuration
+  - collector_derived
+  - runtime_propagated
+
+caller_type:
+  - unknown
+  - claimed_agent
+  - correlated_agent
+  - platform_attested
+
+caller_identity_strength:
+  - unknown
+  - declared
+  - correlated
+  - attested
+
+observer_side:
+  - client
+  - server
+  - platform
+
+provenance:
+  - hook
+  - otel
+  - wrapper
+  - platform
+
+observation_type:
+  - presentation
+  - selection
+  - attempt_started
+  - attempt_completed
+  - result_consumed
+  - task_outcome
+
+choice_mode:
+  - exclusive
+  - multi_select
+  - parallel
+  - sequential
+  - ordered_fallback
+  - router_preselected
+  - unknown
+
+decision_authority:
+  - model
+  - router
+  - workflow
+  - user
+  - policy
+  - platform
+  - unknown
+
+selection_constraint:
+  - autonomous
+  - recommended
+  - required
+  - user_requested
+  - fallback
+  - forced
+  - unknown
+
+# 非枚举型契约（校验存在性，不限制取值）
+#   metric_unit / grain / runtime：开放字符串，由 metrics.yaml 与 DATA.md 约束

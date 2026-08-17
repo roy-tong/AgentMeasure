@@ -24,15 +24,33 @@ from collector.aggregator.aggregator import compute  # noqa: E402
 from collector.ingest import ingest_canonical_jsonl  # noqa: E402
 
 
+def resolve_events(path: Path) -> list:
+    """接受单个文件 / 目录（glob agentmeasure-events*.jsonl）/ glob 模式。"""
+    if path.is_dir():
+        return sorted(path.glob("agentmeasure-events*.jsonl"))
+    if "*" in str(path):
+        return sorted(Path().glob(str(path)))
+    return [path]
+
+
 def report(events_path: Path, project: str, days: int = 30) -> dict:
     tmp = Path(tempfile.mkdtemp())
     conn = connect(tmp / "collector.db")
-    ingested = ingest_canonical_jsonl(
-        conn, events_path, source="provider-sdk", project_id=project,
-        principal="local-analytics")
+    files = resolve_events(events_path)
+    if not files:
+        raise FileNotFoundError(f"no events files matched: {events_path}")
+    ingested = {"accepted": 0, "rejected": 0, "reject_reasons": {}}
+    for f in files:
+        r = ingest_canonical_jsonl(
+            conn, f, source="provider-sdk", project_id=project,
+            principal="local-analytics")
+        ingested["accepted"] += r["accepted"]
+        ingested["rejected"] += r["rejected"]
+        for k, v in (r.get("reject_reasons") or {}).items():
+            ingested["reject_reasons"][k] = ingested["reject_reasons"].get(k, 0) + v
     match_invocations(conn)
     s = compute(conn, project, days=days)
-    return {"ingest": ingested, "stats": s}
+    return {"ingest": ingested, "stats": s, "files": [str(f) for f in files]}
 
 
 def render(r: dict) -> str:

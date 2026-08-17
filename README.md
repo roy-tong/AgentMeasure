@@ -222,10 +222,10 @@ node examples/mcp-integration.js          # synthetic traffic → local JSONL
 python3 product/local-analytics.py ~/.agentmeasure/events/agentmeasure-events.jsonl
 ```
 
-Status: SDK v0.1.0 (canonical output, fail-open, no content, unknown defaults,
-caller declared, loss accounting) + local analytics implemented; hosted ingestion
-and dashboard next. First real external Provider = Product Gate A
-([ROADMAP.md](ROADMAP.md), [MVP.md](product/MVP.md)).
+Status: SDK v0.1.1 — External-Ready (canonical output, non-blocking spool with
+loss accounting, per-request caller, MCP v1/v2, 21 tests, deterministic fixture) +
+local analytics implemented; hosted ingestion and dashboard next. First real
+external Provider = Product Gate A ([ROADMAP.md](ROADMAP.md), [MVP.md](product/MVP.md)).
 
 Scope and acceptance: [product/MVP.md](product/MVP.md) · SDK contract:
 [product/PROVIDER-SDK.md](product/PROVIDER-SDK.md) · Deployment:
