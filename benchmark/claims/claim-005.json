@@ -1,0 +1,30 @@
+{
+  "claim": "glama.ai MCP server score badges (awesome-mcp-servers entries)",
+  "metric_unit": "score (undefined per badge)",
+  "grain": "score / count",
+  "source": {
+    "url": "https://github.com/punkpeye/awesome-mcp-servers",
+    "type": "registry"
+  },
+  "retrieved_at": "2026-08-16T00:00:00Z",
+  "snapshot": "pending (README)",
+  "evidence_profile": {
+    "auth": "A1",
+    "corroboration": "C0/C1",
+    "independence": "I0",
+    "attestation": "T0",
+    "match": "heuristic"
+  },
+  "provenance": {
+    "surface": "third-party registry (aggregating)",
+    "coverage_basis": "servers listed in registry"
+  },
+  "qualification": {
+    "unit_defined": false,
+    "method_disclosed": "partial",
+    "status": "unqualified"
+  },
+  "replayability": "conditional",
+  "reviewer": "roy-tong",
+  "claim_id": "c-242f9c47c752"
+}

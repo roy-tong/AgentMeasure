@@ -7,28 +7,41 @@
 ```
 
 What you'll see: a mock MCP server instrumented with `@agentmeasure/mcp`
-(42 calls → 252 canonical observations, 0 rejected), then the local metrics
-report — with **Strict Qualified Usage defaulting to 0%** until evidence
-upgrades it. That's the observe-first behavior by design, not a bug.
+(**42 calls → 84 canonical observations, 0 rejected**), then the local metrics
+report — with **Strict Qualified Usage defaulting to 0%** (the fixture is labeled
+`synthetic`, never production) and **per-request caller attribution**
+(claude:14 · codex:14 · unknown:14).
 
-## SDK integration example
+The demo runs in an isolated workspace (`mktemp -d`) and never touches
+`~/.agentmeasure` — same fixture + same policy = same result, every run.
 
-[`sdk/examples/mcp-integration.js`](../sdk/examples/mcp-integration.js) — wrap any
-official-MCP-SDK server tool handler at registration time (arguments/results never
-touched, nothing on the request critical path).
+## SDK integration examples
+
+- [`sdk/examples/mcp-integration.js`](../sdk/examples/mcp-integration.js) — **MCP SDK v1 path**
+  (`@modelcontextprotocol/sdk`): wrap tool handlers at registration; per-request
+  caller resolved from the `_meta.sessionId` echo against the initialize-time
+  clientInfo map.
+- [`sdk/examples/mcp-integration-v2.js`](../sdk/examples/mcp-integration-v2.js) — **MCP SDK v2 path**
+  (`@modelcontextprotocol/server`, the stable 2026-07-28 spec line): per-request
+  caller extracted from `_meta.clientInfo` directly in the request context.
+
+Both paths emit the same contract: 42 calls → 84 canonical observations
+(attempt_started + attempt_completed only; no invented result_consumed).
 
 ```bash
-cd sdk && node examples/mcp-integration.js
+cd sdk && node examples/mcp-integration.js      # v1
+cd sdk && node examples/mcp-integration-v2.js   # v2 (primary)
 ```
 
 ## Onboarding your own MCP server (3 steps)
 
 1. `npm install @agentmeasure/mcp`
-2. Wrap your tool handlers as in `sdk/examples/mcp-integration.js`
+2. Wrap your tool handlers as in `sdk/examples/mcp-integration-v2.js` (v2) or
+   `mcp-integration.js` (v1)
 3. Point the metrics tool at the events file:
 
 ```bash
-python3 product/local-analytics.py ~/.agentmeasure/events/agentmeasure-events.jsonl
+python3 product/local-analytics.py ~/.agentmeasure/events/agentmeasure-events.jsonl --project github.com/you/your-server
 ```
 
 Questions? [Issue #2: First external Provider onboarding](https://github.com/roy-tong/AgentMeasure/issues/2)

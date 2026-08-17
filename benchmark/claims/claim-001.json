@@ -1,0 +1,30 @@
+{
+  "claim": "x402 settled its 162-millionth payment; average ticket $0.25",
+  "metric_unit": "payment (undefined)",
+  "grain": "count",
+  "source": {
+    "url": "https://x.com/33xp_/status/2088915992336347639",
+    "type": "x-post"
+  },
+  "retrieved_at": "2026-08-16T00:00:00Z",
+  "snapshot": "pending (X post)",
+  "evidence_profile": {
+    "auth": "A0",
+    "corroboration": "C0",
+    "independence": "I0",
+    "attestation": "T0",
+    "match": "none"
+  },
+  "provenance": {
+    "surface": "provider-side ledger (claimed)",
+    "coverage_basis": "unknown"
+  },
+  "qualification": {
+    "unit_defined": false,
+    "method_disclosed": false,
+    "status": "unqualified"
+  },
+  "replayability": "no",
+  "reviewer": "roy-tong",
+  "claim_id": "c-c7f1d940f703"
+}

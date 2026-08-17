@@ -13,6 +13,10 @@ on:
       - 'product/**'
       - 'extensions/**'
       - 'whitepaper/**'
+      - 'sdk/**'
+      - 'examples/**'
+      - 'benchmark/**'
+      - 'reports/**'
       - 'README*'
       - 'ROADMAP.md'
       - 'GOVERNANCE.md'
@@ -50,7 +54,7 @@ jobs:
         run: |
           python3 schemas/validate_observation.py
 
-  # ─── 套件 2：reference implementation ───
+  # ─── 套件 2：reference implementation（canonical boundary gate） ───
   reference-implementation:
     runs-on: ubuntu-latest
     steps:
@@ -58,90 +62,11 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - name: Core integrity tests (0.4.2 data model)
+      - name: Core integrity tests (0.4.3 data model, canonical ingestion only)
         env:
           PYTHONPATH: reference
         run: |
-          python3 - <<'PY'
-          import sys, json, tempfile, pathlib, os, subprocess
-          sys.path.insert(0, ".")
-          from collector.correlator.correlator import connect, store_observation, match_invocations
-          from collector.aggregator.aggregator import compute
-          from collector.usage import empty_observation, new_observation_id
-
-          # 100 次双边调用 -> share=1.0；无 operation 证据 -> unknown resolution
-          tmp = pathlib.Path(tempfile.mkdtemp())
-          conn = connect(tmp / "collector.db")
-          for n in range(100):
-              for side, principal in (("client", "codex-hook@t"), ("server", "mcp-wrapper@t")):
-                  o = empty_observation(); o.update(dict(
-                      observation_id=new_observation_id(),
-                      observed_at=f"2026-08-16T00:{n//60:02d}:{n%60:02d}Z",
-                      observer_principal=principal, observer_side=side,
-                      provenance="hook" if side=="client" else "wrapper",
-                      project_id="github.com/foo/bar", tool="foo.search",
-                      tool_call_id=f"tc-{n}", session_key=f"sess-{n%10}" if side=="client" else None,
-                      outcome="success", lifecycle_stage="L2"))
-                  store_observation(conn, o)
-          match_invocations(conn)
-          s = compute(conn, "github.com/foo/bar")
-          assert s["logical_invocations"] == 0, s            # 0.4.3：无回退，不把 Attempt 伪装成 Operation
-          assert s["attempts"] == 100, s
-          assert s["legacy_attempt_equivalent"] == 100, s    # 独立披露字段
-          assert s["operation_resolution"]["unknown"] == 100, s
-          assert s["operation_resolution_coverage"] == 0.0, s
-          assert s["corroborated_share"] == 1.0, s           # 单边 Provider observed 数据 eligible（0.4.3）
-          print("core: 100 attempts / 0 operations (no fallback), share 1.0 OK")
-
-          # 单侧 -> observed（最低显示等级）
-          o = empty_observation(); o.update(dict(
-              observation_id=new_observation_id(), observed_at="2026-08-16T03:00:00Z",
-              observer_principal="codex-hook@t", observer_side="client", provenance="hook",
-              project_id="github.com/foo/bar", tool="foo.only", tool_call_id="tc-s",
-              session_key="sess-x", outcome="unknown", lifecycle_stage="L1"))
-          store_observation(conn, o)
-          match_invocations(conn)
-          ev = conn.execute("SELECT evidence FROM invocations WHERE tool='foo.only'").fetchone()
-          assert ev["evidence"] == "observed", ev["evidence"]
-          print("core: single observation -> observed OK")
-
-          # 显式 operation_id -> 3 attempts 归并为 1 operation
-          conn2 = connect(pathlib.Path(tempfile.mkdtemp()) / "c.db")
-          for i, outcome in enumerate(("failure", "failure", "success")):
-              o = empty_observation(); o.update(dict(
-                  observation_id=new_observation_id(),
-                  observed_at=f"2026-08-16T03:00:0{i}Z",
-                  observer_principal="mcp-wrapper@t", observer_side="server",
-                  provenance="wrapper", project_id="github.com/foo/bar",
-                  tool="foo.search", tool_call_id=f"tc-op-{i}", outcome=outcome,
-                  lifecycle_stage="L2", operation_id="op-1", task_id="tk-1"))
-              store_observation(conn2, o)
-          match_invocations(conn2)
-          s2 = compute(conn2, "github.com/foo/bar")
-          assert s2["logical_invocations"] == 1, s2
-          assert s2["attempts"] == 3, s2
-          assert s2["operation_resolution"]["explicit"] == 3, s2
-          assert s2["operation_resolution_coverage"] == 1.0, s2
-          print("core: explicit operation -> 3 attempts / 1 operation, coverage 1.0 OK")
-
-          # Qualification Resolution：production + test 冲突 -> inconsistent（不压平）
-          conn3 = connect(pathlib.Path(tempfile.mkdtemp()) / "q.db")
-          for i, (ctx, val) in enumerate((("production", "normal"), ("test", "normal"))):
-              o = empty_observation(); o.update(dict(
-                  observation_id=new_observation_id(),
-                  observed_at=f"2026-08-16T03:00:0{i}Z",
-                  observer_principal=f"p{i}@t", observer_side="server",
-                  provenance="wrapper", project_id="github.com/foo/bar",
-                  tool="foo.search", tool_call_id="tc-q", outcome="success",
-                  usage_context=ctx, validity=val))
-              store_observation(conn3, o)
-          match_invocations(conn3)
-          row = conn3.execute(
-              "SELECT attempt_context, qualification_status FROM invocations").fetchone()
-          assert row["attempt_context"] == "inconsistent", dict(row)
-          assert row["qualification_status"] == "inconsistent", dict(row)
-          print("core: qualification conflict production+test -> inconsistent OK")
-          PY
+          python3 scripts/canonical_core_gate.py
       - name: Choice end-to-end (M2.2 / M2.5)
         env:
           PYTHONPATH: reference
@@ -192,7 +117,30 @@ jobs:
           print("adapter privacy OK")
           PY
 
-  # ─── 套件 3：documentation consistency（spec-drift） ───
+  # ─── 套件 4：Provider SDK（External-Ready gate） ───
+  sdk-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: sdk/package-lock.json
+      - name: Install + build SDK
+        run: |
+          cd sdk && npm ci && npm run build
+      - name: SDK unit tests (schema / fail-open / privacy / lineage / caller / concurrency / buffer / mcp-integration)
+        run: |
+          cd sdk && npm test
+      - name: Canonical-boundary pipeline gate (SDK → JSONL → validate → ingest → metrics)
+        run: |
+          python3 scripts/verify_sdk_pipeline.py
+
+  # ─── 套件 5：documentation consistency（spec-drift） ───
   documentation-consistency:
     runs-on: ubuntu-latest
     steps:

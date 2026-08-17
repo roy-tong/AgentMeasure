@@ -24,14 +24,14 @@ from collector.aggregator.aggregator import compute  # noqa: E402
 from collector.ingest import ingest_canonical_jsonl  # noqa: E402
 
 
-def report(events_path: Path, project: str) -> dict:
+def report(events_path: Path, project: str, days: int = 30) -> dict:
     tmp = Path(tempfile.mkdtemp())
     conn = connect(tmp / "collector.db")
     ingested = ingest_canonical_jsonl(
         conn, events_path, source="provider-sdk", project_id=project,
         principal="local-analytics")
     match_invocations(conn)
-    s = compute(conn, project, days=365)
+    s = compute(conn, project, days=days)
     return {"ingest": ingested, "stats": s}
 
 
@@ -52,7 +52,7 @@ def render(r: dict) -> str:
         "",
         "Success / Failure              : success-rate %s%%  unknown/inconsistent %d"
         % (f"{s['success_rate'] * 100:.1f}", s["unknown_or_inconsistent_outcomes"]),
-        "Latency (duration_ms buckets)  : " + _latency(s),
+        "Latency (duration_ms)          : " + _latency(s),
         "",
         "Operation resolution           : resolved %d / %d attempts (coverage %s%%)"
         % (s["resolved_operations"], s["attempts"],
@@ -67,12 +67,23 @@ def render(r: dict) -> str:
 
 
 def _latency(s: dict) -> str:
-    return "(needs duration_ms histogram; see collector for buckets)"
+    l = s.get("latency") or {}
+    if not l.get("count"):
+        return "no duration_ms observations (unknown)"
+    buckets = " · ".join(f"{k}:{v}" for k, v in (l.get("buckets") or {}).items() if v)
+    return (f"n={l['count']} mean={l.get('mean_ms')}ms p50={l.get('p50_ms')}ms "
+            f"p95={l.get('p95_ms')}ms min={l.get('min_ms')}ms max={l.get('max_ms')}ms "
+            f"[{buckets}]")
 
 
 def _caller(s: dict) -> str:
-    # caller 分布需要按 caller_identity_strength 分组；此处从 observers 简化
-    return f"declared/unknown per observation (observers: {len(s['observers'])})"
+    by_runtime = s.get("caller_by_runtime") or {}
+    by_strength = s.get("caller_by_strength") or {}
+    if not by_runtime:
+        return "no caller claims (all unknown)"
+    parts = [f"{rt}:{n}" for rt, n in sorted(by_runtime.items())]
+    strength = " / ".join(f"{k}={v}" for k, v in sorted(by_strength.items()))
+    return f"{' '.join(parts)} (strength: {strength})"
 
 
 def main(argv) -> int:
@@ -84,7 +95,7 @@ def main(argv) -> int:
     if not args.events.exists():
         print(f"events file not found: {args.events}", file=sys.stderr)
         return 2
-    r = report(args.events, args.project)
+    r = report(args.events, args.project, days=args.days)
     print(render(r))
     return 0
 

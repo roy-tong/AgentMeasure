@@ -26,9 +26,15 @@ AgentMeasure defines a common language for measuring how AI agents discover, cho
 ```
 
 Mock MCP server → canonical observations → local metrics, all on your machine, no
-cloud. Then read why we audit the ecosystem's usage claims:
-[Benchmark Run #001](reports/benchmark-run-001.md) — six real claims graded on the
-evidence ladder, every number self-reported.
+cloud. The demo is **reproducible**: it runs in an isolated workspace (never touches
+`~/.agentmeasure`) — same fixture + same policy = same result (42 calls → 84
+canonical observations, caller claims claude:14 · codex:14 · unknown:14).
+
+Then read why we audit the ecosystem's usage claims:
+[Benchmark Run #001](reports/benchmark-run-001.md) — six real claims profiled with
+the Evidence Profile (multi-axis, no composite scores), and
+[Pipeline Validation #001](reports/pipeline-validation-001.md) — our own fixture,
+kept out of the ranking as a reference baseline.
 
 ---
 

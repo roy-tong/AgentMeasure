@@ -38,7 +38,7 @@ Categories（按顺序创建）：
 ## 3. 发布后 48h 内的运营动作
 
 1. 在 Discussions「Metric Semantics」发第一篇：**"Is Strict Qualified Usage the right default for public metrics?"**（带 QUALITY.md 链接）——制造第一个讨论
-2. 在仓库开第一个 issue：**"First external Provider onboarding"**（邀请 MCP 开发者接入 SDK，附 Measurement Report #001 链接）
+2. 在仓库开第一个 issue：**"First external Provider onboarding"**（邀请 MCP 开发者接入 SDK，附 Pipeline Validation #001 链接）
 3. 用 Docs → 首页 pinned 两条：README + Whitepaper
 
 ## 4. 传播引用素材（4 类内容）

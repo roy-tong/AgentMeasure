@@ -1,0 +1,31 @@
+{
+  "claim": "AgentMeasure Pipeline Validation #001: 42 synthetic calls → 84 canonical observations, 0 rejected, 0 qualified",
+  "metric_unit": "attempt (defined) / observation (defined)",
+  "grain": "count",
+  "source": {
+    "url": "https://github.com/roy-tong/AgentMeasure/blob/main/reports/pipeline-validation-001.md",
+    "type": "report"
+  },
+  "retrieved_at": "2026-08-17T00:00:00Z",
+  "snapshot": "sha256(pipeline-validation-001.md)",
+  "evidence_profile": {
+    "auth": "A1",
+    "corroboration": "C0",
+    "independence": "I0",
+    "attestation": "T0",
+    "match": "exact-call-id"
+  },
+  "provenance": {
+    "surface": "provider-side (own pipeline)",
+    "coverage_basis": "fixture only (no real usage)"
+  },
+  "qualification": {
+    "unit_defined": true,
+    "method_disclosed": true,
+    "status": "qualified"
+  },
+  "replayability": "yes — ./examples/demo-e2e.sh (isolated workspace)",
+  "reviewer": "roy-tong",
+  "note": "Reference fixture only — NOT ranked (BENCHMARK-DRAFT.md §3)",
+  "claim_id": "c-98757f1ef82b"
+}

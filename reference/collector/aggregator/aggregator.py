@@ -196,6 +196,62 @@ def compute(conn, project_id: str, days: int = DAYS) -> dict:
     corroborated_share = round(corroborated / eligible_attempts, 3) if eligible_attempts else 0.0
     attempts_per_operation = round(attempts / resolved_operations, 2) if resolved_operations else 0.0
 
+    # ---- latency（observations 侧；duration_ms 不在 invocations 承载） ----
+    rows = conn.execute(
+        """
+        SELECT o.duration_ms FROM observations o
+        JOIN observation_links l ON l.observation_id = o.observation_id
+        JOIN invocations i ON i.invocation_id = l.invocation_id
+        WHERE i.project_id=? AND i.started_at>=? AND i.eligible=1
+          AND o.duration_ms IS NOT NULL
+        """,
+        (project_id, since),
+    ).fetchall()
+    durations = sorted(r[0] for r in rows)
+
+    def _pct(p: float):
+        if not durations:
+            return None
+        return durations[min(len(durations) - 1, int(len(durations) * p))]
+
+    latency = {
+        "count": len(durations),
+        "min_ms": durations[0] if durations else None,
+        "max_ms": durations[-1] if durations else None,
+        "mean_ms": round(sum(durations) / len(durations), 1) if durations else None,
+        "p50_ms": _pct(0.50),
+        "p95_ms": _pct(0.95),
+        "buckets": {
+            "<100ms": sum(1 for d in durations if d < 100),
+            "100-500ms": sum(1 for d in durations if 100 <= d < 500),
+            "500-1000ms": sum(1 for d in durations if 500 <= d < 1000),
+            "1000-5000ms": sum(1 for d in durations if 1000 <= d < 5000),
+            ">5000ms": sum(1 for d in durations if d >= 5000),
+        },
+    }
+
+    # ---- caller attribution（observations 侧；按 invocation 去重） ----
+    caller_rows = conn.execute(
+        """
+        SELECT o.caller_runtime AS runtime, o.caller_identity_strength AS strength,
+               COUNT(DISTINCT i.invocation_id) AS n
+        FROM observations o
+        JOIN observation_links l ON l.observation_id = o.observation_id
+        JOIN invocations i ON i.invocation_id = l.invocation_id
+        WHERE i.project_id=? AND i.started_at>=? AND i.eligible=1
+          AND o.caller_runtime IS NOT NULL
+        GROUP BY o.caller_runtime, o.caller_identity_strength
+        """,
+        (project_id, since),
+    ).fetchall()
+    caller_by_runtime: dict = {}
+    caller_by_strength: dict = {}
+    for r in caller_rows:
+        rt = r["runtime"] or "unknown"
+        st = r["strength"] or "unknown"
+        caller_by_runtime[rt] = caller_by_runtime.get(rt, 0) + r["n"]
+        caller_by_strength[st] = caller_by_strength.get(st, 0) + r["n"]
+
     return {
         "project": project_id,
         "days": days,
@@ -221,6 +277,9 @@ def compute(conn, project_id: str, days: int = DAYS) -> dict:
         "unknown_or_inconsistent_outcomes": unknown_or_inconsistent,
         "evidence": [{"grade": e, "invocations": c} for e, c in evidence],
         "observers": [{"principal": p, "invocations": c} for p, c in hosts],
+        "latency": latency,
+        "caller_by_runtime": caller_by_runtime,
+        "caller_by_strength": caller_by_strength,
     }
 
 

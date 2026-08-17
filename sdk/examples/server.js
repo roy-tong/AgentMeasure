@@ -1,29 +1,34 @@
 #!/usr/bin/env node
 /**
- * Example: wrap a real (synthetic) MCP tool handler with @agentmeasure/mcp.
+ * Minimal mock-server example: wrap a plain (non-MCP) handler with the
+ * middleware. The server-level caller claim below is a FIXTURE fallback only —
+ * real integrations resolve the caller per request (see mcp-integration*.js).
+ *
  * Run: node examples/server.js  (after `npm install && npm run build`)
- * Output: ~/.agentmeasure/events/agentmeasure-events.jsonl (canonical observations)
+ * Events: $AGENTMEASURE_EVENTS_DIR/agentmeasure-events.jsonl
+ *         (defaults to ~/.agentmeasure/events/agentmeasure-events.jsonl)
  */
-import { agentmeasure, AgentMeasure, fingerprint } from "../dist/index.js";
+import { agentmeasure } from "../dist/index.js";
 
-// --- a mock "remote MCP server" ---
+// --- a mock "remote server" ---
 const server = {
   tools: {},
+  register(name, handler) {
+    this.tools[name] = handler;
+  },
   use(mw) {
     for (const [name, handler] of Object.entries(this.tools)) {
       this.tools[name] = mw.wrapTool(name, handler);
     }
   },
-  register(name, handler) {
-    this.tools[name] = handler;
-  },
 };
 
-const am = new AgentMeasure({
+const mw = agentmeasure({
   projectId: "github.com/acme/example-search",
   observerPrincipal: "am-sdk@acme",
   trustDomain: "acme",
-  caller: { type: "claimed_agent", runtime: "claude", identityStrength: "declared" },
+  usageContext: "synthetic", // fixture traffic, labeled at the source
+  caller: { type: "claimed_agent", runtime: "claude", identityStrength: "declared" }, // fixture fallback
 });
 
 server.register("search", async (q) => {
@@ -31,30 +36,18 @@ server.register("search", async (q) => {
   if (Math.random() < 0.18) throw new Error("upstream timeout"); // ~18% failure
   return { results: 10, query: q };
 });
-server.use(agentmeasure({
-  projectId: "github.com/acme/example-search",
-  observerPrincipal: "am-sdk@acme",
-  trustDomain: "acme",
-  caller: { type: "claimed_agent", runtime: "claude", identityStrength: "declared" },
-}));
+server.use(mw);
 
-// --- simulate 200 agent calls (session 1: claude; session 2: codex) ---
-const sessions = ["claude-sess-1", "codex-sess-2"];
+// --- simulate 60 calls (synthetic fixture) ---
 for (let i = 0; i < 60; i++) {
-  const sess = sessions[i % 2];
-  const clientKey = fingerprint(sess);
-  // the SDK does not know sessions (provider side); simulate by tagging caller runtime
-  am.emit({
-    type: "task_outcome",
-    surfaceId: "runtime:task",
-    payload: { task_id: `tk-${Math.floor(i / 5)}`, task_success: true },
-  });
   try {
     await server.tools.search(`query ${i}`);
   } catch {
     // failure already observed by middleware
   }
-  if (i % 50 === 0) console.log(`emitted ${i + 1} attempts (client ${clientKey.slice(0, 12)}…)`);
 }
-console.log("\nObservations written to ~/.agentmeasure/events/agentmeasure-events.jsonl");
+await mw.am.shutdown();
+
+console.log(`60 synthetic calls → observations at: ${mw.am.bufferHealth.path}`);
+console.log(`bufferHealth: flushed=${mw.am.bufferHealth.flushedTotal} dropped=${mw.am.bufferHealth.droppedTotal} failures=${mw.am.bufferHealth.flushFailures}`);
 console.log("Next: run `python3 product/local-analytics.py <events.jsonl>` for the local report.");

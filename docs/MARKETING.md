@@ -10,7 +10,7 @@
 |---|---|---|---|
 | C1 | Counter-intuitive fact | **3 Tool Calls ≠ 3 Agent Uses**（Operation/Attempt） | 标准语义 + 反例 |
 | C2 | Measurement failure | **你的 MCP 显示 10,000 calls，多少真的是 Agent？**（declared/correlated/unknown） | Caller Identity 分级 |
-| C3 | Real case | 接入后发现的真实数字（如 0% strict qualified / 0% operation resolution） | Measurement Report #001（合成流量，须标注） |
+| C3 | Real case | 接入后发现的真实数字（如 0% strict qualified / 0% operation resolution） | Pipeline Validation #001（合成流量，须标注） |
 | C4 | Thesis | Capability Economy 需要自己的 measurement layer | Whitepaper / docs/CAPABILITY-ECONOMY.md |
 
 ## 2. X 执行

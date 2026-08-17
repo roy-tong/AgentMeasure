@@ -60,7 +60,7 @@ Discussions 是 AgentMeasure 的社区讨论区。它不是一个问答论坛，
 1. 按上述 categories 建立分类；
 2. 置顶一篇 **"Welcome — 如何参与计量语义讨论"**（本页内容即可）；
 3. 置顶 **Benchmark Draft 0.1 评审帖**（见 `benchmark/BENCHMARK-DRAFT.md`）；
-4. 置顶 **Measurement Report #001 反馈帖**。
+4. 置顶 **Pipeline Validation #001 反馈帖**。
 
 ---
 
@@ -82,5 +82,5 @@ Experiments · Capability Economy · Implementers (seed topics above).
 5. No token-price talk, no promotion — this is a workshop, not a marketing channel.
 
 **Once Discussions is enabled:** create the five categories, pin a welcome post,
-pin the Benchmark Draft 0.1 review thread, and pin the Measurement Report #001
+pin the Benchmark Draft 0.2 review thread, and pin the Pipeline Validation #001
 feedback thread.

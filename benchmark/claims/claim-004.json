@@ -1,0 +1,30 @@
+{
+  "claim": "ClaudeBot impersonation up 400% this quarter",
+  "metric_unit": "impersonation (undefined)",
+  "grain": "rate (q/q)",
+  "source": {
+    "url": "https://x.com/Ai_Trend_/status/2087657972180643914",
+    "type": "x-post"
+  },
+  "retrieved_at": "2026-08-16T00:00:00Z",
+  "snapshot": "pending (X post)",
+  "evidence_profile": {
+    "auth": "A1",
+    "corroboration": "C0",
+    "independence": "I0",
+    "attestation": "T0",
+    "match": "none"
+  },
+  "provenance": {
+    "surface": "self-reported telemetry",
+    "coverage_basis": "unknown (denominator undisclosed)"
+  },
+  "qualification": {
+    "unit_defined": false,
+    "method_disclosed": false,
+    "status": "unqualified"
+  },
+  "replayability": "no",
+  "reviewer": "roy-tong",
+  "claim_id": "c-22fded4040c6"
+}

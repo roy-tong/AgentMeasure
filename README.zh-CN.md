@@ -26,8 +26,13 @@ AgentMeasure 定义一套共同语言，衡量 AI Agent 如何发现、选择、
 ```
 
 Mock MCP server → canonical observations → 本地指标，全程本机运行、无云依赖。
+Demo 可复现：每次运行使用隔离 workspace（不触碰 `~/.agentmeasure`）——相同
+fixture + 相同 policy = 相同结果（42 calls → 84 observations）。
+
 再看看我们如何审计生态的 usage 声称：[Benchmark Run #001](reports/benchmark-run-001.md)——
-六个真实声称按证据阶梯分级，结论：每个数字都是自报的。
+六个真实声称按多轴 Evidence Profile 出具标签（无综合评分）；我们自己的数字
+（[Pipeline Validation #001](reports/pipeline-validation-001.md)）只作参考基线，
+不参与排名。
 
 ---
 

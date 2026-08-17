@@ -1,0 +1,30 @@
+{
+  "claim": "~39,000 llms.txt files; 97% had received zero AI requests",
+  "metric_unit": "AI request (partially defined)",
+  "grain": "rate over crawled files",
+  "source": {
+    "url": "https://www.originality.ai/blog/llms-txt-adoption-2026",
+    "type": "audit"
+  },
+  "retrieved_at": "2026-08-16T00:00:00Z",
+  "snapshot": "pending (page)",
+  "evidence_profile": {
+    "auth": "A1",
+    "corroboration": "C0",
+    "independence": "I2",
+    "attestation": "T0",
+    "match": "heuristic"
+  },
+  "provenance": {
+    "surface": "independent crawl",
+    "coverage_basis": "~39k files of unknown total universe"
+  },
+  "qualification": {
+    "unit_defined": true,
+    "method_disclosed": true,
+    "status": "qualified"
+  },
+  "replayability": "yes (method + tooling)",
+  "reviewer": "roy-tong",
+  "claim_id": "c-ad25402a0ec1"
+}
