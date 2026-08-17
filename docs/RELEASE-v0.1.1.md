@@ -1,12 +1,11 @@
-# Release v0.1.1 — External Ready
+# v0.1.1 — External Ready
 
-> 本文件是 GitHub Release v0.1.1 的正文（粘贴即用）。
-> v0.1.0 Release 顶部请加一行：
->
-> > **Superseded by v0.1.1.** The original release contained several
-> > measurement-model issues (reported 42/126 observations, an unverifiable
-> > "no self-reported numbers" claim, and a non-reproducible demo); all are
-> > documented and fixed in the changelog. History is kept, not deleted.
+> Released automatically from `docs/RELEASE-v0.1.1.md` by
+> `.github/workflows/release.yml` (tag `v0.1.1`).
+> **Supersedes v0.1.0** — the original release contained several
+> measurement-model issues (reported 42/126 observations, an unverifiable
+> "no self-reported numbers" claim, and a non-reproducible demo); all are
+> documented and fixed in the changelog. History is kept, not deleted.
 
 ---
 
@@ -42,7 +41,8 @@ convergence that makes the SDK safe to hand to the first external provider.
 
 **Product**
 
-- Local analytics: `--days`, latency histogram (p50/p95), caller attribution
+- Local analytics: `--days`, latency histogram (p50/p95), caller attribution,
+  spool directory/glob ingestion
 - Pipeline Validation #001 (deterministic baseline); **Measurement Report #001
   is reserved for the first external provider**
 
@@ -68,8 +68,10 @@ boundary." That overstated the guarantee. The accurate statement:
 ## Install
 
 ```bash
-npm install @agentmeasure/mcp   # publish pending npm token — see CHANGELOG
+npm install @agentmeasure/mcp   # publish pending npm scope + token — see CHANGELOG
 # or: git clone https://github.com/roy-tong/AgentMeasure && cd sdk && npm install
+# or: download the attached agentmeasure-mcp-0.1.1.tgz and:
+#     npm install ./agentmeasure-mcp-0.1.1.tgz
 ```
 
 ## Demo

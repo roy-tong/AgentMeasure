@@ -1,0 +1,90 @@
+name: release
+
+# Creates/updates GitHub Releases from docs/RELEASE-<tag>.md and, when an npm
+# token exists, publishes @agentmeasure/mcp. Uses the Actions-provided
+# GITHUB_TOKEN (contents: write) — no local credentials required.
+#
+# Triggers:
+#   - push of a v* tag (e.g. v0.1.1)
+#   - manual workflow_dispatch (defaults to v0.1.1)
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  github-release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Resolve tag
+        run: |
+          if [[ "$GITHUB_REF_NAME" == v* ]]; then
+            echo "TAG=$GITHUB_REF_NAME" >> "$GITHUB_ENV"
+          else
+            echo "TAG=v0.1.1" >> "$GITHUB_ENV"
+          fi
+          echo "releasing $TAG"
+
+      - name: Create or update GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          NOTES="docs/RELEASE-${TAG}.md"
+          if [[ ! -f "$NOTES" ]]; then NOTES="docs/RELEASE-v0.1.1.md"; fi
+          if gh release view "$TAG" --json tagName >/dev/null 2>&1; then
+            gh release edit "$TAG" --notes-file "$NOTES"
+          else
+            gh release create "$TAG" --title "$TAG — AgentMeasure" --notes-file "$NOTES"
+          fi
+
+      - name: Mark v0.1.0 as superseded (history kept, not deleted)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view v0.1.0 --json tagName >/dev/null 2>&1; then
+            BODY="$(gh release view v0.1.0 --json body -q .body)"
+            if ! printf '%s' "$BODY" | grep -q "Superseded by v0.1.1"; then
+              NOTE='> **Superseded by v0.1.1.** The original release contained several measurement-model issues (reported 42/126 observations, an unverifiable "no self-reported numbers" claim, and a non-reproducible demo); all are documented and fixed in the changelog. History is kept, not deleted.'
+              gh release edit v0.1.0 --notes "$(printf '%s\n\n%s' "$NOTE" "$BODY")"
+              echo "v0.1.0 marked as superseded"
+            else
+              echo "v0.1.0 already marked"
+            fi
+          else
+            echo "v0.1.0 release not found (nothing to supersede)"
+          fi
+
+      - name: Attach npm tarball as release asset
+        working-directory: sdk
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          npm pack --pack-destination .
+          gh release upload "$TAG" agentmeasure-mcp-0.1.1.tgz --clobber
+
+  npm-publish:
+    runs-on: ubuntu-latest
+    needs: github-release
+    if: ${{ secrets.NPM_TOKEN != '' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          registry-url: 'https://registry.npmjs.org/'
+      - name: Publish @agentmeasure/mcp
+        working-directory: sdk
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          npm ci
+          npm run build
+          npm test
+          npm publish --access public
