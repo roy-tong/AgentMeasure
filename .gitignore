@@ -4,3 +4,7 @@ sdk/dist/*.js.map
 # 本地数据
 *.db
 .agentmeasure/
+
+# 本地浏览入口（指向 ~/.agentmeasure/outreach，绝不提交）
+/funnel.html
+/funnel-data.js
