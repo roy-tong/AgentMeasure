@@ -1,0 +1,27 @@
+name: issue-sync
+
+# Keeps Issue #2 (first external Provider onboarding) in sync with
+# docs/ISSUE-2.md. Uses the Actions GITHUB_TOKEN — no local credentials.
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'docs/ISSUE-2.md'
+  workflow_dispatch:
+
+permissions:
+  issues: write
+
+jobs:
+  sync-issue-2:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Update Issue #2 body
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh issue edit 2 --body-file docs/ISSUE-2.md
+          echo "Issue #2 synced from docs/ISSUE-2.md"

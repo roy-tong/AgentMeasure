@@ -150,6 +150,38 @@ def compute(conn, project_id: str, days: int = DAYS) -> dict:
                                  + qualification_status.get("partially_classified", 0)
                                  + qualification_status.get("inconsistent", 0))
 
+    # ---- Provider Alpha 仪表盘：production-context + validity coverage ----
+    # （Strict Qualified 不是主指标；先给用户看可观察的事实层）
+    row = conn.execute(
+        """
+        SELECT COUNT(*) FROM invocations
+        WHERE project_id=? AND started_at>=? AND eligible=1
+          AND attempt_context='production'
+        """,
+        (project_id, since),
+    ).fetchone()
+    production_context_attempts = row[0] or 0
+
+    validity_rows = conn.execute(
+        """
+        SELECT attempt_validity, COUNT(*) AS n FROM invocations
+        WHERE project_id=? AND started_at>=? AND eligible=1
+        GROUP BY attempt_validity
+        """,
+        (project_id, since),
+    ).fetchall()
+    _INVALID_VALIDITIES = {"duplicate", "replay", "health_check", "load_test",
+                           "suspected_invalid"}
+    validity_coverage = {"normal": 0, "invalid": 0, "unknown": 0}
+    for r in validity_rows:
+        v = r["attempt_validity"] or "unknown"
+        if v == "normal":
+            validity_coverage["normal"] += r["n"]
+        elif v in _INVALID_VALIDITIES:
+            validity_coverage["invalid"] += r["n"]
+        else:
+            validity_coverage["unknown"] += r["n"]
+
     # ---- success rate（AgentMeasure-M3.3：Successful Completed ÷ Completed；
     #      unknown/inconsistent 不进分母，单列披露） ----
     row = conn.execute(
@@ -272,6 +304,8 @@ def compute(conn, project_id: str, days: int = DAYS) -> dict:
         "corroborated_share": corroborated_share,
         "qualified_invocations": qualified_invocations,
         "qualified_rate": qualified_rate,
+        "production_context_attempts": production_context_attempts,
+        "validity_coverage": validity_coverage,
         "unknown_context_or_validity": unknown_share_invocations,
         "success_rate": success_rate,
         "unknown_or_inconsistent_outcomes": unknown_or_inconsistent,

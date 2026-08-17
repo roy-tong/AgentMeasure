@@ -29,6 +29,8 @@ Canonical observations accepted : 84   rejected: 0
   reject reasons               : none
 
 Observed attempts               : 42
+Production-context attempts     : 0
+Validity coverage               : normal=0 invalid=0 unknown=42
 Strict Qualified attempts      : 0 (0.0%)
   qualification status         : {'unknown': 42}
 

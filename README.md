@@ -216,7 +216,8 @@ the provider side (no agent-side install), feeding a local collector. Local anal
 run without any cloud:
 
 ```bash
-npm install @agentmeasure/mcp
+npm install https://github.com/roy-tong/AgentMeasure/releases/download/v0.1.1/agentmeasure-mcp-0.1.1.tgz
+# (npm registry publish pending scope/token — tarball is the current install path)
 # wrap your MCP server's tool handlers: server.tool = (name, schema, mw.wrapTool(name, handler))
 node examples/mcp-integration.js          # synthetic traffic → local JSONL
 python3 product/local-analytics.py ~/.agentmeasure/events/agentmeasure-events.jsonl

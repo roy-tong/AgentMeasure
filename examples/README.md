@@ -35,7 +35,8 @@ cd sdk && node examples/mcp-integration-v2.js   # v2 (primary)
 
 ## Onboarding your own MCP server (3 steps)
 
-1. `npm install @agentmeasure/mcp`
+1. Install from the release tarball (npm registry publish pending):
+   `npm install https://github.com/roy-tong/AgentMeasure/releases/download/v0.1.1/agentmeasure-mcp-0.1.1.tgz`
 2. Wrap your tool handlers as in `sdk/examples/mcp-integration-v2.js` (v2) or
    `mcp-integration.js` (v1)
 3. Point the metrics tool at the events file:

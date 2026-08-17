@@ -63,6 +63,8 @@ def render(r: dict) -> str:
         f"  reject reasons               : {i['reject_reasons'] or 'none'}",
         "",
         "Observed attempts               : %d" % s["attempts"],
+        "Production-context attempts     : %d" % s["production_context_attempts"],
+        "Validity coverage               : %s" % _validity(s),
         "Strict Qualified attempts      : %d (%s%%)" % (
             s["qualified_invocations"],
             f"{s['qualified_rate'] * 100:.1f}"),
@@ -82,6 +84,11 @@ def render(r: dict) -> str:
         "Measurement coverage           : participating_network (observed only)",
     ]
     return "\n".join(lines)
+
+
+def _validity(s: dict) -> str:
+    v = s.get("validity_coverage") or {}
+    return f"normal={v.get('normal', 0)} invalid={v.get('invalid', 0)} unknown={v.get('unknown', 0)}"
 
 
 def _latency(s: dict) -> str:

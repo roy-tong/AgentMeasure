@@ -18,11 +18,35 @@ Actionability Case。**
 | **A — Measurement Alpha** | 有真实远程/长期 server 流量 | **唯一能产出 Report #001 的池**：Remote MCP / Hosted MCP / SaaS-backed MCP / 长期 self-hosted MCP，**合作方自己控制运行中的 server process** |
 | **B — SDK Implementer** | 本地 MCP 项目 | 验证 SDK 兼容性与标准语义；观察发生在最终用户电脑上，维护者看不到调用边界 |
 | **C — Runtime Partner** | Codex / Claude / 1MCP / Harness | 补 Reach / Choice / Operation lineage（Provider-side SDK 看不到的层） |
-| **D — Standard / Trust Partner** | observability / receipt / evaluation / payment | Agent Receipts（Obsigna）等 evidence/receipt/trust 项目——interop 合作而非竞品 |
+| **D — Standard / Trust Partner** | observability / receipt / evaluation / payment | Agent Receipts（Obsigna）、Horizon3/NodeZero 等 evidence/trust 项目——interop 合作而非竞品 |
 | **E — Strategic Logo** | Neon / Sentry / Cloudflare / GitHub / Apify | 先有 Pool A 真实案例，再谈 logo |
 
-纪律：**第一批发出的 13 封多数属于 Pool B**（本地/stdio MCP）。它们是有效的
+**Partner Strategy 定位（2026-08 升级）**：从"找 MCP developer"正式升级为
+
+> **找拥有 Agent Capability Runtime Boundary 的人。**
+
+目标池是：Hosted SaaS MCP · Remote MCP · Agent-facing API · MCP Gateway/Runtime ·
+Agent Observability Platform · Agent Commerce Infrastructure。候选池从"海量但
+质量差"缩到 100–300 个真正关键的 Provider——早期用**高密度 BD**，不广撒网。
+
+纪律：第一批发出的 13 封多数属于 Pool B（本地/stdio MCP）。它们是有效的
 SDK/标准验证对象，但第一份真实 Measurement Report 必须来自 Pool A。缺口在 A。
+
+## 2.1 Opportunity Score（候选排序）
+
+\[
+Opportunity = 0.30\,B + 0.25\,D + 0.20\,M + 0.15\,T + 0.10\,L
+\]
+
+- **B — Boundary Control**：是否控制真实线上 Provider boundary
+- **D — Decision Accessibility**：维护者是否容易直接决定
+- **M — Measurement Fit**：数据是否能产生有意义指标
+- **T — Traffic Probability**：真实 Agent 流量概率
+- **L — Logo / Leverage**：品牌与传播价值
+
+现阶段小团队（B/D 高）可以比大品牌（L 高）更值得联系：现在需要的是
+YES → integration → traffic → report，而不是 great brand → forwarded →
+meeting → security → legal → three months。当前各目标评分见私有运营区。
 
 ## 3. 核心话术（2026-08 修订）
 
@@ -44,6 +68,31 @@ SDK/标准验证对象，但第一份真实 Measurement Report 必须来自 Pool
 
 > 我们的 measurement model 和你们的 runtime/evidence model 有一块天然可以
 > 互补，想一起定义 interoperability。
+
+## 3.1 三种邮件原型（不再所有人同一版）
+
+**A — 小型 Provider / Founder**（Sugra、Senado、独立 hosted MCP）
+核心是 "I can do the integration work for you"，不是 "Please install our SDK"：
+10–15 min · private alpha · 不要求公开原始数据 · 我可以帮你做/提交 patch ·
+你拿到第一份私有 measurement report。
+
+**B — 已有 telemetry 的 Provider**（Postman / Apify / Grafana / Rootly）
+绝不说 "We built an analytics SDK"。说：
+
+> You already collect most of the raw facts. AgentMeasure is an attempt to make
+> those facts portable and comparable across agent-facing software.
+
+合作形态可以是 `现有 telemetry → AgentMeasure adapter → Canonical Observation
+Envelope`，根本不一定装 SDK。
+
+**C — 大型官方 Hosted MCP**（Figma / Vercel / Slack / GitLab / Google / Cloudflare / Atlassian）
+目标不是 alpha user，而是**标准共建者**：
+
+> We're working on an open measurement vocabulary for agent-facing capabilities,
+> and your hosted MCP is one of the clearest examples of the problem we're trying
+> to standardize.
+
+邀请：review semantics · identify missing fields · explore adapter/telemetry mapping。
 
 ## 4. 节奏（控制式 cadence）
 

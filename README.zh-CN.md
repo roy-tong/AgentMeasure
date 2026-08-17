@@ -216,7 +216,8 @@ SDK](sdk/)（`@agentmeasure/mcp`）在 Provider 侧产出 observations（无需 
 安装），接入本地 collector。本地分析无需任何云：
 
 ```bash
-npm install @agentmeasure/mcp
+npm install https://github.com/roy-tong/AgentMeasure/releases/download/v0.1.1/agentmeasure-mcp-0.1.1.tgz
+# (npm 正式发布等待 scope/token —— 当前安装路径为 release tarball)
 # 包装你的 MCP server 的 tool handler：server.tool = (name, schema, mw.wrapTool(name, handler))
 node examples/mcp-integration.js          # 合成流量 → 本地 JSONL
 python3 product/local-analytics.py ~/.agentmeasure/events/agentmeasure-events.jsonl
