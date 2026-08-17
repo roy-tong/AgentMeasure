@@ -33,9 +33,12 @@ Validation #001 自己证明了这一点。
 AgentMeasure 的卖点不是"我们什么都知道"，而是
 **"我们不会把不知道的事情伪装成知道"**。
 
-**另外**：`@agentmeasure/mcp` 尚未发布到 npm（验证：registry 404）。
-**在 npm publish 完成之前，邮件里不要写 `npm install @agentmeasure/mcp`**——
-统一用仓库链接。发布后把第 1 封邮件里的安装行换成一行 npm install。
+**另外**：`@agentmeasure/mcp` 尚未发布到 npm（registry 404），但 **v0.1.1 GitHub
+Release 已附带 `agentmeasure-mcp-0.1.1.tgz` 资产**——外部 Provider 现在就能装：
+`npm install https://github.com/roy-tong/AgentMeasure/releases/download/v0.1.1/agentmeasure-mcp-0.1.1.tgz`
+或 clone 后 `cd sdk && npm install`。npm 正式发布由 release workflow 自动执行
+（仓库添加 `NPM_TOKEN` secret 后即生效），发布后把邮件里的安装行换成
+一行 npm install。
 
 ---
 
@@ -103,8 +106,10 @@ GitHub MCP Server / MCP 官方 servers / Vercel skills。大 logo 的接入需�
 >
 > Everything is open: [github.com/roy-tong/AgentMeasure](https://github.com/roy-tong/AgentMeasure)
 > (standard draft 0.4.3, reference implementation, deterministic pipeline validation,
-> evidence-profile benchmark of ecosystem claims). The SDK is one install away once
-> published — or clone and `cd sdk && npm install` today.
+> evidence-profile benchmark of ecosystem claims). The SDK installs straight from the
+> v0.1.1 release tarball — no npm wait:
+> `npm install https://github.com/roy-tong/AgentMeasure/releases/download/v0.1.1/agentmeasure-mcp-0.1.1.tgz`
+> or clone and `cd sdk && npm install`.
 >
 > Want to try it? Happy to walk you through the 10 minutes.
 >

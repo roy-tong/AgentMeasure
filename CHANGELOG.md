@@ -130,4 +130,11 @@ First public release: the measurement layer for the Agent Capability Economy.
 
 - `0 stars at launch` is a feature of the honesty-first posture, not a bug.
 - Synthetic traffic only so far; every limitation is stated in the report.
-- 2026-08-17: v0.1.1 tag pushed; CI workflow fixed (quoted step name); publish steps pending npm token
+- 2026-08-17: v0.1.1 tag pushed; CI workflow fixed (quoted step name)
+- 2026-08-17: release automation live — GitHub Release v0.1.1 created and
+  v0.1.0 marked superseded by `.github/workflows/release.yml` (GITHUB_TOKEN);
+  `agentmeasure-mcp-0.1.1.tgz` attached as a release asset (providers can
+  install without npm: `npm install <release-download-url>`); npm publish is
+  automated and activates automatically once an `NPM_TOKEN` secret is added
+  to the repository (job runs build + tests before publish; `--access public`).
+  No npm credentials exist on the dev machine (npm whoami: ENEEDAUTH).
