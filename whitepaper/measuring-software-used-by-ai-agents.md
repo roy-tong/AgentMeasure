@@ -27,6 +27,29 @@ on. The goal is not a dashboard. It is the measurement foundation that makes
 Capability as a Service (CaaS, as used in this paper) possible.
 
 
+
+## 0.2 Relationship to Observability
+
+> **AgentMeasure assumes that telemetry may already exist. Its purpose is not to replace
+> tracing, logging, or evaluation systems, but to define portable measurement objects and
+> rules over their evidence.**
+
+不同系统可以观测到同一 agent 行为，却报出不同的 usage 数字：
+
+```text
+1 logical operation, 2 retries
+
+System A: usage = 3
+System B: usage = 1
+
+Both telemetry systems are correct.
+Their measurement semantics are not the same.
+```
+
+AgentMeasure 不重新采集 observability 数据；它在已有证据（OTel / Langfuse / Logfire /
+Phoenix / runtime logs）之上定义可跨系统比较的测量对象、统计单位和推导规则
+（Evidence → Measurement Semantics → Accounting → Settlement）。
+
 ## 0.5 Measurement Principles
 
 > 本节是全文档的**不可违反数据不变量**（Draft 0.4.4）。以下五条由外部工程反馈
