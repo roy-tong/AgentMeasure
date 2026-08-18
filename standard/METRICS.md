@@ -135,6 +135,21 @@ Counterexamples
 - **Unknown**：outcome=unknown 不计入分母，披露 Unknown Outcome Share
 - **重试**：同一 operation 的失败 attempt 与成功 attempt 分别计数
 
+### 不变量：Reliability claims MUST declare their grain（Draft 0.4.4）
+
+```text
+Attempt Success Rate   ≠   Operation Success Rate
+```
+
+1 user intent → 2 provider attempts → 1 final success：
+- 按 attempt 计：2 attempts，50% success
+- 按 operation 计：1 operation，100% success（intent 最终成功）
+- attempts_per_operation = 2（retry overhead）
+
+**Attempt reliability 不得被报告为 operation reliability，反之亦然。**
+任何 `Reliability = X%` 的声明必须伴随 grain（Provider Attempt Reliability /
+Capability Operation Reliability / Mean Attempts per Successful Operation）。
+
 ### M3.4 — Operation Success Rate
 
 - **公式**：`Operations with ≥1 successful attempt ÷ Completed Operations`

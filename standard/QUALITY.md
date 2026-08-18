@@ -16,6 +16,11 @@
 | 6 | **Identity Resolution** | 标识归一得怎么样（entity/caller） | 解析率、resolution 分布 |
 | 7 | **Method & Version** | 用什么统计、哪个 spec/registry 版本 | spec_version、registry_version、policy 版本 |
 
+> **Draft 0.4.4 不变量：** 质量/可靠性声明必须声明 measurement grain
+> （Attempt / Operation / Task）。Attempt reliability 与 Operation reliability
+> 不得互相顶替（External Consensus：Arthi / 김지훈 / Suraj）。
+
+
 ## 2. Coverage（多维）
 
 ```text

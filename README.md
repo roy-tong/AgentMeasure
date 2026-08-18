@@ -40,6 +40,24 @@ kept out of the ranking as a reference baseline.
 
 ---
 
+## Why the split matters, in one line
+
+```text
+1 user intent
+2 provider attempts
+1 final success
+```
+
+That is **1 operation**, **2 attempts**, operation success **100%**, attempt success **50%**,
+attempts per operation **2**.
+
+It is *not* "2 operations with 50% success".
+
+Attempts are execution facts. Operations are logical intents. Mixing the two is how agent
+reliability reports get distorted.
+
+---
+
 ## External provider trials
 
 AgentMeasure is looking for **3 MCP/API providers** for short external measurement runs.
