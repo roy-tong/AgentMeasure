@@ -204,6 +204,59 @@ def compute(conn, project_id: str, days: int = DAYS) -> dict:
     ).fetchone()
     unknown_or_inconsistent = row[0] or 0
 
+    # ---- Alpha 报告：outcome shares（success/failure/unknown 三桶，覆盖全部 eligible） ----
+    outcome_rows = conn.execute(
+        """
+        SELECT outcome, COUNT(*) AS n FROM invocations
+        WHERE project_id=? AND started_at>=? AND eligible=1
+        GROUP BY outcome
+        """,
+        (project_id, since),
+    ).fetchall()
+    outcome_shares = {"success": 0, "failure": 0, "unknown": 0}
+    _SUCCESS_OUTCOMES = {"success"}
+    _FAILURE_OUTCOMES = {"failure", "denied"}
+    for r in outcome_rows:
+        o = r["outcome"] or "unknown"
+        if o in _SUCCESS_OUTCOMES:
+            outcome_shares["success"] += r["n"]
+        elif o in _FAILURE_OUTCOMES:
+            outcome_shares["failure"] += r["n"]
+        else:
+            outcome_shares["unknown"] += r["n"]
+
+    # ---- Alpha 报告：measurement confidence（四个覆盖度） ----
+    # 1) Caller Identity Coverage：可归因（declared/correlated/attested）attempt 占比
+    caller_attr = conn.execute(
+        """
+        SELECT COUNT(DISTINCT i.invocation_id) AS n FROM observations o
+        JOIN observation_links l ON l.observation_id = o.observation_id
+        JOIN invocations i ON i.invocation_id = l.invocation_id
+        WHERE i.project_id=? AND i.started_at>=? AND i.eligible=1
+          AND o.caller_identity_strength IN ('declared', 'correlated', 'attested')
+        """,
+        (project_id, since),
+    ).fetchone()
+    caller_attribution_coverage = round(caller_attr[0] / eligible_attempts, 3) if eligible_attempts else 0.0
+
+    # 2) Validity Classified Coverage：validity != unknown 的 attempt 占比
+    validity_classified = (validity_coverage["normal"] + validity_coverage["invalid"])
+    validity_classified_coverage = round(validity_classified / eligible_attempts, 3) if eligible_attempts else 0.0
+
+    # 3) Collection Coverage：无 collection_health 告警（drop/overflow）的 attempt 占比
+    coll = conn.execute(
+        """
+        SELECT COUNT(DISTINCT i.invocation_id) AS n FROM observations o
+        JOIN observation_links l ON l.observation_id = o.observation_id
+        JOIN invocations i ON i.invocation_id = l.invocation_id
+        WHERE i.project_id=? AND i.started_at>=? AND i.eligible=1
+          AND (o.buffer_overflow = 1 OR o.dropped_since_last_report > 0)
+        """,
+        (project_id, since),
+    ).fetchone()
+    flagged = coll[0] or 0
+    collection_coverage = round(1 - flagged / eligible_attempts, 3) if eligible_attempts else 0.0
+
     # ---- 证据分布 / 宿主分布（invocation 级） ----
     evidence = conn.execute(
         """
@@ -309,6 +362,10 @@ def compute(conn, project_id: str, days: int = DAYS) -> dict:
         "unknown_context_or_validity": unknown_share_invocations,
         "success_rate": success_rate,
         "unknown_or_inconsistent_outcomes": unknown_or_inconsistent,
+        "outcome_shares": outcome_shares,
+        "caller_attribution_coverage": caller_attribution_coverage,
+        "validity_classified_coverage": validity_classified_coverage,
+        "collection_coverage": collection_coverage,
         "evidence": [{"grade": e, "invocations": c} for e, c in evidence],
         "observers": [{"principal": p, "invocations": c} for p, c in hosts],
         "latency": latency,

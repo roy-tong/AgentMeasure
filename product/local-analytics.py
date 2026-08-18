@@ -56,32 +56,48 @@ def report(events_path: Path, project: str, days: int = 30) -> dict:
 def render(r: dict) -> str:
     s = r["stats"]
     i = r["ingest"]
+    n = s["attempts"]
+    pct = lambda x: f"{x * 100:.1f}%" if x is not None else "—"
     lines = [
-        "AgentMeasure Local Analytics — Provider-observed Capability Usage",
+        "AgentMeasure Provider Measurement Report",
         "=" * 58,
-        f"Canonical observations accepted : {i['accepted']}   rejected: {i['rejected']}",
-        f"  reject reasons               : {i['reject_reasons'] or 'none'}",
+        f"window: last {s['days']} days · observed {n} attempts",
         "",
-        "Observed attempts               : %d" % s["attempts"],
-        "Production-context attempts     : %d" % s["production_context_attempts"],
-        "Validity coverage               : %s" % _validity(s),
-        "Strict Qualified attempts      : %d (%s%%)" % (
-            s["qualified_invocations"],
-            f"{s['qualified_rate'] * 100:.1f}"),
-        "  qualification status         : %s" % {k: v for k, v in s["qualification_status"].items()},
+        "1. How many calls?",
+        f"  Observed attempts              : {n}",
         "",
-        "Success / Failure              : success-rate %s%%  unknown/inconsistent %d"
-        % (f"{s['success_rate'] * 100:.1f}", s["unknown_or_inconsistent_outcomes"]),
-        "Latency (duration_ms)          : " + _latency(s),
+        "2. Did the calls succeed?",
+    ]
+    o = s.get("outcome_shares") or {}
+    lines += [
+        f"  Success                        : {pct(o.get('success', 0) / n) if n else '—'}",
+        f"  Failure                        : {pct(o.get('failure', 0) / n) if n else '—'}",
+        f"  Unknown                        : {pct(o.get('unknown', 0) / n) if n else '—'}",
         "",
-        "Operation resolution           : resolved %d / %d attempts (coverage %s%%)"
-        % (s["resolved_operations"], s["attempts"],
-           f"{s['operation_resolution_coverage'] * 100:.1f}"),
-        f"  resolution                   : {s['operation_resolution']}",
-        f"  legacy_attempt_equivalent    : {s['legacy_attempt_equivalent']} (0.3 迁移期)",
+        "3. How fast?",
+    ]
+    l = s.get("latency") or {}
+    lines += [
+        f"  p50                            : {l.get('p50_ms') or '—'}ms",
+        f"  p95                            : {l.get('p95_ms') or '—'}ms",
         "",
-        "Caller attribution             : " + _caller(s),
-        "Measurement coverage           : participating_network (observed only)",
+        "4. Who is calling? (observable identity only)",
+    ]
+    by_runtime = s.get("caller_by_runtime") or {}
+    if by_runtime:
+        for rt in sorted(by_runtime, key=lambda k: -by_runtime[k]):
+            lines.append(f"  {rt:<28}: {pct(by_runtime[rt] / n) if n else '—'}")
+    else:
+        lines.append("  (no caller claims observed)")
+    lines += ["", "5. What do we still not know? (measurement coverage)"]
+    lines += [
+        f"  Caller identity coverage       : {pct(s.get('caller_attribution_coverage', 0))}",
+        f"  Operation resolution coverage  : {pct(s.get('operation_resolution_coverage', 0))}",
+        f"  Validity classified coverage   : {pct(s.get('validity_classified_coverage', 0))}",
+        f"  Collection coverage            : {pct(s.get('collection_coverage', 0))}",
+        "",
+        f"ingestion: {i['accepted']} canonical observations accepted, {i['rejected']} rejected"
+        + (f" ({i['reject_reasons']})" if i.get("reject_reasons") else ""),
     ]
     return "\n".join(lines)
 

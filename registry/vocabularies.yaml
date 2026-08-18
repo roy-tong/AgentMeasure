@@ -55,6 +55,22 @@ caller_identity_strength:
   - correlated
   - attested
 
+operation_resolution_status:
+  - resolved
+  - unresolved
+  - ambiguous
+
+operation_resolution_method:
+  - explicit_operation_id
+  - idempotency_key
+  - cross_side_correlation
+  - structural_inference
+  - none
+
+attempt_relationship:
+  - retry_of
+  - none
+
 observer_side:
   - client
   - server
@@ -73,9 +89,6 @@ observation_type:
   - attempt_completed
   - result_consumed
   - task_outcome
-
-  - operation_resolution   # 两维：status（resolved/unresolved/ambiguous）× method（explicit/idempotency/cross_side/structural/none）+ rule_id/version（Draft 0.4.4）
-  - attempt_relationship   # attempt 间关系：retry_of（retry 是关系不是 outcome，Draft 0.4.4）
 
 choice_mode:
   - exclusive
