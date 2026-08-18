@@ -74,6 +74,9 @@ observation_type:
   - result_consumed
   - task_outcome
 
+  - operation_resolution   # 两维：status（resolved/unresolved/ambiguous）× method（explicit/idempotency/cross_side/structural/none）+ rule_id/version（Draft 0.4.4）
+  - attempt_relationship   # attempt 间关系：retry_of（retry 是关系不是 outcome，Draft 0.4.4）
+
 choice_mode:
   - exclusive
   - multi_select

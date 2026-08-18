@@ -1,6 +1,6 @@
 # AgentMeasure Roadmap
 
-> **Status（2026-08-16）**：Public launch week — v0.1.0 已发布（Standard Draft 0.4.3 + @agentmeasure/mcp SDK），
+> **Status（2026-08-18）**：v0.1.1 已发布（Standard Draft 0.4.4 — Evidence Preservation & Resolution Semantics + @agentmeasure/mcp SDK），
 > 正在推进 **Product Gate A**（第一个真实外部 Provider + 第一份 Measurement Report 的实数据版）。
 > 开放讨论：#1 Strict Qualified Usage 默认值 · #3 首个 benchmark 设计。欢迎在任何环节提出异议。
 
@@ -12,7 +12,7 @@
 
 | 阶段 | Standard Track | Product Track |
 | --- | --- | --- |
-| **Now** | Draft 0.4.3 — Canonicalization & Convergence（唯一 Canonical Observation、M3.1 无回退、metric-specific eligibility、Qualification Resolution、metrics.yaml 单一事实源、四维正交） | **Product Gate A — First Real Measurement**：Provider SDK（@agentmeasure/mcp）+ Local Analytics + 第一个真实外部 Provider + 第一份 Measurement Report；**完成后才进入 Draft 0.5** |
+| **Now** | Draft 0.4.4 — Evidence Preservation & Resolution Semantics（Attempt 不可变账本、Operation 派生语义、resolution status×method、inferred share、DR-001~004） | **Product Gate A — First Real Measurement**：Provider SDK（@agentmeasure/mcp）+ Local Analytics + 第一个真实外部 Provider + 第一份 Measurement Report；**完成后才进入 Draft 0.5** |
 | **Next** | Draft 0.5 — Utility & Economic Semantics（Result/Effect 双元 Utility、Interaction Classes 指标化） | Provider SDK + Hosted Analytics（SDK 产出 observations，托管 collector/分析） |
 | **Then** | Draft 0.6 — External Validation（5-10 外部项目、第一份《Measurement Discrepancy Report》） | Runtime 集成 + Optimize（跨 runtime 信号、效果确认） |
 | **Later** | Commercial Measurement Profile（COMMERCIAL 转正：Billable Event/Unit/Metering Policy） | Metering（计费事实输出，对接外部支付 rails） |

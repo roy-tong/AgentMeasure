@@ -2,6 +2,8 @@
 
 **Open measurement infrastructure for the Agent Capability Economy.**
 
+> **AgentMeasure separates execution facts from logical operations, evidence from inference, and economic settlement from value.**
+
 AgentMeasure defines a common language for measuring how AI agents discover, choose, use, and derive value from software capabilities.
 
 **Today:** measure agent-facing capability usage.

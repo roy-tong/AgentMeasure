@@ -26,6 +26,43 @@ measurement semantics that metering, marketplaces and payment rails can later bu
 on. The goal is not a dashboard. It is the measurement foundation that makes
 Capability as a Service (CaaS, as used in this paper) possible.
 
+
+## 0.5 Measurement Principles
+
+> 本节是全文档的**不可违反数据不变量**（Draft 0.4.4）。以下五条由外部工程反馈
+> （attempt ledger / cache attribution / reasoning token subset / decision provenance /
+> agent-assigned value）反复验证形成。
+
+**1. Facts survive interpretation.**
+底层事实（attempt、consumption、evaluation 证据）保持不可变；语义、归并、评价、计量与
+决策只能建立在事实之上，而不能覆盖事实。
+
+**2. Grain answers the question.**
+Attempt 回答消费；Operation 回答逻辑使用；Task 回答结果。不同问题不得偷偷共用统计单位
+（10 attempts ≠ 10 operations ≠ 10 decisions）。
+
+**3. Uncertainty is data.**
+```text
+Unknown ≠ Zero
+Unobservable ≠ False
+Unresolved ≠ Operation
+```
+
+**4. Derived facts carry provenance.**
+所有 inferred operation / attribution / value 必须携带产生它的证据、规则与版本
+（rule_id / rule_version / source_attempt_ids）。
+
+**5. Settlement is not value.**
+```text
+Payment ≠ Utility
+Reward ≠ Value
+Settlement ≠ Incremental Value
+Assigned ≠ Settled ≠ Realized ≠ Incremental
+```
+
+一句话总结：**Preserve facts. Derive semantics. Expose uncertainty.**
+（保留事实，推导语义，暴露不确定性。）
+
 ## 1. From SaaS to Capability Economy
 
 Software distribution once had a readable chain: downloaded, installed, used. Each

@@ -117,10 +117,14 @@ entity / capability 归属与 Attempt/Operation 重建由统计层完成：
 
 ### attempt_completed
 ```jsonc
-{ "tool_call_id": "tc-9", "outcome": "success|failure|retry|denied|unknown",
+{ "tool_call_id": "tc-9", "outcome": "success|failure|denied|unknown",  // retry 不是 outcome（Draft 0.4.4）
   "duration_ms": 1250,                  // 非敏感；支持 p50/p95（Draft 0.4.3）
   "error_type": null }
 ```
+
+> **Draft 0.4.4 — `retry` 不是 outcome 值。** 重试是 attempt 之间的关系（`retry_of`），不是单次 attempt 的状态。
+> 正确模型：`attempt_1.outcome = failure`；`attempt_2.retry_of = attempt_1`；`attempt_2.outcome = success`。
+> 原因：retry 若作为 outcome 值，会把"关系"伪装成"状态"，丢失被重试对象与重试次数（External Design Signal #001 / DR-001）。
 
 ### result_consumed
 ```jsonc

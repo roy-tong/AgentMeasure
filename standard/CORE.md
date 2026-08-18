@@ -79,7 +79,7 @@ surface，不一定知道 entity——entity 身份由 registry 的 alias 归并
 | **Tool Presentation** | 某 selectable 出现在该 Candidate Set | `presentation_id` |
 | **Selection** | Agent 选择某 selectable | `selection_id` |
 | **Operation** | 对某 Capability 的一次**逻辑使用**（为某 task 而用） | `operation_id` |
-| **Attempt** | **标准执行对象**：一次实际执行（API request / MCP call / CLI execution / Agent-to-Agent call 统一映射为 Attempt） | `attempt_id`（= tool_call_id） |
+| **Attempt** | **标准执行对象**：一次实际执行（API request / MCP call / CLI execution / Agent-to-Agent call 统一映射为 Attempt）。**不可变事实对象**（Draft 0.4.4） | `attempt_id`（agentmeasure 自有 identity；外部 id 见 `external_ids`） |
 | **Result / Effect** | 执行产生的返回值 / 世界状态改变 | — |
 | **Outcome** | Task 或 Operation 的最终结果 | — |
 
@@ -103,6 +103,21 @@ Task ──▶ Decision Opportunity ──▶ Selection
 - **Attempt** = 标准执行对象；`invocation` 只作为外部协议的原始概念
   （如 MCP invocation），标准内统一为 Attempt（旧命名见 LEGACY-MIGRATION.md）
 - **重试 = 同一 Operation 的多个 Attempt**：关系通过 `operation_id` / `retry_of`
+- **attempt_id 与 protocol/tool_call_id 分离（Draft 0.4.4）**：attempt_id 是 AgentMeasure
+  自有 canonical identity；tool_call_id / protocol_call_id / trace_id 是 observation surface
+  提供的外部证据，放 `external_ids`，用于 correlation，不得与事实对象 identity 混用：
+  ```yaml
+  attempt_id: am-attempt-123
+  external_ids:
+    protocol_call_id: call_789
+    trace_id: trace_456
+  ```
+- **Attempt Ledger 不可变（Draft 0.4.4）**：attempts 是 append-only 事实账本；reconciliation /
+  aggregation / evaluation 不得改写或合并原始 attempt 记录（DR-001）。消费性事实（tokens /
+  cost / cache）属于真正消费它的 attempt（DR-003）。
+- **Operation 是 derived semantic grouping（Draft 0.4.4）**：由 attempt 解析而来（declared /
+  correlated / inferred / unresolved），不是与 attempt 同层的执行对象；解析必须携带 provenance
+  （status / method / rule_id / rule_version，见 CORR §3.1）。
   表达，**不再属于 validity**
 - 无 Operation 证据时，观察只能形成 Attempt；Operation 归并 MUST 遵循
   AgentMeasure Correlation 的确定性规则（不变量 23：无证据不归并）

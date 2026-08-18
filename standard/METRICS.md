@@ -110,6 +110,16 @@ Counterexamples
   `operation_resolution` 分布；无解析证据时本指标为 0 / N/A——**绝不把 Attempt
   数伪装成 Operation 数**。旧 0.3 数据如需兼容，提供
   `Legacy Attempt-equivalent Count`（独立字段，不得命名为 Operation Count）
+- **Draft 0.4.4 — Inferred Operation Share**：任何 Operation Count 必须伴随
+  resolution 构成，不得让总数看起来都是同等确定的事实：
+  ```text
+  Operation Count                 12,483
+    Explicit / correlated         68%
+    Inferred                      21%
+    Unresolved attempts           11%
+  ```
+  指标：`Resolved Operation Share`（resolved ÷ resolved+unresolved+ambiguous）
+  · `Inferred Operation Share`（inferred ÷ resolved）
 - 历史名：Logical Invocations
 
 ### M3.2 — Attempt Completion Rate
