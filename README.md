@@ -2,6 +2,12 @@
 
 **Open measurement infrastructure for the Agent Capability Economy.**
 
+[![CI: conformance](https://github.com/roy-tong/AgentMeasure/actions/workflows/conformance.yml/badge.svg)](https://github.com/roy-tong/AgentMeasure/actions/workflows/conformance.yml)
+[![Spec](https://img.shields.io/badge/spec-Draft_0.4-blue)](standard/CORE.md)
+[![Release](https://img.shields.io/github/v/release/roy-tong/AgentMeasure?include_prereleases)](https://github.com/roy-tong/AgentMeasure/releases)
+[![License: MIT](https://img.shields.io/badge/License-MIT-informational.svg)](LICENSE)
+[![Discussions](https://img.shields.io/github/discussions/roy-tong/AgentMeasure)](https://github.com/roy-tong/AgentMeasure/discussions)
+
 > **AgentMeasure separates execution facts from logical operations, evidence from inference, and economic settlement from value.**
 
 AgentMeasure defines a common language for measuring how AI agents discover, choose, use, and derive value from software capabilities.
@@ -290,7 +296,7 @@ AgentMeasure/
 
 ## Current status & roadmap
 
-**Draft 0.4.3（Canonicalization & Reference Convergence）** — 唯一 Canonical
+**Draft 0.4.4（Canonicalization & Reference Convergence）** — 唯一 Canonical
 Observation（schemas/observation.schema.json，6 类 payload）；Choice/Execution 从同一
 Envelope 派生；M3.1 只计已解析 operation（无回退）；Attempt 级 qualification 派生；
 metrics.yaml 单一事实源；四维正交（Evidence/Caller/Use Profile/Billing）。

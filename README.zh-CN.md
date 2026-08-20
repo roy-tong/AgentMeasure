@@ -2,6 +2,12 @@
 
 **面向 Agent Capability Economy 的开放计量基础设施。**
 
+[![CI: conformance](https://github.com/roy-tong/AgentMeasure/actions/workflows/conformance.yml/badge.svg)](https://github.com/roy-tong/AgentMeasure/actions/workflows/conformance.yml)
+[![Spec](https://img.shields.io/badge/spec-Draft_0.4-blue)](standard/CORE.md)
+[![Release](https://img.shields.io/github/v/release/roy-tong/AgentMeasure?include_prereleases)](https://github.com/roy-tong/AgentMeasure/releases)
+[![License: MIT](https://img.shields.io/badge/License-MIT-informational.svg)](LICENSE)
+[![Discussions](https://img.shields.io/github/discussions/roy-tong/AgentMeasure)](https://github.com/roy-tong/AgentMeasure/discussions)
+
 AgentMeasure 定义一套共同语言，衡量 AI Agent 如何发现、选择、使用软件能力，以及从这些能力中获得多少价值。
 
 **今天：** 度量 Agent 对软件能力的使用。

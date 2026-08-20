@@ -6,6 +6,7 @@ documented here. Format follows [Keep a Changelog](https://keepachangelog.com/).
 ## [Unreleased]
 
 - **Product Gate A in progress**: first external Provider onboarding ([#2](https://github.com/roy-tong/AgentMeasure/issues/2)), first benchmark design discussion ([#3](https://github.com/roy-tong/AgentMeasure/discussions/3))
+- README: added status badge row (CI / spec draft / release / license / discussions, EN + zh-CN); status section now shows Draft 0.4.4
 
 ## [v0.1.1] - 2026-08-17 — External-Ready convergence
 
