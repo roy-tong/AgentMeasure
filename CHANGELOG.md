@@ -5,6 +5,7 @@ documented here. Format follows [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+- **Harness-native direction**: harness profiles for [Codex](profiles/codex.md), [Claude Code](profiles/claude-code.md) and [DeepSeek Harness](profiles/deepseek-harness.md) (what each runtime can/cannot observe, mapped to AgentMeasure semantics); [Experiment D — cross-harness compatibility](experiments/EXPERIMENT-D-cross-harness-compatibility.md) (one fail→retry→fallback→success task across three harnesses); [Proposal: Delegation](proposals/2026-08-21-delegation-graph.md) (fourth semantic object for agent-to-agent delegation); whitepaper §1.5 "Harness-native Software and the Measurement Problem" (EN + zh-CN)
 - **Product Gate A in progress**: first external Provider onboarding ([#2](https://github.com/roy-tong/AgentMeasure/issues/2)), first benchmark design discussion ([#3](https://github.com/roy-tong/AgentMeasure/discussions/3))
 - README: added status badge row (CI / spec draft / release / license / discussions, EN + zh-CN); status section now shows Draft 0.4.4
 

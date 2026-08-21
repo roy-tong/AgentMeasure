@@ -144,6 +144,43 @@ The measurement standard remains useful even if these trends progress unevenly:
 the objects, quality rules and claim discipline stand on their own as an agent
 software measurement standard.
 
+## 1.5 Harness-native Software and the Measurement Problem
+
+A further shift is making the measurement problem harder, and more valuable:
+agent harnesses are emerging as a reusable software runtime. DeepSeek Harness
+treats models, tools, skills, sessions, sandboxes, storage, loops, scheduling
+and UI as plugins composed at runtime; Codex exposes one harness through an App
+Server to CLI, IDE, Web and desktop clients. One harness can already delegate
+to another agent runtime as a subagent provider.
+
+Three consequences follow:
+
+**1. Software is becoming composable.** Harnesses compose model, skill, agent,
+capability, data and execution at runtime, per task. The durable economic unit
+is increasingly the capability that survives the task, not the packaged
+application that produced it.
+
+**2. Telemetry becomes fragmented.** Each harness has its own vocabulary — run,
+turn, span, tool call, subagent, request — and its own blind spots (which
+candidate capabilities were presented; whether a result was actually consumed).
+The same behavior is described by different objects and units in different
+harnesses, and agent-to-agent delegation crosses harness boundaries where no
+single observer sees the whole task.
+
+**3. Measurement must sit above them.** The more composable software becomes,
+the more important portable measurement semantics become. This is why
+AgentMeasure defines semantics (Operation, Attempt, Delegation, evidence
+grades) over existing telemetry rather than another telemetry format, and why
+harness profiles — a public record of what each runtime can and cannot observe
+— are part of the standard itself.
+
+We state this conservatively: as agent harnesses absorb more orchestration and
+interaction logic, the economic unit of software may increasingly shift from
+packaged applications toward independently callable capabilities. Whether, and
+how far, this shift proceeds is an empirical question. The measurement standard
+does not depend on the extreme outcome; it becomes *more* necessary with every
+step toward it.
+
 ## 2. Measurement Before Monetization
 
 Before CaaS can have pricing, billing and reputation, it needs common measurement

@@ -13,4 +13,6 @@
 
 ## 当前提案
 
-（空——等待第一个外部提案）
+| 提案 | 状态 | 摘要 |
+|---|---|---|
+| [2026-08-21-delegation-graph](2026-08-21-delegation-graph.md) | Draft | 新增第四种语义对象 Delegation：Agent 调 Agent 的委托边界、计数纪律与跨侧关联规则 |

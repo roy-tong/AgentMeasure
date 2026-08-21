@@ -70,6 +70,35 @@ AgentMeasure 建立在三个**尚未完全证实**的趋势判断上：
 即使这些趋势发展不均衡，测量标准依然有用：对象、质量规则与声称纪律本身成立为
 一套 Agent 软件测量标准。
 
+## 1.5、Harness-native 软件与测量问题
+
+还有一个变化正在让测量问题变得更难、也更有价值：Agent Harness 正在成为可复用
+的软件运行时。DeepSeek Harness 把模型、工具、Skill、会话、沙箱、存储、Loop、
+调度和 UI 都做成运行时组合的插件；Codex 通过 App Server 把同一套 Harness 暴露给
+CLI、IDE、Web 和桌面客户端。一个 Harness 已经可以把另一个 Agent 运行时当作
+subagent provider 来委托任务。
+
+三个后果随之而来：
+
+**1. 软件正在变得可组合。** Harness 在运行时按任务组合模型、Skill、Agent、
+Capability、数据和执行。持久的经济单位越来越多地是任务结束后仍然存在的能力，
+而不是产生它的封装应用。
+
+**2. 遥测正在碎片化。** 每个 Harness 有自己的词汇表——run、turn、span、tool
+call、subagent、request——也有自己的盲区（哪些候选能力被呈现给模型；结果是否
+真的被消费）。同一行为在不同 Harness 中被不同对象和单位描述，而 Agent 调
+Agent 的委托会跨越 Harness 边界，没有任何单一观察者能看到完整任务。
+
+**3. 测量必须位于它们之上。** 软件越可组合，可移植的测量语义越重要。这正是
+AgentMeasure 在既有遥测之上定义语义对象（Operation、Attempt、Delegation、
+证据等级）而不是再造一种遥测格式的原因，也是 Harness Profiles——每个运行时
+能/不能观察到什么的公开记录——本身成为标准一部分的原因。
+
+我们保守地表述：随着 Agent Harness 吸收更多编排与交互逻辑，软件的经济单位
+可能日益从封装应用转向可独立调用的能力。这一转变是否发生、走多远，是经验
+问题。测量标准不依赖于最极端的结果成立；而是每向它走近一步，标准都变得
+更必要。
+
 ## 二、先计量，后变现（Measurement Before Monetization）
 
 CaaS 要能定价、计费与建立声誉，先要有共同的测量语义。四个问题说明这一点：

@@ -218,6 +218,25 @@ existing payment infrastructure.
 > Extended thesis: [docs/CAPABILITY-ECONOMY.md](docs/CAPABILITY-ECONOMY.md) ·
 > Economic semantics: [extensions/COMMERCIAL.md](extensions/COMMERCIAL.md)（Experimental）
 
+## Harness profiles — what each runtime can (and cannot) observe
+
+Portable semantics need a public record of observation blind spots. Per-harness
+profiles map each runtime's native objects to AgentMeasure semantics:
+
+| Harness | Profile | Highlights |
+| --- | --- | --- |
+| Codex | [profiles/codex.md](profiles/codex.md) | hook 观察，无 trace/精确时间戳；App Server 事件流为优先生效观察面 |
+| Claude Code | [profiles/claude-code.md](profiles/claude-code.md) | 内置成败判定；第一个 Consumption 可实证平台 |
+| DeepSeek Harness | [profiles/deepseek-harness.md](profiles/deepseek-harness.md) | append-only session log；subagent lineage/depth 是 Delegation 的首个真实数据源 |
+| Pydantic AI | [profiles/pydantic-ai.md](profiles/pydantic-ai.md) | Logfire spans → attempt 语义 |
+| OpenTelemetry GenAI | [profiles/opentelemetry-genai.md](profiles/opentelemetry-genai.md) | Route B mapping |
+
+As harnesses compose software at runtime, one behavior gets described by
+different objects and units in different runtimes. [Experiment
+D](experiments/EXPERIMENT-D-cross-harness-compatibility.md) turns that into
+evidence; [Proposal: Delegation](proposals/2026-08-21-delegation-graph.md)
+defines the agent-to-agent boundary the object model was missing.
+
 ## What AgentMeasure is / is not
 
 | AgentMeasure is | AgentMeasure is not |

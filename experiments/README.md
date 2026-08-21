@@ -21,6 +21,13 @@ Claude 等 consumption 可观察平台：Invoked → Completed → Delivered →
 区分 **Tool Incrementality**（Exa vs 替代品仍在）与 **Capability Incrementality**
 （整个 search 能力移除）。
 
+## Experiment D — Cross-Harness Compatibility（验证 portable semantics 的必要性）
+
+同一任务链（fail → retry → fallback → success）在 Codex / Claude Code / DSH 中
+运行，比较各自如何用不同对象和单位描述同一行为。
+设计：[EXPERIMENT-D-cross-harness-compatibility.md](EXPERIMENT-D-cross-harness-compatibility.md)。
+产出：Compatibility Report（语义差异披露，不是排名）。
+
 ## 输出
 
 每类实验产出 → `reports/`（第一份是 Discrepancy Report #1，不是排行榜）。

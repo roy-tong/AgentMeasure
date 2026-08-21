@@ -195,6 +195,24 @@ AgentMeasure 正在**渐进标准化**从发现与选择、经执行到效用与
 | 可比较的质量信号 | 通用声誉分 |
 | 归因框架 | 唯一真相来源 |
 
+## Harness Profiles——每个运行时能（与不能）观察到什么
+
+可移植的测量语义，需要对观察盲区的公开记录。每份 profile 把运行时原生对象
+映射到 AgentMeasure 语义对象：
+
+| Harness | Profile | 要点 |
+| --- | --- | --- |
+| Codex | [profiles/codex.md](profiles/codex.md) | hook 观察，无 trace/精确时间戳；App Server 事件流为优先生效观察面 |
+| Claude Code | [profiles/claude-code.md](profiles/claude-code.md) | 内置成败判定；第一个 Consumption 可实证平台 |
+| DeepSeek Harness | [profiles/deepseek-harness.md](profiles/deepseek-harness.md) | append-only session log；subagent lineage/depth 是 Delegation 的首个真实数据源 |
+| Pydantic AI | [profiles/pydantic-ai.md](profiles/pydantic-ai.md) | Logfire span → attempt 语义 |
+| OpenTelemetry GenAI | [profiles/opentelemetry-genai.md](profiles/opentelemetry-genai.md) | Route B 映射 |
+
+当 Harness 在运行时组合软件，同一行为会在不同运行时中被不同对象和单位描述。
+[实验 D](experiments/EXPERIMENT-D-cross-harness-compatibility.md) 把这件事变成
+证据；[提案：Delegation](proposals/2026-08-21-delegation-graph.md) 定义对象模型
+此前缺失的 Agent 调 Agent 委托边界。
+
 ## 给谁用
 
 | 受众 | 为什么 |
