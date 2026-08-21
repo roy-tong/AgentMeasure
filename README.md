@@ -21,7 +21,7 @@ AgentMeasure defines a common language for measuring how AI agents discover, cho
 > AgentMeasure is **not** a payment protocol, marketplace, or universal ranking system.
 > It standardizes the facts and measurement semantics those systems can build on.
 
-[Whitepaper](whitepaper/measuring-software-used-by-ai-agents.md) · [白皮书（中文）](whitepaper/measuring-software-used-by-ai-agents.zh-CN.md) · [Core Specification](standard/CORE.md) · [中文](README.zh-CN.md)
+[**Free 7-day audit — apply**](product/AUDIT.md) · [Whitepaper](whitepaper/measuring-software-used-by-ai-agents.md) · [白皮书（中文）](whitepaper/measuring-software-used-by-ai-agents.zh-CN.md) · [Core Specification](standard/CORE.md) · [中文](README.zh-CN.md)
 
 ![AgentMeasure — The Measurement Stack](assets/agentmeasure-stack.svg)
 
@@ -74,7 +74,7 @@ A trial can stay fully local, requires no agent-side install, and can start with
 
 **Best feedback:** a concrete trace, counterexample, or field that cannot be measured safely.
 
-→ See: **Looking for 3 MCP/API providers for external measurement runs** in Issues.
+→ The formal offer, schedule, and FAQ live in **[product/AUDIT.md](product/AUDIT.md)** · apply in **[Issue #2 — Looking for 3 MCP/API providers for external measurement runs](https://github.com/roy-tong/AgentMeasure/issues/2)**.
 
 ---
 

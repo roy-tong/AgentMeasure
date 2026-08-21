@@ -1,5 +1,7 @@
 # AgentMeasure Roadmap
 
+> **Timebox（2026-08-21 → 09-04）**：standard 轨暂停非 blocking 变更（AUP 一律排队，除非阻塞接入）；关键路径是产品轨 Product Gate A——第一家真实 Provider 的生产接入。Audit 已产品化：[product/AUDIT.md](product/AUDIT.md)。
+
 > **Status（2026-08-18）**：v0.1.1 已发布（Standard Draft 0.4.4 — Evidence Preservation & Resolution Semantics + @agentmeasure/mcp SDK），
 > 正在推进 **Product Gate A**（第一个真实外部 Provider + 第一份 Measurement Report 的实数据版）。
 > 开放讨论：#1 Strict Qualified Usage 默认值 · #3 首个 benchmark 设计。欢迎在任何环节提出异议。
