@@ -5,6 +5,17 @@ sdk/dist/*.js.map
 *.db
 .agentmeasure/
 
+# Lab 本地工作区与运行产物（绝不提交：实验输出属于用户）
+__pycache__/
+*.pyc
+am-lab/
+runs/
+connector.key
+connector.json
+connector-export.json
+production-events.jsonl
+prod-events.jsonl
+
 # 本地浏览入口（指向 ~/.agentmeasure/outreach，绝不提交）
 /funnel.html
 /funnel-data.js

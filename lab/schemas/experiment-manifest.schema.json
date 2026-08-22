@@ -1,0 +1,155 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentmeasure.lab/experiment-manifest@1.0.0",
+  "title": "AgentMeasure Lab — Experiment Manifest (preregistration)",
+  "description": "FMT-001. Machine-readable, preregistered experiment definition: factors x variants x harness matrix, primary metric, guardrails, analysis plan, budget, seed. Locked by hash before the run; a third party can implement a runner against this schema and produce mutually recognizable results.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "schema_version",
+    "experiment_id",
+    "hypothesis",
+    "task_set",
+    "harnesses",
+    "factors",
+    "variants",
+    "assignment",
+    "primary_metric",
+    "guardrails",
+    "analysis",
+    "budget",
+    "seed"
+  ],
+  "properties": {
+    "schema": { "const": "agentmeasure.lab/experiment-manifest" },
+    "schema_version": { "const": "1.0.0" },
+    "experiment_id": { "type": "string", "minLength": 3, "pattern": "^[a-z0-9][a-z0-9-]*$" },
+    "hypothesis": { "type": "string", "minLength": 10 },
+    "created_by": { "type": "string" },
+    "notes": { "type": "string" },
+    "task_set": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path"],
+      "properties": {
+        "path": { "type": "string", "minLength": 1 },
+        "version": { "type": "string" }
+      }
+    },
+    "harnesses": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "runner"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "runner": { "type": "string", "minLength": 1 },
+          "config": { "type": "object" }
+        }
+      }
+    },
+    "factors": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "levels"],
+        "properties": {
+          "name": { "type": "string", "minLength": 1 },
+          "levels": { "type": "array", "minItems": 2, "items": { "type": "string" } }
+        }
+      }
+    },
+    "variants": {
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "levels", "baseline"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "levels": { "type": "object" },
+          "baseline": { "type": "boolean" }
+        }
+      }
+    },
+    "assignment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "replicates_per_task"],
+      "properties": {
+        "mode": { "enum": ["within-task-balanced"] },
+        "replicates_per_task": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Number of complete replicate blocks per task; each block assigns every variant once, in shuffled order. Per-arm n per task equals this value."
+        }
+      }
+    },
+    "primary_metric": {
+      "enum": ["selection_rate", "operation_success_rate", "consumption_rate"]
+    },
+    "guardrails": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["metric"],
+        "properties": {
+          "metric": {
+            "enum": [
+              "attempts_per_operation",
+              "consumption_rate",
+              "median_steps_per_operation",
+              "cost_units_per_operation"
+            ]
+          },
+          "max": { "type": "number" },
+          "min": { "type": "number" }
+        }
+      }
+    },
+    "analysis": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["method", "alpha", "min_sample_per_arm", "report_per_condition"],
+      "properties": {
+        "method": { "const": "two_proportion_z_test" },
+        "alpha": { "type": "number", "minimum": 0.001, "maximum": 0.2 },
+        "min_sample_per_arm": { "type": "integer", "minimum": 1 },
+        "report_per_condition": {
+          "type": "array",
+          "items": { "enum": ["harness"] }
+        }
+      }
+    },
+    "budget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["max_operations", "max_cost_units", "max_wall_clock_seconds"],
+      "properties": {
+        "max_operations": { "type": "integer", "minimum": 1 },
+        "max_cost_units": { "type": "number", "minimum": 0 },
+        "max_wall_clock_seconds": { "type": "integer", "minimum": 1 },
+        "max_concurrent": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "value_model": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "opportunity_per_month": { "type": ["number", "null"] },
+        "pay_conversion": { "type": ["number", "null"] },
+        "margin_per_billed_event": { "type": ["number", "null"] },
+        "serving_cost_per_month": { "type": ["number", "null"] },
+        "capture_rate_assumption": { "type": ["number", "null"] }
+      }
+    },
+    "seed": { "type": "integer", "minimum": 0 }
+  }
+}

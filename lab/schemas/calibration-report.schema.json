@@ -1,0 +1,87 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentmeasure.lab/calibration-report@1.0.0",
+  "title": "AgentMeasure Lab — Calibration Report (offline vs production)",
+  "description": "CAL-002/003: production re-measurement against a preregistered offline experiment, with per-condition transfer effects. Same funnel schema, same rules, same ruler — different data.",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "schema",
+    "schema_version",
+    "engine_version",
+    "funnel_rules_version",
+    "experiment_id",
+    "preregistration",
+    "offline_run",
+    "production_source",
+    "variants",
+    "limitations"
+  ],
+  "properties": {
+    "schema": { "const": "agentmeasure.lab/calibration-report" },
+    "schema_version": { "const": "1.0.0" },
+    "engine_version": { "type": "string" },
+    "funnel_rules_version": { "type": "string" },
+    "experiment_id": { "type": "string" },
+    "preregistration": {
+      "type": "object",
+      "required": ["manifest_hash", "primary_metric"],
+      "properties": {
+        "manifest_hash": { "type": "string" },
+        "primary_metric": { "type": "string" }
+      }
+    },
+    "offline_run": {
+      "type": "object",
+      "required": ["environment"],
+      "properties": {
+        "run_fingerprint": { "type": ["string", "null"] },
+        "assignments": { "type": ["integer", "null"] },
+        "environment": { "type": "string" }
+      }
+    },
+    "production_source": {
+      "type": "object",
+      "required": ["environment"],
+      "properties": {
+        "events_file": { "type": "string" },
+        "environment": { "type": "string" },
+        "note": { "type": "string" }
+      }
+    },
+    "variants": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["variant_id", "calibration"],
+        "properties": {
+          "variant_id": { "type": "string" },
+          "calibration": {
+            "type": "object",
+            "required": ["calibration"],
+            "properties": {
+              "calibration": {
+                "enum": [
+                  "production_confirmed",
+                  "direction_mismatch",
+                  "transfer_not_established",
+                  "undetermined",
+                  "not_comparable"
+                ]
+              },
+              "reason": { "type": "string" }
+            }
+          },
+          "offline_comparison": { "type": "object" },
+          "production_comparison": { "type": "object" },
+          "transfer_overall": { "type": ["object", "null"] },
+          "per_condition": { "type": "array" },
+          "reweighting_suggestions": { "type": "array" },
+          "production_guardrails": { "type": "array" }
+        }
+      }
+    },
+    "limitations": { "type": "array", "items": { "type": "string" } }
+  }
+}

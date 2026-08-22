@@ -1,0 +1,60 @@
+{
+  "schema": "agentmeasure.lab/experiment-manifest",
+  "schema_version": "1.0.0",
+  "experiment_id": "example-desc-clarity-001",
+  "created_by": "example",
+  "hypothesis": "Rewriting the tool description for clarity raises agent selection rate; adding verbose output formatting raises it further but costs steps and consumption (guardrails).",
+  "notes": "Demo experiment on the synthetic mock harness. Factor effects are planted simulation parameters — this validates the pipeline end-to-end, it is not a claim about real agents. Replace the harness runner with a real adapter (claude-code / codex plugin) for controlled experiments on real harnesses.",
+  "task_set": {
+    "path": "tasks/search-retrieval-scrape.v1.json",
+    "version": "1.0.0"
+  },
+  "harnesses": [
+    {
+      "id": "mock-v1",
+      "runner": "mock",
+      "config": {
+        "factor_effects": {
+          "consumption_add": {
+            "output_verbosity": { "baseline": 0.0, "verbose": -0.10 }
+          }
+        }
+      }
+    }
+  ],
+  "factors": [
+    { "name": "description_clarity", "levels": ["control", "clear"] },
+    { "name": "output_verbosity", "levels": ["baseline", "verbose"] }
+  ],
+  "variants": [
+    { "id": "control", "baseline": true, "levels": { "description_clarity": "control", "output_verbosity": "baseline" } },
+    { "id": "clear", "baseline": false, "levels": { "description_clarity": "clear", "output_verbosity": "baseline" } },
+    { "id": "clear-verbose", "baseline": false, "levels": { "description_clarity": "clear", "output_verbosity": "verbose" } }
+  ],
+  "assignment": { "mode": "within-task-balanced", "replicates_per_task": 80 },
+  "primary_metric": "selection_rate",
+  "guardrails": [
+    { "metric": "consumption_rate", "min": 0.45 },
+    { "metric": "median_steps_per_operation", "max": 14 },
+    { "metric": "attempts_per_operation", "max": 1.5 }
+  ],
+  "analysis": {
+    "method": "two_proportion_z_test",
+    "alpha": 0.05,
+    "min_sample_per_arm": 200,
+    "report_per_condition": ["harness"]
+  },
+  "budget": {
+    "max_operations": 20000,
+    "max_cost_units": 500000,
+    "max_wall_clock_seconds": 600
+  },
+  "value_model": {
+    "opportunity_per_month": 20000000,
+    "pay_conversion": 0.30,
+    "margin_per_billed_event": 0.04,
+    "serving_cost_per_month": 0,
+    "capture_rate_assumption": null
+  },
+  "seed": 20260822
+}
