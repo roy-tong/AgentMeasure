@@ -2,10 +2,11 @@
 
 **A Measurement Foundation for Capability as a Service and the Agent Capability Economy**
 
-*Whitepaper v0.2 · AgentMeasure Standard Draft 0.4*
+*Whitepaper v0.3 · AgentMeasure Standard Draft 0.4.4*
 
 > Roy Tong
-> The reference implementation lives in the AgentMeasure repository.
+> The reference implementation and the open experiment engine
+> ([`lab/`](../lab/README.md)) live in the AgentMeasure repository.
 
 ## 0. Abstract
 
@@ -18,15 +19,17 @@ permissions, transactions and real-world fulfillment.
 This creates a measurement problem before it creates a payment problem. A capability
 cannot be reliably priced, compared, billed or optimized until the ecosystem agrees
 on what constitutes a selection, an operation, a successful delivery, a consumed
-result, an outcome and a billable unit.
+result, an outcome and a billable unit. And once money moves on those numbers, a
+second problem appears: **telling real growth from fake growth** — retry inflation,
+unconsumed results, circular transactions — before anyone budgets on them.
 
 AgentMeasure proposes an open measurement standard for this emerging capability
-economy: a common data language — reach, choice, use, utility, value — plus the
+economy: a common data language — reach, choice, use, utility, value — the
 measurement semantics that metering, marketplaces and payment rails can later build
-on. The goal is not a dashboard. It is the measurement foundation that makes
-Capability as a Service (CaaS, as used in this paper) possible.
-
-
+on, and the experiment semantics (preregistration, guardrails, per-condition effect
+sizes) that turn measurement from passive observation into testable claims. The goal
+is not a dashboard. It is the measurement foundation that makes Capability as a
+Service (CaaS, as used in this paper) possible — and trustworthy.
 
 ## 0.2 Relationship to Observability
 
@@ -34,7 +37,8 @@ Capability as a Service (CaaS, as used in this paper) possible.
 > tracing, logging, or evaluation systems, but to define portable measurement objects and
 > rules over their evidence.**
 
-不同系统可以观测到同一 agent 行为，却报出不同的 usage 数字：
+Different systems can observe the same agent behavior and report different usage
+numbers:
 
 ```text
 1 logical operation, 2 retries
@@ -46,23 +50,29 @@ Both telemetry systems are correct.
 Their measurement semantics are not the same.
 ```
 
-AgentMeasure 不重新采集 observability 数据；它在已有证据（OTel / Langfuse / Logfire /
-Phoenix / runtime logs）之上定义可跨系统比较的测量对象、统计单位和推导规则
-（Evidence → Measurement Semantics → Accounting → Settlement）。
+AgentMeasure does not re-collect observability data; it defines cross-system
+comparable measurement objects, statistical units and derivation rules over existing
+evidence (OTel / Langfuse / Logfire / Phoenix / runtime logs):
+
+```text
+Evidence → Measurement Semantics → Accounting → Settlement
+```
 
 ## 0.5 Measurement Principles
 
-> 本节是全文档的**不可违反数据不变量**（Draft 0.4.4）。以下五条由外部工程反馈
-> （attempt ledger / cache attribution / reasoning token subset / decision provenance /
-> agent-assigned value）反复验证形成。
+> This section is the document's **inviolable data invariants** (Draft 0.4.4). The five
+> below were shaped by repeated external engineering feedback (attempt ledger / cache
+> attribution / reasoning-token subset / decision provenance / agent-assigned value).
 
 **1. Facts survive interpretation.**
-底层事实（attempt、consumption、evaluation 证据）保持不可变；语义、归并、评价、计量与
-决策只能建立在事实之上，而不能覆盖事实。
+Base facts (attempts, consumption, evaluation evidence) stay immutable; semantics,
+rollups, valuation, metering and decisions are built on top of facts — they never
+overwrite them.
 
 **2. Grain answers the question.**
-Attempt 回答消费；Operation 回答逻辑使用；Task 回答结果。不同问题不得偷偷共用统计单位
-（10 attempts ≠ 10 operations ≠ 10 decisions）。
+Attempts answer consumption; Operations answer logical use; Tasks answer outcomes.
+Different questions must not silently share a statistical unit
+(10 attempts ≠ 10 operations ≠ 10 decisions).
 
 **3. Uncertainty is data.**
 ```text
@@ -72,8 +82,8 @@ Unresolved ≠ Operation
 ```
 
 **4. Derived facts carry provenance.**
-所有 inferred operation / attribution / value 必须携带产生它的证据、规则与版本
-（rule_id / rule_version / source_attempt_ids）。
+Every inferred operation / attribution / value claim must carry the evidence, rule
+and version that produced it (rule_id / rule_version / source_attempt_ids).
 
 **5. Settlement is not value.**
 ```text
@@ -83,8 +93,7 @@ Settlement ≠ Incremental Value
 Assigned ≠ Settled ≠ Realized ≠ Incremental
 ```
 
-一句话总结：**Preserve facts. Derive semantics. Expose uncertainty.**
-（保留事实，推导语义，暴露不确定性。）
+In one line: **Preserve facts. Derive semantics. Expose uncertainty.**
 
 ## 1. From SaaS to Capability Economy
 
@@ -208,20 +217,37 @@ monetization**.
 
 ### Emerging evidence: commerce is arriving before measurement
 
-The premise is not hypothetical — payment and discovery infrastructure for
+The premise is not hypothetical — distribution and payment infrastructure for
 agent-mediated commerce already exists:
 
+- The MCP ecosystem has passed **10,000 published servers** (Linux Foundation / AAIF),
+  and the A2A protocol is in production use across **150+ organizations**.
 - **Cloudflare Agents SDK** allows MCP tools to be priced per call and charged via
-  x402 ([Charge for MCP tools](https://developers.cloudflare.com/agents/agentic-payments/x402/charge-for-mcp-tools/)).
-- **Coinbase x402 Bazaar** is a discovery layer where agents search services with
-  price and schema, and complete paid calls over MCP
+  x402 ([Charge for MCP tools](https://developers.cloudflare.com/agents/agentic-payments/x402/charge-for-mcp-tools/));
+  **Coinbase x402 Bazaar** is a discovery layer where agents search services with
+  price and schema and complete paid calls over MCP
   ([x402 Bazaar](https://docs.cdp.coinbase.com/x402/bazaar)).
+- **AWS Bedrock AgentCore Payments** reached general availability (2026-08) and
+  **Google AP2** outlines an agent-payments protocol stack — payment rails are no
+  longer the bottleneck.
 - **OpenAI and Stripe's Agentic Commerce Protocol (ACP)** is being used in real
   agentic commerce flows ([announcement coverage](https://www.digitaltransactions.net/openai-and-stripe-are-the-latest-fintechs-to-enable-agentic-commerce/)).
 
-These examples show that discovery and payment infrastructure is **emerging** while
-no widely adopted cross-platform capability measurement standard yet exists — the
-gap AgentMeasure fills.
+### Evidence that measurement must be trustworthy: fake growth is already here
+
+Payment infrastructure arriving *before* measurement has a predictable side effect:
+metrics that can be gamed will be gamed. Recent on-chain analyses of x402-style
+payment flows report that a substantial share of headline transaction volume appears
+to be internal loops or manufactured transactions rather than genuine demand. We read
+that not as a reason to dismiss machine payments, but as the clearest possible signal
+for the thesis of this paper: **machine-consumed commerce needs machine-verifiable
+measurement**, or every downstream decision — pricing, ranking, budgeting, revenue
+share — inherits fabricated inputs.
+
+This is why "qualified usage" (§6) is not a refinement bolted on top of the standard;
+in an economy where both traffic and transactions can be manufactured, the
+qualification axis (is this real production use?) and the consumption axis (was the
+result actually used?) are the difference between a channel and a slot machine.
 
 ## 3. Measurement Objects
 
@@ -302,11 +328,11 @@ pipeline would produce numbers that mean different things.
 ## 5. Measurement Framework
 
 AgentMeasure defines **metric families**, not a universal KPI. Metric status is
-marked explicitly — **Defined**（正式指标合同）、**Draft**（草案）、
-**Research**（方向）——概念论文不冒充标准已全定义。
+marked explicitly — **Defined** (formal metric contract), **Draft**, **Research** —
+a concept paper does not pretend the standard is fully defined.
 
-**M1 Adoption & Relationship.**（Active Clients 是采用指标，不是 Reach；Reach 由
-M2 Presented / Eligibility 表达）
+**M1 Adoption & Relationship.** (Active Clients is an adoption metric, not Reach;
+Reach is expressed by M2 Presented / Eligibility.)
 `Active Clients (Defined) · Repeat Clients (Draft) · Active Client-Days (Defined)`
 
 **M2 Choice — the most agent-native family.** When the agent had the chance, did it
@@ -314,9 +340,8 @@ choose the capability?
 `Observed Selection Rate (Defined) · Observed Head-to-Head Choice Share (Defined) ·
 First-choice Rate (Proposed)`
 
-**M3 Execution — Use.** Was it usable after selection? The Draft 0.4 model counts
-operations and attempts separately — the distinction that metering will eventually
-need:
+**M3 Execution — Use.** Was it usable after selection? Draft 0.4 counts operations
+and attempts separately — the distinction that metering will eventually need:
 
 ```text
 Operation Count (Defined) · Attempt Completion (Defined) · Attempt Success (Defined)
@@ -335,9 +360,13 @@ Result Consumption (Defined) · Effect Confirmation (Draft 0.5)
 `Task Success Association (Draft) · Incremental Lift (Research / Draft 0.5) ·
 Time Saved (Research) · Cost Saved (Research)`
 
-**Relationships** (formerly a separate chapter, now a subsection): Trial → Active →
-Repeated → Preferred → Dependent. Dependency — the least replaceable — remains the
-long-term asset signal.
+**Relationships**: Trial → Active → Repeated → Preferred → Dependent. Dependency —
+the least replaceable — remains the long-term asset signal.
+
+In the experiment engine (`lab/`), these families reduce to an operational funnel —
+**Reach → Choice → Success → Consumption** — where every stage is a countable event
+and every rate carries its denominator. The families are the vocabulary; the funnel
+is how the vocabulary is exercised under controlled conditions (§8).
 
 ## 6. Measurement Quality & Claim Discipline
 
@@ -352,7 +381,7 @@ Measurement Quality
 ├── Coverage                         how much of the world did we see?
 ├── Qualification                    does this count as real production use?
 ├── Sampling                         sampled? with what uncertainty?
-├── Identity Resolution             how well do identifiers resolve to entities?
+├── Identity Resolution              how well do identifiers resolve to entities?
 └── Method & Version                 which statistics, which spec version?
 
 Quality is assessed per **Measurement Use Profile** (first_party_analytics /
@@ -371,7 +400,9 @@ of the same operation, kept as a reliability signal, not as a distinct logical u
 denominator, observable population, qualified population, runtime coverage, grain,
 choice mode, decision authority, selection constraint. Observed choice is never
 presented as preference; association is never presented as causation; unobservable is
-never interpreted as negative.
+never interpreted as negative. **Selection-rate growth is never presented as margin
+growth until the consumption and qualification axes verify it** — the anti-fake-growth
+rule that runs from this section through the experiment reports of §8.
 
 ## 7. Measurement and Metering
 
@@ -387,7 +418,7 @@ why billing triggers, **Unit** is what is counted, **Quantity** is how many:
 | Action | `effect_confirmed` | operation | 1 |
 | Booking | `effect_confirmed` | booking | 1 |
 | Lead Generation | `outcome_qualified` | qualified_lead | 5 |
-| Commerce | `transaction_settled` | transaction | 0.03（revenue share） |
+| Commerce | `transaction_settled` | transaction | 0.03 (revenue share) |
 
 Metering semantics therefore define, per Offering:
 
@@ -410,10 +441,41 @@ billable quantity, commercial attribution — that payment systems consume.
 
 > **AgentMeasure standardizes economic facts, not money movement.**
 
-## 8. Attribution and Incrementality
+### 7.5 From measurement to margin: the value formula
+
+For a capability provider, the measured quantities compose into one economic
+statement — the value formula the reference implementation ships in its report
+generator:
+
+```text
+incremental margin / month
+  = opportunities × Δ selection rate
+    × P(operation succeeds | selected)        ← measured (M3)
+    × P(result consumed | succeeded)          ← measured (M4)
+    × pay conversion
+    × margin per billed event
+    − serving cost
+```
+
+Every measured factor on the right-hand side is a labeled metric, not an
+assumption; every business factor must be supplied and labeled by the party making
+the claim. Two disciplines apply. First, **no unverified uplift enters the
+formula**: a selection-rate gain that loses consumption (§2) or breaches a
+guardrail (§8.2) is excluded or recomputed at the measured (lower) factors. Second,
+**the formula is honest about its own economics**: at low margin per billed event
+(search-class capabilities at fractions of a cent), even large relative uplifts
+produce absolute margins that cannot fund measurement or experimentation — which is
+a fact about the business, not a reason to distort the numbers.
+
+## 8. Attribution, Incrementality — and Experimentation
 
 **A capability's participation in a successful task is not evidence that it caused
-the success.**
+the success.** And a capability's observed selection rate is not a fixed property of
+the capability — it is a property of the *system* (descriptions, schemas,
+candidate-set composition, harness, model), most of whose knobs the provider can
+change. Both facts push measurement from observation toward experiment.
+
+### 8.1 Attribution and the Value Evidence Ladder
 
 - **Attribution measurement** is observational: which capabilities participated in
   the task chain. It supports claims of *association* and *contribution to the
@@ -433,6 +495,74 @@ V4 Randomized Holdout      strongest causal evidence
 
 Only the evidence actually produced may support the corresponding causal claim
 strength — the same discipline as measurement quality.
+
+### 8.2 The optimization surface is real — and it has teeth
+
+Recent evidence establishes that agent choice responds to provider-controllable
+variables, and that naive optimization can backfire:
+
+- **Hasan et al. (arXiv 2602.14878)**: across 103 MCP servers and 856 tools, 97.1%
+  of tool descriptions carry at least one quality issue; enriched descriptions
+  raised task success by +5.85pp — while increasing execution steps by +67.46%, and
+  with 16.67% of combinations *degrading* performance.
+- **Microsoft BiasBusters (ICLR 2026)**: small description changes significantly
+  shift agent tool selection, and providers benefit from systematic pretraining
+  biases — choice is contestable, and biased.
+- **Arcade ToolBench**: of 41,900+ indexed MCP servers (~219k tools), only 0.5%
+  rate A or above and 76.6% rate F — metadata quality is poor at ecosystem scale,
+  so the post-candidate-set optimization surface is enormous.
+
+Read together: choice can be moved (the opportunity is real), effects have side
+effects (steps, cost, consumption), and a nontrivial share of changes make things
+*worse*. That is precisely the regime where **running controlled experiments is not
+optional** — and where every experiment needs guardrails, because the headline
+metric will happily improve while the capability gets worse.
+
+### 8.3 The preregistered experiment loop
+
+The reference experiment engine (`lab/` in this repository) operationalizes the
+loop:
+
+```text
+Test        preregistered experiment: task set × harness matrix × factor variants
+Recommend   effect sizes with confidence intervals + guardrail checks
+Ship        gradual rollout through the provider's own release process
+Verify      production re-measurement against a holdout
+Learn       adopt / roll back / iterate — a recorded business decision
+```
+
+Its non-negotiable semantics, inherited from §0.5 and §6:
+
+1. **Preregistration.** Hypothesis, primary metric, guardrails, sample size and
+   analysis plan are hashed and locked before the run; the report draws confirmatory
+   conclusions only from the locked plan; changing the plan means a new experiment.
+   This is the line between an experiment engine and a conclusion generator.
+2. **Honest nulls.** A non-significant result is reported as a null with its
+   interval width — not mined for a flattering secondary metric. Insufficient
+   sample yields "undetermined" plus the required n, never an underpowered verdict.
+3. **Guardrails.** Effects are evaluated against preregistered thresholds (cost,
+   steps/latency, consumption, retry rate); a significant win that breaches a
+   guardrail is reported *effective, not qualified* — exactly the +5.85pp-with-
+   +67.46%-steps pattern of §8.2.
+4. **Anti-fake growth.** Selection uplift that loses consumption raises a warning
+   and is excluded from margin claims (§7.5).
+5. **Per-condition effects.** Effect sizes are reported per harness and per task
+   distribution alongside any pooled number — never a single global coefficient,
+   because the next section is about exactly the error that produces.
+
+### 8.4 Offline-to-production transfer is a measurement problem
+
+An experiment measures a *controlled* environment; production is not one. The gap
+between the two is not noise to be averaged away — it is a first-class measured
+quantity: the **transfer effect**, estimated per condition (harness × task
+distribution), with its own confidence interval, reported honestly when it is
+small, zero, or negative. A measured offline effect plus an honestly-reported
+transfer gap is a decision-grade claim; an offline effect with an assumed "roughly
+carries over" is a gamble wearing a lab coat. Production verification (gradual
+rollout against a holdout, cross-side joined to the provider's billing data) is the
+strongest form — V4 on the ladder — and it requires the data rights of §10.
+
+### 8.5 Commercial attribution (observational, separate)
 
 Commercial attribution extends the observational side along the distribution chain:
 
@@ -463,27 +593,36 @@ decision for agents and marketplaces; the standard defines only comparable signa
 and the labels that make them comparable. The Measurement Label is the foundation of
 this comparability.
 
-## 10. Observation & Deployment Architecture
+## 10. Observation Surfaces and Data Rights
 
 Measurement surfaces differ in what they can see; single-sided adoption has value,
-but the claim must match the surface:
+but the claim must match the surface — and in the agent channel, **who holds the
+data decides the ceiling of every claim**, not what features exist:
 
 ```text
 Distribution Side → Agent Runtime Side → Provider Side → Effect / Outcome Side
 ```
 
-| Surface | Can see |
-| --- | --- |
-| Registry | discovery / availability |
-| Agent runtime | presentation / choice / consumption |
-| Capability provider | attempt / completion / result (+ operation only when resolution evidence exists) |
-| Target system | effect / transaction |
-| Experiment layer | incrementality |
+| Funnel stage | Data | Usually held by | Provider-side alone |
+| --- | --- | --- | --- |
+| Discovery | opportunities, candidate-set composition, presentation | Runtime / Registry / Agent app | ✗ |
+| Choice | experiment arms, selection events | Harness / Agent app | ✗ |
+| Execution | calls, outcomes, billing, cost | Provider | ✓ |
+| Consumption | result usage, task results | Agent app / end user | usually ✗ |
 
-Two-sided observations (agent runtime + provider) enable cross-side corroboration; the
-provider side alone is sufficient for provider-scoped usage metrics. The standard is
-not on the critical request path: observations are emitted asynchronously, metadata
-only, pseudonymized before persistence.
+This is an architectural fact, not a product gap to be engineered away. It yields
+three claim tiers that sales language and contracts must respect:
+
+| Data posture | What can honestly be claimed |
+| --- | --- |
+| **Provider-only** | controlled-environment performance + diagnosis of calls that already happened (dedup, success, cost, retry structure); no production selection-rate or incrementality claims |
+| **+ Buyer-side / customer-owned agent apps** | full verified-lift loop: selection attribution, gradual-rollout re-test, incremental margin verification |
+| **+ Runtime / Registry cooperation** | opportunity attribution, presentation optimization, full-funnel measurement |
+
+Two-sided observations (agent runtime + provider) enable cross-side corroboration;
+the provider side alone is sufficient for provider-scoped usage metrics. The
+standard is not on the critical request path: observations are emitted
+asynchronously, metadata only, pseudonymized before persistence.
 
 ## 11. Interoperability
 
@@ -492,7 +631,12 @@ to it as implementation examples, not as preconditions: MCP carries lifecycle ev
 and trace context; OpenTelemetry carries tool spans; Codex, Claude Code, and DeepSeek
 Harness expose observation points with declared capability matrices; registries
 provide entity identity. Payment rails, when they arrive, consume the standard's
-facts rather than extending its core.
+facts rather than extending its core. The experiment formats — preregistration
+manifest, funnel events, report schema — are published as open JSON Schemas
+(`lab/schemas/`) so third parties can implement runners and produce mutually
+recognizable results, and the reference implementation ships a read-only MCP query
+interface (`am mcp serve`) so agents and CI consume the same evidence engineers see —
+with evidence grades, without rankings.
 
 ## 12. Non-goals and Governance
 
@@ -505,7 +649,10 @@ reputation system. The standard does not:
 - require any central server, agent-side install, or open-source provider.
 
 The standard itself is community-governed (AUP process, `proposals/`); commercial
-products built on it must not control the standard's definitions.
+products built on it must not control the standard's definitions. The open substrate
+(CLI engine, formats, runners, report renderer) stays open; commercial value may
+only accrue on top of it — through proprietary data and delivery, never by
+re-licensing or reclaiming what was open.
 
 ## 13. Open Questions
 
@@ -521,6 +668,12 @@ products built on it must not control the standard's definitions.
 6. **Billable-unit consensus.** Which measurement facts will providers and payment
    rails actually agree on, and at what cost of mis-measurement?
 7. **Privacy.** How far can correlation and retention go under pseudonymity?
+8. **Transfer heterogeneity.** When offline effects transfer unevenly across
+   harnesses and task distributions, what is the minimal per-condition reporting
+   standard that keeps pooled claims honest?
+9. **Data rights.** Under what terms will runtimes and buyer-side applications
+   authorize the choice-side observations that incrementality claims require —
+   and what claims remain honest if they never do?
 
 ## 14. Conclusion
 
@@ -528,11 +681,15 @@ The software consumer is changing from humans to agents, and the economic unit i
 shifting from seats to callable capabilities. Before capabilities can be priced,
 billed and compared, the ecosystem needs a shared measurement language — what a
 selection is, what an operation is, what a delivery, a consumption, an effect and an
-outcome are, and which numbers can support which conclusions.
+outcome are, and which numbers can support which conclusions. And once money and
+budgets move on those numbers, it equally needs the discipline that separates
+verified value from manufactured growth: qualification, consumption evidence,
+preregistered experiments, guardrails, honestly-reported transfer effects.
 
-AgentMeasure is that proposal: measurement semantics as infrastructure, commercial
-semantics as a future extension, payment as someone else's rails. **Measure how
-agents use software capabilities today; make capabilities comparable and meterable
+AgentMeasure is that proposal: measurement semantics as infrastructure, experiment
+semantics as their proof procedure, commercial semantics as a future extension,
+payment as someone else's rails. **Measure how agents use software capabilities
+today; make capabilities comparable, meterable — and experimentally improvable —
 next; build the measurement foundation for Capability as a Service in the long
 term.**
 
@@ -543,19 +700,27 @@ term.**
 3. Model Context Protocol (MCP) specification — tool discovery and invocation surfaces.
 4. MCP Registry — server identity as the entry point for entity resolution.
 5. EDPB — guidance on pseudonymisation (pseudonymised data may still be personal data).
-6. Cloudflare — [Charge for MCP tools (x402 / Agentic Payments)](https://developers.cloudflare.com/agents/agentic-payments/x402/charge-for-mcp-tools/).
-7. Coinbase — [x402 Bazaar: discover & pay over MCP](https://docs.cdp.coinbase.com/x402/bazaar).
-8. OpenAI / Stripe — Agentic Commerce Protocol (ACP), announced September 2025; see [Digital Transactions coverage](https://www.digitaltransactions.net/openai-and-stripe-are-the-latest-fintechs-to-enable-agentic-commerce/).
-9. AgentMeasure specification — Core, Metrics, Data, Entity, Quality, Correlation
+6. Linux Foundation — [AAIF formation (MCP ecosystem, 10,000+ servers)](https://www.linuxfoundation.org/press/linux-foundation-announces-the-formation-of-the-agentic-ai-foundation) ·
+   [A2A surpassing 150 organizations](https://www.linuxfoundation.org/press/a2a-protocol-surpasses-150-organizations-lands-in-major-cloud-platforms-and-sees-enterprise-production-use-in-first-year).
+7. Cloudflare — [Charge for MCP tools (x402 / Agentic Payments)](https://developers.cloudflare.com/agents/agentic-payments/x402/charge-for-mcp-tools/).
+8. Coinbase — [x402 Bazaar: discover & pay over MCP](https://docs.cdp.coinbase.com/x402/bazaar).
+9. AWS — [Bedrock AgentCore Payments GA (2026-08)](https://aws.amazon.com/about-aws/whats-new/2026/08/bedrock-agentcore-payments-ga/) ·
+   Google — [A developer's guide to AI agent protocols (AP2)](https://developers.googleblog.com/developers-guide-to-ai-agent-protocols/).
+10. OpenAI / Stripe — Agentic Commerce Protocol (ACP), announced September 2025; see [Digital Transactions coverage](https://www.digitaltransactions.net/openai-and-stripe-are-the-latest-fintechs-to-enable-agentic-commerce/).
+11. Hasan et al. — *MCP Tool Descriptions Are Smelly* ([arXiv 2602.14878](https://arxiv.org/abs/2602.14878)): 97.1% of tool descriptions with quality issues; +5.85pp success with +67.46% steps; 16.67% of combinations degrade.
+12. Microsoft Research — [BiasBusters: tool-selection bias in LLMs (ICLR 2026)](https://www.microsoft.com/en-us/research/publication/biasbusters-uncovering-and-mitigating-tool-selection-bias-in-large-language-models/).
+13. Arcade — [ToolBench: MCP server quality benchmark (41,900+ servers; 0.5% grade A)](https://www.arcade.dev/blog/introducing-toolbench-quality-benchmark-mcp-servers/).
+14. AgentMeasure specification — Core, Metrics, Data, Entity, Quality, Correlation
    (`standard/`); Commercial Extension (`extensions/COMMERCIAL.md`, experimental);
-   machine-readable registry (`schemas/`, `registry/`); reference implementation and
-   conformance vectors in the same repository.
+   machine-readable registry (`schemas/`, `registry/`); open experiment engine
+   (`lab/` — preregistration, funnel capture, honest statistics, guardrails);
+   reference implementation and conformance vectors in the same repository.
 
 ---
 
 *The normative specification (Measurement Objects, Lifecycle, Metric Families,
-Quality, Reporting) and the reference implementation (AgentMeasure) are published
-openly. Graduation to AgentMeasure 1.0 requires two independent implementations, three
-runtime profiles, two tool-side implementations, a public conformance suite with
-canonical test vectors, 5–10 real projects, a published discrepancy report, and
-security and privacy reviews.*
+Quality, Reporting), the open experiment engine (`lab/`), and the reference
+implementation are published openly. Graduation to AgentMeasure 1.0 requires two
+independent implementations, three runtime profiles, two tool-side implementations,
+a public conformance suite with canonical test vectors, 5–10 real projects, a
+published discrepancy report, and security and privacy reviews.*

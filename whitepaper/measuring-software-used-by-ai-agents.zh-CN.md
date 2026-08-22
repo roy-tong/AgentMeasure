@@ -2,10 +2,10 @@
 
 **面向 CaaS 与 Agent Capability Economy 的统一计量基础**
 
-*Whitepaper v0.2 · AgentMeasure Standard Draft 0.4*
+*Whitepaper v0.3 · AgentMeasure Standard Draft 0.4.4*
 
 > 作者：Roy Tong（仝夏瑞）
-> 参考实现：AgentMeasure 仓库（GitHub）。
+> 参考实现与开放实验引擎（[`lab/`](../lab/README.md)）均在 AgentMeasure 仓库发布。
 
 ## 摘要
 
@@ -15,12 +15,76 @@ API、CLI 这些接口越来越容易创建与分发时，经济价值日益向�
 
 这在产生支付问题之前，先产生了计量问题。一个能力要能被可靠地定价、比较、计费与
 优化，生态必须先就"什么算选择、什么算一次操作、什么算成功交付、什么算结果被消费、
-什么算结果、什么算计费单位"达成共识。
+什么算结果、什么算计费单位"达成共识。而当钱开始在这些数字上流动时，第二个问题随
+之出现：**区分真增长与假增长**——retry 膨胀、未被消费的结果、内部循环交易——在任何
+人据此做预算之前。
 
 AgentMeasure 为这个正在形成的 Capability Economy 提出一套开放计量标准：Reach →
-Choice → Use → Utility → Value 的共同数据语言，加上未来 Metering、Marketplace 与
-支付轨道可以构建其上的测量语义。目标不是仪表盘，而是让 **Capability as a Service
-（CaaS，本文用法）成为可能的计量基础**。
+Choice → Use → Utility → Value 的共同数据语言，未来 Metering、Marketplace 与支付
+轨道可以构建其上的测量语义，以及把测量从被动观察变成可检验主张的实验语义（预注册、
+guardrail、分条件效应量）。目标不是仪表盘，而是让 **Capability as a Service（CaaS，
+本文用法）成为可能的计量基础**——并且可信。
+
+## 〇.二、与 Observability 的关系
+
+> **AgentMeasure 假设遥测可能已经存在。它的目的不是替代 tracing、logging 或
+> evaluation 系统，而是在其证据之上定义可移植的测量对象与规则。**
+
+不同系统可以观测到同一 agent 行为，却报出不同的 usage 数字：
+
+```text
+1 次逻辑操作，2 次重试
+
+系统 A：usage = 3
+系统 B：usage = 1
+
+两个遥测系统都是对的。
+它们的测量语义并不相同。
+```
+
+AgentMeasure 不重新采集 observability 数据；它在已有证据（OTel / Langfuse /
+Logfire / Phoenix / 运行时日志）之上定义可跨系统比较的测量对象、统计单位与推导
+规则：
+
+```text
+证据 → 测量语义 → 记账 → 结算
+```
+
+## 〇.五、测量原则
+
+> 本节是全文档的**不可违反数据不变量**（Draft 0.4.4）。以下五条由外部工程反馈
+> （attempt ledger / cache attribution / reasoning token subset / decision
+> provenance / agent-assigned value）反复验证形成。
+
+**1. 事实在解释之上存活。**
+底层事实（attempt、consumption、evaluation 证据）保持不可变；语义、归并、评价、
+计量与决策只能建立在事实之上，而不能覆盖事实。
+
+**2. 统计粒度回答问题。**
+Attempt 回答消费；Operation 回答逻辑使用；Task 回答结果。不同问题不得偷偷共用
+统计单位（10 attempts ≠ 10 operations ≠ 10 decisions）。
+
+**3. 不确定性是数据。**
+```text
+Unknown ≠ Zero
+Unobservable ≠ False
+Unresolved ≠ Operation
+```
+
+**4. 派生事实携带出处。**
+所有 inferred operation / attribution / value 主张必须携带产生它的证据、规则与
+版本（rule_id / rule_version / source_attempt_ids）。
+
+**5. 结算不是价值。**
+```text
+Payment ≠ Utility
+Reward ≠ Value
+Settlement ≠ Incremental Value
+Assigned ≠ Settled ≠ Realized ≠ Incremental
+```
+
+一句话总结：**Preserve facts. Derive semantics. Expose uncertainty.**
+（保留事实，推导语义，暴露不确定性。）
 
 ## 一、从 SaaS 到 Capability Economy
 
@@ -67,10 +131,10 @@ AgentMeasure 建立在三个**尚未完全证实**的趋势判断上：
 2. 更多软件能力将脱离其人类 UI 被独立暴露。
 3. 基于使用、效应与结果的商业模型将与 seat-based 定价并存。
 
-即使这些趋势发展不均衡，测量标准依然有用：对象、质量规则与声称纪律本身成立为
-一套 Agent 软件测量标准。
+即使这些趋势发展不均衡，测量标准依然有用：对象、质量规则与声称纪律本身成立为一
+套 Agent 软件测量标准。
 
-## 1.5、Harness-native 软件与测量问题
+## 一.五、Harness-native 软件与测量问题
 
 还有一个变化正在让测量问题变得更难、也更有价值：Agent Harness 正在成为可复用
 的软件运行时。DeepSeek Harness 把模型、工具、Skill、会话、沙箱、存储、Loop、
@@ -115,7 +179,6 @@ CaaS 要能定价、计费与建立声誉，先要有共同的测量语义。四
 
 任务成功 → 没有这个能力也能成功吗？
 Provider 能主张价值吗？
-
 ```
 
 这些问题都无法由原始调用次数回答，也无法由支付轨道回答。它们需要关于
@@ -124,17 +187,30 @@ Provider 能主张价值吗？
 
 ### 现实证据：商业先于计量到来
 
-这并非假设——Agent 中介商业的支付与发现基础设施已经存在：
+这并非假设——Agent 中介商业的分发与支付基础设施已经存在：
 
+- MCP 生态已超过 **10,000 个已发布 Server**（Linux Foundation / AAIF 口径）；
+  A2A 协议已在 **150+ 组织**进入生产使用。
 - **Cloudflare Agents SDK** 允许 MCP Tool 按单次调用定价并经 x402 收费
-  （[Charge for MCP tools](https://developers.cloudflare.com/agents/agentic-payments/x402/charge-for-mcp-tools/)）。
-- **Coinbase x402 Bazaar** 是发现层：Agent 搜索带价格与 schema 的服务，并经 MCP
+  （[Charge for MCP tools](https://developers.cloudflare.com/agents/agentic-payments/x402/charge-for-mcp-tools/)）；
+  **Coinbase x402 Bazaar** 是发现层：Agent 搜索带价格与 schema 的服务，并经 MCP
   完成付费调用（[x402 Bazaar](https://docs.cdp.coinbase.com/x402/bazaar)）。
+- **AWS Bedrock AgentCore Payments** 已正式 GA（2026-08），**Google AP2** 给出了
+  Agent 支付协议栈的蓝图——支付轨道已不再是瓶颈。
 - **OpenAI 与 Stripe 的 Agentic Commerce Protocol（ACP）** 已在真实 agentic
   commerce 流程中使用（[报道](https://www.digitaltransactions.net/openai-and-stripe-are-the-latest-fintechs-to-enable-agentic-commerce/)）。
 
-这些例子说明：发现与支付基础设施**正在出现**，而一个被广泛采用的跨平台
-capability 测量标准尚不存在——这正是 AgentMeasure 填补的空缺。
+### 计量必须可信的证据：假增长已经出现
+
+支付基础设施先于计量到来，有一个可预测的副作用：**可被操纵的指标会被操纵**。
+近期的链上分析指出，x402 式支付流水的headline交易量中，相当一部分是内部循环或
+可制造交易，而非真实需求。我们不把这读作否定机器支付的理由，而是本文论点最清晰
+的信号：**机器消费的商业需要机器可验证的计量**——否则下游的每个决策（定价、排名、
+预算、分成）都在继承被制造的输入。
+
+这也是为什么"合格使用"（§六）不是标准上补丁式的精细化条款：在一个流量与交易都可
+被制造的经济里，合格轴（这是不是真实生产使用？）与消费轴（结果真的被使用了吗？）
+是渠道与老虎机的区别。
 
 ## 三、测量对象
 
@@ -191,7 +267,8 @@ Published → Listed → Retrieved / Discovered → Presented
 
 ## 四、Agent–Capability 交互模型
 
-**Reach → Value 是测量视角，不是普适执行状态机。** 不同类别的能力有不同的有意义链路：
+**Reach → Value 是测量视角，不是普适执行状态机。** 不同类别的能力有不同的有意义
+链路：
 
 ```text
 Information   操作 → 结果 → 消费
@@ -229,15 +306,19 @@ Attempts per Operation (Defined)
 **M4 Utility — 有效使用。** 能力交付了可用信息，还是引发了预期效应？
 
 ```text
-Result Utility     已交付 · 已消费 · 已接受
-Effect Utility     已应用 · 已确认 · 已回退 / 失败
+Result Consumption (Defined) · Effect Confirmation (Draft 0.5)
 ```
 
 **M5 Outcome — Value。** 改善任务了吗？
-`任务成功关联 · 增量提升 · 节省时间 · 节省成本`
+`任务成功关联 (Draft) · 增量提升 (Research / Draft 0.5) · 节省时间 (Research) ·
+节省成本 (Research)`
 
-**关系测量**（从独立章节降级为小节）：Trial → Active → Repeated → Preferred →
-Dependent。最不可替代的 Dependent 依然是长期资产信号。
+**关系测量**：Trial → Active → Repeated → Preferred → Dependent。最不可替代的
+Dependent 依然是长期资产信号。
+
+在实验引擎（`lab/`）里，这些指标族收敛为一条可操作的漏斗——
+**Reach → Choice → Success → Consumption**——每一级都是可数事件，每个比率都自带
+分母。指标族是词汇表；漏斗是这套词汇在受控条件下被使用的方式（§八）。
 
 ## 六、测量质量与声称纪律
 
@@ -252,6 +333,10 @@ Measurement Quality
 ├── Sampling                        采样了吗？不确定性多少？
 ├── Identity                        标识归一得怎么样？
 └── Method/version                  用什么统计、哪个规范版本？
+
+质量按 **Measurement Use Profile**（first_party_analytics / comparative /
+cross_side_attribution / billable_audit）评估——同一份数据可能适合看内部趋势、
+不适合用于计费（见 QUALITY §4）。
 ```
 
 **限定使用。** 每条观察携带两条轴——Usage Context（流量来源）与 Validity（观察是否
@@ -263,6 +348,8 @@ Measurement Quality
 **声称纪律。** 每个公开指标携带 Measurement Label：分子、分母、可观测人群、合格
 人群、runtime 覆盖、grain、choice mode、decision authority、selection constraint。
 观测到的选择绝不说成偏好；关联绝不说成因果；不可观测绝不说成负面。
+**选择率的增长在消费轴与合格轴验证它之前，绝不说成毛利增长**——这条防假增长规则
+从本节贯穿到 §八的每一份实验报告。
 
 ## 七、测量与计量（Measurement and Metering）
 
@@ -299,23 +386,104 @@ Commercial Attribution  哪些参与方贡献了发现 / 选择 / 收入
 
 > **AgentMeasure 标准化经济事实，不移动金钱。**
 
-## 八、归因与增量
+### 七.五、从测量到毛利：价值公式
 
-**能力参与了成功任务，不等于它导致了成功。**
+对一个 Capability Provider，测量出的量最终合成一句经济陈述——参考实现的报告
+生成器内置了这条价值公式：
 
-- **归因测量**（observational）：哪些能力参与了任务链——只能支持"关联"与"参与执行链"的结论。
-- **增量测量**（counterfactual）：能力的存在创造了多少额外价值——随机对照是最强
+```text
+增量毛利 / 月
+  = Agent 机会量 × 选择率提升
+    × P(操作成功 | 被选择)              ← 测量值（M3）
+    × P(结果被消费 | 成功)              ← 测量值（M4）
+    × 付费转化
+    × 单次计费事件毛利
+    − 新增服务成本
+```
+
+公式右侧的每个测量因子都是带 Label 的指标，不是假设；每个业务参数必须由主张方
+提供并标注来源。两条纪律适用。第一，**未经验证的提升不进公式**：一个丢失消费的
+选择率提升（§二）或爆掉 guardrail 的改动（§八.三）被排除，或按测得的（更低的）
+因子重算。第二，**公式对自己的经济学诚实**：在单次计费事件毛利很低的品类（搜索类
+能力的单价以分计），即使很大的相对提升，其绝对毛利也供养不起测量与实验——这是
+关于这个业务的事实，不是扭曲数字的理由。
+
+## 八、归因、增量——与实验
+
+**能力参与了成功任务，不等于它导致了成功。** 而能力被观测到的选择率也不是它的
+固有属性——它是*系统*（描述、schema、候选集构成、Harness、模型）的属性，而这个
+系统的大多数旋钮 Provider 自己就能改。两个事实都把测量从观察推向实验。
+
+### 八.一、归因与价值证据阶梯
+
+- **归因测量**（observational）：哪些能力参与了任务链——只能支持"关联"与"参与
+  执行链"的结论，仅此而已。
+- **增量测量**（counterfactual）：能力的存在创造了多少额外价值？随机对照是最强
   证据，但许多能力无法随机关闭。因此因果声称遵循 **Value Evidence Ladder**：
 
 ```text
-V0 Association            任务成功时参与过
+V0 Association             任务成功时参与过
 V1 Matched / Observational 控制已知混淆变量比较
-V2 Offline Ablation       重放任务、移除能力
-V3 Quasi-experiment       switchback / 自然变异
-V4 Randomized Holdout     最强因果证据
+V2 Offline Ablation        重放任务、移除能力
+V3 Quasi-experiment        switchback / 自然变异
+V4 Randomized Holdout      最强因果证据
 ```
 
 只允许用实际产出的证据等级支持对应的因果声称强度——与测量质量的纪律一致。
+
+### 八.二、优化空间是真实的——而且有牙齿
+
+近期证据确立了：Agent 的选择对 Provider 可控变量敏感，且拍脑袋优化可能适得其反：
+
+- **Hasan et al.（arXiv 2602.14878）**：103 个 MCP Server、856 个 Tool 中，97.1%
+  的 Tool Description 至少有一种质量问题；增强描述使任务成功率 +5.85pp——但执行
+  步骤 +67.46%，且 16.67% 的组合*退化*。
+- **Microsoft BiasBusters（ICLR 2026）**：小幅修改描述即显著改变 Agent 的工具
+  选择，且 Provider 受益于系统性的预训练偏置——选择可争夺，而且有偏。
+- **Arcade ToolBench**：已索引的 41,900+ MCP Server（约 21.9 万 Tool）中仅 0.5%
+  评 A 或以上，76.6% 评 F——生态尺度的元数据质量很差，"进入候选集之后"的优化
+  空间巨大。
+
+合起来读：选择可以被移动（机会是真的），效应有副作用（步骤、成本、消费），还有
+不小比例的改动会*更糟*。这正是**运行受控实验不是可选项**的环境——也是每个实验
+都需要 guardrail 的环境，因为主指标会兴高采烈地上涨，而能力本身在变坏。
+
+### 八.三、预注册实验闭环
+
+参考实验引擎（本仓库 `lab/`）把这条闭环工程化：
+
+```text
+Test        预注册实验：任务集 × Harness 矩阵 × 因子变体
+Recommend   带置信区间的效应量 + guardrail 检查
+Ship        通过 Provider 自己的发布流程灰度上线
+Verify      生产复测（对 holdout）
+Learn       采纳 / 回滚 / 迭代——一次有记录的经营决策
+```
+
+它不可谈判的语义，继承自 §〇.五与 §六：
+
+1. **预注册。** 假设、主指标、guardrail、样本量与分析计划在运行前哈希锁定；报告
+   只按锁定计划出确证性结论；改计划等于开新实验。这是实验引擎与结论生成器的
+   区别。
+2. **诚实的 null。** 不显著的结果作为 null 报出、带上区间宽度——而不是换个好看
+   的次级指标继续挖。样本不足输出"不可判定"加所需样本量，绝不输出欠功效的结论。
+3. **Guardrail。** 效应对照预注册阈值（成本、步骤/时延、消费、重试率）评估；
+   显著但爆 guardrail 的赢报为*有效但不合格*——正是 §八.二那组
+   "+5.85pp 但 +67.46% 步骤"的模式。
+4. **防假增长。** 选择率提升而消费率下降时报警，并被排除出毛利主张（§七.五）。
+5. **分条件效应。** 效应量按 Harness、按任务分布分别报告，与合并数字并列——
+   绝不只有一个全局系数，因为下一节讲的就是那种错误。
+
+### 八.四、离线到生产的迁移是测量问题
+
+实验测量的是*受控*环境；生产不是。两者之间的差距不是该被平均掉的噪声——它是
+一个一等公民的被测量：**迁移效应**，按条件（Harness × 任务分布）估计、自带置信
+区间，小、零、负都如实报告。一个测量过的离线效应加一个如实报告的迁移差距，是
+决策级的主张；一个离线效应加一句"大概能迁移"的假设，是穿着白大褂的赌博。生产
+验证（对 holdout 灰度复测、跨侧连接到 Provider 的计费数据）是阶梯上的最强形式
+（V4）——而它需要 §十的数据权。
+
+### 八.五、商业归因（观察性，另立）
 
 商业归因扩展观察侧到分发链：
 
@@ -341,32 +509,44 @@ AgentMeasure **不计算通用 AgentMeasure Score**。Agent A 在乎价格，Age
 Agent C 在乎隐私。排名是 Agent 与 Marketplace 的产品决策；标准只定义可比较的信号
 与让它们可比较的 Label。Measurement Label 是这种可比性的基础。
 
-## 十、观察与部署架构（Observation & Deployment Architecture）
+## 十、观察面与数据权（Observation Surfaces and Data Rights）
 
-不同测量 surface 能看到的东西不同；单边接入就有价值，但声称必须匹配 surface：
+不同测量 surface 能看到的东西不同；单边接入就有价值，但声称必须匹配 surface——
+而且在 Agent 渠道里，**数据在谁手里决定一切声称的上限**，而不是功能存不存在：
 
 ```text
 分发侧 → Agent Runtime 侧 → Provider 侧 → 效应 / 结果侧
 ```
 
-| Surface | 能看什么 |
-| --- | --- |
-| Registry | 发现 / 可用性 |
-| Agent runtime | 呈现 / 选择 / 消费 |
-| Capability provider | attempt / completion / result（仅在有 resolution evidence 时才有 operation） |
-| 目标系统 | 效应 / 交易 |
-| 实验层 | 增量 |
+| 漏斗环节 | 数据 | 通常掌握者 | Provider 单侧可得 |
+| --- | --- | --- | --- |
+| 发现 | 机会量、候选集构成、呈现方式 | Runtime / Registry / Agent 应用 | ✗ |
+| 选择 | 实验分组、选择事件 | Harness / Agent 应用 | ✗ |
+| 执行 | 调用、结果、账单、成本 | Provider | ✓ |
+| 消费 | 结果消费、任务结果 | Agent 应用 / 最终用户 | 通常 ✗ |
 
-双侧观察（Agent runtime + provider）构成 cross-side corroborated；仅 Provider 侧也足以支持
-provider-scoped 的使用指标。标准不在请求关键路径上：观察异步产出、仅元数据、
-落盘前伪匿名。
+这是架构事实，不是能靠工程补齐的产品缺口。它推出三档声称纪律——销售话术与合同
+必须与所选档位严格一致：
+
+| 数据姿态 | 能诚实主张什么 |
+| --- | --- |
+| **仅 Provider 侧** | 受控环境表现 + 已发生调用的诊断（去重、成功、成本、重试结构）；不承诺生产选择率与增量 |
+| **+ 买方侧 / 客户自有 Agent 应用** | 完整 verified-lift 闭环：选择归因、灰度复测、增量毛利验证 |
+| **+ Runtime / Registry 合作** | 机会归因、呈现优化、全漏斗测量 |
+
+双侧观察（Agent runtime + provider）构成 cross-side corroborated；仅 Provider 侧也
+足以支持 provider-scoped 的使用指标。标准不在请求关键路径上：观察异步产出、仅元
+数据、落盘前伪匿名。
 
 ## 十一、互操作
 
 标准是 transport-neutral、vendor-neutral 的。现有基础设施作为实现例子而非前提：
 MCP 承载生命周期事件与 trace context；OpenTelemetry 承载工具 span；Codex/Claude
 Code/DeepSeek Harness 暴露带能力声明的观察点；registry 提供实体身份。未来的支付
-轨道消费标准的事实，而不是扩展标准的核心。
+轨道消费标准的事实，而不是扩展标准的核心。实验格式——预注册 manifest、漏斗事件、
+报告 schema——以开放 JSON Schema 发布（`lab/schemas/`），第三方可以据此实现自己的
+runner 并产出互认的结果；参考实现还内置了只读 MCP 查询接口（`am mcp serve`），
+让 Agent 与 CI 消费与工程师相同的证据——带证据等级，不带排名。
 
 ## 十二、不做什么与治理
 
@@ -378,7 +558,8 @@ AgentMeasure **不是**支付协议、Marketplace、钱包或通用声誉系统�
 - 要求任何中心服务器、Agent 侧安装或开源 Provider。
 
 标准本身由社区治理（AUP 流程，`proposals/`）；建立在它之上的商业产品不得控制
-标准的定义。
+标准的定义。开放底座（CLI 引擎、格式、runners、报告渲染器）保持开放；商业价值只
+能在其上累积——通过专有数据与交付，绝不通过回收或改许可曾经开放的东西。
 
 ## 十三、开放问题
 
@@ -389,17 +570,23 @@ AgentMeasure **不是**支付协议、Marketplace、钱包或通用声誉系统�
 5. **跨 Agent 身份**：同一 client 跨 Codex/Claude/DSH——何时可知？
 6. **计费单位共识**：Provider 与支付轨道最终会就哪些测量事实达成一致，误计量的代价多大？
 7. **隐私**：伪匿名下关联与留存能走多远？
+8. **迁移异质性**：当离线效应跨 Harness、跨任务分布迁移不均匀时，什么样的最小
+   分条件报告标准能让合并主张保持诚实？
+9. **数据权**：Runtime 与买方侧应用在什么条款下会授权增量主张所需的选择侧观察——
+   如果永远不授权，哪些主张仍然诚实？
 
 ## 十四、结论
 
 软件消费者正在从人变成 Agent，经济单元正在从席位转向可调用的能力。在能力被定价、
 计费与比较之前，生态需要一套共享的测量语言——什么算选择、什么算操作、什么算交付、
-消费、效应与结果，以及哪些数字能支持哪些结论。
+消费、效应与结果，以及哪些数字能支持哪些结论。而当钱与预算开始在这些数字上流动，
+它同样需要把验证过的价值与制造出来的增长分开的纪律：合格性、消费证据、预注册实验、
+guardrail、如实报告的迁移效应。
 
-AgentMeasure 就是那个提案：测量语义作为基础设施，商业语义作为未来扩展，支付交给
-别人的轨道。**今天：让开发者知道 Agent 如何真实使用自己的能力。下一步：让
-Capability 可以跨 Agent 被统一度量、比较和计量。长期：成为 CaaS 与 Agent Capability
-Economy 的统一计量基础。**
+AgentMeasure 就是那个提案：测量语义作为基础设施，实验语义作为它的证明程序，商业
+语义作为未来扩展，支付交给别人的轨道。**今天：让开发者知道 Agent 如何真实使用
+自己的能力。下一步：让 Capability 可以跨 Agent 被统一度量、比较、计量——并且可以
+被实验性地优化。长期：成为 CaaS 与 Agent Capability Economy 的统一计量基础。**
 
 ## 参考文献
 
@@ -408,15 +595,25 @@ Economy 的统一计量基础。**
 3. Model Context Protocol (MCP) 规范 — 工具发现与调用 surface。
 4. MCP Registry — 实体解析的 server 身份入口。
 5. EDPB — 伪匿名化指引（伪匿名数据仍可能属于 personal data）。
-6. Cloudflare — [Charge for MCP tools（x402 / Agentic Payments）](https://developers.cloudflare.com/agents/agentic-payments/x402/charge-for-mcp-tools/)。
-7. Coinbase — [x402 Bazaar：Discover & pay over MCP](https://docs.cdp.coinbase.com/x402/bazaar)。
-8. OpenAI / Stripe — Agentic Commerce Protocol（ACP），2025 年 9 月发布；见
-   [Digital Transactions 报道](https://www.digitaltransactions.net/openai-and-stripe-are-the-latest-fintechs-to-enable-agentic-commerce/)。
-9. AgentMeasure 规范 — Core / Metrics / Data / Entity / Quality / Correlation
-   （`standard/`）；Commercial Extension（`extensions/COMMERCIAL.md`，实验性）；
-   机器可读 registry（`schemas/`、`registry/`）；参考实现与 conformance vectors
-   同仓发布。
+6. Linux Foundation — [AAIF 成立（MCP 生态，10,000+ servers）](https://www.linuxfoundation.org/press/linux-foundation-announces-the-formation-of-the-agentic-ai-foundation) ·
+   [A2A 超 150 组织进入生产](https://www.linuxfoundation.org/press/a2a-protocol-surpasses-150-organizations-lands-in-major-cloud-platforms-and-sees-enterprise-production-use-in-first-year)。
+7. Cloudflare — [Charge for MCP tools（x402 / Agentic Payments）](https://developers.cloudflare.com/agents/agentic-payments/x402/charge-for-mcp-tools/)。
+8. Coinbase — [x402 Bazaar：Discover & pay over MCP](https://docs.cdp.coinbase.com/x402/bazaar)。
+9. AWS — [Bedrock AgentCore Payments GA（2026-08）](https://aws.amazon.com/about-aws/whats-new/2026/08/bedrock-agentcore-payments-ga/) ·
+   Google — [A developer's guide to AI agent protocols（AP2）](https://developers.googleblog.com/developers-guide-to-ai-agent-protocols/)。
+10. OpenAI / Stripe — Agentic Commerce Protocol（ACP），2025 年 9 月发布；见
+    [Digital Transactions 报道](https://www.digitaltransactions.net/openai-and-stripe-are-the-latest-fintechs-to-enable-agentic-commerce/)。
+11. Hasan et al. — *MCP Tool Descriptions Are Smelly*（[arXiv 2602.14878](https://arxiv.org/abs/2602.14878)）：97.1% 的工具描述有质量问题；成功率 +5.85pp 且步骤 +67.46%；16.67% 的组合退化。
+12. Microsoft Research — [BiasBusters：LLM 工具选择偏置（ICLR 2026）](https://www.microsoft.com/en-us/research/publication/biasbusters-uncovering-and-mitigating-tool-selection-bias-in-large-language-models/)。
+13. Arcade — [ToolBench：MCP Server 质量基准（41,900+ servers；0.5% 评 A）](https://www.arcade.dev/blog/introducing-toolbench-quality-benchmark-mcp-servers/)。
+14. AgentMeasure 规范 — Core / Metrics / Data / Entity / Quality / Correlation
+    （`standard/`）；Commercial Extension（`extensions/COMMERCIAL.md`，实验性）；
+    机器可读 registry（`schemas/`、`registry/`）；开放实验引擎（`lab/`——预注册、
+    漏斗采集、诚实统计、guardrail）；参考实现与 conformance vectors 同仓发布。
 
 ---
 
-*规范全文（测量对象、生命周期、指标家族、质量、报告）与参考实现（AgentMeasure）均已开源。AgentMeasure 1.0 毕业标准：2 个独立实现、3 个 runtime profiles、2 个 tool-side 实现、公开 conformance + canonical test vectors、5-10 个真实项目、已发布的 discrepancy report、安全与隐私审查。*
+*规范全文（测量对象、生命周期、指标家族、质量、报告）、开放实验引擎（`lab/`）
+与参考实现均已开源。AgentMeasure 1.0 毕业标准：2 个独立实现、3 个 runtime
+profiles、2 个 tool-side 实现、公开 conformance + canonical test vectors、5-10 个
+真实项目、已发布的 discrepancy report、安全与隐私审查。*
