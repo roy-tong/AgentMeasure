@@ -46,6 +46,34 @@ kept out of the ranking as a reference baseline.
 
 ---
 
+## Run a preregistered experiment — AgentMeasure Lab
+
+```bash
+python3 lab/am lab selftest                                   # planted uplift recovered + honest null
+python3 lab/am lab init                                       # workspace + example experiment
+python3 lab/am lab preregister am-lab/experiments/example-manifest.json
+python3 lab/am lab run am-lab/experiments/example-manifest.prereg.json
+```
+
+The open experiment engine ([lab/](lab/README.md)): task set × harness matrix × factor
+variants → Reach → Choice → Success → Consumption funnel → effect sizes with
+confidence intervals, guardrails, honest nulls, and an offline HTML report that opens
+with a bilingual decision-maker one-pager. Preregistration is enforced (hypothesis /
+primary metric / guardrails / analysis plan hashed before the run — with a scale /
+power / budget preview), seeds replay deterministically, and a budget circuit breaker
+stops safely with the data it has. Selection uplift that loses consumption is
+**rejected at the decision exit** (`unverified_growth` — do not ship), and candidates
+that make no more money at higher cost are flagged as dominated.
+
+The shipped demo runs on a **synthetic harness** (planted ground truth at realistic,
+literature-scale amplitudes, disclosed in every report) — it validates the engine,
+not real-agent claims. Real harness adapters (Claude Code / Codex) are runner plugins
+against the same interface; that is the highest-value contribution right now.
+Docs: [lab/README.md](lab/README.md) · formats:
+[lab/schemas/](lab/schemas/) (experiment manifest / funnel events / report).
+
+---
+
 ## Why the split matters, in one line
 
 ```text

@@ -63,6 +63,18 @@ def render(r: dict) -> str:
         "=" * 58,
         f"window: last {s['days']} days · observed {n} attempts",
         "",
+        "0. Baseline funnel (provider-side; honest boundaries)",
+        "  attempts observed              : " + str(n),
+        "  resolved operations            : " + str(s.get("resolved_operations", 0))
+        + f"   (logical uses; retry chains collapsed)",
+        "  attempts per operation         : "
+        + (f"{n / s['resolved_operations']:.2f}" if s.get("resolved_operations") else "—"),
+        "  successful completed attempts : "
+        + (f"{s.get('success_rate', 0) * 100:.1f}%"
+           + "  (of completed attempts with a known outcome)"),
+        "  NOT observable provider-side  : choice / consumption — no selection or",
+        "                                   consumption claims from this surface (BP §3 tier 1).",
+        "",
         "1. How many calls?",
         f"  Observed attempts              : {n}",
         "",

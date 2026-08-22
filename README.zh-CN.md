@@ -42,6 +42,31 @@ fixture + 相同 policy = 相同结果（42 calls → 84 observations）。
 
 ---
 
+## 跑一个预注册实验 — AgentMeasure Lab
+
+```bash
+python3 lab/am lab selftest                                   # 植入提升被检出 + 诚实 null
+python3 lab/am lab init                                       # 工作区 + 示例实验
+python3 lab/am lab preregister am-lab/experiments/example-manifest.json
+python3 lab/am lab run am-lab/experiments/example-manifest.prereg.json
+```
+
+开放实验引擎（[lab/](lab/README.md)）：任务集 × Harness 矩阵 × 因子变体 →
+Reach → Choice → Success → Consumption 漏斗 → 带置信区间的效应量、guardrail、
+诚实的 null、以及以**双语决策人一页版**开篇的本地 HTML 报告。预注册被强制执行
+（假设 / 主指标 / guardrail / 分析计划运行前哈希锁定，并附规模/功效/预算预估），
+种子确定性重放，预算熔断安全停止并保留已采数据。选择率提升而消费率下跌的方案
+会在**决策出口被拒绝**（`unverified_growth`——不上线）；不带来更多钱却更贵的
+候选会被标注"被支配"。
+
+内置示例运行在**合成 Harness** 上（按文献口径的现实幅度植入 ground truth，
+每份报告显式披露）——它验证的是引擎，不是对真实 Agent 的主张。真实 Harness
+适配器（Claude Code / Codex）是同一接口上的 runner 插件，这是当前最有价值的
+贡献方向。文档：[lab/README.md](lab/README.md) · 格式：
+[lab/schemas/](lab/schemas/)（实验 manifest / 漏斗事件 / 报告）。
+
+---
+
 ## 为什么 Capability 需要新的测量层
 
 软件消费者正在从人变成 Agent，经济单元正在从软件席位转向可调用的能力（callable capabilities）。

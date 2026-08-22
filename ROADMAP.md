@@ -14,7 +14,7 @@
 
 | 阶段 | Standard Track | Product Track |
 | --- | --- | --- |
-| **Now** | Draft 0.4.4 — Evidence Preservation & Resolution Semantics（Attempt 不可变账本、Operation 派生语义、resolution status×method、inferred share、DR-001~004） | **Product Gate A — First Real Measurement**：Provider SDK（@agentmeasure/mcp）+ Local Analytics + 第一个真实外部 Provider + 第一份 Measurement Report；**完成后才进入 Draft 0.5** |
+| **Now** | Draft 0.4.4 — Evidence Preservation & Resolution Semantics（Attempt 不可变账本、Operation 派生语义、resolution status×method、inferred share、DR-001~004） | **Product Gate A — First Real Measurement**：Provider SDK（@agentmeasure/mcp）+ Local Analytics + 第一个真实外部 Provider + 第一份 Measurement Report；**完成后才进入 Draft 0.5**。并行：**AgentMeasure Lab v0.1 已落地**（[lab/](lab/README.md)）——M1 合成 Harness 范围的预注册实验引擎（CLI/格式/漏斗/诚实统计/guardrail/报告，30 tests + selftest）；下一步=真实 Harness runner 插件（claude-code/codex）→ 开源发布（M2） |
 | **Next** | Draft 0.5 — Utility & Economic Semantics（Result/Effect 双元 Utility、Interaction Classes 指标化） | Provider SDK + Hosted Analytics（SDK 产出 observations，托管 collector/分析） |
 | **Then** | Draft 0.6 — External Validation（5-10 外部项目、第一份《Measurement Discrepancy Report》） | Runtime 集成 + Optimize（跨 runtime 信号、效果确认） |
 | **Later** | Commercial Measurement Profile（COMMERCIAL 转正：Billable Event/Unit/Metering Policy） | Metering（计费事实输出，对接外部支付 rails） |
@@ -37,9 +37,13 @@
 4. 待办：M3.x conformance vectors 发布；Interaction Classes 指标化（0.5 前置）
 
 **Product — Remote Capability Analytics（MVP）**：
-1. AgentMeasure Provider SDK（provider 侧观测，无 Agent 侧安装）——**未实现**
+1. AgentMeasure Provider SDK（provider 侧观测，无 Agent 侧安装）——v0.1.1 已发布（`sdk/`，21/21 测试）；v0.1.2 发布 Gate 待过
 2. 托管 Collector + 分析（远程 MCP / API 能力的使用面板）——**未实现**
 3. 验证目标：≥1 个真实 Provider 愿意接入并产出第一份 provider-scoped 报告
+
+**Substrate — AgentMeasure Lab（开源实验引擎，[lab/](lab/README.md)）**：
+1. v0.4 已落地：预注册锁定 + 规模/功效/预算预估、均衡分配、种子确定性、预算熔断、漏斗采集、诚实统计（效应量+CI+guardrail+null+下轮加样指引）、假增长决策出口拦截（`unverified_growth`）、支配关系标注、双语决策人一页版、价值公式、离线报告、CLI 错误友好化；**真实 Harness 适配器**（claude-code 完整 / codex 实验性：候选集注入=本地 MCP 工具服务器 + headless CLI + transcript 解析；脚本化 transcript 集成测试全绿）；校准分析（生产复测/分条件迁移/not_comparable/再加权）；Connector 数据面（授权三档/撤回/签名导出）；只读 MCP 接口；`am lab history` 本地假设库；local-analytics 基线漏斗（BASE0-002）；74 tests + selftest
+2. 待办：**适配器 live-CLI 验证**（首轮真机运行=验证轮）→ 开源发布 M2 → 外部自助实验 ≥10 例（开源采用 Gate）；真实生产事件接入（前置 G0 数据权）；hosted 历史/持续监控（商业层，Next）
 
 ## 明确不做（直到对应阶段）
 
