@@ -170,16 +170,19 @@ Two kinds of runner ship in this repository:
 
 Honest status of the adapters (also disclosed inside every report):
 
+- `codex`: **live-validated** against codex-cli 0.149.0-alpha (2026-08-22): candidate
+  injection via `-c mcp_servers.*`, MCP calls auto-approved with `--approve-for-me`,
+  ephemeral sessions, token usage metered as cost units (1 unit = 1 token). Transcript
+  shapes are from an alpha CLI and may change upstream; the App Server surface remains
+  the better observation plane (profiles/codex.md §4).
 - `claude-code`: implemented against the documented headless interface and
   **integration-tested against scripted transcripts** (tests/fake_claude.py) —
   live-CLI validation is the next step; treat first live runs as validation runs.
-- `codex`: **experimental** — parsed from documented `codex exec --json` item
-  events; the App Server surface is the better observation plane
-  (profiles/codex.md §4) and remains future work.
-- Observability limits disclosed per episode: candidate set controlled; choice
-  from the transcript; success from tool_result; consumption = continuation
-  proxy (non-empty final answer); steps = candidate-call count (proxy);
-  latency/cost not observed headless (zeros are labeled placeholders).
+- Observability limits disclosed per episode: candidate set controlled (and the prompt
+  closes it — the agent is instructed to use only the injected tools, since a real
+  harness will otherwise reasonably prefer its built-in search); choice from the
+  transcript; success from the tool-call status; consumption = continuation proxy;
+  steps = action-item count (proxy); latency not observed headless (labeled placeholder).
 
 Community runners still follow the plugin interface
 (`module.path:ClassName`); harness profiles live in [`profiles/`](../profiles/).

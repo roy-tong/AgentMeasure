@@ -36,6 +36,14 @@ from .harness import HarnessRunner
 
 _TOOLSERVER = os.path.join(os.path.dirname(os.path.abspath(__file__)), "toolserver.py")
 
+# Live-validated invocation notes (codex-cli 0.149.0-alpha, 2026-08-22):
+# - MCP tool calls need `--approve-for-me` in exec mode, otherwise they fail
+#   with "MCP tool call requires approval, but approval policy is never";
+# - MCP servers appear as `mcp_tool_call` items with explicit server/tool
+#   fields (not function_call);
+# - stdin must be closed (DEVNULL) or codex waits on it as extra input;
+# - turn.completed carries token usage -> cost_units (1 unit = 1 token).
+
 DEFAULT_CANDIDATES = [
     {
         "id": "your-search-api",
@@ -68,6 +76,8 @@ class ParsedEpisode:
     def __init__(self):
         self.calls: List[Dict[str, Any]] = []  # {"tool": str, "ok": bool|None}
         self.final_text: Optional[str] = None
+        self.action_items = 0  # proxy for steps: all tool/search/command items
+        self.total_tokens: Optional[int] = None
 
 
 class HeadlessCliRunner(HarnessRunner):
@@ -118,27 +128,38 @@ class HeadlessCliRunner(HarnessRunner):
 
     # -- shared episode machinery ---------------------------------------------
     def _toolset_for(self, variant_levels: Dict[str, str]) -> List[Dict[str, Any]]:
-        tools = [dict(c) for c in self.candidates]
-        subject = next(t for t in tools if t["id"] == self.subject_id)
-        for factor, level in (variant_levels or {}).items():
-            override = self.level_overrides.get(factor, {}).get(level)
-            if override:
-                subject.update(override)
-        for t in tools:
-            t.setdefault("description", "")
-            t.setdefault("result_mode", "baseline")
+        """Normalized toolset in the toolserver's contract (keys: name/description/
+        result_mode). Live-validation finding: the candidate dicts carry "id", but
+        the MCP spec file must carry "name" — a mismatch crashed tools/list with
+        KeyError('name') and the agent saw "server failed to start"."""
+        tools: List[Dict[str, Any]] = []
+        for c in self.candidates:
+            t = {
+                "name": c.get("name") or c["id"],
+                "description": c.get("description", ""),
+                "result_mode": c.get("result_mode", "baseline"),
+            }
+            if c.get("role") == "subject":
+                for factor, level in (variant_levels or {}).items():
+                    override = self.level_overrides.get(factor, {}).get(level)
+                    if override:
+                        t.update(override)
+            tools.append(t)
         return tools
 
     def _prompt_for(self, task: Dict[str, Any]) -> str:
         return (
             f"{task.get('instruction', 'Complete the task.')}\n\n"
-            "Use the available tools to complete this task, then give your final answer."
+            "Complete this task using ONLY the tools provided by the "
+            f"'{self.config['server_name']}' MCP server — they are synthetic and "
+            "sufficient for this exercise. Do not use built-in web search or the "
+            "shell. Then give your final answer."
         )
 
     def run_episode(self, task, variant_levels, assignment, rng) -> List[Dict[str, Any]]:
         assignment = dict(assignment, subject_id=self.subject_id)
         tools = self._toolset_for(variant_levels)
-        candidate_ids = [t["id"] for t in tools]
+        candidate_ids = [t["name"] for t in tools]
 
         workdir = tempfile.mkdtemp(prefix=f"am-lab-{self.runner_id}-")
         timed_out = False
@@ -153,9 +174,15 @@ class HeadlessCliRunner(HarnessRunner):
             try:
                 proc = subprocess.run(
                     cmd, capture_output=True, text=True,
+                    stdin=subprocess.DEVNULL,
                     timeout=int(self.config["timeout_seconds"]),
                 )
                 stdout = proc.stdout or ""
+                if proc.returncode != 0 and not stdout.strip():
+                    raise ValueError(
+                        f"{self.runner_id}: harness exited with code {proc.returncode}: "
+                        f"{(proc.stderr or '')[:300]}"
+                    )
             except subprocess.TimeoutExpired as e:
                 timed_out = True
                 raw = e.stdout
@@ -206,15 +233,21 @@ class HeadlessCliRunner(HarnessRunner):
         if not subject_calls:
             return events
 
-        steps_total = len(calls)
+        steps_total = max(parsed.action_items, len(calls))
         any_ok = any(c["ok"] is True for c in subject_calls)
         all_unresolved = all(c["ok"] is None for c in subject_calls)
+        # Token metering when the harness reports usage: 1 cost unit = 1 token,
+        # amortized across the episode's subject attempts (disclosed in describe()).
+        cost_per_attempt = (
+            round(parsed.total_tokens / len(subject_calls), 2)
+            if parsed.total_tokens else 0.0
+        )
         for attempt_index, call in enumerate(subject_calls, start=1):
             outcome = "success" if call["ok"] is True else ("failure" if call["ok"] is False else "unresolved")
             events.append(
                 funnel.attempt_event(
                     assignment, 1, attempt_index, outcome,
-                    steps=steps_total, latency_ms=0, cost_units=0.0,
+                    steps=steps_total, latency_ms=0, cost_units=cost_per_attempt,
                 )
             )
         outcome = "unresolved" if all_unresolved else ("success" if any_ok else "failure")
@@ -322,7 +355,6 @@ class ClaudeCodeRunner(HeadlessCliRunner):
 
 class CodexRunner(HeadlessCliRunner):
     runner_id = "codex"
-    experimental = True
 
     def default_cli_path(self) -> str:
         return "codex"
@@ -332,18 +364,46 @@ class CodexRunner(HeadlessCliRunner):
         # codex config overrides take scalar values; wrap args in a launcher script
         launcher = os.path.join(workdir, "launch-tools.sh")
         with open(launcher, "w", encoding="utf-8") as fh:
-            fh.write(f"#!/bin/sh\nexec {sys.executable} {_TOOLSERVER} --spec {spec_path}\n")
+            fh.write(f'#!/bin/sh\nexec {sys.executable} "{_TOOLSERVER}" --spec {spec_path}\n')
         os.chmod(launcher, 0o755)
-        return [
+        cmd = [
             self.config["cli_path"], "exec", "--json", "--skip-git-repo-check",
-            "-c", f"mcp_servers.{server}.command={launcher}",
-            prompt,
+            # live-validated: MCP calls need auto-approval in exec mode
+            "--approve-for-me",
+            # don't pollute the user's codex session history
+            "--ephemeral",
+            "-c", f'mcp_servers.{server}.command="{launcher}"',
         ]
+        for key, value in (self.config.get("codex_config") or {}).items():
+            cmd += ["-c", self._toml_override(key, value)]
+        model = self.config.get("model")
+        if model:
+            cmd += ["-c", self._toml_override("model", model)]
+        cmd += list(self.config.get("extra_args") or [])
+        cmd.append(prompt)
+        return cmd
+
+    @staticmethod
+    def _toml_override(key: str, value: Any) -> str:
+        if isinstance(value, bool):
+            return f"{key}={'true' if value else 'false'}"
+        if isinstance(value, (int, float)):
+            return f"{key}={value}"
+        return f'{key}="{value}"'
 
     def parse_transcript(self, stdout: str) -> ParsedEpisode:
+        """Live-validated shapes (codex-cli 0.149.0-alpha):
+
+        - MCP tools appear as items of type ``mcp_tool_call`` with explicit
+          ``server``/``tool`` fields, a ``status`` and an ``error`` object;
+        - built-in actions appear as ``web_search`` / ``command_execution`` /
+          ``local_shell_call`` / ``function_call`` items;
+        - the final answer is an ``agent_message`` item; ``turn.completed``
+          carries ``usage`` (tokens).
+        """
         ep = ParsedEpisode()
-        outputs_by_call: Dict[str, bool] = {}
-        ordered: List[Dict[str, Any]] = []
+        by_id: Dict[str, Dict[str, Any]] = {}
+        server = self.config["server_name"]
         for line in stdout.splitlines():
             line = line.strip()
             if not line:
@@ -353,38 +413,70 @@ class CodexRunner(HeadlessCliRunner):
             except json.JSONDecodeError:
                 continue
             kind = item.get("type", "")
-            payload = item.get("item") or item
+            payload = item.get("item") or {}
             item_type = payload.get("type", "")
-            if kind == "item.started" or kind == "item.updated":
+            if item_type in ("agent_message", "error", "reasoning"):
+                if item_type == "agent_message" and kind == "item.completed":
+                    ep.final_text = payload.get("text")
                 continue
-            if item_type in ("function_call", "tool_call", "local_shell_call"):
+            if item_type in ("web_search", "command_execution", "local_shell_call"):
+                if kind == "item.completed":
+                    ep.action_items += 1
+                continue
+            if item_type in ("mcp_tool_call", "function_call", "tool_call"):
+                if kind == "item.started":
+                    ep.action_items += 1
+                if kind != "item.completed":
+                    continue
+                ep.action_items = max(ep.action_items, 1)
+                if item_type == "mcp_tool_call":
+                    name = f"{payload.get('server', '')}.{payload.get('tool', '')}"
+                else:
+                    name = payload.get("name", "")
+                ok = None
+                if payload.get("error"):
+                    ok = False
+                elif payload.get("status") == "completed":
+                    ok = True
+                elif payload.get("status") == "failed":
+                    ok = False
                 call_id = payload.get("call_id") or payload.get("id")
-                ordered.append({"id": call_id, "name": payload.get("name", "")})
-            elif item_type in ("function_call_output", "tool_call_output"):
-                call_id = payload.get("call_id") or payload.get("id")
-                out = str(payload.get("output", ""))
-                outputs_by_call[call_id] = "error" not in out[:200].lower()
-            elif item_type == "agent_message":
-                ep.final_text = payload.get("text")
+                by_id[call_id] = {"tool": name, "ok": ok, "mcp": item_type == "mcp_tool_call"}
             elif kind == "turn.completed":
-                if ep.final_text is None:
-                    ep.final_text = item.get("last_agent_message") or ep.final_text
-        for call in ordered:
-            ep.calls.append({"tool": call["name"], "ok": outputs_by_call.get(call["id"])})
+                usage = item.get("usage") or {}
+                ep.total_tokens = (
+                    usage.get("input_tokens", 0) + usage.get("output_tokens", 0)
+                ) or None
+        for call in by_id.values():
+            ep.calls.append({"tool": call["tool"], "ok": call["ok"]})
         return ep
+
+    def _candidate_tool_from_name(self, name: str, candidate_ids: List[str]) -> Optional[str]:
+        # mcp_tool_call names arrive as "<server>.<tool>"; match on the tool part
+        tail = name.rsplit(".", 1)[-1]
+        for cid in candidate_ids:
+            if name == cid or tail == cid or name.endswith(f"__{cid}"):
+                return cid
+        return None
 
     def describe(self) -> Dict[str, Any]:
         d = ClaudeCodeRunner.describe(self)
         d.update(
             {
                 "runner_id": self.runner_id,
-                "kind": "real-harness-adapter (headless CLI) — EXPERIMENTAL",
+                "kind": "real-harness-adapter (headless CLI)",
                 "disclosure": (
-                    "EXPERIMENTAL: parsed from documented `codex exec --json` item events; "
-                    "shapes may change upstream. The App Server surface is the better "
-                    "observation plane (profiles/codex.md §4) and remains future work. "
-                    "Integration-tested against scripted transcripts only."
+                    "Live-validated against codex-cli 0.149.0-alpha (2026-08-22): "
+                    "candidate injection via -c mcp_servers.*, MCP calls auto-approved "
+                    "with --approve-for-me, ephemeral sessions. Transcript shapes are "
+                    "from an alpha CLI and may change upstream; the App Server surface "
+                    "remains the better observation plane (profiles/codex.md §4)."
                 ),
+                "proxies": [
+                    "steps = count of action items (tool calls, searches, commands)",
+                    "cost_units = episode tokens amortized across subject attempts (1 unit = 1 token)",
+                    "latency_ms not observed headless; zero is a labeled placeholder",
+                ],
             }
         )
         return d

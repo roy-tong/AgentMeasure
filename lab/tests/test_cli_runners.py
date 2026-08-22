@@ -60,6 +60,26 @@ class TestClaudeCodeRunner(unittest.TestCase):
         runner = get_runner("claude-code")
         self.assertEqual(runner.runner_id, "claude-code")
 
+    def test_toolset_conforms_to_toolserver_contract(self):
+        """Live-validation regression: the spec file the runner writes must be
+        consumable by toolserver.ToolServer (a KeyError('name') here is what
+        crashed the first live run — the agent saw 'server failed to start')."""
+        from agentmeasure_lab.toolserver import ToolServer
+
+        for runner_id in ("claude-code", "codex"):
+            runner = get_runner(runner_id)
+            runner.setup({"cli_path": "/bin/true"})
+            tools = runner._toolset_for({"description_clarity": "clear",
+                                         "output_verbosity": "verbose"})
+            server = ToolServer({"tools": tools, "server_name": "am-lab-tools"})
+            listed = server.dispatch({"jsonrpc": "2.0", "id": 1, "method": "tools/list"})
+            names = [t["name"] for t in listed["result"]["tools"]]
+            self.assertIn("your-search-api", names)
+            self.assertTrue(all(t.get("description") is not None for t in listed["result"]["tools"]))
+            # verbose level override reaches the result mode
+            subject = next(t for t in tools if t["name"] == "your-search-api")
+            self.assertEqual(subject["result_mode"], "verbose")
+
     def test_subject_selected_success_consumed(self):
         events = _run_episode("claude-code", FAKE_CLAUDE, "subject",
                               levels={"description_clarity": "clear"})
@@ -121,10 +141,42 @@ class TestCodexRunner(unittest.TestCase):
         by_type = _events_by_type(events)
         self.assertEqual(by_type["choice"]["selected_id"], "web-search-pro")
 
-    def test_experimental_flag(self):
+    def test_retry_after_error_is_one_operation(self):
+        events = _run_episode("codex", FAKE_CODEX, "error")
+        by_type = _events_by_type(events)
+        self.assertEqual(by_type["operation_result"]["outcome"], "success")
+        self.assertEqual(by_type["operation_result"]["attempts"], 2)
+
+    def test_tokens_metered_as_cost(self):
+        events = _run_episode("codex", FAKE_CODEX, "subject")
+        by_type = _events_by_type(events)
+        # fake emits usage 1000+200 tokens, 1 subject attempt -> 1200 units
+        self.assertEqual(by_type["attempt"]["cost_units"], 1200)
+        self.assertGreater(by_type["attempt"]["steps"], 0)
+
+    def test_command_includes_live_validated_flags(self):
+        runner = get_runner("codex")
+        runner.setup({"cli_path": FAKE_CODEX,
+                      "codex_config": {"model_reasoning_effort": "low"}})
+        task = {"id": "t", "instruction": "do it"}
+        # build command without running (spec path can be fake)
+        import tempfile
+
+        with tempfile.TemporaryDirectory() as td:
+            open(os.path.join(td, "toolspec.json"), "w").write("{}")
+            cmd = runner.build_command("PROMPT", os.path.join(td, "toolspec.json"), td)
+        joined = " ".join(cmd)
+        self.assertIn("--approve-for-me", joined)
+        self.assertIn("--ephemeral", joined)
+        self.assertIn('mcp_servers.am-lab-tools.command=', joined)
+        self.assertIn('model_reasoning_effort="low"', joined)
+        # candidate-set steering lives in the episode prompt
+        self.assertIn("ONLY the tools provided", runner._prompt_for({"instruction": "x"}))
+
+    def test_live_validated_disclosure(self):
         runner = get_runner("codex")
         runner.setup({"cli_path": FAKE_CODEX})
-        self.assertIn("EXPERIMENTAL", runner.describe()["disclosure"])
+        self.assertIn("Live-validated against codex-cli 0.149.0-alpha", runner.describe()["disclosure"])
 
 
 class TestRunnerThroughEngine(unittest.TestCase):
