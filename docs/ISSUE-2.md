@@ -13,6 +13,12 @@ observations instead of opaque call logs.
 **First deliverable:** one fact about your server's usage you didn't know —
 plus an honest statement of what **cannot** be known with today's lineage.
 
+**→ Apply directly: [Provider Trial form](https://github.com/roy-tong/AgentMeasure/issues/new?template=5-provider-trial.yml)**
+(five fields, ~2 minutes). Prefer email or this issue thread? Either works.
+Full methodology:
+[`product/AUDIT.md`](https://github.com/roy-tong/AgentMeasure/blob/main/product/AUDIT.md) ·
+[Website](https://roy-tong.github.io/AgentMeasure/).
+
 ## Why this matters
 
 Today every agent-facing tool keeps its own logs in its own shape, so nothing
@@ -27,7 +33,7 @@ process**: remote MCP, hosted MCP, SaaS-backed MCP, or long-running
 self-hosted deployments. (Local/stdio-only projects are welcome as SDK
 implementers, but they don't see the call boundary.)
 
-## What onboarding looks like (~10-15 min)
+## What onboarding looks like (≤30 min)
 
 1. Pick a capability you expose (MCP server, API endpoint, CLI).
 2. Wrap it with `@agentmeasure/mcp` (SDK **v0.1.1**, MIT) — install from the

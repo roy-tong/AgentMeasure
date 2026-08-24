@@ -686,11 +686,31 @@ h3 { font-size: 1.02rem; font-weight: 600; margin-bottom: 8px; letter-spacing: -
   padding: 22px 20px;
   display: flex; flex-direction: column; gap: 12px;
 }
+.trial-k {
+  font-family: var(--mono); font-size: 11px; font-weight: 600;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--ok);
+}
 .trial-point p { font-size: 0.95rem; line-height: 1.5; }
 .trial-actions {
   display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; margin-top: 10px;
 }
+.trial .link-quiet { display: block; text-align: center; }
 .trial .note { text-align: center; border-left: none; padding-left: 0; margin-left: auto; margin-right: auto; }
+
+/* ── category definition (telemetry vs semantics) ─────────────── */
+.telemetry-sig {
+  margin-top: 54px; padding: 26px 30px;
+  border: 1px solid var(--border); border-left: 3px solid var(--ok);
+  border-radius: var(--radius);
+  background: rgba(110,242,163,0.03);
+}
+.telemetry-line {
+  font-size: 1.45rem; font-weight: 600; letter-spacing: -0.01em;
+  line-height: 1.35; color: var(--text);
+}
+.telemetry-line strong { color: var(--ok); }
+.telemetry-sig .note { margin-top: 10px; border-left: none; padding-left: 0; }
 
 /* ── footer ────────────────────────────────────────────────────── */
 .footer { border-top: 1px solid var(--border); background: var(--panel-2); padding: 64px 24px 36px; }

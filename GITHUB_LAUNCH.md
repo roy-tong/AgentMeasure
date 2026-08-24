@@ -4,16 +4,16 @@
 
 ## 1. Repository Settings → About
 
-**Description**（粘贴）：
+**Description**（粘贴，2026-08 官网版统一口径）：
 
 ```text
-Open measurement infrastructure for the Agent Capability Economy — how AI agents discover, choose, use, and derive value from software capabilities (Reach → Choice → Use → Utility → Value). A proposed open measurement standard.
+Open measurement infrastructure for agent-facing software. Separate operations from attempts, evidence from inference, and usage from value. Reach → Choice → Use → Utility → Value.
 ```
 
-**Website（homepage）**（旗舰文章——叙事入口，白皮书帖可从文章内到达）：
+**Website（homepage）**（官网——漏斗枢纽，旗舰文章从官网 Story 入口可达）：
 
 ```text
-https://roy-tong.github.io/en/notes/when-the-software-consumer-becomes-an-agent/
+https://roy-tong.github.io/AgentMeasure/
 ```
 
 **Topics**（逐个添加，共 10 个）：

@@ -84,3 +84,7 @@ Day 8+    you pick an action; optional re-measure proves the before/after
 **Why free?** We're calibrating the measurement against real provider traffic. Your cost is 30 minutes and one review call; ours is the analysis. Both sides can walk away after Day 7.
 
 **What if you find nothing we didn't know?** Then the method needs work, and we'll say so. That outcome is public information about us, not about you.
+
+---
+
+**→ Apply: [Provider Trial form](https://github.com/roy-tong/AgentMeasure/issues/new?template=5-provider-trial.yml)** (five fields, ~2 minutes) · [Program details → Issue #2](https://github.com/roy-tong/AgentMeasure/issues/2) · [Website](https://roy-tong.github.io/AgentMeasure/)
