@@ -1,0 +1,62 @@
+{
+  "agentmeasure_commit": "20807ad39483a6b78d2db056d78af6e4c7196bf4",
+  "aggregator_path": "lab/agentmeasure_lab/analysis.py",
+  "fixture_scope": "synthetic-format-and-aggregation-only",
+  "variant_id": "urusilla-projection",
+  "events": 8,
+  "schema_valid_under_fmt_002": true,
+  "expected_metrics": {
+    "reach": 1,
+    "selected": 1,
+    "operations": 1,
+    "selection_rate": {
+      "numerator": 1,
+      "denominator": 1,
+      "value": 1.0
+    },
+    "operation_success_rate": {
+      "numerator": 1,
+      "denominator": 1,
+      "value": 1.0
+    },
+    "consumption_rate": {
+      "numerator": 1,
+      "denominator": 1,
+      "value": 1.0
+    },
+    "attempts_per_operation": {
+      "numerator": 4,
+      "denominator": 1,
+      "value": 4.0
+    },
+    "median_steps_per_operation": {
+      "value": 5.0,
+      "denominator": 1
+    },
+    "cost_units_per_operation": {
+      "numerator": 25.0,
+      "denominator": 1,
+      "value": 25.0
+    }
+  },
+  "urusilla_sidecar_only": {
+    "attempt_ids": [
+      "attempt-001",
+      "attempt-002",
+      "attempt-003",
+      "attempt-004"
+    ],
+    "retry_edges": [
+      ["attempt-002", "attempt-001"],
+      ["attempt-004", "attempt-003"]
+    ],
+    "cache_roles": ["write", "read", "none", "none"],
+    "fallback_edges": [
+      ["attempt-003", "attempt-002"],
+      ["attempt-004", "attempt-002"]
+    ],
+    "provider_total_tokens_unreduced": 25,
+    "task_outcome": "success"
+  },
+  "claim_boundary": "This fixture is project-authored synthetic evidence. It is not an AgentMeasure endorsement, a Langfuse adoption, an external reproduction, or a real provider-cost observation."
+}

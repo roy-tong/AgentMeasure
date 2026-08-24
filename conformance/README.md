@@ -24,7 +24,23 @@
 ```bash
 python3 conformance/runners/run_metrics.py    # 指标 vectors（M2.2 / M2.5 / M4.1）
 python3 verify_vectors.py                      # receipt/correlation vectors
+python3 conformance/runners/run_external_fixture.py  # 外部 fixture（Urusilla-001，#8/#9 守卫）
 ```
+
+## 外部 Fixture
+
+`conformance/vectors/external/<source>-<seq>/` 接收第三方提交的 fixture
+（含 mutations）。首个被接收的：
+
+- **urusilla-001** — @jaden3824 (Urusilla) 的 project-authored synthetic
+  8-event fixture（cache/retry/fallback 拓扑，FMT-002），来自首次外部
+  conformance pass（langfuse/langfuse#16383），按 #8/#9 的承诺接入。
+  Runner 守卫：schema 有效性、#8 root-sibling 变异必须被拒、指标逐项复现
+  expected.json、#9 篡改声明必须显式 `reconciliation: failed`。
+  **Claim boundary 原样保留**：synthetic evidence，非 endorsement、非外部复现。
+
+提交新 fixture：PR 附 events + expected + mapping（或 sidecar）三件套，
+runner 按上面四类守卫生成；claim boundary 由提交方声明、AgentMeasure 复核。
 
 ## 语言无关性
 
