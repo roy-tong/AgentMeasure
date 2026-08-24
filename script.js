@@ -132,4 +132,19 @@
     }
     if (replayBtn) replayBtn.addEventListener("click", playConsole);
   }
+
+  /* ── project status: patch static values from status.json ──
+     index.html ships with correct static values as the fallback;
+     status.json lets the repo bump them without touching the page.
+     Any fetch or parse failure leaves the static values in place. */
+  fetch("status.json", { cache: "no-cache" })
+    .then(function (res) { return res.ok ? res.json() : null; })
+    .then(function (s) {
+      if (!s) return;
+      document.querySelectorAll("[data-status]").forEach(function (el) {
+        var key = el.getAttribute("data-status");
+        if (s[key] !== undefined && s[key] !== null) el.textContent = s[key];
+      });
+    })
+    .catch(function () { /* offline / file:// — static values stay */ });
 })();
