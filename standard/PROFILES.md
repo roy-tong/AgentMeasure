@@ -17,11 +17,14 @@
 ## P2. Claude Code Profile（OTLP 观察）
 
 - 可靠：tool result（tool_name/tool_use_id/success/duration_ms/error_type）、
-  **Consumption 信号**（API request telemetry 带 mcp_server.name/mcp_tool.name =
-  实际消费了该 tool result）、trace
+  **Context Availability 信号**（API request telemetry 带 mcp_server.name/mcp_tool.name =
+  该 tool result 进入后续 model context）、trace
 - Observation：`observer_side=client, provenance=otel`
-- **Consumption 的第一个实证平台**：tool_result(tool_use_id=X) → 后续
-  request(mcp_tool.name) 即消费链（reference/collector/consumption.py 已实现）
+- **Context Availability 的第一个可实证平台**：tool_result(tool_use_id=X) → 后续
+  request(mcp_tool.name) 即 availability 链（reference/collector/consumption.py 已实现）
+- 边界（#11）：available ≠ referenced ≠ counterfactually influential。本 profile 只实证
+  availability；reference 是弱行为证据；causal influence 需 ablation/rerun，属 experiment
+  层（Lab），single trace 不可证
 
 ## P3. DeepSeek Harness Profile（插件观察）
 
@@ -46,5 +49,5 @@
 | Trace | ❌ | ✅ | depends | ✅ |
 | Success 判定 | ⚠️ | ✅ | ✅ | ✅ |
 | Duration | ⚠️ | ✅ | ✅ | ✅ |
-| Consumption 可观察 | ❌ | ✅ MCP | ? | — |
+| Context Availability 可观察 | ❌ | ✅ MCP | ? | — |
 | 独立构成 cross-side corroborated | ❌ | ❌ | ❌ | ❌ |
