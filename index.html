@@ -59,7 +59,6 @@
         <p class="eyebrow reveal">Open measurement infrastructure for agent-facing software</p>
         <h1 class="reveal d1">Know what your agent usage metrics <em>actually</em> count.</h1>
         <p class="lede reveal d2">Separate logical operations from attempts, preserve retry and cost evidence, and show what your telemetry can — and cannot — prove.</p>
-        <p class="body-secondary reveal d3">AgentMeasure provides open measurement semantics for software capabilities used by AI agents.</p>
         <div class="hero-actions reveal d4">
           <a class="btn btn-primary" href="#try">Run the 2-minute demo</a>
           <a class="btn btn-ghost" href="https://github.com/roy-tong/AgentMeasure" target="_blank" rel="noopener">View on GitHub&nbsp;↗</a>
@@ -116,7 +115,6 @@
     <div class="wrap">
       <p class="eyebrow reveal">01 — The problem</p>
       <h2 class="reveal d1">The software consumer changed.<br>The measurement stack didn’t.</h2>
-      <p class="body-secondary reveal d2">A capability passes through many states between existing and creating value. Most telemetry collapses them into one vague number: “tool usage.”</p>
 
       <div class="inequalities" role="list">
         <div class="ineq reveal" role="listitem"><span class="state">Available</span><span class="neq">≠</span><span class="state">Presented</span></div>
@@ -132,6 +130,24 @@
       <p class="note reveal d5">Three attempts of one operation are not three billable operations — unless the metering policy says so.</p>
 
       <p class="lede-sm reveal">Agent systems collapse these states into vague “tool usage.”<br><strong>AgentMeasure keeps them separate.</strong></p>
+
+      <div class="who-grid">
+        <div class="who-card reveal">
+          <span class="who-k">Tool providers</span>
+          <p>Agents hammer your endpoint; retries inflate every count.</p>
+          <span class="who-v">Price by operation, not by noise</span>
+        </div>
+        <div class="who-card reveal d1">
+          <span class="who-k">Platforms &amp; metering</span>
+          <p>Billing rides on usage numbers — with CI and synthetic traffic inside them.</p>
+          <span class="who-v">Meters that survive an audit</span>
+        </div>
+        <div class="who-card reveal d2">
+          <span class="who-k">Runtime evaluators</span>
+          <p>Every runtime counts differently, so comparisons are folklore.</p>
+          <span class="who-v">Same semantics across five runtimes</span>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -140,7 +156,6 @@
     <div class="wrap">
       <p class="eyebrow reveal">02 — Claim discipline</p>
       <h2 class="reveal d1">Similar events. Different facts.</h2>
-      <p class="body-secondary reveal d2">Three distinctions most telemetry stacks blur — and AgentMeasure refuses to.</p>
 
       <div class="claims">
         <div class="claim reveal">
@@ -198,7 +213,7 @@
     <div class="wrap">
       <p class="eyebrow reveal">03 — The measurement model</p>
       <h2 class="reveal d1">From reach to value.</h2>
-      <p class="body-secondary reveal d2">Metric families, not a universal KPI. A search capability, a booking API, and a compute job have different value structures — the same semantics map onto all of them.</p>
+      <p class="body-secondary reveal d2">Metric families, not a universal KPI — the same semantics map onto search, booking, and compute.</p>
 
       <p class="chain-label reveal d2" aria-hidden="true">MEASUREMENT CHAIN</p>
       <div class="chain">
@@ -286,13 +301,12 @@
           <div class="fact-item reveal d3"><span class="fact-no">02</span><div><h3>Provider-side measurement</h3><p>The SDK wraps your tool handlers and emits canonical observations — one schema, six payload classes.</p></div></div>
           <div class="fact-item reveal d4"><span class="fact-no">03</span><div><h3>Not on the critical path</h3><p>Non-blocking, durable spool with loss accounting. If the SDK fails, your server doesn’t.</p></div></div>
           <div class="fact-item reveal d5"><span class="fact-no">04</span><div><h3>Your data can stay local</h3><p>JSONL on your machine, analytics generated locally. Hosted ingestion is explicit opt-in, later.</p></div></div>
-          <p class="note reveal d5">MCP is not required — it is the first reference surface. Your software does not need to be open source.</p>
+          <p class="note reveal d5">MCP is the first reference surface, not a requirement. Closed-source software is fine.</p>
         </div>
       </div>
 
       <div class="telemetry-sig reveal d5">
         <p class="telemetry-line"><strong>Telemetry records events.</strong> AgentMeasure defines what those events&nbsp;mean.</p>
-        <p class="note">AgentMeasure does not replace your telemetry. It defines how agent-facing software usage should be counted, correlated, and interpreted.</p>
       </div>
     </div>
   </section>
@@ -302,7 +316,7 @@
     <div class="wrap">
       <p class="eyebrow reveal">05 — Available today</p>
       <h2 class="reveal d1">What works today.</h2>
-      <p class="body-secondary reveal d2">This is not a thesis page. The standard, the SDK, and local analytics are shipped — with tests, conformance vectors, and published harness profiles.</p>
+      <p class="body-secondary reveal d2">Shipped, with tests, conformance vectors, and published profiles.</p>
 
       <div class="specsheet reveal d3">
         <div class="spec-row">
@@ -348,7 +362,7 @@
         <span class="chip">No cloud required</span>
         <span class="chip">Data stays local</span>
       </div>
-      <p class="note reveal d5">Status discipline is the same as everywhere else: shipped is shipped, planned is planned. This table tracks <a href="https://github.com/roy-tong/AgentMeasure/releases" target="_blank" rel="noopener">releases</a> and <a href="https://github.com/roy-tong/AgentMeasure/blob/main/ROADMAP.md" target="_blank" rel="noopener">the roadmap</a>.</p>
+      <p class="note reveal d5">Numbers track <a href="https://github.com/roy-tong/AgentMeasure/releases" target="_blank" rel="noopener">releases</a> and <a href="https://github.com/roy-tong/AgentMeasure/blob/main/ROADMAP.md" target="_blank" rel="noopener">the roadmap</a>.</p>
     </div>
   </section>
 
@@ -416,12 +430,14 @@
         </div>
       </div>
 
+      <p class="trial-what reveal d4"><strong>You get:</strong> a Measurement Report plus a 45-minute review call — findings as business conclusions, each with its evidence class.</p>
+
       <div class="trial-actions reveal d5">
         <a class="btn btn-primary" href="https://github.com/roy-tong/AgentMeasure/issues/new?template=5-provider-trial.yml" target="_blank" rel="noopener">Start a 7-day audit</a>
         <a class="btn btn-ghost" href="https://github.com/roy-tong/AgentMeasure/issues/2" target="_blank" rel="noopener">See how the program works&nbsp;→</a>
       </div>
       <a class="link-quiet reveal d5" href="https://github.com/roy-tong/AgentMeasure/blob/main/product/AUDIT.md" target="_blank" rel="noopener">Read the audit methodology&nbsp;→</a>
-      <p class="note reveal d5">We’re calibrating the measurement model against real provider traffic — three providers, one capability each. If the method breaks on your data, we document that too.</p>
+      <p class="note reveal d5">Three providers, one capability each. If the method breaks on your data, we publish that — the discipline already applied to six public claims in <a href="https://github.com/roy-tong/AgentMeasure/blob/main/reports/benchmark-run-001.md" target="_blank" rel="noopener">Benchmark Run #001</a>.</p>
     </div>
   </section>
 
@@ -430,7 +446,7 @@
     <div class="wrap">
       <p class="eyebrow reveal">08 — Open standard</p>
       <h2 class="reveal d1">One measurement language<br>across agent runtimes.</h2>
-      <p class="body-secondary reveal d2">Portable semantics need a public record of observation blind spots. Not “works with every framework” — an exact account of what each runtime can and cannot observe.</p>
+      <p class="body-secondary reveal d2">A public record of observation blind spots — what each runtime can and cannot observe.</p>
 
       <div class="matrix-wrap reveal d3">
         <table class="matrix">
@@ -544,7 +560,7 @@
       </div>
 
       <p class="lede-sm reveal d4">Before capabilities can be priced, compared, or purchased by agents,<br>they need a shared measurement layer.</p>
-      <p class="note reveal d5">That layer is the foundation for <strong>Capability as a Service</strong> — a long-term direction, not a product we sell today. AgentMeasure standardizes economic facts, not money movement; payment rails stay with existing payment infrastructure.</p>
+      <p class="note reveal d5">That layer is the foundation for <strong>Capability as a Service</strong> — a direction, not a product sold today. The standard defines economic facts; money movement stays with payment rails.</p>
     </div>
   </section>
 
