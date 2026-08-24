@@ -28,6 +28,11 @@ SCHEMA_FILE = ROOT.parent / "schemas" / "entity.schema.json"
 
 def validate(value, schema, path: str = "$") -> list:
     errors = []
+    # fail-closed（#8 同类防护）：本子集不支持的组合关键字显式报错，
+    # 绝不静默跳过——否则 schema 声明了 oneOf 而校验器装作没看见。
+    for kw in ("oneOf", "anyOf", "allOf", "not"):
+        if kw in schema:
+            errors.append(f"{path}: schema uses unsupported keyword {kw!r} (fail-closed)")
     typ = schema.get("type")
     if typ == "object":
         if not isinstance(value, dict):

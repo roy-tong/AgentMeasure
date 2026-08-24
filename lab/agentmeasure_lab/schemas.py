@@ -41,27 +41,34 @@ def validate(instance: Any, schema: Dict[str, Any], path: str = "", defs: Dict[s
         validate(instance, defs[name], path, defs)
         return
 
+    # #8: oneOf/anyOf are compositional keywords, not terminators. After a
+    # branch matches, sibling keywords at the same level (type / required /
+    # properties / ...) MUST still be evaluated — no early return.
     if "oneOf" in schema:
-        errors = []
         ok = 0
+        first_error = None
         for sub in schema["oneOf"]:
             try:
                 validate(instance, sub, path, defs)
                 ok += 1
             except SchemaError as e:
-                errors.append(e)
+                if first_error is None:
+                    first_error = e
         if ok != 1:
-            raise SchemaError(path, f"oneOf: matched {ok} branches (expected exactly 1)")
-        return
+            detail = f" (first branch error: {first_error.message})" if first_error is not None else ""
+            raise SchemaError(path, f"oneOf: matched {ok} branches (expected exactly 1){detail}")
 
     if "anyOf" in schema:
+        matched = False
         for sub in schema["anyOf"]:
             try:
                 validate(instance, sub, path, defs)
-                return
+                matched = True
+                break
             except SchemaError:
                 continue
-        raise SchemaError(path, "anyOf: no branch matched")
+        if not matched:
+            raise SchemaError(path, "anyOf: no branch matched")
 
     if "const" in schema and instance != schema["const"]:
         raise SchemaError(path, f"expected const {schema['const']!r}, got {instance!r}")
