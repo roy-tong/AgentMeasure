@@ -67,6 +67,8 @@ OBSERVATION_KEYS = (
     "validity_source",      # none|collector_derived|runtime_propagated
     "operation_id",         # 逻辑使用（Core §2.4）；未知留 null（不变量 23：无证据不归并）
     "task_id",              # 任务单位（谱系起点）；未知留 null
+    "task_success",         # task_outcome 声明的任务终态（#9：对账用，非 attempt 事实）
+    "attempt_count",        # task_outcome 声明的 attempt 数（#9：对账用；未声明 null）
 )
 
 USAGE_CONTEXTS = ("production", "development", "test", "benchmark",

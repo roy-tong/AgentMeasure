@@ -73,7 +73,9 @@ def connect(db_path: Path = DB_DEFAULT) -> sqlite3.Connection:
             context_source TEXT,
             validity_source TEXT,
             operation_id TEXT,
-            task_id TEXT
+            task_id TEXT,
+            task_success INTEGER,
+            attempt_count INTEGER
         )
         """
     )
@@ -113,6 +115,7 @@ def connect(db_path: Path = DB_DEFAULT) -> sqlite3.Connection:
     # 旧库迁移：补谱系列与 0.4.2 字段（Draft 0.4，Core §2.4）
     for table, cols in (
         ("observations", {"operation_id": "TEXT", "task_id": "TEXT",
+                          "task_success": "INTEGER", "attempt_count": "INTEGER",
                           "surface_id": "TEXT", "surface_namespace": "TEXT",
                           "provider_claim": "TEXT", "capability_claim": "TEXT",
                           "source_sequence": "INTEGER", "observation_type": "TEXT",
@@ -149,8 +152,8 @@ def store_observation(conn, obs: dict) -> bool:
              signature, key_id, source_event_id, source_sequence, source_instance_id,
              sequence_epoch, dropped_since_last_report, buffer_overflow, trust_domain,
              sampling, usage_context, validity, context_source, validity_source,
-             operation_id, task_id)
-            VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+             operation_id, task_id, task_success, attempt_count)
+            VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
             """,
             tuple(obs.get(k) for k in OBSERVATION_KEYS),
         )

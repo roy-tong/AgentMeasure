@@ -13,6 +13,10 @@
     "task_success": {
       "type": "boolean"
     },
+    "attempt_count": {
+      "type": "integer",
+      "description": "Optional declared attempt count; the aggregator reconciles it against attempt rows (#9), never trusts it."
+    },
     "model": {
       "type": "string"
     },

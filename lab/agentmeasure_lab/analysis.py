@@ -76,8 +76,21 @@ def aggregate(events: List[Dict[str, Any]], key_fields: Tuple[str, ...] = ("vari
                 "steps_per_op": [],
                 "cost_units": 0.0,
                 "steps_by_assignment": {},
+                # #9 reconciliation state: attempt rows are the facts,
+                # operation_result declarations are claims that must reconcile.
+                "attempt_outcomes_by_op": {},
+                "op_declared_keys": {},
+                "op_recon_failures": [],
             }
         return cells[key]
+
+    def _derived_outcome(outcomes: List[str]) -> Optional[str]:
+        """Derive operation outcome from attempt rows (rule op-success-any/1)."""
+        if any(o == "success" for o in outcomes):
+            return "success"
+        if any(o == "failure" for o in outcomes):
+            return "failure"
+        return "unresolved" if outcomes else None
 
     for ev in events:
         c = cell_for(ev)
@@ -92,11 +105,53 @@ def aggregate(events: List[Dict[str, Any]], key_fields: Tuple[str, ...] = ("vari
             c["steps_by_assignment"].setdefault(aid, 0)
             c["steps_by_assignment"][aid] += ev["steps"]
             c["cost_units"] += ev["cost_units"]
+            # measured attempt rows, grouped per operation (#9)
+            op_key = (aid, ev.get("operation_index"))
+            c["attempt_outcomes_by_op"].setdefault(op_key, []).append(ev["outcome"])
         elif kind == "operation_result":
+            op_key = (ev["assignment_id"], ev.get("operation_index"))
+            rows = c["attempt_outcomes_by_op"].get(op_key, [])
+            declared_outcome = ev["outcome"]
+            declared_attempts = ev["attempts"]
+            derived = _derived_outcome(rows)
+            last_outcome = rows[-1] if rows else None
+            reasons = []
+            if op_key in c["op_declared_keys"]:
+                reasons.append("duplicate operation_result declaration for this operation")
+            c["op_declared_keys"][op_key] = True
+            if not rows:
+                reasons.append(
+                    f"no attempt rows grouped under this operation "
+                    f"(declared attempts={declared_attempts})")
+            else:
+                if declared_attempts != len(rows):
+                    reasons.append(
+                        f"declared attempts={declared_attempts} but {len(rows)} attempt row(s)")
+                if derived is not None and declared_outcome != derived:
+                    reasons.append(
+                        f"declared outcome={declared_outcome!r} but attempt rows derive "
+                        f"{derived!r} (rule op-success-any/1; last attempt outcome={last_outcome!r})")
+            # attempts and outcome are taken from measured rows, never from
+            # the declaration (#9: never silent trust)
             c["operations"] += 1
-            c["attempts"] += ev["attempts"]
-            if ev["outcome"] == "success":
+            c["attempts"] += len(rows)
+            if derived == "success":
                 c["operations_succeeded"] += 1
+            if reasons:
+                rec = {
+                    "assignment_id": ev["assignment_id"],
+                    "operation_index": ev.get("operation_index"),
+                    "reasons": reasons,
+                    "declared": {"outcome": declared_outcome, "attempts": declared_attempts},
+                    "actual": {"attempt_rows": len(rows),
+                               "derived_outcome": derived, "last_outcome": last_outcome},
+                }
+                # terminal-outcome note per issue #9: last attempt's outcome
+                if rows and declared_outcome == "success" and last_outcome != "success":
+                    rec["note"] = (
+                        f"declared success but last attempt outcome={last_outcome!r}; "
+                        "accepted under op-success-any/1, disclosed for diagnosis")
+                c["op_recon_failures"].append(rec)
         elif kind == "consumption":
             if ev["consumed"]:
                 c["consumed"] += 1
@@ -105,10 +160,23 @@ def aggregate(events: List[Dict[str, Any]], key_fields: Tuple[str, ...] = ("vari
     for key, c in cells.items():
         steps = list(c["steps_by_assignment"].values())
         med = stats.median(steps)
+        declared_ops = len(c["op_declared_keys"])
+        recon_failed = len(c["op_recon_failures"])
         out[key] = {
             "reach": c["reach"],
             "selected": c["selected"],
             "operations": c["operations"],
+            "operation_reconciliation": {
+                "declared_summaries": declared_ops,
+                "reconciled": declared_ops - recon_failed,
+                "failed": recon_failed,
+                "failures": c["op_recon_failures"][:20],
+                "status": ("failed" if recon_failed
+                           else "passed" if declared_ops
+                           else "no_declared_summaries"),
+                "note": ("operation_result declarations are reconciled against "
+                         "attempt rows; counts/outcomes use measured rows (#9)"),
+            },
             "selection_rate": _rate(
                 c["selected"], c["reach"], "assignment",
                 "subject selected / decision opportunities (reach events)",

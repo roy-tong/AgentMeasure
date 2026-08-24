@@ -157,6 +157,56 @@ def main() -> int:
         fails.append(f"validity-source: qualified via provider_configuration validity")
     print("core-5: provider_configuration validity=normal -> not qualified OK")
 
+    # 6) #9 operation summary reconciliation：task_outcome 声明 vs attempt rows
+    #    a) 一致声明（2 attempts，最后一个 success，task_success=true, attempt_count=2）→ passed
+    #    b) 矛盾声明（attempt_count=5 但实际 2 行；task_success=false 但最后 success）→ failed
+    events = []
+    for i, outcome in enumerate(("failure", "success")):
+        events.append(envelope("attempt_started",
+                               {"tool_call_id": f"tc-ok-{i}", "task_id": "tk-ok"},
+                               "mcp-wrapper@t", "server", f"2026-08-16T05:00:0{i}Z"))
+        events.append(envelope("attempt_completed",
+                               {"tool_call_id": f"tc-ok-{i}", "outcome": outcome},
+                               "mcp-wrapper@t", "server", f"2026-08-16T05:00:0{i}Z"))
+    events.append(envelope("task_outcome",
+                           {"task_id": "tk-ok", "task_success": True, "attempt_count": 2},
+                           "mcp-wrapper@t", "server", "2026-08-16T05:00:10Z"))
+    for i, outcome in enumerate(("failure", "success")):
+        events.append(envelope("attempt_started",
+                               {"tool_call_id": f"tc-bad-{i}", "task_id": "tk-bad"},
+                               "mcp-wrapper@t", "server", f"2026-08-16T05:01:0{i}Z"))
+        events.append(envelope("attempt_completed",
+                               {"tool_call_id": f"tc-bad-{i}", "outcome": outcome},
+                               "mcp-wrapper@t", "server", f"2026-08-16T05:01:0{i}Z"))
+    events.append(envelope("task_outcome",
+                           {"task_id": "tk-bad", "task_success": False, "attempt_count": 5},
+                           "mcp-wrapper@t", "server", "2026-08-16T05:01:10Z"))
+    conn, _ = write_and_ingest(events, "reconciliation")
+    s = compute(conn, PROJECT)
+    rec = s["operation_summary_reconciliation"]
+    if rec["status"] != "failed":
+        fails.append(f"reconciliation: status {rec['status']} != failed (mismatch must surface)")
+    if rec["declared_summaries"] != 2:
+        fails.append(f"reconciliation: declared {rec['declared_summaries']} != 2")
+    if rec["failed"] != 1 or rec["reconciled"] != 1:
+        fails.append(f"reconciliation: {rec}")
+    bad = next((f for f in rec["failures"] if f["task_id"] == "tk-bad"), None)
+    if not bad or len(bad["reasons"]) != 2:
+        fails.append(f"reconciliation: tk-bad reasons {bad}")
+    ok = any(f["task_id"] == "tk-ok" for f in rec["failures"])
+    if ok:
+        fails.append("reconciliation: consistent tk-ok must NOT be a failure")
+    print("core-6: declared summary vs attempt rows -> mismatch surfaces as reconciliation: failed OK")
+
+    # 7) #9 空 dataset：无 task_outcome 声明 → no_declared_summaries（不报错）
+    events = [envelope("attempt_started", {"tool_call_id": "tc-none"},
+                       "mcp-wrapper@t", "server", "2026-08-16T06:00:00Z")]
+    conn, _ = write_and_ingest(events, "no-summary")
+    rec = compute(conn, PROJECT)["operation_summary_reconciliation"]
+    if rec["status"] != "no_declared_summaries":
+        fails.append(f"no-summary: status {rec['status']} != no_declared_summaries")
+    print("core-7: no declared summaries -> no_declared_summaries OK")
+
     if fails:
         print("CORE GATE FAIL:")
         for f in fails:

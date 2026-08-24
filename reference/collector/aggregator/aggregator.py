@@ -337,10 +337,77 @@ def compute(conn, project_id: str, days: int = DAYS) -> dict:
         caller_by_runtime[rt] = caller_by_runtime.get(rt, 0) + r["n"]
         caller_by_strength[st] = caller_by_strength.get(st, 0) + r["n"]
 
+    # ---- Operation summary reconciliation（#9：declared task_outcome 绝不静默信任） ----
+    # task_outcome = provider 声明的 operation 级 summary（终态/可选 attempt 数）。
+    # 每条声明必须与该 task 下的 attempt rows 对账：
+    #   declared attempt_count vs 实际行数；declared task_success vs 最后一个 attempt 的 outcome。
+    # 不一致 → reconciliation: failed（显式披露），绝不照单全收。
+    declared_rows = conn.execute(
+        """
+        SELECT task_id, task_success, attempt_count, observed_at FROM observations
+        WHERE project_id=? AND observed_at>=? AND observation_type='task_outcome'
+          AND task_id IS NOT NULL AND task_id != ''
+        ORDER BY observed_at
+        """,
+        (project_id, since),
+    ).fetchall()
+    declared_by_task: dict = {}
+    for r in declared_rows:
+        declared_by_task.setdefault(r["task_id"], []).append(r)
+    recon_failures = []
+    for task_id, decls in declared_by_task.items():
+        attempt_rows = conn.execute(
+            """
+            SELECT outcome, started_at FROM invocations
+            WHERE project_id=? AND task_id=?
+            ORDER BY started_at
+            """,
+            (project_id, task_id),
+        ).fetchall()
+        d = decls[-1]  # 取最新声明
+        actual_n = len(attempt_rows)
+        last_outcome = attempt_rows[-1]["outcome"] if attempt_rows else None
+        problems = []
+        if len(decls) > 1:
+            successes = {r["task_success"] for r in decls}
+            counts = {r["attempt_count"] for r in decls}
+            if len(successes) > 1 or len(counts) > 1:
+                problems.append(f"conflicting declarations ({len(decls)} task_outcome rows)")
+        if not attempt_rows:
+            problems.append("no attempt rows grouped under this task")
+        else:
+            if d["attempt_count"] is not None and d["attempt_count"] != actual_n:
+                problems.append(
+                    f"declared attempt_count={d['attempt_count']} but {actual_n} attempt row(s)")
+            if d["task_success"] is not None:
+                expected = ("success",) if d["task_success"] else ("failure", "denied")
+                if last_outcome not in expected:
+                    problems.append(
+                        f"declared task_success={bool(d['task_success'])} "
+                        f"but last attempt outcome={last_outcome!r}")
+        if problems:
+            recon_failures.append({
+                "task_id": task_id,
+                "reasons": problems,
+                "declared": {"task_success": bool(d["task_success"]) if d["task_success"] is not None else None,
+                             "attempt_count": d["attempt_count"]},
+                "actual": {"attempt_rows": actual_n, "last_outcome": last_outcome},
+            })
+    operation_summary_reconciliation = {
+        "declared_summaries": len(declared_by_task),
+        "reconciled": len(declared_by_task) - len(recon_failures),
+        "failed": len(recon_failures),
+        "failures": recon_failures[:20],
+        "status": ("failed" if recon_failures
+                   else "passed" if declared_by_task
+                   else "no_declared_summaries"),
+    }
+
     return {
         "project": project_id,
         "days": days,
         "policy": describe(MEASUREMENT_POLICY),
+        "operation_summary_reconciliation": operation_summary_reconciliation,  # #9
         "active_clients": active_clients,
         "acd": acd,
         "logical_invocations": logical_invocations,   # M3.1：已解析 Operation 数（0.3 回退时 = attempts）
