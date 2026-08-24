@@ -19,6 +19,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./styles.css">
+  <script>document.documentElement.classList.add("js");</script>
   <script defer src="./script.js"></script>
 </head>
 <body>
@@ -34,12 +35,12 @@
         <a href="#why">Why</a>
         <a href="#measure">Measure</a>
         <a href="#how">How it works</a>
-        <a href="#lab">Lab</a>
         <a href="#standard">Spec</a>
+        <a href="#lab">Lab</a>
         <a class="ext" href="https://github.com/roy-tong/AgentMeasure" target="_blank" rel="noopener">GitHub&nbsp;↗</a>
       </nav>
       <div class="nav-cta">
-        <a class="btn btn-primary btn-sm" href="#try">Run Demo</a>
+        <a class="btn btn-primary btn-sm" href="#trial">Start a trial</a>
         <button class="nav-toggle" id="nav-toggle" aria-expanded="false" aria-controls="nav-links" aria-label="Toggle menu">
           <span></span><span></span><span></span>
         </button>
@@ -49,7 +50,7 @@
 
   <main id="main">
 
-  <!-- ══════════════════ 01 · HERO ══════════════════ -->
+  <!-- ══════════════════ HERO ══════════════════ -->
   <section class="hero" aria-label="Introduction">
     <div class="hero-grid">
       <div class="hero-copy">
@@ -72,22 +73,17 @@
           <button class="console-replay" id="console-replay" type="button" title="Replay trace">replay</button>
         </div>
         <div class="console-body" id="console-body">
-          <div class="cline"><span class="k">AGENTMEASURE</span><span class="dim">/</span><span class="k">TRACE 0192</span></div>
-          <div class="cline gap"></div>
           <div class="cline"><span class="k">USER INTENT</span></div>
           <div class="cline"><span class="v">Book a table tonight</span></div>
           <div class="cline rule"></div>
           <div class="cline"><span class="k">OPERATION</span><span class="num right">01</span></div>
-          <div class="cline gap"></div>
           <div class="cline"><span class="k">ATTEMPT</span><span class="num right">01</span></div>
           <div class="cline"><span class="path">provider_call</span><span class="tag-failed right">FAILED</span></div>
-          <div class="cline gap"></div>
           <div class="cline"><span class="k">ATTEMPT</span><span class="num right">02</span></div>
           <div class="cline"><span class="path">provider_call</span><span class="tag-ok right">SUCCESS</span></div>
           <div class="cline rule"></div>
           <div class="cline"><span class="k">OPERATIONS</span><span class="num right">1</span></div>
           <div class="cline"><span class="k">ATTEMPTS</span><span class="num right">2</span></div>
-          <div class="cline gap"></div>
           <div class="cline"><span class="k">Operation success</span><span class="num-ok right">100%</span></div>
           <div class="cline"><span class="k">Attempt success</span><span class="num-warn right">50%</span></div>
           <div class="cline rule"></div>
@@ -113,7 +109,7 @@
     </div>
   </section>
 
-  <!-- ══════════════════ 02 · THE PROBLEM ══════════════════ -->
+  <!-- ══════════════════ 01 · THE PROBLEM ══════════════════ -->
   <section class="section" id="why" aria-label="The problem">
     <div class="wrap">
       <p class="eyebrow reveal">01 — The problem</p>
@@ -137,63 +133,21 @@
     </div>
   </section>
 
-  <!-- ══════════════════ 03 · THE MEASUREMENT STACK ══════════════════ -->
-  <section class="section section-panel" id="measure" aria-label="The measurement stack">
+  <!-- ══════════════════ 02 · CLAIM DISCIPLINE (visual moment) ══════════════════ -->
+  <section class="section section-panel" id="facts" aria-label="Claim discipline">
     <div class="wrap">
-      <p class="eyebrow reveal">02 — The measurement stack</p>
-      <h2 class="reveal d1">From reach to value.</h2>
-      <p class="body-secondary reveal d2">Metric families, not a universal KPI. A search capability, a booking API, and a compute job have different value structures — the same facts map onto all of them.</p>
-
-      <div class="pipeline">
-        <div class="stage reveal">
-          <span class="stage-no">01</span>
-          <span class="stage-name">Reach</span>
-          <span class="stage-q">Did the capability enter the choice set?</span>
-          <span class="stage-status st-ok">Defined</span>
-        </div>
-        <div class="stage reveal d1">
-          <span class="stage-no">02</span>
-          <span class="stage-name">Choice</span>
-          <span class="stage-q">Was it selected?</span>
-          <span class="stage-status st-ok">Defined</span>
-        </div>
-        <div class="stage reveal d2">
-          <span class="stage-no">03</span>
-          <span class="stage-name">Use</span>
-          <span class="stage-q">Was it actually executed?</span>
-          <span class="stage-status st-ok">Defined</span>
-        </div>
-        <div class="stage reveal d3">
-          <span class="stage-no">04</span>
-          <span class="stage-name">Utility</span>
-          <span class="stage-q">Was the result consumed?</span>
-          <span class="stage-status st-partial">Partial</span>
-        </div>
-        <div class="stage reveal d4">
-          <span class="stage-no">05</span>
-          <span class="stage-name">Value</span>
-          <span class="stage-q">Did it improve the outcome?</span>
-          <span class="stage-status st-draft">Draft</span>
-        </div>
-        <div class="pipeline-line" aria-hidden="true"></div>
-      </div>
-
-      <p class="note reveal d5">We do not pretend everything is already measurable. The evidence boundary — defined, partial, draft — is part of the design, stated on every number.</p>
-    </div>
-  </section>
-
-  <!-- ══════════════════ 04 · CLAIM DISCIPLINE ══════════════════ -->
-  <section class="section" id="facts" aria-label="Three distinctions">
-    <div class="wrap">
-      <p class="eyebrow reveal">03 — Claim discipline</p>
+      <p class="eyebrow reveal">02 — Claim discipline</p>
       <h2 class="reveal d1">Similar events. Different facts.</h2>
       <p class="body-secondary reveal d2">Three distinctions most telemetry stacks blur — and AgentMeasure refuses to.</p>
 
-      <div class="distinctions">
-        <article class="dist reveal">
-          <span class="dist-no">01</span>
-          <h3><span class="fact">Attempt</span> <span class="neq-sm">≠</span> <span class="fact">Operation</span></h3>
-          <div class="dist-diagram" aria-label="One intent with two attempts equals one operation">
+      <div class="claims">
+        <div class="claim reveal">
+          <div class="claim-main">
+            <span class="claim-no">01</span>
+            <p class="claim-line"><span>Attempt</span><span class="neq-big">≠</span><span>Operation</span></p>
+            <p class="claim-cap">Attempts are execution facts. Operations are logical intents. Retries are multiple attempts of one operation — not “2 operations with 50% success.”</p>
+          </div>
+          <div class="claim-diagram" aria-label="One intent with two attempts equals one operation">
             <div class="dl">1 intent</div>
             <div class="dl dim">↓</div>
             <div class="dl">Attempt 01 <span class="x">✕</span></div>
@@ -201,13 +155,15 @@
             <div class="dl dim">↓</div>
             <div class="dl hl">= 1 Operation</div>
           </div>
-          <p>Attempts are execution facts. Operations are logical intents. Retries are multiple attempts of one operation — mixing the two is how agent reliability reports get distorted.</p>
-        </article>
+        </div>
 
-        <article class="dist reveal d1">
-          <span class="dist-no">02</span>
-          <h3><span class="fact">Returned</span> <span class="neq-sm">≠</span> <span class="fact">Consumed</span></h3>
-          <div class="dist-diagram" aria-label="A tool returned a result; whether the caller consumed it is a separate fact">
+        <div class="claim reveal d1">
+          <div class="claim-main">
+            <span class="claim-no">02</span>
+            <p class="claim-line"><span>Returned</span><span class="neq-big">≠</span><span>Consumed</span></p>
+            <p class="claim-cap">The tool returned a result. Did the caller actually use it? Returned is observable; consumed needs evidence. Unknown is a valid, first-class answer.</p>
+          </div>
+          <div class="claim-diagram" aria-label="A tool returned a result; whether the caller consumed it is a separate fact">
             <div class="dl">Tool returned result</div>
             <div class="dl dim">↓</div>
             <div class="dl warn">?</div>
@@ -215,26 +171,79 @@
             <div class="dl gap-line"><span class="k2">RETURNED</span><span class="ok">observable</span></div>
             <div class="dl gap-line"><span class="k2">CONSUMED</span><span class="warn">needs evidence</span></div>
           </div>
-          <p>Unknown is a valid, first-class answer. AgentMeasure never records unverified consumption — the field stays <span class="mono-inline warn">UNKNOWN</span> until evidence exists.</p>
-        </article>
+        </div>
 
-        <article class="dist reveal d2">
-          <span class="dist-no">03</span>
-          <h3><span class="fact">Observed choice</span> <span class="neq-sm">≠</span> <span class="fact">Preference</span></h3>
-          <div class="dist-diagram" aria-label="A selection can be made by the model, a router, a policy, a workflow, or the user">
+        <div class="claim reveal d2">
+          <div class="claim-main">
+            <span class="claim-no">03</span>
+            <p class="claim-line"><span>Observed</span><span class="neq-big">≠</span><span>Inferred</span></p>
+            <p class="claim-cap">A selection is not a preference — it can be made by the model, a router, a policy, a workflow, or the user. AgentMeasure records what happened before inferring why.</p>
+          </div>
+          <div class="claim-diagram" aria-label="A selection can be made by the model, a router, a policy, a workflow, or the user">
             <div class="dl k2">selected_by:</div>
             <div class="dl">model · router · policy</div>
             <div class="dl">workflow · user · platform</div>
             <div class="dl dim">↓</div>
             <div class="dl hl">what happened ≠ why</div>
           </div>
-          <p>A selection can be made by the model, a router, a workflow, the user, or a policy. AgentMeasure records what happened before inferring why.</p>
-        </article>
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- ══════════════════ 05 · HOW IT WORKS ══════════════════ -->
+  <!-- ══════════════════ 03 · MEASUREMENT CHAIN (visual moment) ══════════════════ -->
+  <section class="section section-chain" id="measure" aria-label="The measurement model">
+    <div class="wrap">
+      <p class="eyebrow reveal">03 — The measurement model</p>
+      <h2 class="reveal d1">From reach to value.</h2>
+      <p class="body-secondary reveal d2">Metric families, not a universal KPI. A search capability, a booking API, and a compute job have different value structures — the same semantics map onto all of them.</p>
+
+      <p class="chain-label reveal d2" aria-hidden="true">MEASUREMENT CHAIN</p>
+      <div class="chain">
+        <div class="chain-col reveal">
+          <span class="chain-no">01</span>
+          <span class="chain-name">Reach</span>
+          <span class="chain-rail r-ok" aria-hidden="true"></span>
+          <span class="chain-q">Did the capability enter the choice set?</span>
+          <span class="chain-status st-ok">Spec · Defined</span>
+        </div>
+        <div class="chain-col reveal d1">
+          <span class="chain-no">02</span>
+          <span class="chain-name">Choice</span>
+          <span class="chain-rail r-ok" aria-hidden="true"></span>
+          <span class="chain-q">Was it selected?</span>
+          <span class="chain-status st-ok">Spec · Defined</span>
+        </div>
+        <div class="chain-col reveal d2">
+          <span class="chain-no">03</span>
+          <span class="chain-name">Use</span>
+          <span class="chain-rail r-ok" aria-hidden="true"></span>
+          <span class="chain-q">Was it actually executed?</span>
+          <span class="chain-status st-ok">Spec · Defined</span>
+        </div>
+        <div class="chain-col reveal d3">
+          <span class="chain-no">04</span>
+          <span class="chain-name">Utility</span>
+          <span class="chain-rail r-partial" aria-hidden="true"></span>
+          <span class="chain-q">Did the result contribute to the task?</span>
+          <span class="chain-status st-partial">Spec · Partial</span>
+          <span class="chain-sub">Consumption — partial<br>Effect confirmation — planned</span>
+        </div>
+        <div class="chain-col reveal d4">
+          <span class="chain-no">05</span>
+          <span class="chain-name">Value</span>
+          <span class="chain-rail r-draft" aria-hidden="true"></span>
+          <span class="chain-q">Did it improve the outcome?</span>
+          <span class="chain-status st-draft">Spec · Draft</span>
+          <span class="chain-sub">Incremental value — formula defined</span>
+        </div>
+      </div>
+
+      <p class="sig reveal d5"><strong>Defined does not mean observable in every runtime.</strong> Semantics are spec status; observation depends on the harness — <a href="#standard">see the observability matrix&nbsp;↓</a></p>
+    </div>
+  </section>
+
+  <!-- ══════════════════ 04 · HOW IT WORKS ══════════════════ -->
   <section class="section section-panel" id="how" aria-label="How it works">
     <div class="wrap">
       <p class="eyebrow reveal">04 — How it works</p>
@@ -281,10 +290,60 @@
     </div>
   </section>
 
-  <!-- ══════════════════ 06 · TRY IT ══════════════════ -->
-  <section class="section" id="try" aria-label="Try the demo">
+  <!-- ══════════════════ 05 · AVAILABLE TODAY ══════════════════ -->
+  <section class="section" id="available" aria-label="What is available today">
     <div class="wrap">
-      <p class="eyebrow reveal">05 — Try it</p>
+      <p class="eyebrow reveal">05 — Available today</p>
+      <h2 class="reveal d1">What works today.</h2>
+      <p class="body-secondary reveal d2">This is not a thesis page. The standard, the SDK, and local analytics are shipped — with tests, conformance vectors, and published harness profiles.</p>
+
+      <div class="specsheet reveal d3">
+        <div class="spec-row">
+          <span class="spec-k">Provider SDK</span>
+          <span class="spec-mono">@agentmeasure/mcp</span>
+          <span class="spec-v ok">v0.1.1</span>
+        </div>
+        <div class="spec-row">
+          <span class="spec-k">Canonical observations</span>
+          <span class="spec-mono">schemas/observation.schema.json · 6 payload classes</span>
+          <span class="spec-v ok">Shipped</span>
+        </div>
+        <div class="spec-row">
+          <span class="spec-k">Local analytics</span>
+          <span class="spec-mono">product/local-analytics.py</span>
+          <span class="spec-v ok">Shipped</span>
+        </div>
+        <div class="spec-row">
+          <span class="spec-k">Conformance vectors</span>
+          <span class="spec-mono">CI · conformance workflow</span>
+          <span class="spec-v ok">Passing</span>
+        </div>
+        <div class="spec-row">
+          <span class="spec-k">Harness profiles</span>
+          <span class="spec-mono">codex · claude-code · dsh · pydantic-ai · otel</span>
+          <span class="spec-v spec">5</span>
+        </div>
+        <div class="spec-row">
+          <span class="spec-k">Hosted ingestion · dashboard</span>
+          <span class="spec-mono">next on the product roadmap</span>
+          <span class="spec-v warn">In development</span>
+        </div>
+      </div>
+
+      <div class="spec-chips reveal d4">
+        <span class="chip">21 SDK tests</span>
+        <span class="chip">Deterministic E2E fixture</span>
+        <span class="chip">No cloud required</span>
+        <span class="chip">Data stays local</span>
+      </div>
+      <p class="note reveal d5">Status discipline is the same as everywhere else: shipped is shipped, planned is planned. This table tracks <a href="https://github.com/roy-tong/AgentMeasure/releases" target="_blank" rel="noopener">releases</a> and the <a href="https://github.com/roy-tong/AgentMeasure/blob/main/ROADMAP.md" target="_blank" rel="noopener">the roadmap</a>.</p>
+    </div>
+  </section>
+
+  <!-- ══════════════════ 06 · TRY IT ══════════════════ -->
+  <section class="section section-panel" id="try" aria-label="Try the demo">
+    <div class="wrap">
+      <p class="eyebrow reveal">06 — Try it</p>
       <h2 class="reveal d1">See the model in two minutes.</h2>
 
       <div class="try-grid">
@@ -323,42 +382,31 @@
     </div>
   </section>
 
-  <!-- ══════════════════ 07 · LAB ══════════════════ -->
-  <section class="section section-panel" id="lab" aria-label="AgentMeasure Lab">
-    <div class="wrap">
-      <p class="eyebrow reveal">06 — AgentMeasure Lab</p>
-      <h2 class="reveal d1">Measure usage. Then measure causality.</h2>
+  <!-- ══════════════════ 07 · EXTERNAL PROVIDER TRIAL ══════════════════ -->
+  <section class="section trial" id="trial" aria-label="External provider trial">
+    <div class="wrap wrap-narrow">
+      <p class="eyebrow reveal">07 — External provider trial</p>
+      <h2 class="reveal d1">Bring us one capability.</h2>
+      <p class="lede-sm reveal d2">We’re looking for <strong>3 MCP / API providers</strong> to test AgentMeasure against real traffic.</p>
 
-      <div class="lab-grid">
-        <div class="lab-card reveal d1">
-          <span class="lab-k">AgentMeasure</span>
-          <p class="lab-q">What happened?</p>
-          <p class="lab-sub">Observation · correlation · evidence-graded facts</p>
-        </div>
-        <div class="lab-arrow reveal d2" aria-hidden="true">→</div>
-        <div class="lab-card lab-card-hi reveal d3">
-          <span class="lab-k">AgentMeasure Lab</span>
-          <p class="lab-q">Did the change actually improve it?</p>
-          <p class="lab-sub">Preregistered experiments · effect sizes · honest nulls</p>
-        </div>
+      <div class="trial-points">
+        <div class="trial-point reveal d2"><span class="fact-no">01</span><p>One capability is enough.</p></div>
+        <div class="trial-point reveal d3"><span class="fact-no">02</span><p>Data can remain on your machine.</p></div>
+        <div class="trial-point reveal d4"><span class="fact-no">03</span><p>The goal is to find where the measurement model breaks.</p></div>
       </div>
 
-      <div class="lab-formula reveal d4" role="img" aria-label="Task set times harness matrix times factor variants, measured across reach, choice, use, consumption and outcome">
-        <span>Task Set</span><span class="op">×</span><span>Harness</span><span class="op">×</span><span>Variant</span>
-        <span class="op">↓</span>
-        <span class="funnel">Reach · Choice · Use · Consumption · Outcome</span>
+      <div class="trial-actions reveal d5">
+        <a class="btn btn-primary" href="https://github.com/roy-tong/AgentMeasure/issues/2" target="_blank" rel="noopener">Apply for the 7-day audit</a>
+        <a class="btn btn-ghost" href="https://github.com/roy-tong/AgentMeasure/blob/main/product/AUDIT.md" target="_blank" rel="noopener">See the methodology&nbsp;→</a>
       </div>
-
-      <p class="lede-sm reveal d5">Preregister experiments, measure effect sizes, preserve honest nulls —<br>and reject “growth” that disappears downstream.</p>
-      <p class="note reveal d5">Selection uplift that loses consumption is rejected at the decision exit (<span class="mono-inline">unverified_growth</span> — do not ship). The shipped demo runs on a synthetic harness, disclosed in every report; real-harness adapters are the highest-value contribution right now.</p>
-      <a class="link-quiet reveal d5" href="https://github.com/roy-tong/AgentMeasure/tree/main/lab" target="_blank" rel="noopener">Read the Lab methodology&nbsp;→</a>
+      <p class="note reveal d5">Not “book a demo.” Best feedback: a concrete trace, counterexample, or field that cannot be measured safely.</p>
     </div>
   </section>
 
   <!-- ══════════════════ 08 · OPEN STANDARD ══════════════════ -->
-  <section class="section" id="standard" aria-label="Open standard and runtime matrix">
+  <section class="section section-panel" id="standard" aria-label="Open standard and runtime matrix">
     <div class="wrap">
-      <p class="eyebrow reveal">07 — Open standard</p>
+      <p class="eyebrow reveal">08 — Open standard</p>
       <h2 class="reveal d1">One measurement language<br>across agent runtimes.</h2>
       <p class="body-secondary reveal d2">Portable semantics need a public record of observation blind spots. Not “works with every framework” — an exact account of what each runtime can and cannot observe.</p>
 
@@ -421,10 +469,34 @@
     </div>
   </section>
 
-  <!-- ══════════════════ 09 · WHY THIS MATTERS ══════════════════ -->
-  <section class="section section-panel" id="economy" aria-label="Why this matters">
+  <!-- ══════════════════ 09 · EXPLORE LAB ══════════════════ -->
+  <section class="section" id="lab" aria-label="AgentMeasure Lab">
     <div class="wrap">
-      <p class="eyebrow reveal">08 — Why this matters</p>
+      <p class="eyebrow reveal">09 — Explore Lab</p>
+      <h2 class="reveal d1">Measure usage. Then measure causality.</h2>
+
+      <div class="lab-grid">
+        <div class="lab-card reveal d1">
+          <span class="lab-k">AgentMeasure</span>
+          <p class="lab-q">What happened?</p>
+          <p class="lab-sub">Observation · correlation · evidence-graded facts</p>
+        </div>
+        <div class="lab-arrow reveal d2" aria-hidden="true">→</div>
+        <div class="lab-card lab-card-hi reveal d3">
+          <span class="lab-k">AgentMeasure Lab</span>
+          <p class="lab-q">Did the change actually improve it?</p>
+          <p class="lab-sub">Preregistered experiments · effect sizes · honest nulls</p>
+        </div>
+      </div>
+
+      <a class="link-quiet reveal d4" href="https://github.com/roy-tong/AgentMeasure/tree/main/lab" target="_blank" rel="noopener">Explore Lab&nbsp;→</a>
+    </div>
+  </section>
+
+  <!-- ══════════════════ 10 · LONG-TERM THESIS ══════════════════ -->
+  <section class="section section-panel" id="economy" aria-label="Long-term thesis">
+    <div class="wrap">
+      <p class="eyebrow reveal">10 — Long-term thesis</p>
       <h2 class="reveal d1">Software is becoming callable.</h2>
 
       <div class="econ-grid">
@@ -450,34 +522,13 @@
       </div>
 
       <p class="lede-sm reveal d4">Before capabilities can be priced, compared, or purchased by agents,<br>they need a shared measurement layer.</p>
-      <p class="note reveal d5">That layer is the foundation for <strong>Capability as a Service</strong>. AgentMeasure standardizes economic facts — not money movement. Payment rails stay with existing payment infrastructure.</p>
-    </div>
-  </section>
-
-  <!-- ══════════════════ 10 · EXTERNAL PROVIDER TRIAL ══════════════════ -->
-  <section class="section trial" id="trial" aria-label="External provider trial">
-    <div class="wrap wrap-narrow">
-      <p class="eyebrow reveal">09 — External provider trial</p>
-      <h2 class="reveal d1">Bring us one capability.</h2>
-      <p class="lede-sm reveal d2">We’re looking for <strong>3 MCP / API providers</strong> to test AgentMeasure against real traffic.</p>
-
-      <div class="trial-points">
-        <div class="trial-point reveal d2"><span class="fact-no">01</span><p>One capability is enough.</p></div>
-        <div class="trial-point reveal d3"><span class="fact-no">02</span><p>Data can remain on your machine.</p></div>
-        <div class="trial-point reveal d4"><span class="fact-no">03</span><p>The goal is to find where the measurement model breaks.</p></div>
-      </div>
-
-      <div class="trial-actions reveal d5">
-        <a class="btn btn-primary" href="https://github.com/roy-tong/AgentMeasure/issues/2" target="_blank" rel="noopener">Apply for the 7-day audit</a>
-        <a class="btn btn-ghost" href="https://github.com/roy-tong/AgentMeasure/blob/main/product/AUDIT.md" target="_blank" rel="noopener">See the methodology&nbsp;→</a>
-      </div>
-      <p class="note reveal d5">Not “book a demo.” Best feedback: a concrete trace, counterexample, or field that cannot be measured safely.</p>
+      <p class="note reveal d5">That layer is the foundation for <strong>Capability as a Service</strong> — a long-term direction, not a product we sell today. AgentMeasure standardizes economic facts, not money movement; payment rails stay with existing payment infrastructure.</p>
     </div>
   </section>
 
   </main>
 
-  <!-- ══════════════════ 11 · FOOTER ══════════════════ -->
+  <!-- ══════════════════ FOOTER ══════════════════ -->
   <footer class="footer" aria-label="Footer">
     <div class="wrap">
       <div class="footer-grid">
