@@ -1,6 +1,6 @@
 # AgentMeasure
 
-**Open measurement infrastructure for the Agent Capability Economy.**
+**Measure agent usage without counting retries as users.**
 
 [![CI: conformance](https://github.com/roy-tong/AgentMeasure/actions/workflows/conformance.yml/badge.svg)](https://github.com/roy-tong/AgentMeasure/actions/workflows/conformance.yml)
 [![Spec](https://img.shields.io/badge/spec-Draft_0.4-blue)](standard/CORE.md)
@@ -8,11 +8,14 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-informational.svg)](LICENSE)
 [![Discussions](https://img.shields.io/github/discussions/roy-tong/AgentMeasure)](https://github.com/roy-tong/AgentMeasure/discussions)
 
-> **AgentMeasure separates execution facts from logical operations, evidence from inference, and economic settlement from value.**
+> **AgentMeasure separates execution facts from logical operations, evidence
+> from inference, and economic settlement from value** — an open measurement
+> layer for the Agent Capability Economy. One number for your dashboards
+> (logical operations), the evidence for what each number counts, and explicit
+> disclosure for what it cannot prove.
 
-AgentMeasure defines a common language for measuring how AI agents discover, choose, use, and derive value from software capabilities.
-
-**Today:** measure agent-facing capability usage.
+**Today:** measure agent-facing capability usage — attempts, operations, retry
+inflation, success rates with numerators you can audit.
 **Next:** make capabilities comparable and meterable.
 **Long term:** provide the measurement foundation for Capability as a Service (CaaS).
 
@@ -21,7 +24,7 @@ AgentMeasure defines a common language for measuring how AI agents discover, cho
 > AgentMeasure is **not** a payment protocol, marketplace, or universal ranking system.
 > It standardizes the facts and measurement semantics those systems can build on.
 
-[**Website**](https://roy-tong.github.io/AgentMeasure/) · [**Free 7-day audit — apply**](product/AUDIT.md) · [Whitepaper](whitepaper/measuring-software-used-by-ai-agents.md) · [白皮书（中文）](whitepaper/measuring-software-used-by-ai-agents.zh-CN.md) · [Core Specification](standard/CORE.md) · [中文](README.zh-CN.md)
+[**Website**](https://roy-tong.github.io/AgentMeasure/) · [**Free 7-day audit — apply**](https://github.com/roy-tong/AgentMeasure/issues/new?template=5-provider-trial.yml) · [Whitepaper](whitepaper/measuring-software-used-by-ai-agents.md) · [白皮书（中文）](whitepaper/measuring-software-used-by-ai-agents.zh-CN.md) · [Core Specification](standard/CORE.md) · [中文](README.zh-CN.md)
 
 ![AgentMeasure — The Measurement Stack](assets/agentmeasure-stack.svg)
 

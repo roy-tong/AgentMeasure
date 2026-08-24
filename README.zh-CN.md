@@ -1,6 +1,6 @@
 # AgentMeasure
 
-**面向 Agent Capability Economy 的开放计量基础设施。**
+**度量 Agent 的真实使用——别把重试当成用户。**
 
 [![CI: conformance](https://github.com/roy-tong/AgentMeasure/actions/workflows/conformance.yml/badge.svg)](https://github.com/roy-tong/AgentMeasure/actions/workflows/conformance.yml)
 [![Spec](https://img.shields.io/badge/spec-Draft_0.4-blue)](standard/CORE.md)
@@ -8,9 +8,13 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-informational.svg)](LICENSE)
 [![Discussions](https://img.shields.io/github/discussions/roy-tong/AgentMeasure)](https://github.com/roy-tong/AgentMeasure/discussions)
 
-AgentMeasure 定义一套共同语言，衡量 AI Agent 如何发现、选择、使用软件能力，以及从这些能力中获得多少价值。
+> **AgentMeasure 把执行事实与逻辑操作分开、把证据与推断分开、把经济结算与价值分开**
+> ——一套面向 Agent Capability Economy 的开放计量层。给仪表盘一个可用的数字
+> （逻辑操作数），给每个数字可审计的证据，给测不到的部分明确的披露，
+> 而不是一个装作精确的估计。
 
-**今天：** 度量 Agent 对软件能力的使用。
+**今天：** 度量 Agent 对软件能力的使用——attempts、operations、retry 膨胀、
+分子可审计的成功率。
 **下一步：** 让 Capability 可以跨 Agent 被统一度量、比较和计量。
 **长期：** 成为 Capability as a Service（CaaS）的计量基础。
 
@@ -19,7 +23,7 @@ AgentMeasure 定义一套共同语言，衡量 AI Agent 如何发现、选择、
 > AgentMeasure **不是**支付协议、市场或通用排名系统。
 > 它标准化的是这些系统可以构建于其上的事实与测量语义。
 
-[**官网**](https://roy-tong.github.io/AgentMeasure/) · [**免费 7 天 Audit——申请**](product/AUDIT.md) · [Whitepaper](whitepaper/measuring-software-used-by-ai-agents.md) · [中文白皮书](whitepaper/measuring-software-used-by-ai-agents.zh-CN.md) · [Core Specification](standard/CORE.md) · [English](README.md)
+[**官网**](https://roy-tong.github.io/AgentMeasure/) · [**免费 7 天 Audit——申请**](https://github.com/roy-tong/AgentMeasure/issues/new?template=5-provider-trial.yml) · [Whitepaper](whitepaper/measuring-software-used-by-ai-agents.md) · [中文白皮书](whitepaper/measuring-software-used-by-ai-agents.zh-CN.md) · [Core Specification](standard/CORE.md) · [English](README.md)
 
 ![AgentMeasure — 计量栈总览](assets/agentmeasure-stack.svg)
 
