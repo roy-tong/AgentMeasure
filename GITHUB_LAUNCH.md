@@ -1,6 +1,11 @@
 # GitHub Launch Pack（复制粘贴即用）
 
-> 需要 Roy 在 GitHub UI 完成（无 token，agent 无法代做）。三步约 5 分钟。
+> **状态（2026-08-24）**：About（description + homepage）、`provider-trial` label
+> 已由 agent 通过 API 完成并验证；topics 线上已是超集无需动。
+> **唯一剩余**：推送本地提交 `f05de16`（CI 接线：外部 fixture 门禁 + lab 套件）——
+> 本机 OAuth 凭证缺 `workflow` scope，需 Roy 用带该 scope 的 token 执行：
+> `git push origin website:main`（或刷新凭证后交给 agent）。
+> 网站部署不受影响（gh-pages 分支快照已上线并验证）。
 
 ## 1. Repository Settings → About
 
