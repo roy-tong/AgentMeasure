@@ -48,7 +48,7 @@
   }
 
   /* ── active nav link ───────────────────────────────────────── */
-  var sectionIds = ["why", "measure", "how", "lab", "standard"];
+  var sectionIds = ["why", "measure", "how", "standard", "lab"];
   var navAnchors = {};
   document.querySelectorAll(".nav-links a").forEach(function (a) {
     var href = a.getAttribute("href") || "";
