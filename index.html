@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AgentMeasure — Measure what agents actually use</title>
+  <meta name="description" content="Open measurement infrastructure for agent-facing software. AgentMeasure separates execution facts from logical operations, evidence from inference, and usage from value — from Reach to Choice to Use to Utility to Value.">
+  <link rel="icon" type="image/svg+xml" href="./assets/favicon.svg">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="AgentMeasure — Measure what agents actually use">
+  <meta property="og:description" content="Open measurement infrastructure for agent-facing software. 1 intent, 2 attempts, 1 operation — not 2 operations with 50% success.">
+  <meta property="og:url" content="https://roy-tong.github.io/AgentMeasure/">
+  <meta property="og:image" content="https://roy-tong.github.io/AgentMeasure/assets/social-preview.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="AgentMeasure — Measure what agents actually use">
+  <meta name="twitter:description" content="Open measurement infrastructure for the Agent Capability Economy.">
+  <meta name="twitter:image" content="https://roy-tong.github.io/AgentMeasure/assets/social-preview.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css">
+  <script defer src="./script.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <!-- ══════════════════ NAV ══════════════════ -->
+  <header class="nav" id="top">
+    <div class="nav-inner">
+      <a class="brand" href="#top" aria-label="AgentMeasure home">
+        AgentMeasure<span class="brand-cursor" aria-hidden="true">_</span>
+      </a>
+      <nav class="nav-links" id="nav-links" aria-label="Sections">
+        <a href="#why">Why</a>
+        <a href="#measure">Measure</a>
+        <a href="#how">How it works</a>
+        <a href="#lab">Lab</a>
+        <a href="#standard">Spec</a>
+        <a class="ext" href="https://github.com/roy-tong/AgentMeasure" target="_blank" rel="noopener">GitHub&nbsp;↗</a>
+      </nav>
+      <div class="nav-cta">
+        <a class="btn btn-primary btn-sm" href="#try">Run Demo</a>
+        <button class="nav-toggle" id="nav-toggle" aria-expanded="false" aria-controls="nav-links" aria-label="Toggle menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+
+  <!-- ══════════════════ 01 · HERO ══════════════════ -->
+  <section class="hero" aria-label="Introduction">
+    <div class="hero-grid">
+      <div class="hero-copy">
+        <p class="eyebrow reveal">Open measurement infrastructure for agent-facing software</p>
+        <h1 class="reveal d1">Measure what agents <em>actually</em> use.</h1>
+        <p class="lede reveal d2">Separate logical operations from execution attempts, returned results from consumed results, and observed usage from inferred value.</p>
+        <p class="body-secondary reveal d3">AgentMeasure provides open measurement semantics for software capabilities used by AI agents.</p>
+        <div class="hero-actions reveal d4">
+          <a class="btn btn-primary" href="#try">Run the 2-minute demo</a>
+          <a class="btn btn-ghost" href="https://github.com/roy-tong/AgentMeasure" target="_blank" rel="noopener">View on GitHub&nbsp;↗</a>
+        </div>
+        <a class="link-quiet reveal d5" href="https://github.com/roy-tong/AgentMeasure/blob/main/standard/CORE.md" target="_blank" rel="noopener">Read the Specification&nbsp;→</a>
+      </div>
+
+      <!-- Measurement console -->
+      <div class="console reveal d2" id="console" aria-label="Example measurement trace: one intent, two attempts, one operation">
+        <div class="console-bar">
+          <span class="dot" aria-hidden="true"></span><span class="dot" aria-hidden="true"></span><span class="dot" aria-hidden="true"></span>
+          <span class="console-title">agentmeasure / trace 0192</span>
+          <button class="console-replay" id="console-replay" type="button" title="Replay trace">replay</button>
+        </div>
+        <div class="console-body" id="console-body">
+          <div class="cline"><span class="k">AGENTMEASURE</span><span class="dim">/</span><span class="k">TRACE 0192</span></div>
+          <div class="cline gap"></div>
+          <div class="cline"><span class="k">USER INTENT</span></div>
+          <div class="cline"><span class="v">Book a table tonight</span></div>
+          <div class="cline rule"></div>
+          <div class="cline"><span class="k">OPERATION</span><span class="num right">01</span></div>
+          <div class="cline gap"></div>
+          <div class="cline"><span class="k">ATTEMPT</span><span class="num right">01</span></div>
+          <div class="cline"><span class="path">provider_call</span><span class="tag-failed right">FAILED</span></div>
+          <div class="cline gap"></div>
+          <div class="cline"><span class="k">ATTEMPT</span><span class="num right">02</span></div>
+          <div class="cline"><span class="path">provider_call</span><span class="tag-ok right">SUCCESS</span></div>
+          <div class="cline rule"></div>
+          <div class="cline"><span class="k">OPERATIONS</span><span class="num right">1</span></div>
+          <div class="cline"><span class="k">ATTEMPTS</span><span class="num right">2</span></div>
+          <div class="cline gap"></div>
+          <div class="cline"><span class="k">Operation success</span><span class="num-ok right">100%</span></div>
+          <div class="cline"><span class="k">Attempt success</span><span class="num-warn right">50%</span></div>
+          <div class="cline rule"></div>
+          <div class="cline"><span class="k">RESULT</span></div>
+          <div class="cline"><span class="k">Returned</span><span class="num-ok right">YES</span></div>
+          <div class="cline"><span class="k">Consumed</span><span class="tag-unknown right">UNKNOWN</span></div>
+          <div class="cline"><span class="k">Useful</span><span class="tag-unknown right">UNKNOWN</span></div>
+          <div class="cline cursor-line"><span class="cursor" aria-hidden="true">▌</span></div>
+        </div>
+        <div class="console-foot">
+          <span class="mono-xs">1 intent · 2 attempts · 1 operation</span>
+          <span class="mono-xs dim">— it is <em>not</em> “2 operations with 50% success”</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- status strip -->
+    <div class="status-strip reveal d5" role="list" aria-label="Project status">
+      <div class="status" role="listitem"><span class="status-k">Open source</span><span class="status-v ok">MIT</span></div>
+      <div class="status" role="listitem"><span class="status-k">Spec</span><span class="status-v spec">Draft 0.4.4</span></div>
+      <div class="status" role="listitem"><span class="status-k">SDK</span><span class="status-v">v0.1.1</span></div>
+      <div class="status" role="listitem"><span class="status-k">Deployment</span><span class="status-v warn">Local-first</span></div>
+    </div>
+  </section>
+
+  <!-- ══════════════════ 02 · THE PROBLEM ══════════════════ -->
+  <section class="section" id="why" aria-label="The problem">
+    <div class="wrap">
+      <p class="eyebrow reveal">01 — The problem</p>
+      <h2 class="reveal d1">The software consumer changed.<br>The measurement stack didn’t.</h2>
+      <p class="body-secondary reveal d2">A capability passes through many states between existing and creating value. Most telemetry collapses them into one vague number: “tool usage.”</p>
+
+      <div class="inequalities" role="list">
+        <div class="ineq reveal" role="listitem"><span class="state">Available</span><span class="neq">≠</span><span class="state">Presented</span></div>
+        <div class="ineq reveal d1" role="listitem"><span class="state">Presented</span><span class="neq">≠</span><span class="state">Selected</span></div>
+        <div class="ineq reveal d2" role="listitem"><span class="state">Selected</span><span class="neq">≠</span><span class="state">Used</span></div>
+        <div class="ineq reveal d3" role="listitem"><span class="state">Used</span><span class="neq">≠</span><span class="state">Useful</span></div>
+        <div class="ineq reveal d4" role="listitem"><span class="state">Useful</span><span class="neq">≠</span><span class="state">Incremental&nbsp;Value</span></div>
+      </div>
+
+      <div class="ineq ineq-final reveal d5">
+        <span class="state">Measured Usage</span><span class="neq">≠</span><span class="state">Billable Usage</span>
+      </div>
+      <p class="note reveal d5">Three attempts of one operation are not three billable operations — unless the metering policy says so.</p>
+
+      <p class="lede-sm reveal">Agent systems collapse these states into vague “tool usage.”<br><strong>AgentMeasure keeps them separate.</strong></p>
+    </div>
+  </section>
+
+  <!-- ══════════════════ 03 · THE MEASUREMENT STACK ══════════════════ -->
+  <section class="section section-panel" id="measure" aria-label="The measurement stack">
+    <div class="wrap">
+      <p class="eyebrow reveal">02 — The measurement stack</p>
+      <h2 class="reveal d1">From reach to value.</h2>
+      <p class="body-secondary reveal d2">Metric families, not a universal KPI. A search capability, a booking API, and a compute job have different value structures — the same facts map onto all of them.</p>
+
+      <div class="pipeline">
+        <div class="stage reveal">
+          <span class="stage-no">01</span>
+          <span class="stage-name">Reach</span>
+          <span class="stage-q">Did the capability enter the choice set?</span>
+          <span class="stage-status st-ok">Defined</span>
+        </div>
+        <div class="stage reveal d1">
+          <span class="stage-no">02</span>
+          <span class="stage-name">Choice</span>
+          <span class="stage-q">Was it selected?</span>
+          <span class="stage-status st-ok">Defined</span>
+        </div>
+        <div class="stage reveal d2">
+          <span class="stage-no">03</span>
+          <span class="stage-name">Use</span>
+          <span class="stage-q">Was it actually executed?</span>
+          <span class="stage-status st-ok">Defined</span>
+        </div>
+        <div class="stage reveal d3">
+          <span class="stage-no">04</span>
+          <span class="stage-name">Utility</span>
+          <span class="stage-q">Was the result consumed?</span>
+          <span class="stage-status st-partial">Partial</span>
+        </div>
+        <div class="stage reveal d4">
+          <span class="stage-no">05</span>
+          <span class="stage-name">Value</span>
+          <span class="stage-q">Did it improve the outcome?</span>
+          <span class="stage-status st-draft">Draft</span>
+        </div>
+        <div class="pipeline-line" aria-hidden="true"></div>
+      </div>
+
+      <p class="note reveal d5">We do not pretend everything is already measurable. The evidence boundary — defined, partial, draft — is part of the design, stated on every number.</p>
+    </div>
+  </section>
+
+  <!-- ══════════════════ 04 · CLAIM DISCIPLINE ══════════════════ -->
+  <section class="section" id="facts" aria-label="Three distinctions">
+    <div class="wrap">
+      <p class="eyebrow reveal">03 — Claim discipline</p>
+      <h2 class="reveal d1">Similar events. Different facts.</h2>
+      <p class="body-secondary reveal d2">Three distinctions most telemetry stacks blur — and AgentMeasure refuses to.</p>
+
+      <div class="distinctions">
+        <article class="dist reveal">
+          <span class="dist-no">01</span>
+          <h3><span class="fact">Attempt</span> <span class="neq-sm">≠</span> <span class="fact">Operation</span></h3>
+          <div class="dist-diagram" aria-label="One intent with two attempts equals one operation">
+            <div class="dl">1 intent</div>
+            <div class="dl dim">↓</div>
+            <div class="dl">Attempt 01 <span class="x">✕</span></div>
+            <div class="dl">Attempt 02 <span class="ok">✓</span></div>
+            <div class="dl dim">↓</div>
+            <div class="dl hl">= 1 Operation</div>
+          </div>
+          <p>Attempts are execution facts. Operations are logical intents. Retries are multiple attempts of one operation — mixing the two is how agent reliability reports get distorted.</p>
+        </article>
+
+        <article class="dist reveal d1">
+          <span class="dist-no">02</span>
+          <h3><span class="fact">Returned</span> <span class="neq-sm">≠</span> <span class="fact">Consumed</span></h3>
+          <div class="dist-diagram" aria-label="A tool returned a result; whether the caller consumed it is a separate fact">
+            <div class="dl">Tool returned result</div>
+            <div class="dl dim">↓</div>
+            <div class="dl warn">?</div>
+            <div class="dl dim smaller">Did the caller actually use it?</div>
+            <div class="dl gap-line"><span class="k2">RETURNED</span><span class="ok">observable</span></div>
+            <div class="dl gap-line"><span class="k2">CONSUMED</span><span class="warn">needs evidence</span></div>
+          </div>
+          <p>Unknown is a valid, first-class answer. AgentMeasure never records unverified consumption — the field stays <span class="mono-inline warn">UNKNOWN</span> until evidence exists.</p>
+        </article>
+
+        <article class="dist reveal d2">
+          <span class="dist-no">03</span>
+          <h3><span class="fact">Observed choice</span> <span class="neq-sm">≠</span> <span class="fact">Preference</span></h3>
+          <div class="dist-diagram" aria-label="A selection can be made by the model, a router, a policy, a workflow, or the user">
+            <div class="dl k2">selected_by:</div>
+            <div class="dl">model · router · policy</div>
+            <div class="dl">workflow · user · platform</div>
+            <div class="dl dim">↓</div>
+            <div class="dl hl">what happened ≠ why</div>
+          </div>
+          <p>A selection can be made by the model, a router, a workflow, the user, or a policy. AgentMeasure records what happened before inferring why.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════ 05 · HOW IT WORKS ══════════════════ -->
+  <section class="section section-panel" id="how" aria-label="How it works">
+    <div class="wrap">
+      <p class="eyebrow reveal">04 — How it works</p>
+      <h2 class="reveal d1">Provider-side measurement.<br>No agent-side install.</h2>
+
+      <div class="how-grid">
+        <div class="arch reveal d1" aria-label="Architecture: agent runtime calls a capability provider through MCP, API or CLI; the AgentMeasure SDK inside the provider emits observations to a local collector feeding local or hosted analytics">
+          <div class="arch-node arch-agent">
+            <span class="arch-k">Agent</span>
+            <span class="arch-sub">Claude · Codex · any runtime</span>
+          </div>
+          <div class="arch-arrow"><span class="arch-line"></span><span class="arch-label">MCP / API / CLI</span><span class="arch-head">▼</span></div>
+          <div class="arch-node arch-provider">
+            <span class="arch-k">Capability Provider</span>
+            <div class="arch-rows">
+              <div class="arch-row">Business handler</div>
+              <div class="arch-row arch-sdk">AgentMeasure SDK</div>
+            </div>
+          </div>
+          <div class="arch-arrow"><span class="arch-line"></span><span class="arch-label">observations · JSONL</span><span class="arch-head">▼</span></div>
+          <div class="arch-node arch-collector">
+            <span class="arch-k">Local Collector</span>
+          </div>
+          <div class="arch-split">
+            <div class="arch-branch">
+              <div class="arch-arrow"><span class="arch-line"></span><span class="arch-head">▼</span></div>
+              <div class="arch-node arch-local"><span class="arch-k">Local analytics</span><span class="arch-sub">no cloud required</span></div>
+            </div>
+            <div class="arch-branch">
+              <div class="arch-arrow"><span class="arch-line"></span><span class="arch-head">▼</span></div>
+              <div class="arch-node arch-hosted"><span class="arch-k">Hosted analytics</span><span class="arch-sub">opt-in · planned</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="how-facts">
+          <div class="fact-item reveal d2"><span class="fact-no">01</span><div><h3>No agent-side install</h3><p>Third-party agents never need AgentMeasure. Measurement happens where the capability is delivered.</p></div></div>
+          <div class="fact-item reveal d3"><span class="fact-no">02</span><div><h3>Provider-side measurement</h3><p>The SDK wraps your tool handlers and emits canonical observations — one schema, six payload classes.</p></div></div>
+          <div class="fact-item reveal d4"><span class="fact-no">03</span><div><h3>Not on the critical path</h3><p>Non-blocking, durable spool with loss accounting. If the SDK fails, your server doesn’t.</p></div></div>
+          <div class="fact-item reveal d5"><span class="fact-no">04</span><div><h3>Your data can stay local</h3><p>JSONL on your machine, analytics generated locally. Hosted ingestion is explicit opt-in, later.</p></div></div>
+          <p class="note reveal d5">MCP is not required — it is the first reference surface. Your software does not need to be open source.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════ 06 · TRY IT ══════════════════ -->
+  <section class="section" id="try" aria-label="Try the demo">
+    <div class="wrap">
+      <p class="eyebrow reveal">05 — Try it</p>
+      <h2 class="reveal d1">See the model in two minutes.</h2>
+
+      <div class="try-grid">
+        <div class="terminal reveal d1" aria-label="Terminal: clone the repository and run the end-to-end demo">
+          <div class="console-bar">
+            <span class="dot" aria-hidden="true"></span><span class="dot" aria-hidden="true"></span><span class="dot" aria-hidden="true"></span>
+            <span class="console-title">sh — demo</span>
+          </div>
+          <div class="terminal-body">
+            <div class="tl"><span class="prompt">$</span> git clone https://github.com/roy-tong/AgentMeasure</div>
+            <div class="tl"><span class="prompt">$</span> cd AgentMeasure</div>
+            <div class="tl"><span class="prompt">$</span> ./examples/demo-e2e.sh</div>
+            <div class="tl gap"></div>
+            <div class="tl out"><span class="ok">✓</span> 42 calls captured — mock MCP server, 3 caller classes</div>
+            <div class="tl out"><span class="ok">✓</span> 84 canonical observations · 0 rejected</div>
+            <div class="tl out"><span class="ok">✓</span> operation correlation — strict, no fallback counting</div>
+            <div class="tl out"><span class="ok">✓</span> caller attribution — claude&nbsp;14 · codex&nbsp;14 · unknown&nbsp;14</div>
+            <div class="tl out"><span class="ok">✓</span> strict qualified 0% — synthetic traffic excluded</div>
+            <div class="tl out"><span class="ok">✓</span> deterministic replay — same fixture, same result</div>
+          </div>
+          <div class="console-foot"><span class="mono-xs">requires node&nbsp;≥&nbsp;18 + python3 · no external deps · isolated workspace</span></div>
+        </div>
+
+        <div class="try-proofs">
+          <h3 class="reveal d2">What the demo proves</h3>
+          <ul class="proofs">
+            <li class="reveal d2"><span class="ok">●</span> Canonical observations — one schema for every runtime</li>
+            <li class="reveal d3"><span class="ok">●</span> Operation / attempt correlation, fail-closed</li>
+            <li class="reveal d3"><span class="ok">●</span> Caller attribution — correlated · declared · unknown</li>
+            <li class="reveal d4"><span class="ok">●</span> Local analytics without any cloud</li>
+            <li class="reveal d4"><span class="ok">●</span> Deterministic replay — reproducible numbers</li>
+          </ul>
+          <a class="btn btn-ghost reveal d5" href="https://github.com/roy-tong/AgentMeasure#try-it-in-2-minutes" target="_blank" rel="noopener">Open Quickstart&nbsp;→</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════ 07 · LAB ══════════════════ -->
+  <section class="section section-panel" id="lab" aria-label="AgentMeasure Lab">
+    <div class="wrap">
+      <p class="eyebrow reveal">06 — AgentMeasure Lab</p>
+      <h2 class="reveal d1">Measure usage. Then measure causality.</h2>
+
+      <div class="lab-grid">
+        <div class="lab-card reveal d1">
+          <span class="lab-k">AgentMeasure</span>
+          <p class="lab-q">What happened?</p>
+          <p class="lab-sub">Observation · correlation · evidence-graded facts</p>
+        </div>
+        <div class="lab-arrow reveal d2" aria-hidden="true">→</div>
+        <div class="lab-card lab-card-hi reveal d3">
+          <span class="lab-k">AgentMeasure Lab</span>
+          <p class="lab-q">Did the change actually improve it?</p>
+          <p class="lab-sub">Preregistered experiments · effect sizes · honest nulls</p>
+        </div>
+      </div>
+
+      <div class="lab-formula reveal d4" role="img" aria-label="Task set times harness matrix times factor variants, measured across reach, choice, use, consumption and outcome">
+        <span>Task Set</span><span class="op">×</span><span>Harness</span><span class="op">×</span><span>Variant</span>
+        <span class="op">↓</span>
+        <span class="funnel">Reach · Choice · Use · Consumption · Outcome</span>
+      </div>
+
+      <p class="lede-sm reveal d5">Preregister experiments, measure effect sizes, preserve honest nulls —<br>and reject “growth” that disappears downstream.</p>
+      <p class="note reveal d5">Selection uplift that loses consumption is rejected at the decision exit (<span class="mono-inline">unverified_growth</span> — do not ship). The shipped demo runs on a synthetic harness, disclosed in every report; real-harness adapters are the highest-value contribution right now.</p>
+      <a class="link-quiet reveal d5" href="https://github.com/roy-tong/AgentMeasure/tree/main/lab" target="_blank" rel="noopener">Read the Lab methodology&nbsp;→</a>
+    </div>
+  </section>
+
+  <!-- ══════════════════ 08 · OPEN STANDARD ══════════════════ -->
+  <section class="section" id="standard" aria-label="Open standard and runtime matrix">
+    <div class="wrap">
+      <p class="eyebrow reveal">07 — Open standard</p>
+      <h2 class="reveal d1">One measurement language<br>across agent runtimes.</h2>
+      <p class="body-secondary reveal d2">Portable semantics need a public record of observation blind spots. Not “works with every framework” — an exact account of what each runtime can and cannot observe.</p>
+
+      <div class="matrix-wrap reveal d3">
+        <table class="matrix">
+          <thead>
+            <tr>
+              <th scope="col" class="matrix-runtime">Runtime</th>
+              <th scope="col">Operation</th>
+              <th scope="col">Attempt</th>
+              <th scope="col">Consumption</th>
+              <th scope="col">Delegation</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">Claude Code</th>
+              <td><span class="dot-full" title="Observable">●</span></td>
+              <td><span class="dot-full" title="Observable — built-in success judgment">●</span></td>
+              <td><span class="dot-part" title="Partial — via request-reference chain">◐</span></td>
+              <td><span class="dot-part" title="Partial — inferred, no lineage metadata">◐</span></td>
+            </tr>
+            <tr>
+              <th scope="row">Codex</th>
+              <td><span class="dot-full" title="Observable">●</span></td>
+              <td><span class="dot-full" title="Observable lifecycle — outcome unknown by default">●</span></td>
+              <td><span class="dot-none" title="Unobservable — never recorded as unconsumed">○</span></td>
+              <td><span class="dot-none" title="No built-in subagent concept — recorded on the delegating side">○</span></td>
+            </tr>
+            <tr>
+              <th scope="row">DeepSeek Harness</th>
+              <td><span class="dot-full" title="Observable">●</span></td>
+              <td><span class="dot-full" title="Observable — callId pairing, append-only session log">●</span></td>
+              <td><span class="dot-none" title="Unobservable">○</span></td>
+              <td><span class="dot-full" title="Observable — subagent lineage & depth, first real data source">●</span></td>
+            </tr>
+            <tr>
+              <th scope="row">Pydantic AI</th>
+              <td><span class="dot-full" title="Observable — AgentRun → operation candidate">●</span></td>
+              <td><span class="dot-full" title="Observable — Logfire spans → attempt semantics">●</span></td>
+              <td><span class="dot-none" title="Unobservable — RunResult is candidate evidence only">○</span></td>
+              <td><span class="dot-none" title="Unobservable">○</span></td>
+            </tr>
+            <tr>
+              <th scope="row">OTel GenAI</th>
+              <td><span class="dot-part" title="Derived — span ≠ operation, merged via correlation rules">◐</span></td>
+              <td><span class="dot-full" title="Observable — one model call = one attempt candidate">●</span></td>
+              <td><span class="dot-none" title="Unobservable">○</span></td>
+              <td><span class="dot-none" title="Unobservable">○</span></td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="matrix-legend">
+          <span><span class="dot-full">●</span> observable</span>
+          <span><span class="dot-part">◐</span> partial / derived</span>
+          <span><span class="dot-none">○</span> unavailable</span>
+        </div>
+        <p class="note">Harness profiles, Draft 0.4.4 — a fixed questionnaire per runtime, with the mapping rules and blind spots in writing. <a href="https://github.com/roy-tong/AgentMeasure/tree/main/profiles" target="_blank" rel="noopener">Read the profiles&nbsp;→</a></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════ 09 · WHY THIS MATTERS ══════════════════ -->
+  <section class="section section-panel" id="economy" aria-label="Why this matters">
+    <div class="wrap">
+      <p class="eyebrow reveal">08 — Why this matters</p>
+      <h2 class="reveal d1">Software is becoming callable.</h2>
+
+      <div class="econ-grid">
+        <div class="econ reveal d1">
+          <span class="econ-k">Human Software Economy</span>
+          <div class="econ-chain">
+            <span>Human</span><span class="dim">↓</span>
+            <span>UI</span><span class="dim">↓</span>
+            <span>App</span><span class="dim">↓</span>
+            <span class="econ-unit">Seat / Month</span>
+          </div>
+        </div>
+        <div class="econ econ-hi reveal d3">
+          <span class="econ-k">Agent Capability Economy</span>
+          <div class="econ-chain">
+            <span>Agent</span><span class="dim">↓</span>
+            <span>Capability</span><span class="dim">↓</span>
+            <span>Execution</span><span class="dim">↓</span>
+            <span>Outcome</span><span class="dim">↓</span>
+            <span class="econ-unit">Usage · Value · Transaction</span>
+          </div>
+        </div>
+      </div>
+
+      <p class="lede-sm reveal d4">Before capabilities can be priced, compared, or purchased by agents,<br>they need a shared measurement layer.</p>
+      <p class="note reveal d5">That layer is the foundation for <strong>Capability as a Service</strong>. AgentMeasure standardizes economic facts — not money movement. Payment rails stay with existing payment infrastructure.</p>
+    </div>
+  </section>
+
+  <!-- ══════════════════ 10 · EXTERNAL PROVIDER TRIAL ══════════════════ -->
+  <section class="section trial" id="trial" aria-label="External provider trial">
+    <div class="wrap wrap-narrow">
+      <p class="eyebrow reveal">09 — External provider trial</p>
+      <h2 class="reveal d1">Bring us one capability.</h2>
+      <p class="lede-sm reveal d2">We’re looking for <strong>3 MCP / API providers</strong> to test AgentMeasure against real traffic.</p>
+
+      <div class="trial-points">
+        <div class="trial-point reveal d2"><span class="fact-no">01</span><p>One capability is enough.</p></div>
+        <div class="trial-point reveal d3"><span class="fact-no">02</span><p>Data can remain on your machine.</p></div>
+        <div class="trial-point reveal d4"><span class="fact-no">03</span><p>The goal is to find where the measurement model breaks.</p></div>
+      </div>
+
+      <div class="trial-actions reveal d5">
+        <a class="btn btn-primary" href="https://github.com/roy-tong/AgentMeasure/issues/2" target="_blank" rel="noopener">Apply for the 7-day audit</a>
+        <a class="btn btn-ghost" href="https://github.com/roy-tong/AgentMeasure/blob/main/product/AUDIT.md" target="_blank" rel="noopener">See the methodology&nbsp;→</a>
+      </div>
+      <p class="note reveal d5">Not “book a demo.” Best feedback: a concrete trace, counterexample, or field that cannot be measured safely.</p>
+    </div>
+  </section>
+
+  </main>
+
+  <!-- ══════════════════ 11 · FOOTER ══════════════════ -->
+  <footer class="footer" aria-label="Footer">
+    <div class="wrap">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <span class="brand">AgentMeasure<span class="brand-cursor" aria-hidden="true">_</span></span>
+          <p>Measure software used by agents.</p>
+        </div>
+        <nav class="footer-col" aria-label="Project">
+          <span class="footer-k">Project</span>
+          <a href="https://github.com/roy-tong/AgentMeasure" target="_blank" rel="noopener">GitHub</a>
+          <a href="https://github.com/roy-tong/AgentMeasure/blob/main/ROADMAP.md" target="_blank" rel="noopener">Roadmap</a>
+          <a href="https://github.com/roy-tong/AgentMeasure/releases" target="_blank" rel="noopener">Releases</a>
+          <a href="https://github.com/roy-tong/AgentMeasure/discussions" target="_blank" rel="noopener">Discussions</a>
+        </nav>
+        <nav class="footer-col" aria-label="Standard">
+          <span class="footer-k">Standard</span>
+          <a href="https://github.com/roy-tong/AgentMeasure/blob/main/standard/CORE.md" target="_blank" rel="noopener">Core</a>
+          <a href="https://github.com/roy-tong/AgentMeasure/blob/main/standard/METRICS.md" target="_blank" rel="noopener">Metrics</a>
+          <a href="https://github.com/roy-tong/AgentMeasure/blob/main/standard/ENTITY.md" target="_blank" rel="noopener">Entity</a>
+          <a href="https://github.com/roy-tong/AgentMeasure/blob/main/standard/QUALITY.md" target="_blank" rel="noopener">Quality</a>
+        </nav>
+        <nav class="footer-col" aria-label="Research">
+          <span class="footer-k">Research</span>
+          <a href="https://github.com/roy-tong/AgentMeasure/blob/main/whitepaper/measuring-software-used-by-ai-agents.md" target="_blank" rel="noopener">Whitepaper</a>
+          <a href="https://github.com/roy-tong/AgentMeasure/tree/main/lab" target="_blank" rel="noopener">Lab</a>
+          <a href="https://github.com/roy-tong/AgentMeasure/blob/main/reports/benchmark-run-001.md" target="_blank" rel="noopener">Benchmark Run #001</a>
+        </nav>
+        <nav class="footer-col" aria-label="Language">
+          <span class="footer-k">Language</span>
+          <a href="#top" aria-current="page">English</a>
+          <a href="https://github.com/roy-tong/AgentMeasure/blob/main/README.zh-CN.md" target="_blank" rel="noopener">中文</a>
+        </nav>
+      </div>
+      <div class="footer-bottom">
+        <span>Open source under MIT. Built in the open.</span>
+        <span class="footer-epigraph">AgentMeasure does not define who owns the truth. It defines what evidence, under what rules, can support what conclusions.</span>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>
