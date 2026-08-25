@@ -38,6 +38,11 @@ touching your code paths or content:
 It emits canonical observations (default: unknown — nothing is claimed
 without evidence). 10-minute install, local-only, no cloud.
 
+> **Install note (until npm publish lands):** not on the public registry yet;
+> install from the release tarball attached to
+> [v0.2.2](https://github.com/roy-tong/AgentMeasure/releases/tag/v0.2.2)
+> (`agentmeasure-mcp-0.1.1.tgz`), or `npm pack` inside `sdk/`.
+
 If the numbers come out wrong or the definitions feel broken, that's the
 most useful feedback we can get: https://github.com/roy-tong/AgentMeasure/issues
 ```
