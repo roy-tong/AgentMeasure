@@ -69,6 +69,26 @@ jobs:
           npm pack --pack-destination .
           gh release upload "$TAG" agentmeasure-mcp-0.1.1.tgz --clobber
 
+      # ── process fix (live-codex-desc-clarity-001 lesson): bundles ship with the tag ──
+      # Every bundles/<experiment-id>/ is zipped and attached as a release asset, so a
+      # tagged release always carries its verifiable artifacts. The checklist that
+      # populates bundles/ before tagging lives in lab/README.md ("Releasing a live run").
+      - name: Attach evidence bundles as release assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if compgen -G "bundles/*" > /dev/null; then
+            for d in bundles/*/; do
+              id="$(basename "$d")"
+              zipfile="/tmp/bundle-${id}.zip"
+              (cd "$d" && zip -r -q "$zipfile" .)
+              gh release upload "$TAG" "$zipfile" --clobber
+              echo "attached $zipfile"
+            done
+          else
+            echo "no bundles/ to attach"
+          fi
+
   npm-publish:
     runs-on: ubuntu-latest
     needs: github-release

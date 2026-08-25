@@ -18,6 +18,7 @@ on:
       - 'examples/**'
       - 'benchmark/**'
       - 'reports/**'
+      - 'bundles/**'
       - 'README*'
       - 'ROADMAP.md'
       - 'GOVERNANCE.md'
@@ -61,6 +62,16 @@ jobs:
       - name: "Vocabulary registry single-source check (yaml, schema, TS, Python)"
         run: |
           python3 scripts/gen_vocab.py --check
+      - name: "Evidence bundles: statistics-layer recomputation (stats-recomputable guard)"
+        run: |
+          status=0
+          for f in bundles/*/recompute_stats.py; do
+            if [ -e "$f" ]; then
+              echo "== $f"
+              python3 "$f" || status=1
+            fi
+          done
+          exit $status
 
   # ─── 套件 2：reference implementation（canonical boundary gate） ───
   reference-implementation:

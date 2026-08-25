@@ -225,3 +225,20 @@ No registration wall, no cloud dependency, no telemetry (not even opt-in yet —
 see OD-009), no ranking of capabilities or providers, no payment features. Lab reports are
 openly shareable; the commercial layer adds data and delivery on top of the same formats —
 never a different ruler.
+
+## Releasing a live run (bundle checklist)
+
+Live-run artifacts live under gitignored paths (`runs/`, `.agentmeasure/`) —
+if you tag a release without exporting them, they are gone for good. Before
+tagging after a live experiment:
+
+1. `am lab history` → resolve the run directory for the experiment.
+2. Copy the four-piece set into `bundles/<experiment-id>/`:
+   preregistration manifest, raw events JSONL, run metadata, report.
+3. If (and only if) some pieces no longer exist, ship what does, add a
+   `MANIFEST.md` documenting the gap, and label the bundle honestly
+   (e.g. `stats-recomputable` instead of `bundle-verifiable`) — see
+   `bundles/live-codex-desc-clarity-001/` for the pattern, including a
+   `recompute_stats.py` that CI re-executes on every push.
+4. Tag. `release.yml` zips every `bundles/<id>/` and attaches it to the
+   GitHub Release automatically.

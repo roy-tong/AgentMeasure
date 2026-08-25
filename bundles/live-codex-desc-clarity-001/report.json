@@ -1,0 +1,367 @@
+{
+  "decision": {
+    "note": "This is a recommendation with its evidence chain, not a decision. continue / scale / stop belongs to the customer (decision owner).",
+    "recommendations": [
+      {
+        "recommended_action": "no action from this experiment; honest null recorded; to resolve an effect of the observed size (~25.0pp), plan ≈31 per arm in the next round",
+        "variant_id": "clear",
+        "verdict": "null_result"
+      }
+    ],
+    "run_incomplete": false
+  },
+  "engine_version": "0.4.0",
+  "experiment_id": "live-codex-desc-clarity-001",
+  "funnel_rules_version": "lab-funnel-rules/1.0.0",
+  "hypothesis": "Live validation round: a clearer tool description raises real-agent selection rate; the goal of THIS round is pipeline correctness on a real harness, not a powered conclusion.",
+  "limitations": [
+    "Controlled synthetic environment; production transfer is NOT claimed here — production verification requires the commercial calibration loop (Connector + holdout).",
+    "Per-condition (per-harness) effects may disagree with the pooled effect; that disagreement is information, not noise to be averaged away.",
+    "Mock harness factor effects are planted simulation parameters, not real-agent claims."
+  ],
+  "preregistration": {
+    "alpha": 0.05,
+    "manifest_hash": "31c1c298101c7b13350df4f9fa098b06cf39ab2d5bae25d3ccdc3a4d300589d3",
+    "min_sample_per_arm": 4,
+    "primary_metric": "selection_rate"
+  },
+  "run": {
+    "assignments_executed": 8,
+    "assignments_planned": 8,
+    "budget": {
+      "max_cost_units": 10000000,
+      "max_operations": 20,
+      "max_wall_clock_seconds": 3600,
+      "spent_cost_units": 1614163.98,
+      "spent_operations": 8,
+      "spent_wall_clock_seconds": 1900.273
+    },
+    "created_at": "2026-08-22T06:45:51+00:00",
+    "determinism_note": "same seed + same engine + same rules version + same harness versions => same fingerprint",
+    "engine_version": "0.4.0",
+    "funnel_rules_version": "lab-funnel-rules/1.0.0",
+    "harnesses": [
+      {
+        "config": {
+          "cli_path": "/Applications/ChatGPT.app/Contents/Resources/codex",
+          "max_turns": 8,
+          "model": null,
+          "timeout_seconds": 300
+        },
+        "disclosure": "Live-validated against codex-cli 0.149.0-alpha (2026-08-22): candidate injection via -c mcp_servers.*, MCP calls auto-approved with --approve-for-me, ephemeral sessions. Transcript shapes are from an alpha CLI and may change upstream; the App Server surface remains the better observation plane (profiles/codex.md §4).",
+        "injection": "controlled candidate set via a per-episode local MCP tool server; presentation (descriptions, output verbosity) varies per variant",
+        "kind": "real-harness-adapter (headless CLI)",
+        "observability": {
+          "choice": "first candidate-tool invocation in the transcript",
+          "consumption": "continuation proxy: non-empty final answer after a successful subject call",
+          "reach": "full candidate set controlled (MCP tools exposed)",
+          "success": "per-call tool_result.is_error"
+        },
+        "proxies": [
+          "steps = count of action items (tool calls, searches, commands)",
+          "cost_units = episode tokens amortized across subject attempts (1 unit = 1 token)",
+          "latency_ms not observed headless; zero is a labeled placeholder"
+        ],
+        "runner_id": "codex"
+      }
+    ],
+    "plan": {
+      "assignments_total": 8,
+      "balanced": true,
+      "per_arm": {
+        "clear": 4,
+        "control": 4
+      },
+      "per_harness": {
+        "codex-gpt56-sol": 8
+      },
+      "tasks": 4
+    },
+    "run_fingerprint": "d6b161fda9fcc1ed474ffb214a1b60ec863016a558a8146cf7917ca9e6f1b3c1",
+    "seed": 20260822,
+    "status": "complete",
+    "stopped_reason": null,
+    "task_set": {
+      "path": "live-tasks.json",
+      "sha256": "498ac95694343694598012c84298388813fc4f17b2d252ef3e80d77f0666328f"
+    }
+  },
+  "schema": "agentmeasure.lab/report",
+  "schema_version": "1.0.0",
+  "secondary_metrics_note": "descriptive only — not part of the preregistered analysis plan; do not read as confirmatory",
+  "variants": [
+    {
+      "baseline": true,
+      "guardrails": [],
+      "levels": {
+        "description_clarity": "control"
+      },
+      "metrics": {
+        "attempts_per_operation": {
+          "denominator": 4,
+          "measurement_label": {
+            "definition": "total attempts / operations (retries are attempts, not uses)",
+            "grain": "operation",
+            "qualification": "controlled experiment environment (not production)",
+            "rules_version": "lab-funnel-rules/1.0.0"
+          },
+          "numerator": 5,
+          "value": 1.25
+        },
+        "consumption_rate": {
+          "ci95": [
+            0.5101,
+            1.0
+          ],
+          "denominator": 4,
+          "measurement_label": {
+            "definition": "results consumed by the agent / successful operations",
+            "grain": "operation",
+            "qualification": "controlled experiment environment (not production)",
+            "rules_version": "lab-funnel-rules/1.0.0"
+          },
+          "numerator": 4,
+          "value": 1.0
+        },
+        "cost_units_per_operation": {
+          "denominator": 4,
+          "measurement_label": {
+            "definition": "abstract cost units (harness-reported)",
+            "grain": "operation",
+            "qualification": "controlled experiment environment (not production)",
+            "rules_version": "lab-funnel-rules/1.0.0"
+          },
+          "numerator": 754081.0,
+          "value": 188520.25
+        },
+        "median_steps_per_operation": {
+          "denominator": 4,
+          "measurement_label": {
+            "definition": "median summed steps across attempts",
+            "grain": "operation",
+            "qualification": "controlled experiment environment (not production)",
+            "rules_version": "lab-funnel-rules/1.0.0"
+          },
+          "numerator": null,
+          "value": 9.5
+        },
+        "operation_success_rate": {
+          "ci95": [
+            0.5101,
+            1.0
+          ],
+          "denominator": 4,
+          "measurement_label": {
+            "definition": "operations with >=1 successful attempt / subject operations (rule op-success-any/1)",
+            "grain": "operation",
+            "qualification": "controlled experiment environment (not production)",
+            "rules_version": "lab-funnel-rules/1.0.0"
+          },
+          "numerator": 4,
+          "value": 1.0
+        },
+        "operations": 4,
+        "reach": 4,
+        "selected": 0,
+        "selection_rate": {
+          "ci95": [
+            0.0,
+            0.4899
+          ],
+          "denominator": 4,
+          "measurement_label": {
+            "definition": "subject selected / decision opportunities (reach events)",
+            "grain": "assignment",
+            "qualification": "controlled experiment environment (not production)",
+            "rules_version": "lab-funnel-rules/1.0.0"
+          },
+          "numerator": 0,
+          "value": 0.0
+        }
+      },
+      "plain_label": [
+        "Baseline (current)",
+        "基线（现状）"
+      ],
+      "variant_id": "control",
+      "verdict": "baseline"
+    },
+    {
+      "baseline": false,
+      "fake_growth": null,
+      "guardrails": [
+        {
+          "metric": "attempts_per_operation",
+          "note": "within threshold",
+          "status": "pass",
+          "threshold": {
+            "max": 3.0,
+            "metric": "attempts_per_operation"
+          },
+          "value": 3.0
+        }
+      ],
+      "levels": {
+        "description_clarity": "clear"
+      },
+      "metrics": {
+        "attempts_per_operation": {
+          "denominator": 4,
+          "measurement_label": {
+            "definition": "total attempts / operations (retries are attempts, not uses)",
+            "grain": "operation",
+            "qualification": "controlled experiment environment (not production)",
+            "rules_version": "lab-funnel-rules/1.0.0"
+          },
+          "numerator": 12,
+          "value": 3.0
+        },
+        "consumption_rate": {
+          "ci95": [
+            0.5101,
+            1.0
+          ],
+          "denominator": 4,
+          "measurement_label": {
+            "definition": "results consumed by the agent / successful operations",
+            "grain": "operation",
+            "qualification": "controlled experiment environment (not production)",
+            "rules_version": "lab-funnel-rules/1.0.0"
+          },
+          "numerator": 4,
+          "value": 1.0
+        },
+        "cost_units_per_operation": {
+          "denominator": 4,
+          "measurement_label": {
+            "definition": "abstract cost units (harness-reported)",
+            "grain": "operation",
+            "qualification": "controlled experiment environment (not production)",
+            "rules_version": "lab-funnel-rules/1.0.0"
+          },
+          "numerator": 860082.98,
+          "value": 215020.74500000002
+        },
+        "median_steps_per_operation": {
+          "denominator": 4,
+          "measurement_label": {
+            "definition": "median summed steps across attempts",
+            "grain": "operation",
+            "qualification": "controlled experiment environment (not production)",
+            "rules_version": "lab-funnel-rules/1.0.0"
+          },
+          "numerator": null,
+          "value": 22.5
+        },
+        "operation_success_rate": {
+          "ci95": [
+            0.5101,
+            1.0
+          ],
+          "denominator": 4,
+          "measurement_label": {
+            "definition": "operations with >=1 successful attempt / subject operations (rule op-success-any/1)",
+            "grain": "operation",
+            "qualification": "controlled experiment environment (not production)",
+            "rules_version": "lab-funnel-rules/1.0.0"
+          },
+          "numerator": 4,
+          "value": 1.0
+        },
+        "operations": 4,
+        "reach": 4,
+        "selected": 1,
+        "selection_rate": {
+          "ci95": [
+            0.0456,
+            0.6994
+          ],
+          "denominator": 4,
+          "measurement_label": {
+            "definition": "subject selected / decision opportunities (reach events)",
+            "grain": "assignment",
+            "qualification": "controlled experiment environment (not production)",
+            "rules_version": "lab-funnel-rules/1.0.0"
+          },
+          "numerator": 1,
+          "value": 0.25
+        }
+      },
+      "per_condition": [
+        {
+          "comparison": {
+            "alpha": 0.05,
+            "candidate": {
+              "n": 4,
+              "value": 0.25
+            },
+            "control": {
+              "n": 4,
+              "value": 0.0
+            },
+            "diff_ci95": [
+              -0.2808,
+              0.6994
+            ],
+            "difference": 0.25,
+            "metric": "selection_rate",
+            "min_sample_per_arm": 4,
+            "p_value": 0.285049,
+            "power_note": "to resolve an effect of the observed size (~25.0pp), plan ≈31 per arm in the next round",
+            "reason": "no significant difference at alpha=0.05 (two-sided, preregistered); this is an honest null, not evidence of no effect — see CI width",
+            "verdict": "null_result",
+            "z": 1.069
+          },
+          "condition": "codex-gpt56-sol",
+          "note": "per-condition effect size — never summarized by one global coefficient"
+        }
+      ],
+      "plain_label": [
+        "No measurable difference (honest null)",
+        "无可测差异（诚实零结果）"
+      ],
+      "primary_comparison": {
+        "alpha": 0.05,
+        "candidate": {
+          "n": 4,
+          "value": 0.25
+        },
+        "control": {
+          "n": 4,
+          "value": 0.0
+        },
+        "diff_ci95": [
+          -0.2808,
+          0.6994
+        ],
+        "difference": 0.25,
+        "metric": "selection_rate",
+        "min_sample_per_arm": 4,
+        "p_value": 0.285049,
+        "power_note": "to resolve an effect of the observed size (~25.0pp), plan ≈31 per arm in the next round",
+        "reason": "no significant difference at alpha=0.05 (two-sided, preregistered); this is an honest null, not evidence of no effect — see CI width",
+        "verdict": "null_result",
+        "z": 1.069
+      },
+      "value": {
+        "computable": false,
+        "formula": "opportunity x dSelection x P(success|selected) x P(consumed|success) x conversion x margin - serving_cost",
+        "missing_parameters": [
+          "opportunity_per_month",
+          "pay_conversion",
+          "margin_per_billed_event"
+        ],
+        "note": "relative uplift only — no absolute margin claimed without customer parameters",
+        "parameters_supplied": {
+          "capture_rate_assumption": null,
+          "margin_per_billed_event": null,
+          "opportunity_per_month": null,
+          "pay_conversion": null,
+          "serving_cost_per_month": null
+        }
+      },
+      "variant_id": "clear",
+      "verdict": "null_result"
+    }
+  ]
+}
