@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>A tool result in the next LLM context does not mean the agent used it — AgentMeasure</title>
+  <meta name="description" content="Context availability, reference, and causal influence are three different facts. Most agent usage metrics collapse them into one — and every downstream number inherits the ambiguity.">
+  <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+  <link rel="canonical" href="https://roy-tong.github.io/AgentMeasure/blog/context-availability.html">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="AgentMeasure">
+  <meta property="og:title" content="A tool result in the next LLM context does not mean the agent used it">
+  <meta property="og:description" content="Context availability, reference, and causal influence are three different facts. Most agent usage metrics collapse them into one.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../styles.css">
+  <style>
+    .post { max-width: 44rem; margin: 0 auto; padding: 96px 24px 80px; }
+    .post-back { font-family: var(--mono); font-size: 12px; letter-spacing: 0.08em; color: var(--secondary); }
+    .post-back:hover { color: var(--spec); }
+    .post-k { font-family: var(--mono); font-size: 11px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ok); margin: 26px 0 12px; }
+    .post h1 { font-size: 2.0rem; font-weight: 700; letter-spacing: -0.02em; line-height: 1.2; margin: 10px 0 14px; }
+    .post-meta { font-size: 0.85rem; color: var(--secondary); margin-bottom: 40px; }
+    .post p { font-size: 1.0rem; line-height: 1.7; color: var(--text); margin: 0 0 18px; }
+    .post h2 { font-size: 1.25rem; font-weight: 600; margin: 40px 0 14px; letter-spacing: -0.01em; }
+    .post ul, .post ol { margin: 0 0 18px 22px; }
+    .post li { font-size: 1.0rem; line-height: 1.65; margin-bottom: 8px; }
+    .post pre { background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px 20px; overflow-x: auto; margin: 0 0 18px; }
+    .post code { font-family: var(--mono); font-size: 0.88rem; color: var(--ok); }
+    .post p code, .post li code { color: var(--spec); }
+    .post blockquote { border-left: 3px solid var(--spec); padding: 2px 0 2px 18px; margin: 0 0 18px; color: var(--secondary); }
+    .post a { color: var(--spec); }
+    .post a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <main class="post" id="main">
+    <a class="post-back" href="../index.html">← AgentMeasure</a>
+    <p class="post-k">Research note · Semantics</p>
+    <h1>A tool result in the next LLM context does not mean the agent&nbsp;used&nbsp;it</h1>
+    <p class="post-meta">2026-08-25 · cross-posted from <a href="https://github.com/roy-tong/AgentMeasure/issues/11" target="_blank" rel="noopener">issue #11</a> and <a href="https://github.com/roy-tong/AgentMeasure/blob/main/design-rationale/DR-005-evidence-calibrated-consumption-claims.md" target="_blank" rel="noopener">DR-005</a></p>
+
+    <p>You shipped MCP observability. Your dashboard shows a green checkmark: <strong>consumed</strong>. The tool returned a result, and <code>mcp_tool.name</code> shows up in the next model request. Chain closed, right?</p>
+    <p>Here is what that checkmark actually proves — and what it doesn't.</p>
+
+    <h2>The concrete case</h2>
+    <p>An agent calls a pricing tool. The tool returns <code>price = $38.21</code>. The next model request contains the tool result. The next model output says:</p>
+    <blockquote>"The current price is $38.21."</blockquote>
+    <p>Did the agent <em>use</em> the result? Most dashboards would say yes. But look closer — there are at least three different facts hiding in that "yes":</p>
+    <ol>
+      <li>The result <strong>entered the model's context</strong> (your trace can show this)</li>
+      <li>The output <strong>restates</strong> the value (you can observe this, sometimes)</li>
+      <li>The agent's <strong>decision depended on</strong> the value (you cannot show this from a single trace)</li>
+    </ol>
+    <p>The third is the one everyone actually wants. It is also the only one your telemetry cannot deliver.</p>
+
+    <h2>What a single trace can prove</h2>
+    <p>We asked people on both sides of the API where this boundary sits, and two answers converged from opposite directions:</p>
+    <ul>
+      <li>A <strong>provider engineer</strong> (the tool side): the server knows the call happened and the result was returned. What the agent did with it afterwards is invisible from the server.</li>
+      <li>A <strong>reviewer of our spec</strong> (the client side): a single trace can certify the result was <em>placed into</em> the next model call's context. Proving it <em>influenced</em> the next decision requires removing or corrupting the result and running again — an ablation, not an observation.</li>
+    </ul>
+    <p>Two sides, same boundary. That boundary is the interesting object:</p>
+    <pre><code>Tool invoked               ✅ observable
+Result returned            ✅ observable
+Result available next step ✅ observable
+Result referenced          ~  sometimes observable — weak evidence, not proof
+Result influential         ✗  requires counterfactual evidence (ablation / rerun)</code></pre>
+    <p>The jump from <em>referenced</em> to <em>influential</em> is the jump from observation to experiment. A model restating <code>$38.21</code> is compatible with the model ignoring the price entirely — you need the counterfactual run to rule that out.</p>
+
+    <h2>Why this matters more than it seems</h2>
+    <p>If your usage metrics collapse these rungs into one flag, every downstream number inherits the ambiguity. "Consumption rate" becomes a number nobody can defend: it can't be compared across runtimes, because each runtime means something different by it. And when it's time to bill, or to decide which tools the agent actually needs, the causal question is the only one that matters — and it's the one the trace can't answer.</p>
+    <p>The honest split is architectural, not cosmetic:</p>
+    <ul>
+      <li><strong>Trace layer</strong> proves availability, and observes reference as weak evidence.</li>
+      <li><strong>Experiment layer</strong> (ablation / rerun) estimates causal influence.</li>
+    </ul>
+    <p>A measurement system that knows which layer it's in can say exactly what it knows — and that turns out to be the harder, more valuable feature than another dashboard.</p>
+
+    <h2>What we did with this</h2>
+    <p>This boundary exposed an overclaim in our own spec: our Claude Code profile called <code>mcp_tool.name</code> in the next request a "consumption signal" — the first platform where consumption was "empirically proven." By the ladder above, that signal certifies <strong>context availability</strong>, and we've corrected the claim and renamed the signal (<a href="https://github.com/roy-tong/AgentMeasure/issues/11" target="_blank" rel="noopener">issue #11</a>, <a href="https://github.com/roy-tong/AgentMeasure/blob/main/design-rationale/DR-005-evidence-calibrated-consumption-claims.md" target="_blank" rel="noopener">DR-005</a>).</p>
+    <p>Claude Code is still genuinely notable — it's the first client runtime where availability is certifiable at all. That's a real capability. It's just a rung lower than we claimed, and the rung is the whole point.</p>
+    <p>This is why agent usage needs evidence-aware measurement semantics: metrics that name what they observe, dashboards that mark what they don't.</p>
+
+    <p class="post-meta" style="margin-top:44px">AgentMeasure is an open measurement standard for software used by AI agents — <a href="https://github.com/roy-tong/AgentMeasure" target="_blank" rel="noopener">GitHub</a> · <a href="../index.html">what it measures</a></p>
+  </main>
+</body>
+</html>
