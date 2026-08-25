@@ -1,0 +1,212 @@
+{
+  "artifact": "langfuse demo-seed framework traces (3 files, pinned)",
+  "fail_closed": {
+    "accepted": 24,
+    "derivation": {
+      "explicit": 0,
+      "structural": 0,
+      "unknown": 0
+    },
+    "metrics": {
+      "project": "langfuse/demo-seed-traces",
+      "days": 420,
+      "policy": "AgentMeasure/Measurement-1 [aggregate-base] (qualified=production+normal, evidence>=observed, coverage=participating_network, sampling=unsampled-only, window=30d)",
+      "operation_summary_reconciliation": {
+        "declared_summaries": 0,
+        "reconciled": 0,
+        "failed": 0,
+        "failures": [],
+        "status": "no_declared_summaries"
+      },
+      "active_clients": 0,
+      "acd": 0,
+      "logical_invocations": 0,
+      "attempts": 12,
+      "resolved_operations": 0,
+      "legacy_attempt_equivalent": 12,
+      "unresolved_attempts": 12,
+      "qualification_status": {
+        "unknown": 12
+      },
+      "operation_resolution_coverage": 0.0,
+      "attempts_per_operation": 0.0,
+      "operation_resolution": {
+        "unknown": 12
+      },
+      "eligible_invocations": 12,
+      "corroborated_invocations": 0,
+      "corroborated_share": 0.0,
+      "qualified_invocations": 0,
+      "qualified_rate": 0.0,
+      "production_context_attempts": 0,
+      "validity_coverage": {
+        "normal": 0,
+        "invalid": 0,
+        "unknown": 12
+      },
+      "unknown_context_or_validity": 12,
+      "success_rate": 1.0,
+      "unknown_or_inconsistent_outcomes": 0,
+      "outcome_shares": {
+        "success": 12,
+        "failure": 0,
+        "unknown": 0
+      },
+      "caller_attribution_coverage": 1.0,
+      "validity_classified_coverage": 0.0,
+      "collection_coverage": 1.0,
+      "evidence": [
+        {
+          "grade": "observed",
+          "invocations": 12
+        }
+      ],
+      "observers": [
+        {
+          "principal": "langfuse-export@concierge",
+          "invocations": 12
+        }
+      ],
+      "latency": {
+        "count": 12,
+        "min_ms": 0,
+        "max_ms": 2362,
+        "mean_ms": 1016.2,
+        "p50_ms": 1150,
+        "p95_ms": 2362,
+        "buckets": {
+          "<100ms": 4,
+          "100-500ms": 0,
+          "500-1000ms": 1,
+          "1000-5000ms": 7,
+          ">5000ms": 0
+        }
+      },
+      "caller_by_runtime": {},
+      "caller_by_strength": {}
+    }
+  },
+  "structural_experimental": {
+    "accepted": 24,
+    "derivation": {
+      "explicit": 0,
+      "structural": 0,
+      "unknown": 0
+    },
+    "metrics": {
+      "project": "langfuse/demo-seed-traces",
+      "days": 420,
+      "policy": "AgentMeasure/Measurement-1 [aggregate-base] (qualified=production+normal, evidence>=observed, coverage=participating_network, sampling=unsampled-only, window=30d)",
+      "operation_summary_reconciliation": {
+        "declared_summaries": 0,
+        "reconciled": 0,
+        "failed": 0,
+        "failures": [],
+        "status": "no_declared_summaries"
+      },
+      "active_clients": 0,
+      "acd": 0,
+      "logical_invocations": 0,
+      "attempts": 12,
+      "resolved_operations": 0,
+      "legacy_attempt_equivalent": 12,
+      "unresolved_attempts": 12,
+      "qualification_status": {
+        "unknown": 12
+      },
+      "operation_resolution_coverage": 0.0,
+      "attempts_per_operation": 0.0,
+      "operation_resolution": {
+        "unknown": 12
+      },
+      "eligible_invocations": 12,
+      "corroborated_invocations": 0,
+      "corroborated_share": 0.0,
+      "qualified_invocations": 0,
+      "qualified_rate": 0.0,
+      "production_context_attempts": 0,
+      "validity_coverage": {
+        "normal": 0,
+        "invalid": 0,
+        "unknown": 12
+      },
+      "unknown_context_or_validity": 12,
+      "success_rate": 1.0,
+      "unknown_or_inconsistent_outcomes": 0,
+      "outcome_shares": {
+        "success": 12,
+        "failure": 0,
+        "unknown": 0
+      },
+      "caller_attribution_coverage": 1.0,
+      "validity_classified_coverage": 0.0,
+      "collection_coverage": 1.0,
+      "evidence": [
+        {
+          "grade": "observed",
+          "invocations": 12
+        }
+      ],
+      "observers": [
+        {
+          "principal": "langfuse-export@concierge",
+          "invocations": 12
+        }
+      ],
+      "latency": {
+        "count": 12,
+        "min_ms": 0,
+        "max_ms": 2362,
+        "mean_ms": 1016.2,
+        "p50_ms": 1150,
+        "p95_ms": 2362,
+        "buckets": {
+          "<100ms": 4,
+          "100-500ms": 0,
+          "500-1000ms": 1,
+          "1000-5000ms": 7,
+          ">5000ms": 0
+        }
+      },
+      "caller_by_runtime": {},
+      "caller_by_strength": {}
+    }
+  },
+  "raw_patterns": [
+    {
+      "trace": "langgraph-2025-08-22",
+      "pattern": "2x 'agent' under same parent",
+      "verdict": "retry OR loop step \u2014 indistinguishable without declared boundary"
+    },
+    {
+      "trace": "langgraph-2025-08-22",
+      "pattern": "token usage in export",
+      "verdict": "ABSENT (0/9)"
+    },
+    {
+      "trace": "openai-agents-2025-09-30",
+      "pattern": "2x 'response' under same parent",
+      "verdict": "retry OR loop step \u2014 indistinguishable without declared boundary"
+    },
+    {
+      "trace": "openai-agents-2025-09-30",
+      "pattern": "token usage in export",
+      "verdict": "ABSENT (0/5)"
+    },
+    {
+      "trace": "pydantic-ai-tools-2025-12-04",
+      "pattern": "2x 'joke_agent run' under same parent",
+      "verdict": "retry OR loop step \u2014 indistinguishable without declared boundary"
+    },
+    {
+      "trace": "pydantic-ai-tools-2025-12-04",
+      "pattern": "2x 'chat gpt-4o-mini' under same parent",
+      "verdict": "retry OR loop step \u2014 indistinguishable without declared boundary"
+    },
+    {
+      "trace": "pydantic-ai-tools-2025-12-04",
+      "pattern": "token usage in export",
+      "verdict": "ABSENT (0/12)"
+    }
+  ]
+}

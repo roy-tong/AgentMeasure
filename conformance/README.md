@@ -27,6 +27,17 @@ python3 verify_vectors.py                      # receipt/correlation vectors
 python3 conformance/runners/run_external_fixture.py  # 外部 fixture（Urusilla-001，#8/#9 守卫）
 ```
 
+## Evidence Cases（公开 artifact 分析，≠ conformance vectors）
+
+`conformance/evidence/<case>/` 存放对公开 artifact 的覆盖分析案例——
+不验证实现，只演示口径纪律（coverage-first 报告 + claim boundary）：
+
+- **langfuse-demo-traces** — Langfuse 官方 demo seed 的三份真实框架 trace
+  （langgraph / openai-agents / pydantic-ai-tools，commit-pinned，不分发源文件）：
+  12 attempts、operation grouping evidence 100% ungrouped、**safe operation
+  coverage = 0%**、4 处 retry/loop 不可分辨 sibling 模式、token usage 0/26。
+  一次性 adapter + 双模式 pipeline 全可复现（`fetch_source.py` + `run_case.py`）。
+
 ## 外部 Fixture
 
 `conformance/vectors/external/<source>-<seq>/` 接收第三方提交的 fixture

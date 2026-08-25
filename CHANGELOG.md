@@ -5,6 +5,10 @@ documented here. Format follows [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Added
+
+- **First public evidence case — [langfuse-demo-traces](conformance/evidence/langfuse-demo-traces/)**: three real framework-instrumented traces published by Langfuse as demo seed data (commit-pinned, source not redistributed), run through the canonical pipeline via a disclosed one-off adapter. Result: 12 attempts, operation grouping evidence 100% ungrouped, **safe operation coverage 0%** in both fail-closed and structural-experimental modes; 4 sibling patterns where retry and loop step are observationally indistinguishable; token usage absent from the export (0/26). Fully reproducible (`fetch_source.py` + `run_case.py`, stdlib only). Claim boundary: External Fixture — numbers describe these three traces only.
+
 ## [v0.2.2] - 2026-08-24 — conformance hardening (#8 / #9 + first external vector)
 
 - **Fix #8 — validator: root sibling constraints after oneOf** (found in the first external conformance pass, [langfuse#16383](https://github.com/langfuse/langfuse/discussions/16383)): the bundled validator returned after evaluating `oneOf`, so records matching one branch but missing root-level required fields (siblings of the root `oneOf` in FMT-002) validated successfully. `oneOf`/`anyOf` are now compositional — sibling keywords are always evaluated after a branch matches; zero-match errors carry the first branch error for diagnosis. The registry validator additionally fails closed on unsupported composition keywords instead of silently ignoring them.
