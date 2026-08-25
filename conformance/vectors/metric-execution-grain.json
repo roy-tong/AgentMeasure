@@ -1,0 +1,66 @@
+{
+  "spec_version": "agentmeasure-0.4",
+  "metric": "M3.1/M3.3 Execution Grain — Operation vs Attempt",
+  "grain": "declared per metric — the point of this vector family",
+  "external_evidence": "Avi Seth 2026-08-24 (operation_id = additive grouping key, not the emitted unit); Arthi (attempts = append-only execution facts); see DR-006",
+  "vectors": [
+    {
+      "id": "retry-chain-one-operation",
+      "description": "runtime 重试同一 intent：3 attempts（429 → timeout → success）携带同一 operation_id → M3.1=1（结构去重），M3.3=0.333，attempts_per_operation=3",
+      "input": {
+        "project": "p1",
+        "invocations": [
+          {"tool_call_id": "tc-1", "observer": "claude-otel@a", "outcome": "failure", "context": "production", "validity": "normal", "operation_id": "op-a"},
+          {"tool_call_id": "tc-2", "observer": "claude-otel@a", "outcome": "failure", "context": "production", "validity": "normal", "operation_id": "op-a"},
+          {"tool_call_id": "tc-3", "observer": "claude-otel@a", "outcome": "success", "context": "production", "validity": "normal", "operation_id": "op-a"}
+        ]
+      },
+      "expect": {
+        "resolved_operations": 1,
+        "attempts": 3,
+        "success_rate": 0.333,
+        "attempts_per_operation": 3.0,
+        "operation_resolution": {"explicit": 3}
+      }
+    },
+    {
+      "id": "independent-executions-stay-separate",
+      "description": "三次独立执行（无 operation_id，无归组证据）：M3.1=0（fail-closed，绝不把 attempt 伪装成 operation），M3.3=1.0，resolution=unknown",
+      "input": {
+        "project": "p1",
+        "invocations": [
+          {"tool_call_id": "tc-1", "observer": "claude-otel@a", "outcome": "success", "context": "production", "validity": "normal"},
+          {"tool_call_id": "tc-2", "observer": "claude-otel@a", "outcome": "success", "context": "production", "validity": "normal"},
+          {"tool_call_id": "tc-3", "observer": "claude-otel@a", "outcome": "success", "context": "production", "validity": "normal"}
+        ]
+      },
+      "expect": {
+        "resolved_operations": 0,
+        "attempts": 3,
+        "success_rate": 1.0,
+        "attempts_per_operation": 0.0,
+        "operation_resolution": {"unknown": 3},
+        "legacy_attempt_equivalent": 3
+      }
+    },
+    {
+      "id": "same-shape-different-grain-disclosure",
+      "description": "同一份 3-attempt 数据在两种 grain 下的合法读数：attempt 视图 33% 成功 vs operation 视图 1 次逻辑使用（最终成功）——两个数字都正确，不声明 grain 则都误导",
+      "input": {
+        "project": "p1",
+        "invocations": [
+          {"tool_call_id": "tc-1", "observer": "claude-otel@a", "outcome": "failure", "context": "production", "validity": "normal", "operation_id": "op-a"},
+          {"tool_call_id": "tc-2", "observer": "claude-otel@a", "outcome": "failure", "context": "production", "validity": "normal", "operation_id": "op-a"},
+          {"tool_call_id": "tc-3", "observer": "claude-otel@a", "outcome": "success", "context": "production", "validity": "normal", "operation_id": "op-a"}
+        ]
+      },
+      "expect": {
+        "resolved_operations": 1,
+        "attempts": 3,
+        "success_rate": 0.333,
+        "attempts_per_operation": 3.0,
+        "outcome_shares": {"success": 1, "failure": 2, "unknown": 0}
+      }
+    }
+  ]
+}

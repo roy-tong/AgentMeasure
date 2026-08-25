@@ -108,10 +108,49 @@ def _run_consumed_rate(vector: dict) -> bool:
             and s["consumed_rate"] == exp["rate"])
 
 
+def _run_execution_grain(vector: dict) -> bool:
+    """M3.1/M3.3 Execution Grain（DR-006：attempt = 发射粒度，operation = 分析粒度）。
+
+    断言：retry chain 归并为 1 operation 且 attempt 事实完整保留；
+    无归组证据时 fail-closed（M3.1=0，不把 attempt 伪装成 operation）。
+    """
+    from collector.correlator.correlator import (
+        connect, store_observation, match_invocations, derive_operations)
+    from collector.usage import empty_observation, new_observation_id
+    from collector.aggregator.aggregator import compute
+
+    tmp = tempfile.mkdtemp()
+    conn = connect(Path(tmp) / "v.db")
+    project = vector["input"]["project"]
+    for i, inv in enumerate(vector["input"]["invocations"]):
+        # 每调用双侧观察（client=observer + server=wrapper）保证 eligible；
+        # operation_id 只由 client 侧观察携带（explicit 归组证据）
+        for side, principal in (("client", inv["observer"]), ("server", "mcp-wrapper@t")):
+            o = empty_observation(); o.update(dict(
+                observation_id=new_observation_id(),
+                observed_at=f"2026-08-25T00:{i:02d}:00Z",
+                observer_principal=principal, observer_side=side,
+                provenance="hook" if side == "client" else "wrapper",
+                trust_domain="td-a" if side == "client" else "td-s",
+                project_id=project, tool="foo.search", tool_call_id=inv["tool_call_id"],
+                outcome=inv["outcome"], lifecycle_stage="L2",
+                usage_context=inv["context"], validity=inv["validity"]))
+            if inv.get("operation_id") and side == "client":
+                o["operation_id"] = inv["operation_id"]
+            store_observation(conn, o)
+    match_invocations(conn)
+    derive_operations(conn)
+    s = compute(conn, project, days=30)
+    exp = vector["expect"]
+    # 断言 expect 中声明的字段（disclosure vectors 可只断言其演示的字段）
+    return all(s.get(k) == v for k, v in exp.items())
+
+
 RUNNERS = {
     "M2.2 Observed Selection Rate": _run_selection_rate,
     "M2.5 Observed Head-to-Head Choice Share": _run_conditional_choice_share,
     "M4.1 Result Consumed Rate": _run_consumed_rate,
+    "M3.1/M3.3 Execution Grain — Operation vs Attempt": _run_execution_grain,
 }
 
 

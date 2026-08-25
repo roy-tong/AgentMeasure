@@ -8,7 +8,7 @@
 | --- | --- | --- |
 | **AgentMeasure Core Conformant** | 收据格式、签名、隐私、不变量 1-24 | receipt/correlation fixtures 已发布（`verify_vectors.py`） |
 | **AgentMeasure Choice Conformant** | M2.1-M2.5 | M2.2 / M2.5 vectors 已发布（含三轴 scope：authority/constraint）；M2.1 / M2.3 / M2.4 待发布 |
-| **AgentMeasure Execution Conformant** | M3.1-M3.3 | 待发布 |
+| **AgentMeasure Execution Conformant** | M3.1-M3.3 | M3.1/M3.3 grain vectors 已发布（retry chain 归并 / 无证据 fail-closed / 双 grain 披露，DR-006）；M3.2 待发布 |
 | **AgentMeasure Utility Conformant** | M4.1 | consumption vectors 已发布 |
 | **AgentMeasure Reporting Conformant** | Measurement Label + 口径披露 | 待发布 |
 | **Verified Measurement Profile** | 签名、证据、Receipt（Core §10 高级符合性） | 参考实现支持；非采用前置 |
@@ -22,7 +22,7 @@
 ## 运行
 
 ```bash
-python3 conformance/runners/run_metrics.py    # 指标 vectors（M2.2 / M2.5 / M4.1）
+python3 conformance/runners/run_metrics.py    # 指标 vectors（M2.2 / M2.5 / M3.1+M3.3 / M4.1）
 python3 verify_vectors.py                      # receipt/correlation vectors
 python3 conformance/runners/run_external_fixture.py  # 外部 fixture（Urusilla-001，#8/#9 守卫）
 ```
