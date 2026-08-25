@@ -2,7 +2,7 @@
   "spec_version": "agentmeasure-0.4",
   "metric": "M3.1/M3.3 Execution Grain — Operation vs Attempt",
   "grain": "declared per metric — the point of this vector family",
-  "external_evidence": "Avi Seth 2026-08-24 (operation_id = additive grouping key, not the emitted unit); Arthi (attempts = append-only execution facts); see DR-006",
+  "external_evidence": "external reviewers (direct replies 2026-08-24; attribution anonymous pending consent): operation_id = additive grouping key, not the emitted unit; attempts = append-only execution facts; see DR-006",
   "vectors": [
     {
       "id": "retry-chain-one-operation",

@@ -2,10 +2,13 @@
 
 - Status: Adopted as design rationale (Draft 0.4.4); tracked in #11
 - Date: 2026-08-25 (revised same day — two-state + ranked-evidence reframing)
-- External evidence: Gunjan Jaswal (client-side taxonomy + estimator reframing, direct replies
-  2026-08-24/25); David Elsey (independent four-rung convergence + provider inference boundary,
-  direct reply 2026-08-24); Exa engineer (provider-side boundary, direct reply 2026-08-20) —
-  cross-validated from both observation sides
+- External evidence: external reviewer (OpenAI Agents SDK ecosystem — client-side
+  taxonomy + estimator reframing, direct replies 2026-08-24/25); external reviewer
+  (agent/runtime instrumentation — independent four-rung convergence + provider inference
+  boundary, direct reply 2026-08-24); external reviewer (hosted MCP provider —
+  provider-side boundary, direct reply 2026-08-20); cross-validated from three
+  observation points. Attribution anonymous pending each reviewer's consent to
+  public naming.
 
 ## Problem
 
@@ -22,8 +25,8 @@ serialized versus what reached provider inference. Collapsing these into one wor
 ## Decision
 
 **There are exactly two semantic states. Everything between them is evidence, ranked by
-strength.** (Reframing adopted from Gunjan's second reply: the original ladder wrongly
-treated `referenced` as a third state.)
+strength.** (Reframing adopted from the client-side reviewer's second reply: the original
+ladder wrongly treated `referenced` as a third state.)
 
 ```text
 STATE 1 — Availability        (a fact about the context)
@@ -49,7 +52,8 @@ Evidence for State 2, ranked:
    request = availability signal, not consumption/influence.
 4. Where the spec defines `referenced`, it MUST name both failure modes at the definition
    site, so reference cannot masquerade as causal.
-5. **Inference boundary within availability** (David Elsey): client-side instrumentation
+5. **Inference boundary within availability** (agent/runtime instrumentation reviewer):
+   client-side instrumentation
    proves what the framework serialized into the request — not what reached provider
    inference. Providers may truncate or transform context internally. Availability claims
    from client telemetry are therefore `serialized-as-sent`, one step short of

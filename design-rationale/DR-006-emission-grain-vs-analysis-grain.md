@@ -2,9 +2,11 @@
 
 - Status: Adopted as design rationale (Draft 0.4.4)
 - Date: 2026-08-25
-- External evidence: Avi Seth (direct reply 2026-08-24: operation is an additive grouping,
-  "a stable id to group by," not "the unit you emit"); Arthi (attempts = append-only facts,
-  operation = view); converging with Eren / Darien retry-identity threads
+- External evidence: external reviewer (Logfire/Pydantic ecosystem — direct reply
+  2026-08-24: operation is an additive grouping, "a stable id to group by," not
+  "the unit you emit"); external reviewer (runtime retry semantics — attempts =
+  append-only facts, operation = view); converging with two further retry-identity
+  threads. Attribution anonymous pending each reviewer's consent to public naming.
 
 ## Problem
 

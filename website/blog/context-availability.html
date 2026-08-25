@@ -62,15 +62,22 @@
       <li>A <strong>reviewer of our spec</strong> (the client side): a single trace can certify the result was <em>placed into</em> the next model call's context. Proving it <em>influenced</em> the next decision requires removing or corrupting the result and running again — an ablation, not an observation.</li>
     </ul>
     <p>Two sides, same boundary. That boundary is the interesting object:</p>
-    <pre><code>Tool invoked               ✅ observable
-Result returned            ✅ observable
-Result available next step ✅ observable
-Result referenced          ~  sometimes observable — weak evidence, not proof
-Result influential         ✗  requires counterfactual evidence (ablation / rerun)</code></pre>
-    <p>The jump from <em>referenced</em> to <em>influential</em> is the jump from observation to experiment. A model restating <code>$38.21</code> is compatible with the model ignoring the price entirely — you need the counterfactual run to rule that out.</p>
+    <pre><code>STATE — AVAILABLE   (a fact about the context)
+  Tool invoked               ✅ observable
+  Result returned            ✅ observable
+  Result available next step ✅ observable — a trace certifies exactly this
+
+STATE — INFLUENTIAL  (a fact about the behavior)
+  Result influential         ✗  requires counterfactual evidence (ablation / rerun)
+
+Evidence for influence, ranked:
+  ablation / rerun           strong
+  result referenced          weak estimator — fails both ways:
+                               cite-without-use · use-without-cite</code></pre>
+    <p>Two states, not three: <em>referenced</em> is not a level in between — it sits on the evidence axis. A model restating <code>$38.21</code> is compatible with the model ignoring the price entirely; only the counterfactual run rules that out.</p>
 
     <h2>Why this matters more than it seems</h2>
-    <p>If your usage metrics collapse these rungs into one flag, every downstream number inherits the ambiguity. "Consumption rate" becomes a number nobody can defend: it can't be compared across runtimes, because each runtime means something different by it. And when it's time to bill, or to decide which tools the agent actually needs, the causal question is the only one that matters — and it's the one the trace can't answer.</p>
+    <p>If your usage metrics collapse these two states into one flag, every downstream number inherits the ambiguity. "Consumption rate" becomes a number nobody can defend: it can't be compared across runtimes, because each runtime means something different by it. And when it's time to bill, or to decide which tools the agent actually needs, the causal question is the only one that matters — and it's the one the trace can't answer.</p>
     <p>The honest split is architectural, not cosmetic:</p>
     <ul>
       <li><strong>Trace layer</strong> proves availability, and observes reference as weak evidence.</li>
@@ -79,8 +86,8 @@ Result influential         ✗  requires counterfactual evidence (ablation / rer
     <p>A measurement system that knows which layer it's in can say exactly what it knows — and that turns out to be the harder, more valuable feature than another dashboard.</p>
 
     <h2>What we did with this</h2>
-    <p>This boundary exposed an overclaim in our own spec: our Claude Code profile called <code>mcp_tool.name</code> in the next request a "consumption signal" — the first platform where consumption was "empirically proven." By the ladder above, that signal certifies <strong>context availability</strong>, and we've corrected the claim and renamed the signal (<a href="https://github.com/roy-tong/AgentMeasure/issues/11" target="_blank" rel="noopener">issue #11</a>, <a href="https://github.com/roy-tong/AgentMeasure/blob/main/design-rationale/DR-005-evidence-calibrated-consumption-claims.md" target="_blank" rel="noopener">DR-005</a>).</p>
-    <p>Claude Code is still genuinely notable — it's the first client runtime where availability is certifiable at all. That's a real capability. It's just a rung lower than we claimed, and the rung is the whole point.</p>
+    <p>This boundary exposed an overclaim in our own spec: our Claude Code profile called <code>mcp_tool.name</code> in the next request a "consumption signal" — the first platform where consumption was "empirically proven." By the two states above, that signal certifies <strong>context availability</strong>, and we've corrected the claim and renamed the signal (<a href="https://github.com/roy-tong/AgentMeasure/issues/11" target="_blank" rel="noopener">issue #11</a>, <a href="https://github.com/roy-tong/AgentMeasure/blob/main/design-rationale/DR-005-evidence-calibrated-consumption-claims.md" target="_blank" rel="noopener">DR-005</a>).</p>
+    <p>Claude Code is still genuinely notable — it's the first client runtime where availability is certifiable at all. That's a real capability. It's one state short of what we claimed, and the state is the whole point.</p>
     <p>This is why agent usage needs evidence-aware measurement semantics: metrics that name what they observe, dashboards that mark what they don't.</p>
 
     <p class="post-meta" style="margin-top:44px">AgentMeasure is an open measurement standard for software used by AI agents — <a href="https://github.com/roy-tong/AgentMeasure" target="_blank" rel="noopener">GitHub</a> · <a href="../index.html">what it measures</a></p>
