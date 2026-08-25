@@ -40,7 +40,7 @@
 **Product — 双假设实验（→ 9/3 Gate）**：
 1. Provider SDK（provider 侧观测，无 Agent 侧安装）——v0.1.1 已发布（21/21 测试，release tarball 可装）；npm publish 待凭据
 2. 假设 B 入口已修复：官网 Trial 双路径（mailto 主＋issue 次）＋暖池直达；concierge #1（fallback：langfuse demo 公开 artifact）已完成并公开
-3. 验证目标（预注册判据，PRD v0.5 §8.2）：真实 production telemetry ≥2＋L2/L3 ≥2（假设 B）；外部 PR/mapping ≥2＋主动 fixture ≥2（假设 A）
+3. 验证目标（预注册判据，PRD v0.5 §8.2）：真实 production telemetry ≥2＋强反应（"再测一组"/"怎么接进 CI"级）≥2 人（假设 B）；外部 PR/mapping ≥2＋主动 fixture ≥2（假设 A）
 
 **Substrate — AgentMeasure Lab（开源实验引擎，[lab/](lab/README.md)）**：
 1. v0.4 已落地：预注册锁定 + 规模/功效/预算预估、均衡分配、种子确定性、预算熔断、漏斗采集、诚实统计（效应量+CI+guardrail+null+下轮加样指引）、假增长决策出口拦截（`unverified_growth`）、支配关系标注、双语决策人一页版、价值公式、离线报告、CLI 错误友好化；**真实 Harness 适配器**（claude-code 完整 / codex 实验性：候选集注入=本地 MCP 工具服务器 + headless CLI + transcript 解析；脚本化 transcript 集成测试全绿）；校准分析（生产复测/分条件迁移/not_comparable/再加权）；Connector 数据面（授权三档/撤回/签名导出）；只读 MCP 接口；`am lab history` 本地假设库；local-analytics 基线漏斗（BASE0-002）；74 tests + selftest；**codex 适配器 live-validated（v0.2.1）**
