@@ -707,6 +707,27 @@ h3 { font-size: 1.02rem; font-weight: 600; margin-bottom: 8px; letter-spacing: -
 }
 .trial .link-quiet { display: block; text-align: center; }
 .trial .note { text-align: center; border-left: none; padding-left: 0; margin-left: auto; margin-right: auto; }
+.trial-links {
+  display: flex; flex-wrap: wrap; gap: 6px 12px; justify-content: center;
+  margin-top: 16px; color: var(--secondary);
+}
+.trial-links .link-quiet { display: inline; }
+.evidence-card {
+  margin: 42px auto 0; max-width: 46em; text-align: left;
+  padding: 20px 24px;
+  border: 1px solid var(--border); border-left: 3px solid var(--ok);
+  border-radius: var(--radius);
+  background: rgba(110,242,163,0.03);
+}
+.evidence-k {
+  font-family: var(--mono); font-size: 11px; font-weight: 600;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--ok); margin-bottom: 10px;
+}
+.evidence-line { font-size: 0.92rem; line-height: 1.6; color: var(--secondary); }
+.evidence-line strong { color: var(--text); font-weight: 600; }
+.evidence-line a { color: var(--spec); }
+.evidence-line a:hover { text-decoration: underline; }
 .trial-what {
   margin: 30px auto 0; max-width: 40em;
   font-size: 0.98rem; line-height: 1.55; color: var(--secondary);
