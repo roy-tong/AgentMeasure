@@ -14,6 +14,7 @@ on:
       - 'extensions/**'
       - 'whitepaper/**'
       - 'sdk/**'
+      - 'lab/**'
       - 'examples/**'
       - 'benchmark/**'
       - 'reports/**'
@@ -45,6 +46,9 @@ jobs:
           PYTHONPATH: reference
         run: |
           python3 conformance/runners/run_metrics.py
+      - name: "External fixture conformance (Urusilla-001: issues 8+9 guards)"
+        run: |
+          python3 conformance/runners/run_external_fixture.py
       - name: Registry validation (entities)
         run: |
           python3 registry/validate_entities.py
@@ -120,6 +124,18 @@ jobs:
           assert "p-" in raw
           print("adapter privacy OK")
           PY
+
+  # ─── 套件 3：AgentMeasure Lab（experiment engine） ───
+  lab-suite:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Lab unit + regression tests (incl. #8 oneOf sibling tests)
+        run: |
+          python3 -m unittest discover -s lab/tests
 
   # ─── 套件 4：Provider SDK（External-Ready gate） ───
   sdk-gate:

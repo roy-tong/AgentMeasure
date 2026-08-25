@@ -93,8 +93,7 @@ Bundle contents (all in-repo, versioned with this tag):
 ## Also in this release
 
 - CI runs the full lab test suite (`lab/**` previously did not trigger
-  workflows) — *pending the workflow-scope commit; see repo activity for
-  landing status*
+  workflows) — *landed post-release: `lab/**` + external-fixture guards wired into CI*
 - README (EN/中文) two-layer first fold: the measurement pain line first,
   the Capability Economy second
 - Website hero: "Know what your agent usage metrics actually count."
