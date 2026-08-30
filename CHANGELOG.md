@@ -20,7 +20,7 @@ documented here. Format follows [Keep a Changelog](https://keepachangelog.com/).
 
 ### Fixed
 
-- **lab: AM-U-007 (#10) — `median_steps_per_operation` mixed assignment grain into an operation-grain metric.** Found by @jaden3824 in the second external conformance vector: per-operation step totals [3, 2] reported 5.0 with denominator 1, because steps were summed per assignment and the median taken across assignments. Steps are now summed per resolved operation, the median runs over reconciled operations only, and the denominator is the number of contributing operations (2.5 over 2 in that vector; unresolved or failed-reconciliation operations contribute nothing, fail-closed). Single-operation behavior (urusilla-001) is unchanged; 84 lab tests and both external guards pass.
+- **lab: AM-U-007 (#12) — `median_steps_per_operation` mixed assignment grain into an operation-grain metric.** Found by @jaden3824 in the second external conformance vector: per-operation step totals [3, 2] reported 5.0 with denominator 1, because steps were summed per assignment and the median taken across assignments. Steps are now summed per resolved operation, the median runs over reconciled operations only, and the denominator is the number of contributing operations (2.5 over 2 in that vector; unresolved or failed-reconciliation operations contribute nothing, fail-closed). Single-operation behavior (urusilla-001) is unchanged; 84 lab tests and both external guards pass.
 
 ## [v0.2.2] - 2026-08-24 — conformance hardening (#8 / #9 + first external vector)
 

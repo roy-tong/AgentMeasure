@@ -75,7 +75,7 @@ def aggregate(events: List[Dict[str, Any]], key_fields: Tuple[str, ...] = ("vari
                 "consumed": 0,
                 "cost_units": 0.0,
                 # steps are summed per operation key, not per assignment:
-                # an assignment may contain several operations (#10 / AM-U-007)
+                # an assignment may contain several operations (#12 / AM-U-007)
                 "steps_by_operation": {},
                 # #9 reconciliation state: attempt rows are the facts,
                 # operation_result declarations are claims that must reconcile.
@@ -157,7 +157,7 @@ def aggregate(events: List[Dict[str, Any]], key_fields: Tuple[str, ...] = ("vari
 
     out: Dict[Tuple, Dict[str, Any]] = {}
     for key, c in cells.items():
-        # AM-U-007 (#10): the metric is operation-grain, so the median runs
+        # AM-U-007 (#12): the metric is operation-grain, so the median runs
         # over resolved operations only. Steps of attempts whose operation has
         # no reconciled declaration are dropped (fail-closed), and operations
         # that failed reconciliation do not contribute either.

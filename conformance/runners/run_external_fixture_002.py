@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""External fixture conformance: Urusilla-002 (AM-U-007 / #10 regression guard).
+"""External fixture conformance: Urusilla-002 (AM-U-007 / #12 regression guard).
 
 Source: second external conformance vector by @jaden3824 (Urusilla), pinned
 urusilla @ cfb4ef3 — langfuse/langfuse#16383. Different boundary from 001:
@@ -12,7 +12,7 @@ Guards:
   2. metrics  — aggregate() reproduces expected.json; multi-operation
                 metrics (attempts_per_operation, cost_units_per_operation)
                 match the externally pinned values;
-  3. AM-U-007 (#10) — median_steps_per_operation is operation-grain:
+  3. AM-U-007 (#12) — median_steps_per_operation is operation-grain:
                 per-operation step totals reproduce [3, 2], the median is
                 2.5 with denominator 2 (not 5.0 / 1 at assignment grain);
   4. fail-closed — an operation whose declaration fails reconciliation
@@ -81,7 +81,7 @@ def main() -> int:
           cell["operation_reconciliation"]["status"] == expected["operation_reconciliation"]["status"],
           cell["operation_reconciliation"]["status"])
 
-    print("urusilla-002 guard 3: AM-U-007 (#10) operation-grain median")
+    print("urusilla-002 guard 3: AM-U-007 (#12) operation-grain median")
     per_op = {}
     for ev in events:
         if ev["event"] == "attempt":
