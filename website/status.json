@@ -6,5 +6,9 @@
   "sdkTests": 21,
   "profiles": 5,
   "conformance": "Passing",
-  "verified": null
+  "verified": {
+    "sha": "344c750",
+    "at": "2026-08-30",
+    "run": "https://github.com/roy-tong/AgentMeasure/actions/runs/33311365108"
+  }
 }
