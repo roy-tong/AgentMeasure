@@ -1,8 +1,8 @@
 # AgentMeasure website
 
 Temporary official site, published at **<https://roy-tong.github.io/AgentMeasure/>**
-via GitHub Pages (currently the classic `gh-pages` branch; intended to switch to
-the [`pages.yml`](../.github/workflows/pages.yml) Actions deploy).
+via GitHub Pages from the classic `gh-pages` branch. Moving deployment to a
+GitHub Actions Pages workflow remains a follow-up.
 
 One long page, static HTML + CSS + a thin interaction layer. No framework,
 no build step — loads fast, easy for any agent (or human) to edit.
@@ -12,7 +12,9 @@ website/
 ├── index.html    # all sections + copy
 ├── styles.css    # Precision Instrument design system (colors = data states)
 ├── script.js     # console playback, scroll reveals, nav state
-└── assets/       # favicon.svg, social-preview.png (og:image)
+├── robots.txt    # crawler policy + sitemap pointer
+├── sitemap.xml   # public page inventory
+└── assets/       # favicon.svg, social-preview.html source, social-preview.png
 ```
 
 ## Page structure (IA: comprehension → proof → depth)
@@ -61,6 +63,10 @@ Copy changes → `index.html`. Visual changes → `styles.css`. To preview local
 cd website && python3 -m http.server 4173
 # → http://localhost:4173
 ```
+
+`assets/social-preview.html` is the editable 1280×640 source for the Open
+Graph image. Keep its spec and SDK status aligned with `status.json`, then
+regenerate `assets/social-preview.png` in a browser at the same dimensions.
 
 Deploy: commit to `website/` on `main`, then refresh the `gh-pages` snapshot
 (until the Actions deploy is enabled):

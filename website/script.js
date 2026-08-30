@@ -1,4 +1,4 @@
-/* AgentMeasure website — interaction layer
+/* AgentMeasure website - interaction layer
    console playback · scroll reveals · nav state · active section */
 
 (function () {
@@ -8,12 +8,12 @@
 
   /* ── nav: scrolled border ──────────────────────────────────── */
   var nav = document.querySelector(".nav");
-  function onScroll() {
-    if (window.scrollY > 8) nav.classList.add("scrolled");
-    else nav.classList.remove("scrolled");
+  var navSentinel = document.getElementById("nav-sentinel");
+  if (nav && navSentinel && "IntersectionObserver" in window) {
+    new IntersectionObserver(function (entries) {
+      nav.classList.toggle("scrolled", !entries[0].isIntersecting);
+    }).observe(navSentinel);
   }
-  window.addEventListener("scroll", onScroll, { passive: true });
-  onScroll();
 
   /* ── nav: mobile toggle ────────────────────────────────────── */
   var toggle = document.getElementById("nav-toggle");
@@ -27,6 +27,13 @@
       if (e.target.tagName === "A") {
         links.classList.remove("open");
         toggle.setAttribute("aria-expanded", "false");
+      }
+    });
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && links.classList.contains("open")) {
+        links.classList.remove("open");
+        toggle.setAttribute("aria-expanded", "false");
+        toggle.focus();
       }
     });
   }
@@ -146,5 +153,5 @@
         if (s[key] !== undefined && s[key] !== null) el.textContent = s[key];
       });
     })
-    .catch(function () { /* offline / file:// — static values stay */ });
+    .catch(function () { /* offline / file:// - static values stay */ });
 })();
