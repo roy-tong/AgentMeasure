@@ -204,16 +204,16 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - name: Regenerate website/status.json if stale
+      - name: Regenerate website/status.json (binds Passing to this run)
         run: |
-          if python3 scripts/gen_status.py --check; then
-            echo "status.json up to date — nothing to do"
+          python3 scripts/gen_status.py --write
+          git config user.name "agentmeasure-ci"
+          git config user.email "actions@users.noreply.github.com"
+          git add website/status.json
+          if git diff --cached --quiet; then
+            echo "status.json unchanged — nothing to do"
           else
-            python3 scripts/gen_status.py --write
-            git config user.name "agentmeasure-ci"
-            git config user.email "actions@users.noreply.github.com"
-            git add website/status.json
-            git commit -m "chore: sync website/status.json from repo state [skip ci]"
+            git commit -m "chore: sync website/status.json (verified @ ${GITHUB_SHA:0:7}) [skip ci]"
             git pull --rebase origin main
             git push origin main
             # mirror to gh-pages so the live site serves fresh numbers

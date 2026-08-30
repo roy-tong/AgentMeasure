@@ -152,6 +152,16 @@
         var key = el.getAttribute("data-status");
         if (s[key] !== undefined && s[key] !== null) el.textContent = s[key];
       });
+      /* "Passing" is only a current claim when it is bound to the green run
+         that produced it; without a verified block the static fallback stays. */
+      var v = s.verified;
+      if (v && v.sha && v.run) {
+        var link = document.querySelector("[data-status-verified]");
+        if (link) {
+          link.textContent = (v.at || "") + " @ " + v.sha;
+          link.setAttribute("href", v.run);
+        }
+      }
     })
     .catch(function () { /* offline / file:// - static values stay */ });
 })();
