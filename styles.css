@@ -1,5 +1,5 @@
 /* ════════════════════════════════════════════════════════════════
-   AgentMeasure — Precision Instrument design system
+   AgentMeasure - Precision Instrument design system
    Colors are data states, not decoration:
      green  = evidence / confirmed
      blue   = specification / structure
@@ -46,7 +46,7 @@ body {
   text-rendering: optimizeLegibility;
 }
 
-/* faint graph-paper grid — the instrument surface */
+/* faint graph-paper grid - the instrument surface */
 body::before {
   content: "";
   position: fixed;
@@ -74,7 +74,7 @@ section { scroll-margin-top: 72px; }
   color: var(--spec);
   margin-bottom: 20px;
 }
-.eyebrow::before { content: "— "; color: var(--border); }
+.eyebrow::before { content: none; }
 
 h1 {
   font-size: clamp(2.5rem, 5.6vw, 4.3rem);
@@ -133,6 +133,14 @@ h3 { font-size: 1.02rem; font-weight: 600; margin-bottom: 8px; letter-spacing: -
   border-bottom: 1px solid transparent;
   transition: border-color 0.25s ease;
 }
+.nav-sentinel {
+  position: absolute;
+  top: 8px;
+  left: 0;
+  width: 1px;
+  height: 1px;
+  pointer-events: none;
+}
 .nav.scrolled { border-bottom-color: var(--border); }
 .nav-inner {
   max-width: var(--wrap); margin: 0 auto;
@@ -184,6 +192,7 @@ h3 { font-size: 1.02rem; font-weight: 600; margin-bottom: 8px; letter-spacing: -
 .btn-primary:hover { background: rgba(110,242,163,0.14); border-color: var(--ok); }
 .btn-ghost { color: var(--text); background: transparent; }
 .btn-ghost:hover { border-color: var(--secondary); background: var(--panel); }
+.btn:active { transform: translateY(1px); }
 .btn-sm { padding: 8px 16px; font-size: 12.5px; }
 .btn:focus-visible, a:focus-visible, button:focus-visible {
   outline: 2px solid var(--spec); outline-offset: 2px; border-radius: 4px;
@@ -317,8 +326,8 @@ h3 { font-size: 1.02rem; font-weight: 600; margin-bottom: 8px; letter-spacing: -
 }
 .wrap { max-width: var(--wrap); margin: 0 auto; }
 .wrap-narrow { max-width: 860px; margin: 0 auto; text-align: center; }
-.wrap-narrow .eyebrow::before { content: none; }
-.wrap-narrow > .eyebrow::after { content: " —"; color: var(--border); }
+.wrap-narrow .eyebrow::before,
+.wrap-narrow > .eyebrow::after { content: none; }
 .wrap-narrow .lede-sm { margin-top: 18px; }
 .wrap-narrow .note { margin-left: auto; margin-right: auto; text-align: left; }
 
@@ -687,7 +696,7 @@ h3 { font-size: 1.02rem; font-weight: 600; margin-bottom: 8px; letter-spacing: -
     var(--bg);
 }
 .trial-points {
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
+  display: grid; grid-template-columns: 1.15fr 0.92fr 0.93fr; gap: 16px;
   margin: 46px 0; text-align: left;
 }
 .trial-point {
@@ -736,9 +745,10 @@ h3 { font-size: 1.02rem; font-weight: 600; margin-bottom: 8px; letter-spacing: -
 
 /* ── who pays for this (scenario cards in #why) ────────────────── */
 .who-grid {
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
+  display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 16px;
   margin-top: 46px; text-align: left;
 }
+.who-card:first-child { grid-row: span 2; }
 .who-card {
   background: var(--panel);
   border: 1px solid var(--border); border-radius: var(--radius);
@@ -849,6 +859,7 @@ html:not(.js) .reveal { opacity: 1; transform: none; }
   .lab-arrow { transform: rotate(90deg); justify-content: center; }
   .trial-points { grid-template-columns: 1fr; }
   .who-grid { grid-template-columns: 1fr; }
+  .who-card:first-child { grid-row: auto; }
   .section { padding: 76px 24px; }
   .ineq { font-size: 1.05rem; }
   .ineq-final { padding: 16px 18px; font-size: 1.15rem; }
@@ -859,4 +870,45 @@ html:not(.js) .reveal { opacity: 1; transform: none; }
 @media (max-width: 480px) {
   .footer-grid { grid-template-columns: 1fr; gap: 26px; }
   .claim-line { font-size: 1.55rem; }
+}
+
+@media (max-width: 560px) {
+  .nav-inner { height: 56px; padding: 0 16px; }
+  .nav-links { top: 56px; padding: 8px 16px 16px; }
+  .nav-cta > .btn { display: none; }
+
+  .hero { padding: 44px 16px 32px; }
+  .hero-grid { gap: 36px; }
+  h1 { font-size: clamp(2.25rem, 11.5vw, 3rem); }
+  h2 { font-size: clamp(1.65rem, 8vw, 2.2rem); }
+  .lede { font-size: 1.02rem; }
+  .hero-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    margin-top: 24px;
+  }
+  .hero-actions .btn,
+  .trial-actions .btn { width: 100%; white-space: nowrap; }
+
+  .status-strip { margin-top: 40px; }
+  .status { padding: 13px 14px; }
+  .status-v { font-size: 13px; }
+  .console-body, .terminal-body { padding-left: 16px; padding-right: 16px; }
+  .console-title { margin-left: 3px; letter-spacing: 0.06em; }
+  .console-foot { align-items: flex-start; flex-direction: column; }
+
+  .section { padding: 64px 16px; }
+  .section-panel, .section-chain { background-image: none; }
+  .inequalities { margin-top: 36px; }
+  .ineq { width: 100%; justify-content: space-between; }
+  .claim { padding: 26px 0; }
+  .claim-line { font-size: 1.35rem; }
+  .arch { padding: 24px 16px; }
+  .spec-row { padding: 14px 16px; }
+  .telemetry-sig { padding: 22px 20px; }
+  .telemetry-line { font-size: 1.2rem; }
+  .trial-points { margin: 34px 0; }
+  .evidence-card { padding: 18px 16px; }
+  .footer { padding: 52px 16px 28px; }
 }
