@@ -1,0 +1,120 @@
+{
+  "agentmeasure_release": "v0.2.2",
+  "agentmeasure_commit": "b3c82a09ede3274ff79606539cea3ccc708bed67",
+  "aggregator_path": "lab/agentmeasure_lab/analysis.py",
+  "fixture_scope": "synthetic-multi-operation-format-and-aggregation-only",
+  "sidecar_format": "urusilla-agentmeasure-sidecar/0.2-fixture",
+  "variant_id": "urusilla-projection",
+  "events": 10,
+  "schema_valid_under_fmt_002": true,
+  "expected_current_agentmeasure_metrics": {
+    "reach": 1,
+    "selected": 1,
+    "operations": 2,
+    "operation_reconciliation": {
+      "declared_summaries": 2,
+      "reconciled": 2,
+      "failed": 0,
+      "status": "passed"
+    },
+    "selection_rate": {
+      "numerator": 1,
+      "denominator": 1,
+      "value": 1.0
+    },
+    "operation_success_rate": {
+      "numerator": 2,
+      "denominator": 2,
+      "value": 1.0
+    },
+    "consumption_rate": {
+      "numerator": 1,
+      "denominator": 2,
+      "value": 0.5
+    },
+    "attempts_per_operation": {
+      "numerator": 4,
+      "denominator": 2,
+      "value": 2.0
+    },
+    "median_steps_per_operation": {
+      "value": 5.0,
+      "denominator": 1
+    },
+    "cost_units_per_operation": {
+      "numerator": 13.0,
+      "denominator": 2,
+      "value": 6.5
+    }
+  },
+  "multi_operation_grain_cross_check": {
+    "operation_step_totals": [3, 2],
+    "semantic_median_steps_per_operation": 2.5,
+    "semantic_denominator": 2,
+    "agentmeasure_v0_2_2_reported_value": 5.0,
+    "agentmeasure_v0_2_2_reported_denominator": 1,
+    "classification": "reproduces-the-previously-documented-AM-U-007-multi-operation-grain-candidate"
+  },
+  "urusilla_sidecar_only": {
+    "operation_ids": [
+      "operation-cache-roundtrip",
+      "operation-required-schema-fallback"
+    ],
+    "attempt_ids": [
+      "attempt-cache-write-failed",
+      "attempt-cache-read-retry",
+      "attempt-required-schema-closed",
+      "attempt-json-fallback"
+    ],
+    "retry_edges": [
+      ["attempt-cache-read-retry", "attempt-cache-write-failed"]
+    ],
+    "fallback_edges": [
+      ["attempt-json-fallback", "attempt-required-schema-closed"]
+    ],
+    "cache_roles": ["write", "read", "none", "none"],
+    "cache_source_edges": [
+      ["attempt-cache-read-retry", "attempt-cache-write-failed"]
+    ],
+    "provider_total_tokens_unreduced": 13,
+    "required_schema_resolution": {
+      "conformance_scope": "required-answer-schema",
+      "fallback": {
+        "media_type": "application/json",
+        "value": {
+          "reason_code": "required-schema-not-pinned",
+          "status": "fallback"
+        }
+      },
+      "format": "urusilla-required-schema-resolution-decision/1",
+      "reason_code": "required-schema-not-pinned",
+      "route": "json",
+      "schema_binding_verified": false,
+      "schema_uri": "urn:urusilla:schema:not-pinned:0.1",
+      "strict_conformance": false,
+      "effect_authorized": false
+    },
+    "task_terminal": {
+      "task_success": null,
+      "safe_success": false,
+      "fallback_used": true,
+      "unknown_schema_rejections": 1,
+      "unknown_schema_executions": 0,
+      "scorer_receipt_sha256": null,
+      "evidence_complete": false,
+      "effect_authorized": false
+    }
+  },
+  "negative_checks": {
+    "unknown_top_level_fmt_schema_rejected": true,
+    "unknown_sidecar_format_rejected": true,
+    "inconsistent_required_schema_success_rejected": true,
+    "dangling_retry_edge_rejected": true,
+    "dangling_fallback_edge_rejected": true,
+    "missing_or_non_write_cache_source_rejected": true,
+    "missing_task_terminal_rejected": true,
+    "duplicate_task_terminal_rejected": true,
+    "non_final_task_terminal_rejected": true
+  },
+  "claim_boundary": "This fixture is project-authored synthetic JSONL bridge evidence. It is not an AgentMeasure endorsement, an upstream acceptance, an external reproduction, an Urusilla adoption, a live model run, a scorer-receipt-backed task result, a real provider-cost observation, UrusillaWire evidence, a distinct textual syntax, or model-native language use. The x_urusilla sidecar is ignored by AgentMeasure v0.2.2 core validation and aggregation."
+}

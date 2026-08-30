@@ -73,9 +73,10 @@ def aggregate(events: List[Dict[str, Any]], key_fields: Tuple[str, ...] = ("vari
                 "operations_succeeded": 0,
                 "attempts": 0,
                 "consumed": 0,
-                "steps_per_op": [],
                 "cost_units": 0.0,
-                "steps_by_assignment": {},
+                # steps are summed per operation key, not per assignment:
+                # an assignment may contain several operations (#10 / AM-U-007)
+                "steps_by_operation": {},
                 # #9 reconciliation state: attempt rows are the facts,
                 # operation_result declarations are claims that must reconcile.
                 "attempt_outcomes_by_op": {},
@@ -102,11 +103,9 @@ def aggregate(events: List[Dict[str, Any]], key_fields: Tuple[str, ...] = ("vari
                 c["selected"] += 1
         elif kind == "attempt":
             aid = ev["assignment_id"]
-            c["steps_by_assignment"].setdefault(aid, 0)
-            c["steps_by_assignment"][aid] += ev["steps"]
-            c["cost_units"] += ev["cost_units"]
-            # measured attempt rows, grouped per operation (#9)
             op_key = (aid, ev.get("operation_index"))
+            c["steps_by_operation"][op_key] = c["steps_by_operation"].get(op_key, 0) + ev["steps"]
+            c["cost_units"] += ev["cost_units"]
             c["attempt_outcomes_by_op"].setdefault(op_key, []).append(ev["outcome"])
         elif kind == "operation_result":
             op_key = (ev["assignment_id"], ev.get("operation_index"))
@@ -158,8 +157,19 @@ def aggregate(events: List[Dict[str, Any]], key_fields: Tuple[str, ...] = ("vari
 
     out: Dict[Tuple, Dict[str, Any]] = {}
     for key, c in cells.items():
-        steps = list(c["steps_by_assignment"].values())
-        med = stats.median(steps)
+        # AM-U-007 (#10): the metric is operation-grain, so the median runs
+        # over resolved operations only. Steps of attempts whose operation has
+        # no reconciled declaration are dropped (fail-closed), and operations
+        # that failed reconciliation do not contribute either.
+        failed_keys = {
+            (rec["assignment_id"], rec.get("operation_index"))
+            for rec in c["op_recon_failures"]
+        }
+        op_steps = [
+            v for k, v in c["steps_by_operation"].items()
+            if k in c["op_declared_keys"] and k not in failed_keys
+        ]
+        med = stats.median(op_steps) if op_steps else None
         declared_ops = len(c["op_declared_keys"])
         recon_failed = len(c["op_recon_failures"])
         out[key] = {
@@ -201,8 +211,11 @@ def aggregate(events: List[Dict[str, Any]], key_fields: Tuple[str, ...] = ("vari
             "median_steps_per_operation": {
                 "value": med,
                 "numerator": None,
-                "denominator": len(steps),
-                "measurement_label": _label("operation", "median summed steps across attempts"),
+                "denominator": len(op_steps),
+                "measurement_label": _label(
+                    "operation",
+                    "median summed steps across attempts, per resolved operation "
+                    "(unresolved operations contribute nothing, fail-closed)"),
             },
             "cost_units_per_operation": {
                 "numerator": round(c["cost_units"], 2),

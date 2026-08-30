@@ -50,6 +50,9 @@ jobs:
       - name: "External fixture conformance (Urusilla-001: issues 8+9 guards)"
         run: |
           python3 conformance/runners/run_external_fixture.py
+      - name: "External fixture conformance (Urusilla-002: issue 10 / AM-U-007 grain guard)"
+        run: |
+          python3 conformance/runners/run_external_fixture_002.py
       - name: Registry validation (entities)
         run: |
           python3 registry/validate_entities.py
