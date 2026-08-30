@@ -24,7 +24,7 @@ inflation, success rates with numerators you can audit.
 > AgentMeasure is **not** a payment protocol, marketplace, or universal ranking system.
 > It standardizes the facts and measurement semantics those systems can build on.
 
-[**Website**](https://roy-tong.github.io/AgentMeasure/) · [**Free 7-day audit — apply**](https://github.com/roy-tong/AgentMeasure/issues/new?template=5-provider-trial.yml) · [Whitepaper](whitepaper/measuring-software-used-by-ai-agents.md) · [白皮书（中文）](whitepaper/measuring-software-used-by-ai-agents.zh-CN.md) · [Core Specification](standard/CORE.md) · [中文](README.zh-CN.md)
+[**Website**](https://roy-tong.github.io/AgentMeasure/) · [**Send a trace → get a measurement check**](mailto:tongroy18@gmail.com?subject=AgentMeasure%20measurement%20check%20-%20%5Byour%20capability%5D&body=Hi%2C%0A%0AI%27d%20like%20a%20zero-install%20measurement%20check.%0A%0A1.%20Data%3A%2020-100%20anonymized%20trace/log%20rows%2C%20or%20a%20link%20to%20a%20public%20export%20%28production%20or%20synthetic%20-%20please%20say%20which%29%3A%0A%0A2.%20Source%20and%20time%20window%3A%0A%0A3.%20The%20decision%20this%20should%20inform%3A%0A%0ANote%3A%20raw%20data%20stays%20local%20by%20default.%20If%20I%20share%20a%20sanitized%20sample%2C%20I%27ll%20state%20what%20may%20be%20done%20with%20it.) (zero-install: 20–100 anonymized rows, nothing leaves your machine unless you authorize it) · [Free 7-day audit — apply](https://github.com/roy-tong/AgentMeasure/issues/new?template=5-provider-trial.yml) · [Whitepaper](whitepaper/measuring-software-used-by-ai-agents.md) · [白皮书（中文）](whitepaper/measuring-software-used-by-ai-agents.zh-CN.md) · [Core Specification](standard/CORE.md) · [中文](README.zh-CN.md)
 
 ![AgentMeasure — The Measurement Stack](assets/agentmeasure-stack.svg)
 
@@ -97,7 +97,9 @@ reliability reports get distorted.
 
 ## External provider trials
 
-AgentMeasure is looking for **3 MCP/API providers** for short external measurement runs.
+Start smaller than a trial: **send a trace, get a measurement check** — 20–100 anonymized trace/log rows (or a public export), mapped locally, with a short report of what safely counts as attempts vs operations, where retries may inflate usage, and what the telemetry cannot prove. No SDK, no integration; raw data stays local unless you explicitly authorize sharing a sanitized sample. A sample check is not a full audit and claims no causal effect.
+
+If the check pays for itself, AgentMeasure is looking for **3 MCP/API providers** for short external measurement runs.
 
 The goal is not to prove the model works. It is to find where it breaks on real provider traffic.
 

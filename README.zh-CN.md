@@ -23,7 +23,7 @@
 > AgentMeasure **不是**支付协议、市场或通用排名系统。
 > 它标准化的是这些系统可以构建于其上的事实与测量语义。
 
-[**官网**](https://roy-tong.github.io/AgentMeasure/) · [**免费 7 天 Audit——申请**](https://github.com/roy-tong/AgentMeasure/issues/new?template=5-provider-trial.yml) · [Whitepaper](whitepaper/measuring-software-used-by-ai-agents.md) · [中文白皮书](whitepaper/measuring-software-used-by-ai-agents.zh-CN.md) · [Core Specification](standard/CORE.md) · [English](README.md)
+[**官网**](https://roy-tong.github.io/AgentMeasure/) · [**发送一段 trace，换一份 measurement check**](mailto:tongroy18@gmail.com?subject=AgentMeasure%20measurement%20check%20-%20%5Byour%20capability%5D&body=Hi%2C%0A%0AI%27d%20like%20a%20zero-install%20measurement%20check.%0A%0A1.%20Data%3A%2020-100%20anonymized%20trace/log%20rows%2C%20or%20a%20link%20to%20a%20public%20export%20%28production%20or%20synthetic%20-%20please%20say%20which%29%3A%0A%0A2.%20Source%20and%20time%20window%3A%0A%0A3.%20The%20decision%20this%20should%20inform%3A%0A%0ANote%3A%20raw%20data%20stays%20local%20by%20default.%20If%20I%20share%20a%20sanitized%20sample%2C%20I%27ll%20state%20what%20may%20be%20done%20with%20it.)（零安装：20–100 行匿名数据；未经你明确授权不出你的机器） · [免费 7 天 Audit——申请](https://github.com/roy-tong/AgentMeasure/issues/new?template=5-provider-trial.yml) · [Whitepaper](whitepaper/measuring-software-used-by-ai-agents.md) · [中文白皮书](whitepaper/measuring-software-used-by-ai-agents.zh-CN.md) · [Core Specification](standard/CORE.md) · [English](README.md)
 
 ![AgentMeasure — 计量栈总览](assets/agentmeasure-stack.svg)
 

@@ -15,6 +15,18 @@ The AgentMeasure Audit answers these with an evidence-graded measurement, not an
 
 ---
 
+## Step 0 — Zero-install measurement check (try before any commitment)
+
+Before a 7-day run, there is a smaller first step: **send a trace, get a measurement check.**
+
+- **You provide:** 20–100 anonymized trace/log rows, or a link to a public export. Say whether the rows are production or synthetic — the two enter through separate intakes.
+- **You get back:** a short check — what safely counts as attempts vs operations in your data, where retries may inflate usage, and what the telemetry cannot prove.
+- **Boundaries, stated plainly:** no SDK, no integration, no 7-day commitment. Raw data stays local by default; a sanitized sample is only shared if you explicitly authorize it and say what may be done with it. A sample check is **not** a full audit and claims **no causal effect** — it establishes what your existing data can and cannot support.
+
+If the check pays for itself, the 7-day audit below is the next rung.
+
+---
+
 ## What you get
 
 A Measurement Report plus a 45-minute review call. Findings are stated as business conclusions with their evidence class attached — never as a wall of traces. Typical finding types (all provable from the provider side alone):

@@ -13,7 +13,17 @@ observations instead of opaque call logs.
 **First deliverable:** one fact about your server's usage you didn't know —
 plus an honest statement of what **cannot** be known with today's lineage.
 
-**→ Apply directly: [Provider Trial form](https://github.com/roy-tong/AgentMeasure/issues/new?template=5-provider-trial.yml)**
+**→ Lowest-commitment start — send a trace, get a measurement check:**
+20–100 anonymized trace/log rows (or a public export), mapped locally, with a
+short report of what safely counts as attempts vs operations, where retries
+may inflate usage, and what the telemetry cannot prove. No SDK, no
+integration, no 7-day commitment; raw data stays local unless you explicitly
+authorize sharing a sanitized sample (say whether your rows are production or
+synthetic — separate intakes). Email `tongroy18@gmail.com` with subject
+"measurement check" — three short fields (data, source + time window, the
+decision it should inform).
+
+**→ Full 7-day audit — [Provider Trial form](https://github.com/roy-tong/AgentMeasure/issues/new?template=5-provider-trial.yml)**
 (five fields, ~2 minutes). Prefer email or this issue thread? Either works.
 Full methodology:
 [`product/AUDIT.md`](https://github.com/roy-tong/AgentMeasure/blob/main/product/AUDIT.md) ·
