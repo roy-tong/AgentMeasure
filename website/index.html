@@ -57,6 +57,7 @@
         AgentMeasure<span class="brand-cursor" aria-hidden="true">_</span>
       </a>
       <nav class="nav-links" id="nav-links" aria-label="Sections">
+        <a href="#conformance">Conformance</a>
         <a href="#why">Why</a>
         <a href="#measure">Measure</a>
         <a href="#how">How it works</a>
@@ -79,46 +80,41 @@
   <section class="hero" aria-label="Introduction">
     <div class="hero-grid">
       <div class="hero-copy">
-        <p class="eyebrow reveal">Open measurement infrastructure for agent-facing software</p>
-        <h1 class="reveal d1">Calls are not <em>agent usage.</em></h1>
-        <p class="lede reveal d2">Separate logical operations from attempts, preserve retry and cost evidence, and make telemetry limits explicit.</p>
+        <p class="eyebrow reveal">Executable measurement conformance for agent telemetry</p>
+        <h1 class="reveal d1">Test your agent <em>metrics.</em></h1>
+        <p class="lede reveal d2">Does your agent metric actually mean what its label says? Turn measurement assumptions into CI checks — PASS, FAIL, or UNPROVABLE.</p>
         <div class="hero-actions reveal d4">
-          <a class="btn btn-primary" href="#try">Run the 2-minute demo</a>
-          <a class="btn btn-ghost" href="https://github.com/roy-tong/AgentMeasure/blob/main/standard/CORE.md" target="_blank" rel="noopener">Read the spec&nbsp;↗</a>
+          <a class="btn btn-primary" href="#conformance">Add AgentMeasure to CI</a>
+          <a class="btn btn-ghost" href="#try">Run conformance locally</a>
         </div>
       </div>
 
-      <!-- Measurement console -->
-      <div class="console reveal d2" id="console" aria-label="Example measurement trace: one intent, two attempts, one operation">
+      <!-- Conformance report console -->
+      <div class="console reveal d2" id="console" aria-label="Example conformance report: PASS, FAIL and UNPROVABLE invariants">
         <div class="console-bar">
           <span class="dot" aria-hidden="true"></span><span class="dot" aria-hidden="true"></span><span class="dot" aria-hidden="true"></span>
-          <span class="console-title">agentmeasure / trace 0192</span>
-          <button class="console-replay" id="console-replay" type="button" title="Replay trace">replay</button>
+          <span class="console-title">agentmeasure conformance --fixture retry-chain.jsonl</span>
+          <button class="console-replay" id="console-replay" type="button" title="Replay report">replay</button>
         </div>
         <div class="console-body" id="console-body">
-          <div class="cline"><span class="k">USER INTENT</span></div>
-          <div class="cline"><span class="v">Book a table tonight</span></div>
+          <div class="cline"><span class="tag-ok">✓ PASS</span><span class="path"> execution-grain</span><span class="num right">1 op · 3 attempts</span></div>
+          <div class="cline"><span class="tag-ok">✓ PASS</span><span class="path"> retry-reconciliation</span><span class="num right">declared 3 = rows 3</span></div>
+          <div class="cline"><span class="tag-ok">✓ PASS</span><span class="path"> cost-preservation</span><span class="num right">13 units conserved</span></div>
           <div class="cline rule"></div>
-          <div class="cline"><span class="k">OPERATION</span><span class="num right">01</span></div>
-          <div class="cline"><span class="k">ATTEMPT</span><span class="num right">01</span></div>
-          <div class="cline"><span class="path">provider_call</span><span class="tag-failed right">FAILED</span></div>
-          <div class="cline"><span class="k">ATTEMPT</span><span class="num right">02</span></div>
-          <div class="cline"><span class="path">provider_call</span><span class="tag-ok right">SUCCESS</span></div>
+          <div class="cline"><span class="tag-failed">✗ FAIL</span><span class="path"> operation-grain</span><span class="num right">grain drift</span></div>
+          <div class="cline"><span class="k">declared grain</span><span class="num right">operation</span></div>
+          <div class="cline"><span class="k">actual grain</span><span class="num right">assignment</span></div>
+          <div class="cline"><span class="k">expected</span><span class="num-ok right">2.5 over 2</span></div>
+          <div class="cline"><span class="k">observed</span><span class="num-warn right">5.0 over 1</span></div>
           <div class="cline rule"></div>
-          <div class="cline"><span class="k">OPERATIONS</span><span class="num right">1</span></div>
-          <div class="cline"><span class="k">ATTEMPTS</span><span class="num right">2</span></div>
-          <div class="cline"><span class="k">OPERATION SUCCESS</span><span class="num-ok right">100%</span></div>
-          <div class="cline"><span class="k">ATTEMPT SUCCESS</span><span class="num-warn right">50%</span></div>
-          <div class="cline rule"></div>
-          <div class="cline"><span class="k">RESULT</span></div>
-          <div class="cline"><span class="k">RETURNED</span><span class="num-ok right">YES</span></div>
-          <div class="cline"><span class="k">CONSUMED</span><span class="tag-unknown right">UNKNOWN</span></div>
-          <div class="cline"><span class="k">USEFUL</span><span class="tag-unknown right">UNKNOWN</span></div>
+          <div class="cline"><span class="tag-unknown">? UNPROVABLE</span><span class="path"> cache-distinction</span></div>
+          <div class="cline"><span class="k">no cache-hit signal in evidence —</span></div>
+          <div class="cline"><span class="k">unsafe inference refused</span></div>
           <div class="cline cursor-line"><span class="cursor" aria-hidden="true">▌</span></div>
         </div>
         <div class="console-foot">
-          <span class="mono-xs">1 intent → 2 attempts → 1 operation</span>
-          <span class="mono-xs dim">It is <em>not</em> “2 operations with 50% success”</span>
+          <span class="mono-xs">found by an external contributor · fixed with their fixture as the regression guard</span>
+          <span class="mono-xs dim">UNPROVABLE is a finding, not a zero</span>
         </div>
       </div>
     </div>
@@ -197,8 +193,8 @@
         <div class="claim reveal d1">
           <div class="claim-main">
             <span class="claim-no">02</span>
-            <p class="claim-line"><span>Returned</span><span class="neq-big">≠</span><span>Consumed</span></p>
-            <p class="claim-cap">The tool returned a result. Did the caller actually use it? Returned is observable; consumed needs evidence. Unknown is a valid, first-class answer.</p>
+            <p class="claim-line"><span>Available</span><span class="neq-big">≠</span><span>Influential</span></p>
+            <p class="claim-cap">A tool result appearing in the next context proves availability. Influence — that it changed the agent's behavior — needs counterfactual evidence. Reference is a weak estimator, not a state. Unknown is a valid, first-class answer.</p>
           </div>
           <div class="claim-diagram" aria-label="A tool returned a result; whether the caller consumed it is a separate fact">
             <div class="dl">Tool returned result</div>
@@ -426,6 +422,34 @@
           </ul>
           <a class="btn btn-ghost reveal d5" href="https://github.com/roy-tong/AgentMeasure#try-it-in-2-minutes" target="_blank" rel="noopener">Open Quickstart&nbsp;→</a>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════ CONFORMANCE IN CI ══════════════════ -->
+  <section class="section" id="conformance" aria-label="Conformance in CI">
+    <div class="wrap wrap-narrow">
+      <p class="eyebrow reveal">Conformance in CI</p>
+      <h2 class="reveal d1">Turn measurement assumptions into checks.</h2>
+      <p class="lede-sm reveal d2">One workflow step reads your telemetry fixture and reports PASS / FAIL / UNPROVABLE per invariant. The evidence contract is explicit; what the data cannot decide is a finding, not a zero.</p>
+      <div class="spec-row reveal d3">
+        <span class="spec-k">Workflow</span>
+        <span class="spec-mono">- uses: roy-tong/AgentMeasure@&lt;sha&gt;</span>
+        <span class="spec-v ok">1 step</span>
+      </div>
+      <div class="spec-row reveal d3">
+        <span class="spec-k">Input</span>
+        <span class="spec-mono">fixtures/telemetry.jsonl (FMT-002)</span>
+        <span class="spec-v spec">yours</span>
+      </div>
+      <div class="spec-row reveal d4">
+        <span class="spec-k">Verdicts</span>
+        <span class="spec-mono">execution-grain · retry-reconciliation · cost-preservation · operation-grain · evidence-boundary</span>
+        <span class="spec-v ok">3-state</span>
+      </div>
+      <div class="trial-links reveal d4">
+        <a class="link-quiet" href="https://github.com/roy-tong/AgentMeasure/blob/main/conformance/pack/README.md" target="_blank" rel="noopener">Pack README &amp; input contract&nbsp;→</a>
+        <a class="link-quiet" href="https://github.com/roy-tong/AgentMeasure/tree/main/conformance/vectors/external" target="_blank" rel="noopener">Two external fixtures · three externally found defects&nbsp;→</a>
       </div>
     </div>
   </section>
