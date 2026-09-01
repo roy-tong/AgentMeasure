@@ -1,0 +1,52 @@
+{
+  "schema": "agentmeasure.conformance/pack-registry/0.1",
+  "pack_version": "0.1",
+  "notes": "supported = checked against caller-provided FMT-002 fixtures. not-supported = evidence contract not yet frozen; reported explicitly instead of silently passing.",
+  "invariants": [
+    {
+      "id": "execution-grain",
+      "status": "supported",
+      "claim": "A retry chain under one declared operation resolves to a single operation; attempts stay attempts.",
+      "evidence_required": ["operation_result declarations", "attempt rows"],
+      "unprovable_when": "attempt rows exist with no declared or safely correlated operation boundary"
+    },
+    {
+      "id": "retry-reconciliation",
+      "status": "supported",
+      "claim": "Declared attempt counts and outcomes reconcile against measured attempt rows.",
+      "evidence_required": ["operation_result declarations", "attempt rows"],
+      "unprovable_when": "no operation declarations exist to reconcile"
+    },
+    {
+      "id": "cost-preservation",
+      "status": "supported",
+      "claim": "Operation grouping never removes or invents attempt-level cost.",
+      "evidence_required": ["attempt cost_units"],
+      "unprovable_when": "fixture carries no cost fields"
+    },
+    {
+      "id": "operation-grain",
+      "status": "supported",
+      "claim": "Operation-grain metrics aggregate at operation grain, not assignment grain.",
+      "evidence_required": ["attempt rows with steps", "operation declarations"],
+      "unprovable_when": "no resolved operation carries steps"
+    },
+    {
+      "id": "evidence-boundary",
+      "status": "supported",
+      "claim": "What the data cannot decide is disclosed as UNPROVABLE with a reason, never reported as zero.",
+      "evidence_required": ["operation_result declarations or their documented absence"],
+      "unprovable_when": "always reported; this rule governs disclosure of the others"
+    },
+    {
+      "id": "token-subset",
+      "status": "not-supported",
+      "reason": "core FMT-002 events carry no token fields; a separate token-evidence contract is required before this can be checked rather than assumed"
+    },
+    {
+      "id": "cache-distinction",
+      "status": "not-supported",
+      "reason": "core FMT-002 events carry no cache-hit signal; a separate cache-evidence contract is required before this can be checked rather than assumed"
+    }
+  ]
+}

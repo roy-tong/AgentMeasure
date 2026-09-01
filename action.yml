@@ -1,0 +1,42 @@
+name: "AgentMeasure Conformance"
+description: Check an agent-telemetry fixture against measurement invariants (PASS / FAIL / UNPROVABLE). Turning measurement assumptions into CI checks.
+inputs:
+  fixture:
+    description: "Path to an FMT-002 funnel-event JSONL fixture, relative to the calling workspace"
+    required: true
+  metadata:
+    description: "Optional path to sidecar metadata JSON (source, time window, observation surface, production|synthetic)"
+    required: false
+    default: ""
+  claims:
+    description: "Optional path to observed-claims JSON; when supplied, claimed values are compared against computation and mismatches FAIL"
+    required: false
+    default: ""
+  require:
+    description: "Comma-separated invariant ids that must be PROVEN (UNPROVABLE blocks the check). Default: none — findings are reported without blocking."
+    required: false
+    default: ""
+runs:
+  using: "composite"
+  steps:
+    - name: Run AgentMeasure conformance pack
+      shell: bash
+      env:
+        AM_FIXTURE: ${{ inputs.fixture }}
+        AM_METADATA: ${{ inputs.metadata }}
+        AM_CLAIMS: ${{ inputs.claims }}
+        AM_REQUIRE: ${{ inputs.require }}
+      run: |
+        set -euo pipefail
+        ARGS=(conformance --fixture "$AM_FIXTURE")
+        [ -n "$AM_METADATA" ] && ARGS+=("--metadata" "$AM_METADATA")
+        [ -n "$AM_CLAIMS" ] && ARGS+=("--claims" "$AM_CLAIMS")
+        [ -n "$AM_REQUIRE" ] && ARGS+=("--require" "$AM_REQUIRE")
+        python3 "${{ github.action_path }}/conformance/pack/agentmeasure" "${ARGS[@]}" | tee pack-report.txt
+        echo '## AgentMeasure Conformance' >> "$GITHUB_STEP_SUMMARY"
+        echo '```' >> "$GITHUB_STEP_SUMMARY"
+        cat pack-report.txt >> "$GITHUB_STEP_SUMMARY"
+        echo '```' >> "$GITHUB_STEP_SUMMARY"
+branding:
+  icon: "check-circle"
+  color: "green"

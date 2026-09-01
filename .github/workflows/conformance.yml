@@ -53,6 +53,9 @@ jobs:
       - name: "External fixture conformance (Urusilla-002: issue 10 / AM-U-007 grain guard)"
         run: |
           python3 conformance/runners/run_external_fixture_002.py
+      - name: "Conformance Pack selftest (caller-input contract)"
+        run: |
+          python3 conformance/pack/agentmeasure selftest
       - name: Registry validation (entities)
         run: |
           python3 registry/validate_entities.py
