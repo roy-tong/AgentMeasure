@@ -26,11 +26,12 @@ This sprint asks each project one question:
 | # | Project | Surface checked | Invariant | Status | Upstream artifact |
 | --- | --- | --- | --- | --- | --- |
 | 1 | [OpenLIT](https://github.com/openlit/openlit) | token accounting | token subset (reasoning ⊂ output) | **FAIL → fixed** | [PR #1476 merged](https://github.com/openlit/openlit/pull/1476) |
-| 2 | [Urusilla](https://github.com/jaden3824/urusilla) | operation aggregation (checked AgentMeasure itself) | execution / reconciliation / operation grain | **3 FAILs → fixed** | [vector 001](../conformance/vectors/external/urusilla-001/) · [002](../conformance/vectors/external/urusilla-002/) · issues [#8](https://github.com/roy-tong/AgentMeasure/issues/8) [#9](https://github.com/roy-tong/AgentMeasure/issues/9) [#12](https://github.com/roy-tong/AgentMeasure/issues/12) |
+| 2 | [Urusilla](https://github.com/jaden3824/urusilla) | operation aggregation (checked AgentMeasure itself) | execution / reconciliation / operation grain | **3 FAILs → fixed** | vectors [001](../conformance/vectors/external/urusilla-001/) · [002](../conformance/vectors/external/urusilla-002/) · issues [#8](https://github.com/roy-tong/AgentMeasure/issues/8) [#9](https://github.com/roy-tong/AgentMeasure/issues/9) [#12](https://github.com/roy-tong/AgentMeasure/issues/12) · CI integration [PR jaden3824/urusilla#15](https://github.com/jaden3824/urusilla/pull/15) |
 | 3 | [pydantic-ai](https://github.com/pydantic/pydantic-ai) | OTel usage attributes | token subset emission | reviewing | [issue #7975](https://github.com/pydantic/pydantic-ai/issues/7975) |
 | 4 | [LiteLLM](https://github.com/BerriAI/litellm) | cache-hit usage logging | cache accounting | reviewing | [issue #39057](https://github.com/BerriAI/litellm/issues/39057) |
 | 5 | [Phoenix](https://github.com/Arize-ai/phoenix) | token aggregation | leaf-span counting | reviewing | [issue #15793](https://github.com/Arize-ai/phoenix/issues/15793) |
 | 6 | [DeepEval](https://github.com/confident-ai/deepeval) | eval rerun semantics | repeated measurement | discussing | [issue #3110](https://github.com/confident-ai/deepeval/issues/3110) |
+| 7 | [SigNoz](https://github.com/SigNoz/signoz) | cost pipeline ↔ dashboard | cost source linkage | reviewing | [issue #12738](https://github.com/SigNoz/signoz/issues/12738) |
 
 *(Rows update as checks complete. Status meanings: checking = audit in
 progress; reviewing = upstream issue open; discussing = public thread active;
