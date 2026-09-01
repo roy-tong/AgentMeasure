@@ -1,6 +1,17 @@
 # AgentMeasure
 
-**Measure agent usage without counting retries as users.**
+**Test whether your agent metrics mean what their labels claim.**
+
+Conformance checks for AI-agent telemetry — a retry is one logical operation, not two requests; a reasoning-token subset must not be added into totals; a cache hit is not a new measurement. Every check reports **PASS / FAIL / UNPROVABLE**, and UNPROVABLE is a first-class result: when the evidence to decide is absent, it is disclosed, never zeroed.
+
+```yaml
+# .github/workflows/conformance.yml — turn measurement assumptions into CI checks
+- uses: roy-tong/AgentMeasure@469bfc3
+  with:
+    fixture: fixtures/telemetry.jsonl   # your FMT-002 event fixture
+```
+
+[**Run conformance locally**](conformance/pack/README.md) · [**See real failures**](#external-provider-trials) · [Read the spec](standard/CORE.md) · [中文](README.zh-CN.md)
 
 [![CI: conformance](https://github.com/roy-tong/AgentMeasure/actions/workflows/conformance.yml/badge.svg)](https://github.com/roy-tong/AgentMeasure/actions/workflows/conformance.yml)
 [![Spec](https://img.shields.io/badge/spec-Draft_0.4-blue)](standard/CORE.md)
@@ -24,7 +35,7 @@ inflation, success rates with numerators you can audit.
 > AgentMeasure is **not** a payment protocol, marketplace, or universal ranking system.
 > It standardizes the facts and measurement semantics those systems can build on.
 
-[**Website**](https://roy-tong.github.io/AgentMeasure/) · [**Send a trace → get a measurement check**](mailto:tongroy18@gmail.com?subject=AgentMeasure%20measurement%20check%20-%20%5Byour%20capability%5D&body=Hi%2C%0A%0AI%27d%20like%20a%20zero-install%20measurement%20check.%0A%0A1.%20Data%3A%2020-100%20anonymized%20trace/log%20rows%2C%20or%20a%20link%20to%20a%20public%20export%20%28production%20or%20synthetic%20-%20please%20say%20which%29%3A%0A%0A2.%20Source%20and%20time%20window%3A%0A%0A3.%20The%20decision%20this%20should%20inform%3A%0A%0ANote%3A%20raw%20data%20stays%20local%20by%20default.%20If%20I%20share%20a%20sanitized%20sample%2C%20I%27ll%20state%20what%20may%20be%20done%20with%20it.) (zero-install: 20–100 anonymized rows, nothing leaves your machine unless you authorize it) · [Free 7-day audit — apply](https://github.com/roy-tong/AgentMeasure/issues/new?template=5-provider-trial.yml) · [Whitepaper](whitepaper/measuring-software-used-by-ai-agents.md) · [白皮书（中文）](whitepaper/measuring-software-used-by-ai-agents.zh-CN.md) · [Core Specification](standard/CORE.md) · [中文](README.zh-CN.md)
+[**Website**](https://roy-tong.github.io/AgentMeasure/) · [Send a trace → get a measurement check](mailto:tongroy18@gmail.com?subject=AgentMeasure%20measurement%20check%20-%20%5Byour%20capability%5D&body=Hi%2C%0A%0AI%27d%20like%20a%20zero-install%20measurement%20check.%0A%0A1.%20Data%3A%2020-100%20anonymized%20trace/log%20rows%2C%20or%20a%20link%20to%20a%20public%20export%20%28production%20or%20synthetic%20-%20please%20say%20which%29%3A%0A%0A2.%20Source%20and%20time%20window%3A%0A%0A3.%20The%20decision%20this%20should%20inform%3A%0A%0ANote%3A%20raw%20data%20stays%20local%20by%20default.%20If%20I%20share%20a%20sanitized%20sample%2C%20I%27ll%20state%20what%20may%20be%20done%20with%20it.) · [Free 7-day audit — apply](https://github.com/roy-tong/AgentMeasure/issues/new?template=5-provider-trial.yml) · [30 Projects / 30 Days campaign](campaigns/30-projects-30-days.md) · [Whitepaper](whitepaper/measuring-software-used-by-ai-agents.md) · [Core Specification](standard/CORE.md)
 
 ![AgentMeasure — The Measurement Stack](assets/agentmeasure-stack.svg)
 
