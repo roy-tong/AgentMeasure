@@ -32,6 +32,11 @@ This sprint asks each project one question:
 | 5 | [Phoenix](https://github.com/Arize-ai/phoenix) | token aggregation | leaf-span counting | reviewing | [issue #15793](https://github.com/Arize-ai/phoenix/issues/15793) |
 | 6 | [DeepEval](https://github.com/confident-ai/deepeval) | eval rerun semantics | repeated measurement | **contributor PR proposed** | [issue #3110](https://github.com/confident-ai/deepeval/issues/3110) — tests/docs to pin cache replay ≠ new judge sample |
 | 7 | [SigNoz](https://github.com/SigNoz/signoz) | cost pipeline ↔ dashboard | cost source linkage | reviewing | [issue #12738](https://github.com/SigNoz/signoz/issues/12738) |
+| 8 | [AgentOps](https://github.com/AgentOps-AI/agentops) | Anthropic usage extraction | cache token emission | reviewing | [issue #1445](https://github.com/AgentOps-AI/agentops/issues/1445) |
+| 9 | [OpenLLMetry](https://github.com/traceloop/openllmetry) | anthropic vs bedrock packages | cache accounting | reviewing | [issue #4449](https://github.com/traceloop/openllmetry/issues/4449) |
+| 10 | [Ragas](https://github.com/vibrantlabsai/ragas) | metric aggregation | failure denominator | reviewing | [issue #2980](https://github.com/vibrantlabsai/ragas/issues/2980) |
+| 11 | [Promptfoo](https://github.com/promptfoo/promptfoo) | cached-run reporting | replayed measurement | reviewing | [issue #10595](https://github.com/promptfoo/promptfoo/issues/10595) |
+| 12 | [Langfuse](https://github.com/langfuse/langfuse) | OTel vs REST ingestion | cache normalization | reviewing | [issue #16884](https://github.com/langfuse/langfuse/issues/16884) |
 
 *(Rows update as checks complete. Status meanings: checking = audit in
 progress; reviewing = upstream issue open; discussing = public thread active;
