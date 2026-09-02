@@ -36,6 +36,8 @@ This sprint asks each project one question:
 | 9 | [OpenLLMetry](https://github.com/traceloop/openllmetry) | anthropic vs bedrock packages | cache accounting | reviewing | [issue #4449](https://github.com/traceloop/openllmetry/issues/4449) |
 | 10 | [Ragas](https://github.com/vibrantlabsai/ragas) | metric aggregation | failure denominator | reviewing | [issue #2980](https://github.com/vibrantlabsai/ragas/issues/2980) |
 | 11 | [Promptfoo](https://github.com/promptfoo/promptfoo) | cached-run reporting | replayed measurement | reviewing | [issue #10595](https://github.com/promptfoo/promptfoo/issues/10595) |
+| 13 | [SigNoz](https://github.com/SigNoz/signoz) | dashboard filters | semconv attribute drift | reviewing | [issue #12759](https://github.com/SigNoz/signoz/issues/12759) |
+| 14 | [Phoenix](https://github.com/Arize-ai/phoenix) | cost attribution | total-only span classification | reviewing | [issue #15840](https://github.com/Arize-ai/phoenix/issues/15840) |
 | 12 | [Langfuse](https://github.com/langfuse/langfuse) | OTel vs REST ingestion | cache normalization | **current paths normalized; residual scope unverified** | [issue #16884 correction](https://github.com/langfuse/langfuse/issues/16884#issuecomment-5502836090) — the original 2.3× claim used stale line references and was withdrawn |
 
 *(Rows update as checks complete. Status meanings: checking = audit in
