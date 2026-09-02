@@ -11,12 +11,17 @@ This Skill routes measurement-semantics questions to AgentMeasure's local runner
 
 ```bash
 git clone https://github.com/roy-tong/AgentMeasure && cd AgentMeasure
+python3 conformance/pack/agentmeasure selftest          # Pack fixtures, PASS / FAIL / UNPROVABLE
+python3 conformance/pack/agentmeasure conformance \
+  --fixture conformance/vectors/external/urusilla-001/agentmeasure_urusilla_fixture_001.events.jsonl
 ./examples/demo-e2e.sh                                  # 42 calls -> 84 canonical observations, deterministic
 python3 conformance/runners/run_metrics.py              # 21/21 vectors PASS
 python3 verify_vectors.py                               # receipts / correlation / operation grouping
 ```
 
-If all three run locally, the Skill is working. No network, no cloud, no credentials.
+These commands run locally. The Pack reads the caller-supplied FMT-002 fixture;
+`selftest` is deliberately separate and only checks repository fixtures. No
+network, cloud, or credentials are required.
 
 ## What to check, and where
 
@@ -28,13 +33,17 @@ If all three run locally, the Skill is working. No network, no cloud, no credent
 | Does an operation-grain metric aggregate at the wrong grain? | `conformance/vectors/external/urusilla-002/` |
 | Can this trace safely support an operation count at all? | `conformance/evidence/langfuse-demo-traces/` (the 0%-coverage case) |
 
-Verdict vocabulary: `PASS` / `FAIL` / `AMBIGUOUS` / `UNPROVABLE`. Report `UNPROVABLE` as a finding, never as zero.
+Verdict vocabulary: `PASS` / `FAIL` / `UNPROVABLE`. Ambiguity is retained in
+the reason for an `UNPROVABLE` finding; it is not a fourth public verdict.
+Report `UNPROVABLE` as a finding, never as zero.
 
 ## Boundaries
 
 - Local by default. Nothing is uploaded; a sanitized sample is shared only with explicit authorization.
 - A short sample check is not a full audit and claims no causal effect.
-- The packaged `agentmeasure conformance` CLI and GitHub Action are in development; today the runners above are the interface.
+- The Pack CLI and root GitHub Action are shipped on `main`. Until a release
+  tag explicitly includes the Pack, pin the Action to the verified immutable
+  commit `2cf476d6f7d0fc45401db5a822e1f12de009ac74` rather than a moving branch.
 - Provider-side usage questions (who called, how often, production traffic) start with the zero-install check described in the repository README.
 
 Catalog entry: `https://raw.githubusercontent.com/roy-tong/roy-tong/main/agent-tools.json`

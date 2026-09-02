@@ -6,7 +6,7 @@ Conformance checks for AI-agent telemetry — a retry is one logical operation, 
 
 ```yaml
 # .github/workflows/conformance.yml — turn measurement assumptions into CI checks
-- uses: roy-tong/AgentMeasure@469bfc3
+- uses: roy-tong/AgentMeasure@2cf476d6f7d0fc45401db5a822e1f12de009ac74
   with:
     fixture: fixtures/telemetry.jsonl   # your FMT-002 event fixture
 ```
