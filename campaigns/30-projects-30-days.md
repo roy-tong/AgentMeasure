@@ -56,6 +56,11 @@ a change.)*
 | cost preservation | does grouping remove or duplicate real attempt cost? |
 | evidence boundary | are returned / available / influential conflated? |
 | eval repeatability | are n runs n measurements, or retries of one verdict? |
+| 15 | [Weave](https://github.com/wandb/weave) | usage aggregation | self+descendants double counting | reviewing | [issue #7831](https://github.com/wandb/weave/issues/7831) |
+| 16 | [OpenInference](https://github.com/Arize-ai/openinference) | openai instrumentation | retry invisible in single span | reviewing | [issue #3664](https://github.com/Arize-ai/openinference/issues/3664) |
+| 17 | [TruLens](https://github.com/truera/trulens) | leaderboard aggregation | avg masquerading as total; mixed currency sum | reviewing | [issue #2759](https://github.com/truera/trulens/issues/2759) |
+| 18 | [Helicone](https://github.com/Helicone/helicone) | cost calculation | accepted_prediction_tokens double count | reviewing | [issue #5805](https://github.com/Helicone/helicone/issues/5805) |
+| 19 | [Braintrust](https://github.com/braintrustdata/braintrust-sdk-python) | span idempotency | span_parents skip on merge | reviewing | (drafted, template blocked) |
 
 ## Discipline
 
