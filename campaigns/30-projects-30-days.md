@@ -61,6 +61,9 @@ a change.)*
 | 17 | [TruLens](https://github.com/truera/trulens) | leaderboard aggregation | avg masquerading as total; mixed currency sum | reviewing | [issue #2759](https://github.com/truera/trulens/issues/2759) |
 | 18 | [Helicone](https://github.com/Helicone/helicone) | cost calculation | accepted_prediction_tokens double count | reviewing | [issue #5805](https://github.com/Helicone/helicone/issues/5805) |
 | 19 | [Braintrust](https://github.com/braintrustdata/braintrust-sdk-python) | span idempotency | span_parents skip on merge | reviewing | (drafted, template blocked) |
+| 20 | [LiteLLM](https://github.com/BerriAI/litellm) | mid-stream fallback | partial usage loss asymmetry | reviewing | [issue #39462](https://github.com/BerriAI/litellm/issues/39462) |
+| 21 | [AgentOps](https://github.com/AgentOps-AI/agentops) | semconv naming | old prompt_tokens vs input_tokens | reviewing | [issue #1447](https://github.com/AgentOps-AI/agentops/issues/1447) |
+| 22 | [OpenLLMetry](https://github.com/traceloop/openllmetry) | anthropic reasoning | reasoning subset not emitted | reviewing | [issue #4458](https://github.com/traceloop/openllmetry/issues/4458) |
 
 ## Discipline
 
