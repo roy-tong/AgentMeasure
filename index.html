@@ -3,23 +3,23 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AgentMeasure | Know what your agent usage metrics actually count</title>
-  <meta name="description" content="Open measurement infrastructure for agent-facing software. Separate operations from attempts, evidence from inference, and usage from value.">
+  <title>AgentMeasure | The open yardstick for agent usage and AI outcomes</title>
+  <meta name="description" content="Open measurement layer for the agent economy: usage and outcomes with auditable evidence. A retry is one operation; an outcome is only billable when proven.">
   <link rel="icon" type="image/svg+xml" href="./assets/favicon.svg">
   <link rel="canonical" href="https://roy-tong.github.io/AgentMeasure/">
   <meta name="theme-color" content="#090C10">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="AgentMeasure">
-  <meta property="og:title" content="AgentMeasure | Know what your agent usage metrics actually count">
-  <meta property="og:description" content="Open measurement infrastructure for agent-facing software. Separate operations from attempts, evidence from inference, and usage from value.">
+  <meta property="og:title" content="AgentMeasure | The open yardstick for agent usage and AI outcomes">
+  <meta property="og:description" content="Open measurement layer for the agent economy: usage and outcomes with auditable evidence. A retry is one operation; an outcome is only billable when proven.">
   <meta property="og:url" content="https://roy-tong.github.io/AgentMeasure/">
   <meta property="og:image" content="https://roy-tong.github.io/AgentMeasure/assets/social-preview.png">
   <meta property="og:image:width" content="1280">
   <meta property="og:image:height" content="640">
   <meta property="og:image:alt" content="AgentMeasure: know what your agent usage metrics actually count">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="AgentMeasure | Know what your agent usage metrics actually count">
-  <meta name="twitter:description" content="Open measurement infrastructure for agent-facing software. Separate operations from attempts, evidence from inference, and usage from value.">
+  <meta name="twitter:title" content="AgentMeasure | The open yardstick for agent usage and AI outcomes">
+  <meta name="twitter:description" content="Open measurement layer for the agent economy: usage and outcomes with auditable evidence. A retry is one operation; an outcome is only billable when proven.">
   <meta name="twitter:image" content="https://roy-tong.github.io/AgentMeasure/assets/social-preview.png">
   <meta name="twitter:image:alt" content="AgentMeasure: know what your agent usage metrics actually count">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -33,7 +33,7 @@
     "@context": "https://schema.org",
     "@type": "SoftwareSourceCode",
     "name": "AgentMeasure",
-    "description": "Open measurement infrastructure for agent-facing software.",
+    "description": "Open measurement layer for the agent economy: usage and outcomes with auditable evidence.",
     "url": "https://roy-tong.github.io/AgentMeasure/",
     "codeRepository": "https://github.com/roy-tong/AgentMeasure",
     "license": "https://opensource.org/license/mit",
@@ -57,6 +57,7 @@
         AgentMeasure<span class="brand-cursor" aria-hidden="true">_</span>
       </a>
       <nav class="nav-links" id="nav-links" aria-label="Sections">
+        <a href="#whynow">Why now</a>
         <a href="#conformance">Conformance</a>
         <a href="#why">Why</a>
         <a href="#measure">Measure</a>
@@ -80,7 +81,7 @@
   <section class="hero" aria-label="Introduction">
     <div class="hero-grid">
       <div class="hero-copy">
-        <p class="eyebrow reveal">Executable measurement conformance for agent telemetry</p>
+        <p class="eyebrow reveal">The open yardstick for agent &amp; outcome metrics</p>
         <h1 class="reveal d1">Test your agent <em>metrics.</em></h1>
         <p class="lede reveal d2">Does your agent metric actually mean what its label says? Turn measurement assumptions into CI checks — PASS, FAIL, or UNPROVABLE.</p>
         <div class="hero-actions reveal d4">
@@ -125,6 +126,35 @@
       <div class="status" role="listitem"><span class="status-k">Spec</span><span class="status-v spec" data-status="spec">Draft 0.4.4</span></div>
       <div class="status" role="listitem"><span class="status-k">SDK</span><span class="status-v" data-status="sdk">v0.1.1</span></div>
       <div class="status" role="listitem"><span class="status-k">Deployment</span><span class="status-v warn">Local-first</span></div>
+    </div>
+  </section>
+
+  <!-- ══════════════════ 00 · WHY NOW ══════════════════ -->
+  <section class="section" id="whynow" aria-label="Why now">
+    <div class="wrap">
+      <h2 class="reveal d1">AI is starting to charge by the outcome.<br>Nobody defined the outcome.</h2>
+      <p class="body-secondary reveal d2">When money rides on a measured unit, someone has to define the unit. That is what a measurement standard is for.</p>
+
+      <div class="who-grid">
+        <div class="who-card reveal d1">
+          <span class="who-k">The question</span>
+          <p>What counts as one resolution, one operation, one outcome? Retries, reopens, and silent “assumed resolutions” all change the number — and the bill.</p>
+          <span class="who-v">A yardstick, or an argument</span>
+        </div>
+        <div class="who-card reveal d2">
+          <span class="who-k">$1.50–2.00 per resolution</span>
+          <p>Zendesk launched outcome-based pricing in Aug 2024; Salesforce, Intercom, and Sierra followed.</p>
+          <span class="who-v">Per-outcome billing is live</span>
+        </div>
+        <div class="who-card reveal d3">
+          <span class="who-k">$0.99 per resolution</span>
+          <p>Intercom Fin bills per resolution with a money-back guarantee. Buyers dispute what was counted; sellers refund what cannot be proven.</p>
+          <span class="who-v">Both sides need a referee</span>
+        </div>
+      </div>
+
+      <p class="lede-sm reveal d4">AgentMeasure is the open yardstick for both sides of that bill —<br><strong>usage and outcomes, one semantics, evidence you can audit.</strong></p>
+      <p class="note reveal d5"><a href="blog/outcome-yardstick.html">Read the note: the yardstick for outcome-based AI&nbsp;→</a></p>
     </div>
   </section>
 
@@ -622,6 +652,32 @@
     </div>
   </section>
 
+  <!-- ══════════════════ 11 · PRINCIPLES ══════════════════ -->
+  <section class="section section-panel" id="principles" aria-label="Principles">
+    <div class="wrap">
+      <h2 class="reveal d1">The referee doesn’t open a store.</h2>
+      <p class="body-secondary reveal d2">Rules we wrote down before anyone asked us to bend them.</p>
+
+      <div class="who-grid">
+        <div class="who-card reveal d1">
+          <span class="who-k">Free, forever</span>
+          <p>The spec, the engine, the SDK, conformance, and the local dashboard stay open. The free list is written into governance — not revocable later.</p>
+          <span class="who-v">Adoption is the product</span>
+        </div>
+        <div class="who-card reveal d2">
+          <span class="who-k">Local-first, opt-in</span>
+          <p>Raw data never leaves your machine by default. Only aggregated, anonymized evidence returns to the network — only if you opt in.</p>
+          <span class="who-v">Your traces stay yours</span>
+        </div>
+        <div class="who-card reveal d3">
+          <span class="who-k">No rankings for sale</span>
+          <p>No paid placement, no recommendation slots, no custody of funds. The moment a referee sells shelf space, the measurements stop meaning anything.</p>
+          <span class="who-v">Neutrality is the product</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
   </main>
 
   <!-- ══════════════════ FOOTER ══════════════════ -->
@@ -630,7 +686,7 @@
       <div class="footer-grid">
         <div class="footer-brand">
           <span class="brand">AgentMeasure<span class="brand-cursor" aria-hidden="true">_</span></span>
-          <p>Measure software used by agents.</p>
+          <p>The open yardstick for software agents use — and the work AI delivers.</p>
         </div>
         <nav class="footer-col" aria-label="Project">
           <span class="footer-k">Project</span>
