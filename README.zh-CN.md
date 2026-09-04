@@ -1,5 +1,6 @@
 # AgentMeasure
 
+**Agent 经济缺一把公尺——AI 用了什么、干得怎么样，行业还没有统一的算法。**
 **度量 Agent 的真实使用——别把重试当成用户。**
 
 [![CI: conformance](https://github.com/roy-tong/AgentMeasure/actions/workflows/conformance.yml/badge.svg)](https://github.com/roy-tong/AgentMeasure/actions/workflows/conformance.yml)
@@ -15,13 +16,24 @@
 
 **今天：** 度量 Agent 对软件能力的使用——attempts、operations、retry 膨胀、
 分子可审计的成功率。
-**下一步：** 让 Capability 可以跨 Agent 被统一度量、比较和计量。
+**下一步：** 让 Capability 可以跨 Agent 被统一度量、比较和计量——包括正在被
+计费的"效果单位"（什么算一次解决、一次完成的任务）。
 **长期：** 成为 Capability as a Service（CaaS）的计量基础。
 
 **Reach → Choice → Use → Utility → Value**
 
 > AgentMeasure **不是**支付协议、市场或通用排名系统。
 > 它标准化的是这些系统可以构建于其上的事实与测量语义。
+
+## 为什么是现在
+
+AI 服务已经开始按效果收钱：Zendesk 2024 年 8 月起[按"解决一单"收 1.50–2.00 美金](https://www.zendesk.com/newsroom/articles/zendesk-outcome-based-pricing/)，[Intercom Fin 一单 0.99 美金](https://www.intercom.com/pricing/fin)还带退款保证，[Sierra 按效果签企业合同](https://sierra.ai/blog/outcome-based-pricing-for-ai-agents)。但**"什么算一次解决"没有标准**——重试、工单重开、"客户沉默就算已解决"，都改着这个数，也改着账单。钱挂在一个可测量的量上，就得有人把这个量定义清楚。这就是我们在做的事。→ [读这篇说明](https://roy-tong.github.io/AgentMeasure/blog/outcome-yardstick.html)
+
+## 我们的原则（先写下来，免得以后被要求破例）
+
+- **永久免费。** 规范、引擎、SDK、conformance、本地看板——免费清单写进治理，不秋后算账。用起来，就是产品。
+- **本地优先，opt-in 才回流。** 原始数据默认不出你的机器；只有聚合、匿名后的证据回流网络，而且要你自己选择加入。
+- **裁判不开店。** 不卖排名、不卖推荐位、不碰钱。中立就是产品。
 
 [**官网**](https://roy-tong.github.io/AgentMeasure/) · [**发送一段 trace，换一份 measurement check**](mailto:tongroy18@gmail.com?subject=AgentMeasure%20measurement%20check%20-%20%5Byour%20capability%5D&body=Hi%2C%0A%0AI%27d%20like%20a%20zero-install%20measurement%20check.%0A%0A1.%20Data%3A%2020-100%20anonymized%20trace/log%20rows%2C%20or%20a%20link%20to%20a%20public%20export%20%28production%20or%20synthetic%20-%20please%20say%20which%29%3A%0A%0A2.%20Source%20and%20time%20window%3A%0A%0A3.%20The%20decision%20this%20should%20inform%3A%0A%0ANote%3A%20raw%20data%20stays%20local%20by%20default.%20If%20I%20share%20a%20sanitized%20sample%2C%20I%27ll%20state%20what%20may%20be%20done%20with%20it.)（零安装：20–100 行匿名数据；未经你明确授权不出你的机器） · [免费 7 天 Audit——申请](https://github.com/roy-tong/AgentMeasure/issues/new?template=5-provider-trial.yml) · [Whitepaper](whitepaper/measuring-software-used-by-ai-agents.md) · [中文白皮书](whitepaper/measuring-software-used-by-ai-agents.zh-CN.md) · [Core Specification](standard/CORE.md) · [English](README.md)
 

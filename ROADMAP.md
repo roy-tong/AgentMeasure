@@ -1,5 +1,7 @@
 # AgentMeasure Roadmap
 
+> **Positioning（2026-09-04）**：公开叙事统一为"开放公尺"——usage 与 outcome 同一套语义（官网 Why now / Principles 两节与 README 已同步）。按效果计费的场景（per-resolution 计费的 AI 客服生态）是标准落地的第一个目标场景；当前唯一产品验收是采用指标：生产接入家数、月度被计量交互量、opt-in 数据回流率、被外部项目合并的规则数。原则红线：免费清单写进治理；原始数据本地默认；不卖排名、不碰资金。
+
 > **Timebox（2026-08-21 → 09-04）**：standard 轨暂停非 blocking 变更（AUP 一律排队，除非阻塞接入）；关键路径是双假设实验与 **9/3 Gate Review**（判据预注册见 PRD v0.5 §8.2）。Audit 以 concierge 形态受试：[product/AUDIT.md](product/AUDIT.md)。
 
 > **Status（2026-08-25）**：v0.2.2 已发布（conformance hardening：#8/#9 修复 + 首个外部 fixture Urusilla-001 入库）。

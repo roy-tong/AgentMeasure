@@ -1,5 +1,6 @@
 # AgentMeasure
 
+**The open yardstick for agent usage and AI outcomes.**
 **Test whether your agent metrics mean what their labels claim.**
 
 Conformance checks for AI-agent telemetry — a retry is one logical operation, not two requests; a reasoning-token subset must not be added into totals; a cache hit is not a new measurement. Every check reports **PASS / FAIL / UNPROVABLE**, and UNPROVABLE is a first-class result: when the evidence to decide is absent, it is disclosed, never zeroed.
@@ -27,13 +28,24 @@ Conformance checks for AI-agent telemetry — a retry is one logical operation, 
 
 **Today:** measure agent-facing capability usage — attempts, operations, retry
 inflation, success rates with numerators you can audit.
-**Next:** make capabilities comparable and meterable.
+**Next:** make capabilities comparable and meterable — including the outcome units
+now being billed (what counts as one resolution, one completed task).
 **Long term:** provide the measurement foundation for Capability as a Service (CaaS).
 
 **Reach → Choice → Use → Utility → Value**
 
 > AgentMeasure is **not** a payment protocol, marketplace, or universal ranking system.
 > It standardizes the facts and measurement semantics those systems can build on.
+
+## Why now
+
+AI services have started charging by the outcome: [Zendesk at $1.50–2.00 per automated resolution](https://www.zendesk.com/newsroom/articles/zendesk-outcome-based-pricing/) since Aug 2024, [Intercom Fin at $0.99 per resolution](https://www.intercom.com/pricing/fin) with a money-back guarantee, [Sierra's outcome-based enterprise contracts](https://sierra.ai/blog/outcome-based-pricing-for-ai-agents). But *what counts as one outcome* has no standard — retries, reopens, and silent "assumed resolutions" all change the number, and the bill. When money rides on a measured unit, someone has to define the unit. That is what we build. → [Read the note](https://roy-tong.github.io/AgentMeasure/blog/outcome-yardstick.html)
+
+## Principles (written down before anyone asked)
+
+- **Free, forever.** Spec, engine, SDK, conformance, local dashboard — the free list is part of governance, not revocable later. Adoption is the product.
+- **Local-first, opt-in.** Raw data never leaves your machine by default; only aggregated, anonymized evidence returns, and only if you opt in.
+- **The referee doesn't open a store.** No paid rankings, no recommendation slots, no custody of funds. Neutrality is the product.
 
 [**Website**](https://roy-tong.github.io/AgentMeasure/) · [Send a trace → get a measurement check](mailto:tongroy18@gmail.com?subject=AgentMeasure%20measurement%20check%20-%20%5Byour%20capability%5D&body=Hi%2C%0A%0AI%27d%20like%20a%20zero-install%20measurement%20check.%0A%0A1.%20Data%3A%2020-100%20anonymized%20trace/log%20rows%2C%20or%20a%20link%20to%20a%20public%20export%20%28production%20or%20synthetic%20-%20please%20say%20which%29%3A%0A%0A2.%20Source%20and%20time%20window%3A%0A%0A3.%20The%20decision%20this%20should%20inform%3A%0A%0ANote%3A%20raw%20data%20stays%20local%20by%20default.%20If%20I%20share%20a%20sanitized%20sample%2C%20I%27ll%20state%20what%20may%20be%20done%20with%20it.) · [Free 7-day audit — apply](https://github.com/roy-tong/AgentMeasure/issues/new?template=5-provider-trial.yml) · [30 Projects / 30 Days campaign](campaigns/30-projects-30-days.md) · [Whitepaper](whitepaper/measuring-software-used-by-ai-agents.md) · [Core Specification](standard/CORE.md)
 
