@@ -1,0 +1,71 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://roy-tong.github.io/AgentMeasure/schemas/healthcheck/compare-v1.schema.json",
+  "title": "AgentMeasure Healthcheck comparison export (v1)",
+  "description": "Machine-readable export written by `agentmeasure compare ... --json PATH`. Deltas are B − A per metric. Token rows exist only when token_state is \"provable\" (both sides provable); UNPROVABLE sides are labelled, never differenced. Within a schema version fields are only added, never renamed or removed.",
+  "type": "object",
+  "required": ["schema", "a", "b", "rows", "token_state", "token_rows", "verdicts", "changed_verdicts", "warnings"],
+  "properties": {
+    "schema": { "const": 1 },
+    "a": { "$ref": "#/definitions/side" },
+    "b": { "$ref": "#/definitions/side" },
+    "rows": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["metric", "a", "b", "delta"],
+        "properties": {
+          "metric": { "type": "string" },
+          "a": { "type": ["integer", "null"] },
+          "b": { "type": ["integer", "null"] },
+          "delta": { "type": "string" }
+        }
+      }
+    },
+    "token_state": { "enum": ["provable", "unprovable"] },
+    "token_rows": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["metric", "a", "b", "delta"],
+        "properties": {
+          "metric": { "type": "string" },
+          "a": { "type": "integer" },
+          "b": { "type": "integer" },
+          "delta": { "type": "string" }
+        }
+      }
+    },
+    "token_a_reason": { "type": ["string", "null"] },
+    "token_b_reason": { "type": ["string", "null"] },
+    "verdicts": { "$ref": "#/definitions/verdictList" },
+    "changed_verdicts": { "$ref": "#/definitions/verdictList" },
+    "warnings": { "type": "array", "items": { "type": "string" } }
+  },
+  "definitions": {
+    "side": {
+      "type": "object",
+      "required": ["path", "saved_at", "window", "mode", "tool_version"],
+      "properties": {
+        "path": { "type": "string", "description": "empty string when this side was a fresh run" },
+        "saved_at": { "type": "string" },
+        "window": { "type": "string" },
+        "mode": { "type": "string" },
+        "tool_version": { "type": "string" }
+      }
+    },
+    "verdictList": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["check_id", "name", "a", "b"],
+        "properties": {
+          "check_id": { "type": "string" },
+          "name": { "type": "string" },
+          "a": { "enum": ["ok", "finding", "unprovable", "info", null] },
+          "b": { "enum": ["ok", "finding", "unprovable", "info", null] }
+        }
+      }
+    }
+  }
+}

@@ -12,7 +12,8 @@ from _support import fixture, HEALTHCHECK_DIR
 
 from am_healthcheck.checks import run_checks
 from am_healthcheck.codex import parse_session
-from am_healthcheck.share import build_share_summary, share_json, share_markdown
+from am_healthcheck.share import (ALLOWED_KEYS, build_share_summary,
+                                  share_json, share_markdown)
 
 PLANTED = [
     "secret-project",      # repo-ish path segment
@@ -22,13 +23,6 @@ PLANTED = [
     "SESSIONUUID",         # session id fragment
     "exec-001",            # exec item id
 ]
-
-ALLOWED_KEYS = {
-    "tool", "tool_version", "mode", "runtime", "runtime_versions", "window",
-    "sessions", "log_files", "turns", "command_executions", "failed_executions",
-    "retry_chains", "retry_executions", "unresolved_retry_chains", "checks",
-    "notes",
-}
 
 
 class TestShareRedaction(unittest.TestCase):

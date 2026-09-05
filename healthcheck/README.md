@@ -41,6 +41,8 @@ agentmeasure check --all           # every local session
 agentmeasure check --dir ~/.codex/sessions/2026/09/05
 agentmeasure selftest  # adapters + checks on bundled fixtures
 agentmeasure validate export.json  # check an export against its schema
+agentmeasure share run.json        # PREVIEW the sanitized summary (writes nothing)
+agentmeasure share run.json --out summary.md   # export after review
 agentmeasure --version
 ```
 
@@ -58,6 +60,20 @@ Input filters for `check` and `compare`:
 --project myrepo                        # keep sessions whose project matches
                                         # (project = cwd basename, case-insensitive)
 ```
+
+## Sharing results: preview first, export second
+
+The recommended flow never writes a shareable file until you have read it:
+
+```bash
+agentmeasure check --json run.json          # the report export embeds the summary
+agentmeasure share run.json                 # terminal PREVIEW — nothing is written
+agentmeasure share run.json --out summary.md  # export only after you reviewed it
+```
+
+`share` re-checks the summary against its whitelist before showing or writing
+anything, so a tampered or future-format export is refused rather than leaked.
+`check --share PATH` remains available as the one-step explicit alternative.
 
 ## Snapshots & compare — did the change help?
 
@@ -187,7 +203,7 @@ New cli versions are handled defensively: unknown event types are accounted
 ## Development
 
 ```bash
-python3 -m unittest discover -s healthcheck/tests   # 101 tests
+python3 -m unittest discover -s healthcheck/tests   # 109 tests
 python3 healthcheck/agentmeasure selftest           # fixtures + redaction + compare + schemas
 bash healthcheck/scripts/smoke_install.sh           # clean-venv install smoke (packaged artifact)
 ```

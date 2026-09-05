@@ -372,6 +372,62 @@ def cmd_compare(args) -> int:
     return 0
 
 
+def cmd_share(args) -> int:
+    """Preview-then-export: show the sanitized summary, write only with --out.
+
+    The default is a PREVIEW on the terminal — nothing is exported until the
+    user re-runs with an explicit --out after reviewing what would leave the
+    machine. The summary is re-checked against the whitelist before either
+    step (defense in depth for hand-edited or future report files).
+    """
+    kind, errors = schema_mod.validate_file(args.report)
+    if errors:
+        for err in errors:
+            print("error: %s" % err, file=sys.stderr)
+        return 2
+    if kind != "report":
+        print("error: %s is a %s export; sharing works from a report export "
+              "(`check --json` / `demo --json`)" % (args.report, kind),
+              file=sys.stderr)
+        return 2
+    try:
+        with open(args.report, "r", encoding="utf-8") as fh:
+            data = json.load(fh)
+    except (OSError, ValueError) as exc:
+        print("error: cannot re-read %s: %s" % (args.report, exc), file=sys.stderr)
+        return 2
+    summary = data.get("share_summary")
+    problems = share_mod.summary_problems(summary)
+    if problems:
+        for problem in problems:
+            print("error: refusing to show/export: %s" % problem, file=sys.stderr)
+        return 2
+
+    body = (share_mod.share_json(summary) if (args.out or "").endswith(".json")
+            else share_mod.share_markdown(summary))
+    print("— sanitized share summary (preview) —")
+    print(body)
+    print("— end of preview · contains aggregate counts only; no prompts, "
+          "paths, commands, repo names, or session ids —")
+
+    if args.out:
+        output_error = _validate_output_paths([args.report], args.out)
+        if output_error:
+            print("error: %s" % output_error, file=sys.stderr)
+            return 2
+        try:
+            with open(args.out, "w", encoding="utf-8") as fh:
+                fh.write(body + "\n")
+        except OSError as exc:
+            print("error: could not write share summary: %s" % exc, file=sys.stderr)
+            return 2
+        print("\nExported → %s (you reviewed the preview above)" % os.path.abspath(args.out))
+    else:
+        print("\nPreview only — nothing was written. To export after review, "
+              "re-run with: --out summary.md")
+    return 0
+
+
 def cmd_validate(args) -> int:
     """Validate exported JSON files against their versioned schemas."""
     problems = 0
@@ -508,10 +564,47 @@ def cmd_selftest(args) -> int:
 
     failures += _selftest_snapshot_and_compare()
     failures += _selftest_export_schemas()
+    failures += _selftest_share_flow()
 
     print("selftest: %s" % ("PASS" if failures == 0 else
                             "FAIL (%d mismatches)" % failures))
     return 0 if failures == 0 else 1
+
+
+def _selftest_share_flow() -> int:
+    import tempfile
+    problems = 0
+    ok = codex_adapter.parse_session(_fixture_path("codex-ok.jsonl"))
+    ov, checks, _cov, _top = checks_mod.run_checks([ok], "selftest")
+    summary = share_mod.build_share_summary(ov, checks, "synthetic-demo",
+                                            "selftest")
+    if share_mod.summary_problems(summary):
+        print("  share flow: summary fails whitelist  [MISMATCH]")
+        problems += 1
+    preview = share_mod.share_markdown(summary)
+    for planted in ("secret-project", "Users/tongxiarui", "call_demo_1",
+                    "deploy-prod", "SESSIONUUID"):
+        if planted in preview:
+            print("  share flow: %s leaked into preview  [MISMATCH]" % planted)
+            problems += 1
+    with tempfile.TemporaryDirectory() as tmp:
+        report = os.path.join(tmp, "run.json")
+        snap = dict(schema=schema_mod.REPORT_SCHEMA,
+                    tool="agentmeasure-healthcheck", version=__version__,
+                    mode="synthetic-demo", window="selftest",
+                    overview=snapshot_mod.overview_dict(ov),
+                    checks=[_check_dict(c) for c in checks], coverage=[],
+                    share_summary=summary)
+        with open(report, "w", encoding="utf-8") as fh:
+            json.dump(snap, fh, ensure_ascii=True)
+        body = share_mod.share_markdown(json.load(
+            open(report, encoding="utf-8"))["share_summary"])
+        if "AgentMeasure Healthcheck" not in body:
+            print("  share flow: report roundtrip preview broken  [MISMATCH]")
+            problems += 1
+    print("  share preview-then-export contracts  [%s]"
+          % ("ok" if problems == 0 else "see above"))
+    return problems
 
 
 def _selftest_export_schemas() -> int:
@@ -616,6 +709,16 @@ def build_parser() -> argparse.ArgumentParser:
                        help="write the machine-readable comparison")
     p_cmp.add_argument("--no-history", action="store_true")
     p_cmp.set_defaults(func=cmd_compare)
+
+    p_share = sub.add_parser(
+        "share", help="preview the sanitized summary from a report export; "
+                      "write it only with --out (preview-then-export)")
+    p_share.add_argument("report", metavar="REPORT.json",
+                         help="a `check --json` / `demo --json` export")
+    p_share.add_argument("--out", metavar="PATH", default=None,
+                         help="export after review (.md or .json); "
+                              "without it, nothing is written")
+    p_share.set_defaults(func=cmd_share)
 
     p_val = sub.add_parser("validate",
                            help="validate exported JSON (report/snapshot/compare) "

@@ -43,9 +43,11 @@ agentmeasure check   # your Codex logs, last 7 days
   Fields are only added within a version; `agentmeasure validate` checks any
   export; `examples/track-weekly.py` is a complete external consumer that
   imports no package internals.
-- **Share-safe by construction.** `--share` exports a whitelist-only summary
-  (no prompts, paths, commands, repo names, session ids) — planted-string
-  tests enforce it.
+- **Share-safe by construction, preview-then-export.** `agentmeasure share
+  run.json` previews the sanitized summary on the terminal and writes nothing
+  until an explicit `--out`; the summary is whitelist-only (no prompts, paths,
+  commands, repo names, session ids) and re-checked before either step —
+  planted-string tests enforce it.
 
 ### Verification
 

@@ -14,6 +14,32 @@ from . import __version__
 
 _VERSION = re.compile(r"^(\d+\.\d+\.\d+)(?:-[0-9A-Za-z.-]+)?$")
 
+# The whitelist IS the redaction mechanism: the share summary may contain
+# exactly these top-level keys, nothing else. Tests import this set.
+ALLOWED_KEYS = {
+    "tool", "tool_version", "mode", "runtime", "runtime_versions", "window",
+    "sessions", "log_files", "turns", "command_executions", "failed_executions",
+    "retry_chains", "retry_executions", "unresolved_retry_chains", "checks",
+    "notes",
+}
+
+
+def summary_problems(summary) -> list:
+    """Defense in depth for the preview-then-export flow: re-check the exact
+    shape before showing or exporting anything as 'sanitized'."""
+    if not isinstance(summary, dict):
+        return ["share summary is not an object"]
+    problems = []
+    extra = sorted(set(summary.keys()) - ALLOWED_KEYS)
+    if extra:
+        problems.append("unexpected key(s) outside the whitelist: %s"
+                        % ", ".join(extra))
+    for check in summary.get("checks", []) or []:
+        if not isinstance(check, dict) or set(check.keys()) != {"check", "name", "status"}:
+            problems.append("checks entries must have exactly check/name/status")
+            break
+    return problems
+
 
 def _safe_versions(values) -> list:
     if not isinstance(values, (list, tuple)):

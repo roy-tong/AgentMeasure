@@ -8,10 +8,11 @@ import tempfile
 import unittest
 from contextlib import redirect_stderr, redirect_stdout
 
-from _support import fixture, HEALTHCHECK_DIR
+from _support import fixture, HEALTHCHECK_DIR, FIXTURES_DIR
 
 from am_healthcheck import cli
 from am_healthcheck import schema as schema_mod
+from am_healthcheck import share as share_mod
 from am_healthcheck import snapshot as snapshot_mod
 from am_healthcheck.checks import run_checks, session_summaries
 from am_healthcheck.codex import parse_session
@@ -133,6 +134,92 @@ class TestExternalExample(unittest.TestCase):
         proc = self._example(path)
         self.assertEqual(proc.returncode, 1)
         self.assertIn("schema", proc.stderr)
+
+
+class TestShareCommand(unittest.TestCase):
+    """R4: preview-then-export — nothing leaves the machine before review."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        old = os.environ.get("HOME")
+        os.environ["HOME"] = os.path.join(self.tmp.name, "home")
+        os.makedirs(os.environ["HOME"], exist_ok=True)
+        self.addCleanup(lambda: os.environ.__setitem__("HOME", old) if old
+                        else os.environ.pop("HOME", None))
+
+    def _run(self, argv, expect=0):
+        buf_out, buf_err = io.StringIO(), io.StringIO()
+        with redirect_stdout(buf_out), redirect_stderr(io.StringIO()):
+            code = cli.main(argv)
+        self.assertEqual(code, expect,
+                         "stdout:\n%s\nstderr:\n%s" % (buf_out.getvalue(),
+                                                       buf_err.getvalue()))
+        return buf_out.getvalue()
+
+    def _report(self):
+        report = os.path.join(self.tmp.name, "run.json")
+        self._run(["check", "--dir", FIXTURES_DIR,
+                   "--html", os.path.join(self.tmp.name, "r.html"),
+                   "--json", report, "--no-history"])
+        return report
+
+    def test_preview_writes_nothing_by_default(self):
+        report = self._report()
+        out = self._run(["share", report])
+        self.assertIn("preview", out)
+        self.assertIn("nothing was written", out)
+        self.assertFalse([f for f in os.listdir(self.tmp.name)
+                          if f.startswith("summary")])
+
+    def test_preview_is_sanitized(self):
+        out = self._run(["share", self._report()])
+        for planted in ("secret-project", "Users/tongxiarui", "call_demo_1",
+                        "SESSIONUUID", "deploy-prod"):
+            self.assertNotIn(planted, out)
+
+    def test_export_only_with_out(self):
+        report = self._report()
+        dest = os.path.join(self.tmp.name, "summary.md")
+        out = self._run(["share", report, "--out", dest])
+        self.assertIn("reviewed the preview", out)
+        self.assertTrue(os.path.isfile(dest))
+
+    def test_json_variant(self):
+        report = self._report()
+        dest = os.path.join(self.tmp.name, "summary.json")
+        self._run(["share", report, "--out", dest])
+        with open(dest) as fh:
+            payload = json.load(fh)
+        self.assertEqual(payload["tool"], "AgentMeasure Healthcheck")
+
+    def test_snapshot_file_rejected(self):
+        snap = os.path.join(self.tmp.name, "s.json")
+        self._run(["check", "--dir", FIXTURES_DIR,
+                   "--html", os.path.join(self.tmp.name, "r.html"),
+                   "--save-snapshot", snap, "--no-history"])
+        out = self._run(["share", snap], expect=2)
+
+    def test_tampered_summary_refused(self):
+        report = self._report()
+        with open(report, encoding="utf-8") as fh:
+            data = json.load(fh)
+        data["share_summary"]["my_prompts"] = ["hello"]
+        with open(report, "w", encoding="utf-8") as fh:
+            json.dump(data, fh)
+        self._run(["share", report], expect=2)
+
+
+class TestSummaryWhitelist(unittest.TestCase):
+    def test_extra_key_is_a_problem(self):
+        problems = share_mod.summary_problems({"tool": "x", "extra": 1})
+        self.assertTrue(any("extra" in p for p in problems))
+
+    def test_good_summary_has_no_problems(self):
+        s = parse_session(fixture("codex-ok.jsonl"))
+        ov, checks, _cov, _top = run_checks([s], "unit")
+        summary = share_mod.build_share_summary(ov, checks, "synthetic-demo", "u")
+        self.assertEqual(share_mod.summary_problems(summary), [])
 
 
 if __name__ == "__main__":
