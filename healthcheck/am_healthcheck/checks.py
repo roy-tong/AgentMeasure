@@ -10,6 +10,7 @@ Verdicts: ok | finding | unprovable | info. A session whose logs cannot decide
 a check makes the check UNPROVABLE for that session — never silently ok.
 """
 from collections import defaultdict
+import os
 from typing import Dict, List, Tuple
 
 from .model import (CheckResult, Evidence, Finding, Overview, RetryChain,
@@ -156,7 +157,70 @@ def build_overview(sessions: List[SessionRecord], window_label: str) -> Overview
     ov.retry_chains = len(chains)
     ov.retry_attempts_in_chains = sum(c.attempts for c in chains)
     ov.unresolved_chains = sum(1 for c in chains if not c.resolved)
+
+    ov.projects = _project_breakdown(sessions, canonical, chains)
     return ov
+
+
+def _project_breakdown(sessions, canonical, chains):
+    """Per-project aggregates on canonical (deduplicated) executions."""
+    project_by_key: Dict[str, str] = {}
+    for s in sessions:
+        key = _session_key(s)
+        if key not in project_by_key or (not project_by_key[key] and s.project):
+            project_by_key[key] = s.project or "(unknown)"
+    agg: Dict[str, Dict[str, int]] = {}
+    for key, project in project_by_key.items():
+        entry = agg.setdefault(project, {"sessions": 0, "exec_total": 0,
+                                         "exec_failed": 0, "retry_chains": 0})
+        entry["sessions"] += 1
+    for _s, e in canonical:
+        project = project_by_key.get(_session_key(_s), "(unknown)")
+        agg[project]["exec_total"] += 1
+        if e.status == "failed":
+            agg[project]["exec_failed"] += 1
+    for c in chains:
+        project = project_by_key.get(c.session_id or c.file, "(unknown)")
+        if project in agg:
+            agg[project]["retry_chains"] += 1
+    rows = [{"project": name, **counts} for name, counts in agg.items()]
+    rows.sort(key=lambda r: (-r["exec_total"], r["project"]))
+    return rows[:8]
+
+
+def session_summaries(sessions: List[SessionRecord]) -> List[Dict[str, object]]:
+    """Canonical per-logical-session rows for snapshots (split files merged)."""
+    canonical, _duplicates, _conflicts = _canonical_execs(sessions)
+    groups: Dict[str, Dict[str, object]] = {}
+    order: List[str] = []
+    for s in sessions:
+        key = _session_key(s)
+        if key not in groups:
+            groups[key] = {
+                "session": s.session_id[:8] if s.session_id else "?",
+                "file": os.path.basename(s.path),
+                "project": s.project or "(unknown)",
+                "started_at": s.started_at,
+                "turns": 0, "exec_total": 0, "exec_failed": 0,
+                "retry_chains": 0,
+            }
+            order.append(key)
+        row = groups[key]
+        row["turns"] += s.turns
+        if not row["started_at"] and s.started_at:
+            row["started_at"] = s.started_at
+        if s.project and row["project"] == "(unknown)":
+            row["project"] = s.project
+    for _s, e in canonical:
+        row = groups[_session_key(_s)]
+        row["exec_total"] += 1
+        if e.status == "failed":
+            row["exec_failed"] += 1
+    for c in all_retry_chains(sessions):
+        row = groups.get(c.session_id or c.file)
+        if row is not None:
+            row["retry_chains"] += 1
+    return [groups[key] for key in order]
 
 
 # ---------------------------------------------------------------- HC-02 core

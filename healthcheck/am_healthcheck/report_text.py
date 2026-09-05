@@ -38,6 +38,12 @@ def render_terminal(ov: Overview, checks: List[CheckResult], top3: List[Finding]
                % (span, span_end, ", ".join(ov.models[:3]) or "?"))
     if ov.cli_versions:
         out.append("  runtime cli: %s" % ", ".join(sorted(ov.cli_versions)))
+    if ov.projects:
+        parts = ["%s (%s sess · %s exec · %s failed)"
+                 % (p["project"], p["sessions"], p["exec_total"], p["exec_failed"])
+                 for p in ov.projects[:3]]
+        more = "" if len(ov.projects) <= 3 else " · +%d more" % (len(ov.projects) - 3)
+        out.append("  projects: %s%s" % (" · ".join(parts), more))
 
     out.append("")
     out.append("Activity")

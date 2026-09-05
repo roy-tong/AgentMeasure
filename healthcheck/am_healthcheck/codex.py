@@ -122,6 +122,15 @@ def _exec_fingerprint(item: dict) -> Tuple[object, ...]:
             item.get("exit_code"), item.get("status"), item.get("duration"))
 
 
+def _project_from_cwd(cwd) -> str:
+    """Project label = cwd basename. Paths stay local; never hashed."""
+    if not isinstance(cwd, str) or not cwd.strip():
+        return ""
+    text = _clean_str(cwd.strip().rstrip("/\\"))
+    base = os.path.basename(text)
+    return _clean_str(base)[:80]
+
+
 def parse_session(path: str, file_index: int = 0) -> SessionRecord:
     """Parse one rollout file into a SessionRecord. Never raises on data."""
     rec = SessionRecord(path=path)
@@ -196,8 +205,12 @@ def parse_session(path: str, file_index: int = 0) -> SessionRecord:
             rec.cli_version = _clean_str(ver)
             origin = payload.get("originator")
             rec.originator = _clean_str(origin)
+            if not rec.project:
+                rec.project = _project_from_cwd(payload.get("cwd"))
 
         elif etype == "turn_context":
+            if not rec.project:
+                rec.project = _project_from_cwd(payload.get("cwd"))
             model = payload.get("model")
             if isinstance(model, str):
                 model = _clean_str(model)

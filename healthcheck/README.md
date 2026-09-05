@@ -10,7 +10,7 @@ Same honesty rules as the [conformance pack](../conformance/pack/README.md):
 every verdict is `OK / FINDING / UNPROVABLE`, and UNPROVABLE is a first-class
 result — when the logs cannot decide, that is disclosed, never zeroed.
 
-> Status: engineering preview (v0.1.0). First adapter: **Codex rollout logs**.
+> Status: engineering preview (v0.2.0). First adapter: **Codex rollout logs**.
 > The command name and distribution channel are not final; nothing is published
 > to a package registry yet.
 
@@ -27,8 +27,37 @@ python3 healthcheck/agentmeasure --version
 
 Options for `check`: `--html PATH` (default `agentmeasure-report.html`),
 `--json PATH` (full machine-readable export), `--share PATH` (sanitized summary,
-`.md` or `.json`), `--days N`, `--no-history`. `demo` accepts the three output
-paths and `--no-history`.
+`.md` or `.json`), `--days N`, `--save-snapshot [PATH]`, `--no-history`.
+`demo` accepts the three output paths and `--no-history`.
+
+Input filters for `check` and `compare`:
+
+```bash
+--since 2026-09-01 --until 2026-09-05   # date range (overrides --days)
+--project myrepo                        # keep sessions whose project matches
+                                        # (project = cwd basename, case-insensitive)
+```
+
+## Snapshots & compare — did the change help?
+
+The re-run preview: save a snapshot, change something (a prompt, a Skill, a
+dependency), run the agent again, compare.
+
+```bash
+python3 healthcheck/agentmeasure check --save-snapshot before.json
+# …make your change and run the agent…
+python3 healthcheck/agentmeasure check --save-snapshot after.json
+python3 healthcheck/agentmeasure compare before.json after.json
+# or skip the second snapshot: compare runs a fresh check as side B
+python3 healthcheck/agentmeasure compare --all before.json
+```
+
+`compare` prints metric deltas (failed executions, retry chains, …), check
+verdict transitions (`HC-02 OK → FINDING`), and honest caveats: token totals
+are differenced only when **both** sides are provable, and version / window /
+mode mismatches are disclosed because they change what a delta is allowed to
+mean. Snapshots are local artifacts (they contain project names and session
+short-ids); the snapshot schema is versioned and validated on load.
 
 ## What it checks
 
@@ -40,8 +69,9 @@ paths and `--no-history`.
 
 Plus a coverage overview: sessions, turns, executions by outcome, token
 consumption (with subset discipline), compactions, sub-agent activity, corrupt
-lines. Every finding carries evidence — file, line number, exit codes — and a
-concrete next step.
+lines, and a **per-project breakdown** (project = cwd basename, canonical
+deduplicated counts). Every finding carries evidence — file, line number, exit
+codes — and a concrete next step.
 
 ## Honest-number rules (the part most tools get wrong)
 
@@ -71,6 +101,9 @@ concrete next step.
 | resolved chain | a chain whose last attempt succeeded |
 | tool error run | ≥3 consecutive failed executions of the same tool kind with no success or unknown in between |
 | token total | last cumulative `total_token_usage` snapshot per session, summed only when every session has a valid snapshot; otherwise UNPROVABLE |
+| project | basename of the session's recorded working directory (`session_meta.cwd`); used for the breakdown, `--project` filtering, and snapshots — never included in the share summary |
+| snapshot | versioned JSON record of one run's window, verdicts, and aggregate counters (schema 1); local artifact |
+| comparison delta | `B − A` per metric; tokens are differenced only when provable on both sides, and version/window/mode mismatches are disclosed as caveats |
 | demo run | executed on the bundled synthetic session; counted separately (`synthetic-demo`) |
 | own-data run | executed on real local logs (`own-data`) |
 | run number | local run history at `~/.agentmeasure/history.jsonl` distinguishes first vs repeated runs; delete the file to reset |
@@ -113,8 +146,8 @@ New cli versions are handled defensively: unknown event types are accounted
 ## Development
 
 ```bash
-python3 -m unittest discover -s healthcheck/tests   # 71 tests
-python3 healthcheck/agentmeasure selftest           # fixture verdicts + redaction scan
+python3 -m unittest discover -s healthcheck/tests   # 89 tests
+python3 healthcheck/agentmeasure selftest           # fixture verdicts + redaction + compare contracts
 ```
 
 Python 3.9+ standard library only. Zero dependencies, by policy: if any step

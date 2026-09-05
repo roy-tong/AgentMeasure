@@ -94,12 +94,52 @@ def collect_claude_files(root: str) -> List[str]:
     return out
 
 
+def parse_date(text: str) -> datetime:
+    """Parse a YYYY-MM-DD date; raises ValueError with a usable message."""
+    if not isinstance(text, str):
+        raise ValueError("dates must be YYYY-MM-DD strings")
+    try:
+        return datetime.strptime(text.strip(), "%Y-%m-%d").replace(tzinfo=timezone.utc)
+    except ValueError:
+        raise ValueError("invalid date %r — use YYYY-MM-DD, e.g. 2026-09-01" % text)
+
+
+def filter_by_date(paths: List[str], since: Optional[datetime],
+                   until: Optional[datetime]):
+    """Filter explicitly-listed files by their rollout filename date.
+
+    Files whose names carry no parseable rollout date are kept: their window
+    cannot be decided, and dropping them silently would hide data. The caller
+    discloses how many were kept undated.
+    """
+    kept: List[str] = []
+    skipped = 0
+    undated = 0
+    for path in paths:
+        stamp = _codex_date_of(path)
+        if stamp is None:
+            kept.append(path)
+            undated += 1
+            continue
+        if since and stamp < since:
+            skipped += 1
+            continue
+        if until and stamp > until + timedelta(days=1):
+            skipped += 1
+            continue
+        kept.append(path)
+    return kept, skipped, undated
+
+
 def discover(since_days: Optional[int] = None, explicit_dir: Optional[str] = None,
-             scan_all: bool = False, now: Optional[datetime] = None) -> DiscoveryResult:
+             scan_all: bool = False, now: Optional[datetime] = None,
+             since: Optional[datetime] = None, until: Optional[datetime] = None
+             ) -> DiscoveryResult:
     result = DiscoveryResult()
-    since = None
+    since_window = None
     if since_days is not None and not scan_all:
-        since = (now or datetime.now(timezone.utc)) - timedelta(days=since_days)
+        since_window = (now or datetime.now(timezone.utc)) - timedelta(days=since_days)
+    lower = since or since_window
 
     # --- Codex: supported runtime ---
     root = explicit_dir or codex_root()
@@ -108,10 +148,10 @@ def discover(since_days: Optional[int] = None, explicit_dir: Optional[str] = Non
             runtime="codex", supported=True, root=root,
             note="Codex sessions directory not found. Pass --dir <path> to point at rollout-*.jsonl files."))
     else:
-        files = collect_codex_files(root, since, None)
+        files = collect_codex_files(root, lower, until)
         note = ""
-        if not files and since is not None:
-            note = "No rollout files in the selected window; try --days N or --all."
+        if not files and (lower is not None or until is not None):
+            note = "No rollout files in the selected window; try --days N, --since/--until, or --all."
         result.runtimes.append(RuntimeFound(
             runtime="codex", supported=True, root=root, files=files, note=note))
 

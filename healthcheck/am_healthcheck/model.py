@@ -71,6 +71,7 @@ class SessionRecord:
     session_id: str = ""
     cli_version: str = ""
     originator: str = ""
+    project: str = ""      # cwd basename from session_meta — local, not hashed
     started_at: str = ""
     last_ts: str = ""
     models: List[str] = field(default_factory=list)
@@ -183,3 +184,4 @@ class Overview:
     token_missing_sessions: int = 0
     token_invalid_sessions: int = 0
     sessions_without_exec_events: int = 0
+    projects: List[Dict[str, object]] = field(default_factory=list)

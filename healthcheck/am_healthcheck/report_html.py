@@ -93,6 +93,11 @@ def _overview_grid(ov: Overview) -> str:
          else "no file exceeded the per-file safety cap"),
         ("Runtime versions", ", ".join(sorted(ov.cli_versions)) or "?",
          "models: %s" % (", ".join(ov.models) or "?")),
+        ("Top projects", "; ".join(
+            "%s %s sess / %s exec / %s failed"
+            % (p["project"], p["sessions"], p["exec_total"], p["exec_failed"])
+            for p in ov.projects[:4]) or "—",
+         "project = cwd basename; executions are canonical (deduplicated) counts"),
         ("Context compactions", "{:,}".format(ov.compactions),
          "token totals are not comparable across a compaction"
          if ov.compactions else "none observed"),
