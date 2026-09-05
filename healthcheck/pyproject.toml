@@ -3,7 +3,10 @@ requires = ["setuptools>=61"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "agentmeasure-healthcheck"
+# PyPI distribution name (decision 2026-09-05: `agentmeasure`, confirmed by Roy).
+# The command is also `agentmeasure`. JSON exports keep the stable tool tag
+# "agentmeasure-healthcheck" from schema v1 — do not rename inside exports.
+name = "agentmeasure"
 version = "0.3.0"
 description = "AgentMeasure Healthcheck — a local check-up report for coding agent runs (Codex rollout logs). Zero dependencies, fully offline."
 readme = "README.md"

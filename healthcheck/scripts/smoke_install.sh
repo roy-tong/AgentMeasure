@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Install smoke test (R3/R6 acceptance: "发布产物冒烟通过").
-# Builds the package the way a user would install it, then runs the installed
-# console command against the bundled fixtures — not the repository checkout.
+# Default: install from the source tree the way a user would.
+# `--wheel`: build the wheel first and install that — verifies the exact
+# artifact shape that PyPI will serve.
 set -euo pipefail
 
 here="$(cd "$(dirname "$0")/.." && pwd)"
@@ -12,7 +13,16 @@ python3 -m venv "$tmp/venv"
 # A fresh venv bundles pip+setuptools; make sure setuptools is present before
 # building with --no-build-isolation, which keeps the build fully offline.
 "$tmp/venv/bin/pip" install --quiet --no-build-isolation --upgrade setuptools
-"$tmp/venv/bin/pip" install --quiet --no-build-isolation --no-deps "$here"
+
+if [[ "${1:-}" == "--wheel" ]]; then
+  "$tmp/venv/bin/pip" install --quiet --no-build-isolation wheel
+  "$tmp/venv/bin/pip" wheel --quiet --no-deps --no-build-isolation \
+      -w "$tmp/wheels" "$here"
+  ls "$tmp/wheels"
+  "$tmp/venv/bin/pip" install --quiet --no-deps "$tmp/wheels"/agentmeasure-*.whl
+else
+  "$tmp/venv/bin/pip" install --quiet --no-build-isolation --no-deps "$here"
+fi
 
 cd "$tmp"
 "$tmp/venv/bin/agentmeasure" --version

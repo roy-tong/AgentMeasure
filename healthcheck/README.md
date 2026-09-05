@@ -11,21 +11,22 @@ every verdict is `OK / FINDING / UNPROVABLE`, and UNPROVABLE is a first-class
 result — when the logs cannot decide, that is disclosed, never zeroed.
 
 > Status: engineering preview (v0.3.0). First adapter: **Codex rollout logs**.
-> The PyPI name is not reserved yet and publishing is a deliberate launch
-> decision — see *Install* below for what works today.
+> Distribution name decided: **`agentmeasure`** on PyPI (command of the same
+> name). PyPI publish is armed and goes live with tag `v0.3.0` once the PyPI
+> account/trusted publisher is configured — until then use the git install.
 
 ## Install
 
 ```bash
-# 1) run straight from a repository checkout (zero install)
-python3 healthcheck/agentmeasure demo
+# 1) once v0.3.0 is published (planned this week)
+pipx install agentmeasure
 
-# 2) install as a command from git (no account, no PyPI needed)
+# 2) today, from git (no account, no PyPI needed)
 pipx install "git+https://github.com/roy-tong/AgentMeasure#subdirectory=healthcheck"
-agentmeasure check
 # without pipx: python3 -m pip install --user "git+https://github.com/roy-tong/AgentMeasure#subdirectory=healthcheck"
 
-# 3) PyPI (`pipx install agentmeasure`) — planned; reserved at launch time
+# 3) zero install, straight from a repository checkout
+python3 healthcheck/agentmeasure demo
 ```
 
 Python 3.9+ standard library only; zero runtime dependencies; no network code
