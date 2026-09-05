@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "agentmeasure-healthcheck"
+version = "0.3.0"
+description = "AgentMeasure Healthcheck — a local check-up report for coding agent runs (Codex rollout logs). Zero dependencies, fully offline."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+keywords = ["agent", "codex", "observability", "measurement", "healthcheck"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Software Development :: Quality Assurance",
+]
+
+[project.scripts]
+agentmeasure = "am_healthcheck.cli:main"
+
+[tool.setuptools]
+packages = ["am_healthcheck"]
+
+[tool.setuptools.package-data]
+# The synthetic fixtures and demo session ship with the package so that
+# `agentmeasure selftest` and `agentmeasure demo` work from a clean install.
+am_healthcheck = ["fixtures/*.jsonl", "demo/*.jsonl"]

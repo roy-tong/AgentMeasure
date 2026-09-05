@@ -1,0 +1,95 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://roy-tong.github.io/AgentMeasure/schemas/healthcheck/report-v1.schema.json",
+  "title": "AgentMeasure Healthcheck report export (v1)",
+  "description": "Machine-readable export written by `agentmeasure check --json PATH` / `demo --json PATH`. A personal artifact (contains local paths in evidence and coverage sections); share the share_summary section instead. Within a schema version fields are only added, never renamed or removed.",
+  "type": "object",
+  "required": ["schema", "tool", "version", "mode", "window", "overview", "checks", "coverage", "share_summary"],
+  "properties": {
+    "schema": { "const": 1 },
+    "tool": { "const": "agentmeasure-healthcheck" },
+    "version": { "type": "string" },
+    "mode": { "enum": ["own-data", "synthetic-demo"] },
+    "window": { "type": "string" },
+    "overview": { "$ref": "snapshot-v1.schema.json#/definitions/overview" },
+    "checks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["check_id", "name", "status", "summary", "unprovable_reason", "findings"],
+        "properties": {
+          "check_id": { "type": "string" },
+          "name": { "type": "string" },
+          "status": { "enum": ["ok", "finding", "unprovable", "info"] },
+          "summary": { "type": "string" },
+          "unprovable_reason": { "type": "string" },
+          "findings": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["title", "severity", "explanation", "next_step", "evidence"],
+              "properties": {
+                "title": { "type": "string" },
+                "severity": { "enum": ["finding", "info"] },
+                "explanation": { "type": "string" },
+                "next_step": { "type": "string" },
+                "evidence": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": ["session", "file", "line", "detail"],
+                    "properties": {
+                      "session": { "type": "string" },
+                      "file": { "type": "string" },
+                      "line": { "type": "integer" },
+                      "detail": { "type": "object" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "coverage": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/finding" }
+    },
+    "share_summary": {
+      "type": "object",
+      "required": ["tool", "tool_version", "mode", "runtime", "runtime_versions", "window", "sessions", "log_files", "turns", "command_executions", "failed_executions", "retry_chains", "retry_executions", "unresolved_retry_chains", "checks", "notes"],
+      "properties": {
+        "tool": { "type": "string" },
+        "tool_version": { "type": "string" },
+        "mode": { "type": "string" },
+        "runtime": { "type": "string" },
+        "runtime_versions": { "type": "array", "items": { "type": "string" } },
+        "window": { "type": "string" },
+        "sessions": { "type": "integer" },
+        "log_files": { "type": "integer" },
+        "turns": { "type": "integer" },
+        "command_executions": { "type": "integer" },
+        "failed_executions": { "type": "integer" },
+        "retry_chains": { "type": "integer" },
+        "retry_executions": { "type": "integer" },
+        "unresolved_retry_chains": { "type": "integer" },
+        "checks": { "type": "array" },
+        "notes": { "type": "string" }
+      }
+    }
+  },
+  "definitions": {
+    "finding": {
+      "type": "object",
+      "required": ["title", "severity", "explanation", "next_step", "evidence"],
+      "properties": {
+        "title": { "type": "string" },
+        "severity": { "enum": ["finding", "info"] },
+        "explanation": { "type": "string" },
+        "next_step": { "type": "string" },
+        "evidence": { "type": "array" }
+      }
+    }
+  }
+}

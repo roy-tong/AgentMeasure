@@ -10,25 +10,45 @@ Same honesty rules as the [conformance pack](../conformance/pack/README.md):
 every verdict is `OK / FINDING / UNPROVABLE`, and UNPROVABLE is a first-class
 result — when the logs cannot decide, that is disclosed, never zeroed.
 
-> Status: engineering preview (v0.2.0). First adapter: **Codex rollout logs**.
-> The command name and distribution channel are not final; nothing is published
-> to a package registry yet.
+> Status: engineering preview (v0.3.0). First adapter: **Codex rollout logs**.
+> The PyPI name is not reserved yet and publishing is a deliberate launch
+> decision — see *Install* below for what works today.
+
+## Install
+
+```bash
+# 1) run straight from a repository checkout (zero install)
+python3 healthcheck/agentmeasure demo
+
+# 2) install as a command from git (no account, no PyPI needed)
+pipx install "git+https://github.com/roy-tong/AgentMeasure#subdirectory=healthcheck"
+agentmeasure check
+# without pipx: python3 -m pip install --user "git+https://github.com/roy-tong/AgentMeasure#subdirectory=healthcheck"
+
+# 3) PyPI (`pipx install agentmeasure`) — planned; reserved at launch time
+```
+
+Python 3.9+ standard library only; zero runtime dependencies; no network code
+(a test enforces both).
 
 ## Quick start
 
 ```bash
-python3 healthcheck/agentmeasure demo      # synthetic session — see it work, no data needed
-python3 healthcheck/agentmeasure check     # your Codex logs, last 7 days
-python3 healthcheck/agentmeasure check --all           # every local session
-python3 healthcheck/agentmeasure check --dir ~/.codex/sessions/2026/09/05
-python3 healthcheck/agentmeasure selftest  # adapters + checks on bundled fixtures
-python3 healthcheck/agentmeasure --version
+agentmeasure demo      # synthetic session — see it work, no data needed
+agentmeasure check     # your Codex logs, last 7 days
+agentmeasure check --all           # every local session
+agentmeasure check --dir ~/.codex/sessions/2026/09/05
+agentmeasure selftest  # adapters + checks on bundled fixtures
+agentmeasure validate export.json  # check an export against its schema
+agentmeasure --version
 ```
 
-Options for `check`: `--html PATH` (default `agentmeasure-report.html`),
+(Without installing, prefix the commands with `python3 healthcheck/agentmeasure`.)
+
+Options for `check` / `demo`: `--html PATH` (default `agentmeasure-report.html`),
 `--json PATH` (full machine-readable export), `--share PATH` (sanitized summary,
 `.md` or `.json`), `--days N`, `--save-snapshot [PATH]`, `--no-history`.
-`demo` accepts the three output paths and `--no-history`.
+`demo` accepts the same output paths and `--no-history`.
 
 Input filters for `check` and `compare`:
 
@@ -58,6 +78,26 @@ are differenced only when **both** sides are provable, and version / window /
 mode mismatches are disclosed because they change what a delta is allowed to
 mean. Snapshots are local artifacts (they contain project names and session
 short-ids); the snapshot schema is versioned and validated on load.
+
+## Versioned export schemas — how other tools integrate (R8)
+
+Everything a third party needs is a JSON document with a version on it:
+
+| document | written by | schema |
+| --- | --- | --- |
+| report export | `check --json PATH` / `demo --json PATH` | `report-v1` |
+| snapshot | `--save-snapshot PATH` | `snapshot-v1` (schema field = 1) |
+| comparison | `compare --json PATH` | `compare-v1` |
+
+Reference schemas live in [`schemas/`](schemas/). Compatibility policy:
+**within a schema version, fields are only added — never renamed, retyped, or
+removed**; a consumer that meets an unknown newer version must stop and say so.
+`agentmeasure validate FILE…` checks any export against its schema, and
+[`examples/track-weekly.py`](examples/track-weekly.py) is a complete external
+consumer: it reads snapshots through the schema only, imports nothing from the
+package, and refuses future schema versions. MCP-style servers can wrap the
+same exports later; the exports, not internal modules, are the integration
+surface.
 
 ## What it checks
 
@@ -146,9 +186,15 @@ New cli versions are handled defensively: unknown event types are accounted
 ## Development
 
 ```bash
-python3 -m unittest discover -s healthcheck/tests   # 89 tests
-python3 healthcheck/agentmeasure selftest           # fixture verdicts + redaction + compare contracts
+python3 -m unittest discover -s healthcheck/tests   # 101 tests
+python3 healthcheck/agentmeasure selftest           # fixtures + redaction + compare + schemas
+bash healthcheck/scripts/smoke_install.sh           # clean-venv install smoke (packaged artifact)
 ```
+
+The install smoke is also a CI job (Python 3.9/3.11): it builds the package,
+installs it into a fresh venv, and runs `selftest`, `demo`, `validate`, and the
+external example from the installed artifact — the repository checkout is not
+used.
 
 Python 3.9+ standard library only. Zero dependencies, by policy: if any step
 asks you to register, connect to a network, or pay — that is a bug.

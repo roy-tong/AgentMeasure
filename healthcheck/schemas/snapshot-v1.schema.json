@@ -1,0 +1,111 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://roy-tong.github.io/AgentMeasure/schemas/healthcheck/snapshot-v1.schema.json",
+  "title": "AgentMeasure Healthcheck snapshot (v1)",
+  "description": "Local artifact written by `agentmeasure check --save-snapshot`. Contains project names and session short-ids; do not upload as-is. Within a schema version fields are only added, never renamed or removed. Consumers that meet an unknown schema version must stop and disclose it.",
+  "type": "object",
+  "required": ["schema", "tool", "tool_version", "saved_at", "mode", "window_label", "source_command", "overview", "checks", "sessions", "notes"],
+  "properties": {
+    "schema": { "const": 1 },
+    "tool": { "const": "agentmeasure-healthcheck" },
+    "tool_version": { "type": "string" },
+    "saved_at": { "type": "string" },
+    "mode": { "enum": ["own-data", "synthetic-demo"] },
+    "window_label": { "type": "string" },
+    "source_command": { "type": "string" },
+    "overview": { "$ref": "#/definitions/overview" },
+    "checks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["check_id", "name", "status", "summary"],
+        "properties": {
+          "check_id": { "type": "string" },
+          "name": { "type": "string" },
+          "status": { "enum": ["ok", "finding", "unprovable", "info"] },
+          "summary": { "type": "string" }
+        }
+      }
+    },
+    "sessions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["session", "file", "project", "started_at", "turns", "exec_total", "exec_failed", "retry_chains"],
+        "properties": {
+          "session": { "type": "string" },
+          "file": { "type": "string" },
+          "project": { "type": "string" },
+          "started_at": { "type": "string" },
+          "turns": { "type": "integer" },
+          "exec_total": { "type": "integer" },
+          "exec_failed": { "type": "integer" },
+          "retry_chains": { "type": "integer" }
+        }
+      }
+    },
+    "notes": { "type": "string" }
+  },
+  "definitions": {
+    "overview": {
+      "type": "object",
+      "required": ["sessions", "files", "lines", "corrupt_lines", "corrupt_ratio", "truncated_files", "first_ts", "last_ts", "models", "cli_versions", "turns", "exec_total", "exec_ok", "exec_failed", "exec_unknown", "call_total", "retry_chains", "retry_attempts_in_chains", "unresolved_chains", "compactions", "token_provable", "token_missing_sessions", "token_invalid_sessions", "token", "projects"],
+      "properties": {
+        "sessions": { "type": "integer" },
+        "files": { "type": "integer" },
+        "lines": { "type": "integer" },
+        "corrupt_lines": { "type": "integer" },
+        "corrupt_ratio": { "type": "number" },
+        "truncated_files": { "type": "integer" },
+        "first_ts": { "type": "string" },
+        "last_ts": { "type": "string" },
+        "models": { "type": "array", "items": { "type": "string" } },
+        "cli_versions": { "type": "array", "items": { "type": "string" } },
+        "turns": { "type": "integer" },
+        "exec_total": { "type": "integer" },
+        "exec_ok": { "type": "integer" },
+        "exec_failed": { "type": "integer" },
+        "exec_unknown": { "type": "integer" },
+        "call_total": { "type": "integer" },
+        "retry_chains": { "type": "integer" },
+        "retry_attempts_in_chains": { "type": "integer" },
+        "unresolved_chains": { "type": "integer" },
+        "compactions": { "type": "integer" },
+        "token_provable": { "type": "boolean" },
+        "token_missing_sessions": { "type": "integer" },
+        "token_invalid_sessions": { "type": "integer" },
+        "token": {
+          "oneOf": [
+            { "type": "null" },
+            {
+              "type": "object",
+              "required": ["input", "cached_input", "output", "reasoning_output", "total_reported", "subset_rule"],
+              "properties": {
+                "input": { "type": "integer" },
+                "cached_input": { "type": "integer" },
+                "output": { "type": "integer" },
+                "reasoning_output": { "type": "integer" },
+                "total_reported": { "type": "integer" },
+                "subset_rule": { "type": "string" }
+              }
+            }
+          ]
+        },
+        "projects": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["project", "sessions", "exec_total", "exec_failed", "retry_chains"],
+            "properties": {
+              "project": { "type": "string" },
+              "sessions": { "type": "integer" },
+              "exec_total": { "type": "integer" },
+              "exec_failed": { "type": "integer" },
+              "retry_chains": { "type": "integer" }
+            }
+          }
+        }
+      }
+    }
+  }
+}

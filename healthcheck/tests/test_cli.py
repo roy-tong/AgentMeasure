@@ -7,7 +7,7 @@ import tempfile
 import unittest
 from contextlib import redirect_stderr, redirect_stdout
 
-from _support import HEALTHCHECK_DIR
+from _support import HEALTHCHECK_DIR, FIXTURES_DIR
 
 from am_healthcheck import cli
 from am_healthcheck import history as history_mod
@@ -88,7 +88,7 @@ class TestDemoRun(CliHarness):
     def test_check_explicit_fixture_dir(self):
         # fixtures dir contains no rollout-* names but check --dir accepts .jsonl
         out, _err = self.run_cli([
-            "check", "--dir", os.path.join(HEALTHCHECK_DIR, "fixtures"),
+            "check", "--dir", FIXTURES_DIR,
             "--html", os.path.join(self.tmp.name, "fx.html"), "--no-history"])
         self.assertIn("reading", out)
         self.assertIn("HC-01", out)

@@ -45,6 +45,8 @@ jobs:
         run: |
           python3 -m unittest discover -s healthcheck/tests
           python3 healthcheck/agentmeasure selftest
+      - name: Healthcheck install smoke (packaged artifact)
+        run: bash healthcheck/scripts/smoke_install.sh
 
   # ─── 套件 1：spec conformance（向量 + registry + metric registry） ───
   spec-conformance:

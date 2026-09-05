@@ -7,7 +7,7 @@ import unittest
 from contextlib import redirect_stderr, redirect_stdout
 from datetime import datetime, timezone
 
-from _support import fixture, HEALTHCHECK_DIR
+from _support import fixture, HEALTHCHECK_DIR, FIXTURES_DIR, DEMO_DIR
 
 from am_healthcheck import cli
 from am_healthcheck.checks import build_overview, run_checks, session_summaries
@@ -108,7 +108,7 @@ class TestSnapshotFlow(CliHarness):
     def test_check_saves_snapshot(self):
         snap = os.path.join(self.tmp.name, "snap.json")
         out, _err = self.run_cli([
-            "check", "--dir", os.path.join(HEALTHCHECK_DIR, "fixtures"),
+            "check", "--dir", FIXTURES_DIR,
             "--html", os.path.join(self.tmp.name, "r.html"),
             "--save-snapshot", snap, "--no-history"])
         self.assertIn("Snapshot", out)
@@ -122,7 +122,7 @@ class TestSnapshotFlow(CliHarness):
         os.chdir(self.tmp.name)
         try:
             out, _err = self.run_cli([
-                "check", "--dir", os.path.join(HEALTHCHECK_DIR, "fixtures"),
+                "check", "--dir", FIXTURES_DIR,
                 "--save-snapshot", "--no-history"])
             self.assertIn("agentmeasure-snapshot-", out)
             files = [f for f in os.listdir(self.tmp.name)
@@ -134,10 +134,10 @@ class TestSnapshotFlow(CliHarness):
     def test_compare_two_snapshots(self):
         snap_a = os.path.join(self.tmp.name, "a.json")
         snap_b = os.path.join(self.tmp.name, "b.json")
-        self.run_cli(["check", "--dir", os.path.join(HEALTHCHECK_DIR, "fixtures"),
+        self.run_cli(["check", "--dir", FIXTURES_DIR,
                       "--html", os.path.join(self.tmp.name, "ra.html"),
                       "--save-snapshot", snap_a, "--no-history"])
-        self.run_cli(["check", "--dir", os.path.join(HEALTHCHECK_DIR, "demo"),
+        self.run_cli(["check", "--dir", DEMO_DIR,
                       "--html", os.path.join(self.tmp.name, "rb.html"),
                       "--save-snapshot", snap_b, "--no-history"])
         out, _err = self.run_cli(["compare", snap_a, snap_b])
@@ -148,11 +148,11 @@ class TestSnapshotFlow(CliHarness):
 
     def test_compare_one_snapshot_against_fresh_run(self):
         snap_a = os.path.join(self.tmp.name, "a.json")
-        self.run_cli(["check", "--dir", os.path.join(HEALTHCHECK_DIR, "fixtures"),
+        self.run_cli(["check", "--dir", FIXTURES_DIR,
                       "--html", os.path.join(self.tmp.name, "ra.html"),
                       "--save-snapshot", snap_a, "--no-history"])
         out, _err = self.run_cli([
-            "compare", "--dir", os.path.join(HEALTHCHECK_DIR, "fixtures"), snap_a,
+            "compare", "--dir", FIXTURES_DIR, snap_a,
             "--json", os.path.join(self.tmp.name, "cmp.json")])
         self.assertIn("fresh run", out)
         with open(os.path.join(self.tmp.name, "cmp.json")) as fh:
@@ -171,13 +171,13 @@ class TestSnapshotFlow(CliHarness):
 
     def test_project_filter_and_known_projects_error(self):
         out, err = self.run_cli([
-            "check", "--dir", os.path.join(HEALTHCHECK_DIR, "fixtures"),
+            "check", "--dir", FIXTURES_DIR,
             "--html", os.path.join(self.tmp.name, "rp.html"),
             "--project", "never-matches", "--no-history"], expect_code=2)
         self.assertIn("known projects", out + err)
         # --project match keeps only matching sessions
         out2, _err2 = self.run_cli([
-            "check", "--dir", os.path.join(HEALTHCHECK_DIR, "fixtures"),
+            "check", "--dir", FIXTURES_DIR,
             "--html", os.path.join(self.tmp.name, "rp2.html"),
             "--project", "project", "--no-history"])
         self.assertIn("project ~project", out2)

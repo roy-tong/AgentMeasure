@@ -25,6 +25,7 @@ from . import report_html as html_mod
 from . import report_text as text_mod
 from . import share as share_mod
 from . import snapshot as snapshot_mod
+from . import schema as schema_mod
 
 DEFAULT_DAYS = 7
 DEFAULT_HTML = "agentmeasure-report.html"
@@ -184,6 +185,7 @@ def _run_check(paths: List[str], mode: str, window_label: str, command: str,
 
     if json_path:
         payload = {
+            "schema": schema_mod.REPORT_SCHEMA,
             "tool": "agentmeasure-healthcheck", "version": __version__,
             "mode": mode, "window": window_label,
             "overview": snapshot_mod.overview_dict(ov),
@@ -253,13 +255,13 @@ def _finding_dict(f):
 
 
 def _demo_fixture_path() -> str:
-    return os.path.join(os.path.dirname(os.path.dirname(
-        os.path.abspath(__file__))), "demo", "demo-codex.jsonl")
+    return os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                        "demo", "demo-codex.jsonl")
 
 
 def _fixture_path(name: str) -> str:
-    return os.path.join(os.path.dirname(os.path.dirname(
-        os.path.abspath(__file__))), "fixtures", name)
+    return os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                        "fixtures", name)
 
 
 def _resolve_snapshot_path(value) -> Optional[str]:
@@ -307,8 +309,9 @@ def cmd_demo(args) -> int:
     command = "python3 healthcheck/agentmeasure " + shlex.join(
         getattr(args, "_argv", sys.argv[1:]) or ["demo"])
     html_path = args.html or "agentmeasure-demo-report.html"
+    snapshot_path = _resolve_snapshot_path(args.save_snapshot)
     return _run_check([fixture], "synthetic-demo", "synthetic demo session",
-                      command, html_path, args.json, args.share, None,
+                      command, html_path, args.json, args.share, snapshot_path,
                       not args.no_history)
 
 
@@ -367,6 +370,23 @@ def cmd_compare(args) -> int:
             "changed_verdicts": len(cmp["changed_verdicts"]),
         })
     return 0
+
+
+def cmd_validate(args) -> int:
+    """Validate exported JSON files against their versioned schemas."""
+    problems = 0
+    for path in args.paths:
+        kind, errors = schema_mod.validate_file(path)
+        if errors:
+            problems += 1
+            print("%s: INVALID" % path)
+            for err in errors:
+                print("  - %s" % err)
+        else:
+            print("%s: valid %s" % (path, kind))
+    print("validate: %s" % ("PASS" if problems == 0 else
+                            "FAIL (%d invalid file(s))" % problems))
+    return 0 if problems == 0 else 2
 
 
 def cmd_history(args) -> int:
@@ -487,10 +507,51 @@ def cmd_selftest(args) -> int:
           % ("ok" if failures == 0 else "see above"))
 
     failures += _selftest_snapshot_and_compare()
+    failures += _selftest_export_schemas()
 
     print("selftest: %s" % ("PASS" if failures == 0 else
                             "FAIL (%d mismatches)" % failures))
     return 0 if failures == 0 else 1
+
+
+def _selftest_export_schemas() -> int:
+    import tempfile
+    problems = 0
+    ok = codex_adapter.parse_session(_fixture_path("codex-ok.jsonl"))
+    ov, checks, _cov, _top = checks_mod.run_checks([ok], "selftest")
+    rows = checks_mod.session_summaries([ok])
+    snap = snapshot_mod.build_snapshot(ov, checks, rows, "synthetic-demo",
+                                       "selftest", "selftest")
+    errors = schema_mod.validate_snapshot(snap)
+    if errors:
+        print("  schema: snapshot has errors: %s" % errors[:3])
+        problems += 1
+    report = {
+        "schema": schema_mod.REPORT_SCHEMA,
+        "tool": "agentmeasure-healthcheck", "version": __version__,
+        "mode": "synthetic-demo", "window": "selftest",
+        "overview": snapshot_mod.overview_dict(ov),
+        "checks": [_check_dict(c) for c in checks], "coverage": [],
+        "share_summary": share_mod.build_share_summary(ov, checks,
+                                                       "synthetic-demo", "selftest"),
+    }
+    errors = schema_mod.validate_report(report)
+    if errors:
+        print("  schema: report has errors: %s" % errors[:3])
+        problems += 1
+    with tempfile.TemporaryDirectory() as tmp:
+        path = os.path.join(tmp, "snap.json")
+        snapshot_mod.save_snapshot(snap, path)
+        detected, errors = schema_mod.validate_file(path)
+        if detected != "snapshot" or errors:
+            print("  schema: file detection/validation failed  [MISMATCH]")
+            problems += 1
+        broken = dict(snap, schema=99)
+        if not schema_mod.validate_snapshot(broken):
+            print("  schema: broken schema version accepted  [MISMATCH]")
+            problems += 1
+    print("  export schema contracts  [%s]" % ("ok" if problems == 0 else "see above"))
+    return problems
 
 
 def _add_filter_args(parser) -> None:
@@ -540,6 +601,9 @@ def build_parser() -> argparse.ArgumentParser:
     p_demo.add_argument("--html", metavar="PATH", default=None)
     p_demo.add_argument("--json", metavar="PATH", default=None)
     p_demo.add_argument("--share", metavar="PATH", default=None)
+    p_demo.add_argument("--save-snapshot", metavar="PATH", nargs="?", const=True,
+                        default=None,
+                        help="save a synthetic snapshot (try `compare` with it)")
     p_demo.add_argument("--no-history", action="store_true")
     p_demo.set_defaults(func=cmd_demo)
 
@@ -552,6 +616,12 @@ def build_parser() -> argparse.ArgumentParser:
                        help="write the machine-readable comparison")
     p_cmp.add_argument("--no-history", action="store_true")
     p_cmp.set_defaults(func=cmd_compare)
+
+    p_val = sub.add_parser("validate",
+                           help="validate exported JSON (report/snapshot/compare) "
+                                "against its versioned schema")
+    p_val.add_argument("paths", nargs="+", metavar="FILE")
+    p_val.set_defaults(func=cmd_validate)
 
     p_hist = sub.add_parser("history", help="show local run history")
     p_hist.add_argument("--last", type=int, default=10)
