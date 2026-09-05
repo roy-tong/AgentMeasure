@@ -1,0 +1,128 @@
+# AgentMeasure Healthcheck (pre-release)
+
+**A local check-up report for your coding agent runs.**
+Point it at the logs your agent runtime already writes. It answers three
+questions with evidence — *which records are duplicated, where did the agent
+pay retries for one logical operation, and where did the same tool fail over
+and over* — and writes a terminal summary plus a local HTML report.
+
+Same honesty rules as the [conformance pack](../conformance/pack/README.md):
+every verdict is `OK / FINDING / UNPROVABLE`, and UNPROVABLE is a first-class
+result — when the logs cannot decide, that is disclosed, never zeroed.
+
+> Status: engineering preview (v0.1.0). First adapter: **Codex rollout logs**.
+> The command name and distribution channel are not final; nothing is published
+> to a package registry yet.
+
+## Quick start
+
+```bash
+python3 healthcheck/agentmeasure demo      # synthetic session — see it work, no data needed
+python3 healthcheck/agentmeasure check     # your Codex logs, last 7 days
+python3 healthcheck/agentmeasure check --all           # every local session
+python3 healthcheck/agentmeasure check --dir ~/.codex/sessions/2026/09/05
+python3 healthcheck/agentmeasure selftest  # adapters + checks on bundled fixtures
+python3 healthcheck/agentmeasure --version
+```
+
+Options for `check`: `--html PATH` (default `agentmeasure-report.html`),
+`--json PATH` (full machine-readable export), `--share PATH` (sanitized summary,
+`.md` or `.json`), `--days N`, `--no-history`. `demo` accepts the three output
+paths and `--no-history`.
+
+## What it checks
+
+| id | check | question it answers | verdict basis |
+| --- | --- | --- | --- |
+| HC-01 | Duplicate records | byte-identical lines, repeated call/execution ids, sessions split across files, and the format's **by-design dual recording** when model-side calls and command events are both present | exact line hashes, id counts |
+| HC-02 | Retry amplification | same command failed then re-run: how many executions carried one logical operation | consecutive same-command blocks whose first attempt failed |
+| HC-03 | Tool error runs | ≥3 back-to-back failures of the same tool with no success between | consecutive failed executions, same tool kind |
+
+Plus a coverage overview: sessions, turns, executions by outcome, token
+consumption (with subset discipline), compactions, sub-agent activity, corrupt
+lines. Every finding carries evidence — file, line number, exit codes — and a
+concrete next step.
+
+## Honest-number rules (the part most tools get wrong)
+
+- **Executions are counted from exactly one stream.** Codex Desktop can write a
+  tool call as both a `response_item` record and an `item_completed` event.
+  Summing both — or grepping the file — double-counts when both are present.
+  HC-01 discloses the observed ratio instead of hiding it.
+- **Token subsets are never added into totals.** `cached_input` ⊆ input,
+  `reasoning_output` ⊆ output in Codex logs. The report shows subsets
+  alongside, never inside, totals.
+- **Token totals use the last cumulative snapshot per session**, not sums of
+  per-event deltas (which double-count after context compaction). The aggregate
+  is marked UNPROVABLE unless every logical session has one valid snapshot;
+  missing or malformed snapshots are reported separately.
+- **Corrupt or truncated input lowers every count.** All numbers are lower bounds
+  where lines failed to parse or a file hit the safety cap; the limitation is
+  reported, never dropped.
+- **UNPROVABLE, not zero.** Sessions whose format lacks outcome events make
+  HC-02/HC-03 UNPROVABLE for that part — reported as such.
+
+## Statistics definitions (for support and accounting)
+
+| term | definition |
+| --- | --- |
+| execution | one `CommandExecution` / `McpToolCall` event; its outcome is `ok`, `failed`, or `unknown` |
+| retry chain | a maximal block of consecutive executions of the same command whose first attempt failed; one chain = one logical operation executed N times |
+| resolved chain | a chain whose last attempt succeeded |
+| tool error run | ≥3 consecutive failed executions of the same tool kind with no success or unknown in between |
+| token total | last cumulative `total_token_usage` snapshot per session, summed only when every session has a valid snapshot; otherwise UNPROVABLE |
+| demo run | executed on the bundled synthetic session; counted separately (`synthetic-demo`) |
+| own-data run | executed on real local logs (`own-data`) |
+| run number | local run history at `~/.agentmeasure/history.jsonl` distinguishes first vs repeated runs; delete the file to reset |
+
+## Privacy
+
+- **No network.** The package contains no network code; a test enforces this by
+  scanning every module for network imports.
+- **Raw data stays local.** Prompts, message text, and reasoning content are
+  never read into the model (only envelope types, ids, exit codes, durations,
+  and token counters).
+- **Two artifacts, two levels.** The HTML report is personal (local paths and
+  evidence metadata — raw commands are represented by hashes, and the banner
+  says so). The `--share` summary
+  is built from a fixed whitelist of aggregate counts: no prompts, paths,
+  commands, repo names, or session ids can appear in it, and a planted-string
+  test enforces this.
+- **Run history** (`~/.agentmeasure/history.jsonl`) stays on the machine and is
+  deletable.
+
+## Verified runtime support
+
+| runtime | status | verified against |
+| --- | --- | --- |
+| Codex rollout JSONL (Desktop originator) | supported | cli 0.142.3 – 0.153.0; review snapshot 54 local files, 48 sessions, ~83k lines (2026-06-30 → 2026-09-05). Sessions without `CommandExecution` events (older format) run with HC-02/HC-03 UNPROVABLE, disclosed. |
+| Codex CLI (`codex_cli_rs` originator) | expected compatible, **not yet verified** — no local samples | pending real samples |
+| Claude Code (`~/.claude/projects`) | detected, **not yet supported** | adapter ships after validation against real samples |
+
+New cli versions are handled defensively: unknown event types are accounted
+(`unknown type` counts), never silently dropped.
+
+## Exit codes
+
+| code | meaning |
+| --- | --- |
+| 0 | the check ran and produced a report (findings or not) |
+| 1 | selftest fixture mismatch (development only) |
+| 2 | input/output error: no readable logs in the window, bad `--dir`/arguments, or an output path cannot be written |
+
+## Development
+
+```bash
+python3 -m unittest discover -s healthcheck/tests   # 71 tests
+python3 healthcheck/agentmeasure selftest           # fixture verdicts + redaction scan
+```
+
+Python 3.9+ standard library only. Zero dependencies, by policy: if any step
+asks you to register, connect to a network, or pay — that is a bug.
+
+## Feedback
+
+- [Open an issue](https://github.com/roy-tong/AgentMeasure/issues) — include
+  the `--json` export (it contains local paths; strip them first if the log
+  location is sensitive).
+- [Email](mailto:tongroy18@gmail.com?subject=AgentMeasure%20Healthcheck%20feedback)

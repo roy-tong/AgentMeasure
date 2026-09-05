@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AgentMeasure Healthcheck · synthetic demo session</title>
+<style>
+:root{--ink:#1d1b17;--soft:#5b5548;--line:#ddd3c2;--panel:#faf7f0;--accent:#a4511f;
+--ok:#2c6e49;--find:#a4511f;--unprov:#7a6a2f;--info:#4a5d82;--bg:#f4efe5}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);
+font:15px/1.75 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC",sans-serif}
+main{max-width:980px;margin:0 auto;padding:34px 26px 60px}
+h1{font-size:26px;margin:0 0 6px;letter-spacing:-.3px}
+h2{font-size:19px;margin:34px 0 12px;border-bottom:2px solid var(--ink);padding-bottom:6px}
+h3{font-size:16px;margin:22px 0 8px}h4{font-size:15px;margin:14px 0 6px}
+.meta{color:var(--soft);font-size:13px}.banner{background:#f3e3c8;border:1px solid
+#d8bf92;border-radius:6px;padding:10px 14px;font-size:13px;margin:14px 0}
+.badge{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.6px;
+padding:2px 8px;border-radius:4px;margin-right:8px;vertical-align:1px}
+.st-ok{background:#dcebe1;color:var(--ok)}.st-finding{background:#f4ddcc;color:var(--find)}
+.st-unprovable{background:#efe7c6;color:var(--unprov)}.st-info{background:#dee5f0;color:var(--info)}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:14px 0}
+.cell{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:10px 13px}
+.cell .label{font-size:11.5px;letter-spacing:.4px;color:var(--soft);
+text-transform:uppercase;font-weight:600}
+.cell .value{font-size:16px;margin:3px 0 2px}.cell .note{font-size:12px;color:var(--soft)}
+.sub{color:var(--soft);font-size:12px}
+.finding{border:1px solid var(--line);border-left:4px solid var(--find);
+border-radius:6px;background:var(--panel);padding:12px 16px;margin:12px 0}
+.finding.sev-info{border-left-color:var(--info)}
+.finding h4{margin-top:2px}.finding p{margin:6px 0;font-size:14px}
+.unprov{background:#efe7c6;border-radius:4px;padding:8px 12px;font-size:13px}
+table{border-collapse:collapse;width:100%;font-size:12.5px;margin:8px 0}
+th,td{border-bottom:1px solid var(--line);padding:6px 9px;text-align:left;
+vertical-align:top}th{background:#ece5d6;font-size:11px;
+text-transform:uppercase;letter-spacing:.4px}
+td.path{font-family:ui-monospace,Menlo,monospace;font-size:11.5px;max-width:220px;
+overflow-wrap:anywhere}
+.kv{display:inline-block;margin-right:14px}.kv .k{color:var(--soft)}
+.kv .v{font-family:ui-monospace,Menlo,monospace}
+pre{background:var(--panel);border:1px solid var(--line);border-radius:6px;
+padding:14px 16px;overflow-x:auto;font-size:12.5px;line-height:1.6;white-space:pre-wrap}
+.sharebox{background:#eef0e9;border:1px solid #c9d1bd;border-radius:6px;padding:4px 14px}
+.note{color:var(--soft);font-size:12.5px}ol,ul{padding-left:22px}li{margin:6px 0}
+footer{margin-top:40px;border-top:1px solid var(--line);padding-top:14px;
+font-size:12px;color:var(--soft)}
+@media(max-width:720px){.grid{grid-template-columns:1fr}}
+@media print{body{background:#fff}main{max-width:none}}
+</style></head><body><main>
+<h1>AgentMeasure Healthcheck <span class="badge st-info">SYNTHETIC DEMO</span></h1>
+<p class="meta">v0.1.0 · generated 2026-09-05 13:28 UTC · window: synthetic demo session ·
+1 file(s), 1 session(s)</p>
+<div class="banner"><strong>This file is personal.</strong> It may contain local
+paths and evidence metadata. Raw commands are represented by hashes.
+To share results, use the sanitized
+summary at the bottom of this page — never upload this file as-is.</div>
+
+<h2>Overview</h2>
+<div class="grid"><div class="cell"><div class="label">Sessions / files</div><div class="value">1 / 1</div><div class="note">unique session ids / rollout files</div></div><div class="cell"><div class="label">Turns</div><div class="value">2</div><div class="note">task_started events</div></div><div class="cell"><div class="label">Command executions</div><div class="value">10</div><div class="note">ok 3 · failed 7 · outcome unknown 0</div></div><div class="cell"><div class="label">Model-side tool calls</div><div class="value">3</div><div class="note">response_item records — the format&#x27;s second recording; never summed with executions</div></div><div class="cell"><div class="label">Tokens (last cumulative snapshot per session)</div><div class="value">input 90,000 <span class="sub">(cached 40,000 ⊆ input)</span> · output 12,000 <span class="sub">(reasoning 5,000 ⊆ output)</span></div><div class="note">cached and reasoning are subsets; never added into totals</div></div><div class="cell"><div class="label">Log window data</div><div class="value">2026-09-05 09:00:00 → 2026-09-05 09:12:10</div><div class="note">corrupt lines 0 of 26 (0.00%) — counts are lower bounds where lines failed to parse</div></div><div class="cell"><div class="label">Read cap</div><div class="value">0 truncated file(s)</div><div class="note">no file exceeded the per-file safety cap</div></div><div class="cell"><div class="label">Runtime versions</div><div class="value">0.153.0-demo</div><div class="note">models: demo-model-a</div></div><div class="cell"><div class="label">Context compactions</div><div class="value">2</div><div class="note">token totals are not comparable across a compaction</div></div><div class="cell"><div class="label">Sub-agent activity records</div><div class="value">1</div><div class="note">spawn/resume activity in this window</div></div></div>
+
+<h2>Worth checking first</h2>
+<div class="finding sev-finding"><h4>#1 1 retry chain(s): 3 executions carry 1 logical operation(s)</h4><p>Each chain is one command that failed and was re-run. 1 chain(s) eventually succeeded; 0 ended unresolved. Amplification: 3.00 executions per logical operation.</p><p><strong>Next step:</strong> Open the worst chain below: repeated failures of the same command usually mean a flaky check, a wrong path, or a task the agent could not finish — worth fixing once instead of paying the retries every run.</p><table><thead><tr><th>session</th><th>file</th><th>line</th><th>detail</th></tr></thead><tbody><tr><td>00000000</td><td class="path">demo-codex.jsonl</td><td>7</td><td><div class="kv"><span class="k">attempts</span> <span class="v">3</span></div><div class="kv"><span class="k">command_hash</span> <span class="v">0ae02742bd60</span></div><div class="kv"><span class="k">lines</span> <span class="v">7–9</span></div><div class="kv"><span class="k">outcomes</span> <span class="v">failed→failed→ok</span></div><div class="kv"><span class="k">resolved</span> <span class="v">True</span></div><div class="kv"><span class="k">tool</span> <span class="v">npm</span></div></td></tr></tbody></table></div><div class="finding sev-finding"><h4>#2 1 run(s) of ≥3 consecutive failures of the same tool</h4><p>The agent kept hitting the same tool failure back-to-back without a success in between. These are the most expensive failure modes: each attempt costs a model turn plus the tool run, and none of them moved the task forward.</p><p><strong>Next step:</strong> Take the longest run and read its first error: usually a missing dependency, a wrong working directory, or an authentication problem the agent could not self-heal.</p><table><thead><tr><th>session</th><th>file</th><th>line</th><th>detail</th></tr></thead><tbody><tr><td>00000000</td><td class="path">demo-codex.jsonl</td><td>18</td><td><div class="kv"><span class="k">exit_codes</span> <span class="v">1, 2, 1, 2</span></div><div class="kv"><span class="k">failures</span> <span class="v">4</span></div><div class="kv"><span class="k">lines</span> <span class="v">18–21</span></div><div class="kv"><span class="k">tool</span> <span class="v">python</span></div></td></tr></tbody></table></div><div class="finding sev-info"><h4>#3 2 context compaction event(s)</h4><p>Compaction resets the context; token counts before and after a compaction are not comparable, and cached-input savings are lost at each reset.</p><p><strong>Next step:</strong> Nothing to fix — keep it in mind when comparing token totals across long sessions.</p></div>
+
+<h2>Checks</h2>
+<section class="check"><h3><span class="badge st-info">INFO</span> HC-01 · Duplicate records</h3><p>identical lines: 0; repeated call_ids: 0; repeated execution ids: 0; conflicting execution ids: 0; multi-file sessions: 0</p><div class="finding sev-info"><h4>#1 Format records executions twice: 3 model-side calls vs 9 command events</h4><p>Codex writes tool calls as response_item records AND as item_completed events. This is by design, but any tool that sums both streams (or greps the file for command names) double-counts executions. Ratio here: 3.00x.</p><p><strong>Next step:</strong> Count executions from exactly one stream. This tool uses the item_completed stream (it carries exit codes).</p></div></section><section class="check"><h3><span class="badge st-finding">FINDING</span> HC-02 · Retry amplification</h3><p>chains: 1; attempts inside chains: 3; unresolved: 0</p><div class="finding sev-finding"><h4>#1 1 retry chain(s): 3 executions carry 1 logical operation(s)</h4><p>Each chain is one command that failed and was re-run. 1 chain(s) eventually succeeded; 0 ended unresolved. Amplification: 3.00 executions per logical operation.</p><p><strong>Next step:</strong> Open the worst chain below: repeated failures of the same command usually mean a flaky check, a wrong path, or a task the agent could not finish — worth fixing once instead of paying the retries every run.</p><table><thead><tr><th>session</th><th>file</th><th>line</th><th>detail</th></tr></thead><tbody><tr><td>00000000</td><td class="path">demo-codex.jsonl</td><td>7</td><td><div class="kv"><span class="k">attempts</span> <span class="v">3</span></div><div class="kv"><span class="k">command_hash</span> <span class="v">0ae02742bd60</span></div><div class="kv"><span class="k">lines</span> <span class="v">7–9</span></div><div class="kv"><span class="k">outcomes</span> <span class="v">failed→failed→ok</span></div><div class="kv"><span class="k">resolved</span> <span class="v">True</span></div><div class="kv"><span class="k">tool</span> <span class="v">npm</span></div></td></tr></tbody></table></div></section><section class="check"><h3><span class="badge st-finding">FINDING</span> HC-03 · Tool error runs</h3><p>failed executions: 7; same-tool runs ≥3: 1</p><div class="finding sev-finding"><h4>#1 1 run(s) of ≥3 consecutive failures of the same tool</h4><p>The agent kept hitting the same tool failure back-to-back without a success in between. These are the most expensive failure modes: each attempt costs a model turn plus the tool run, and none of them moved the task forward.</p><p><strong>Next step:</strong> Take the longest run and read its first error: usually a missing dependency, a wrong working directory, or an authentication problem the agent could not self-heal.</p><table><thead><tr><th>session</th><th>file</th><th>line</th><th>detail</th></tr></thead><tbody><tr><td>00000000</td><td class="path">demo-codex.jsonl</td><td>18</td><td><div class="kv"><span class="k">exit_codes</span> <span class="v">1, 2, 1, 2</span></div><div class="kv"><span class="k">failures</span> <span class="v">4</span></div><div class="kv"><span class="k">lines</span> <span class="v">18–21</span></div><div class="kv"><span class="k">tool</span> <span class="v">python</span></div></td></tr></tbody></table></div></section>
+
+<h2>Coverage &amp; format notes</h2>
+<div class="finding sev-info"><h4>#1 2 context compaction event(s)</h4><p>Compaction resets the context; token counts before and after a compaction are not comparable, and cached-input savings are lost at each reset.</p><p><strong>Next step:</strong> Nothing to fix — keep it in mind when comparing token totals across long sessions.</p></div>
+<p class="note">Format features detected: compaction_events: 1/1 sessions · exec_item_events: 1/1 sessions · multi_agent: 1/1 sessions · token_count_events: 1/1 sessions · token_usage_records: 0/1 sessions</p>
+
+<h2>Methodology &amp; limits</h2>
+<ul>
+<li><strong>Execution vs logical operation.</strong> One command execution is one
+attempt. A maximal block of consecutive executions of the same command
+(first one failed) is one retry chain = one logical operation executed N times.
+Executions are counted from the <code>item_completed</code> stream; the
+<code>response_item</code> stream is reported separately and never summed with it.</li>
+<li><strong>Token subsets.</strong> <code>cached_input</code> ⊆ input and
+<code>reasoning_output</code> ⊆ output in Codex logs. Subsets are displayed,
+never added into totals. Token totals use the last cumulative snapshot per
+session; they are not per-turn sums.</li>
+<li><strong>UNPROVABLE is a result.</strong> When the logs cannot decide a check
+(outcomes absent, records missing), the check reports UNPROVABLE for that part —
+it is never counted as zero or OK.</li>
+<li><strong>Corrupt lines lower every count.</strong> All counts are lower bounds
+where lines failed to parse; the corrupt count is reported per file.</li>
+<li><strong>Local only.</strong> This tool contains no network code; nothing is
+uploaded. Run history stays in <code>~/.agentmeasure/history.jsonl</code>.</li>
+</ul>
+
+<h2>Sanitized share summary</h2>
+<div class="sharebox"><pre>**AgentMeasure Healthcheck** — local coding-agent check-up (_synthetic-demo_, synthetic demo session)
+
+- Runtime: Codex rollout 0.153.0
+- Sessions: 1 · turns: 2 · command executions: 10
+- Failed executions: 7 · retry chains: 1 (3 executions, 0 unresolved)
+- Checks: HC-01 INFO · HC-02 FINDING · HC-03 FINDING
+
+Aggregate counts only — no prompts, paths, commands, repo names, or session ids. Generated locally by AgentMeasure v0.1.0.</pre></div>
+<p class="note">Aggregate counts only — no prompts, paths, commands, repo names,
+or session ids. Export with <code>--share summary.md</code> after reviewing.</p>
+
+<h2>Reproduce</h2>
+<pre>python3 healthcheck/agentmeasure demo --html healthcheck/demo/demo-report.html --share healthcheck/demo/demo-share-summary.md --no-history</pre>
+
+<footer>AgentMeasure Healthcheck v0.1.0 · PASS / FINDING / UNPROVABLE discipline ·
+Deterministic metrics: same logs + same version → same counts and findings.</footer>
+</main></body></html>

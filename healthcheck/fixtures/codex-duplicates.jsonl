@@ -1,0 +1,9 @@
+{"timestamp":"2026-09-03T11:00:00.000Z","type":"session_meta","payload":{"id":"abcdef01-2345-6789-abcd-000000000003","cli_version":"0.153.0","originator":"Codex Desktop","cwd":"/home/demo","timestamp":"2026-09-03T11:00:00.000Z","source":"fixture"}}
+{"timestamp":"2026-09-03T11:00:01.000Z","type":"event_msg","payload":{"type":"task_started"}}
+{"timestamp":"2026-09-03T11:00:02.000Z","type":"response_item","payload":{"type":"function_call","name":"exec_command","arguments":"{\"command\":[\"ls\"]}","call_id":"call_dup_1"}}
+{"timestamp":"2026-09-03T11:00:02.000Z","type":"response_item","payload":{"type":"function_call","name":"exec_command","arguments":"{\"command\":[\"ls\"]}","call_id":"call_dup_1"}}
+{"timestamp":"2026-09-03T11:00:03.000Z","type":"response_item","payload":{"type":"function_call","name":"exec_command","arguments":"{\"command\":[\"ls\"]}","call_id":"call_dup_1"}}
+{"timestamp":"2026-09-03T11:00:04.000Z","type":"response_item","payload":{"type":"function_call_output","call_id":"call_dup_1","output":"out1"}}
+{"timestamp":"2026-09-03T11:00:05.000Z","type":"response_item","payload":{"type":"function_call_output","call_id":"call_dup_1","output":"out2 different line content same call_id"}}
+{"timestamp":"2026-09-03T11:00:06.000Z","type":"event_msg","payload":{"type":"item_completed","item":{"type":"CommandExecution","id":"exec-d1","command":["ls"],"exit_code":0,"duration":0.1,"status":"completed"}}}
+{"timestamp":"2026-09-03T11:00:06.000Z","type":"event_msg","payload":{"type":"item_completed","item":{"type":"CommandExecution","id":"exec-d1","command":["ls"],"exit_code":0,"duration":0.1,"status":"completed"}}}

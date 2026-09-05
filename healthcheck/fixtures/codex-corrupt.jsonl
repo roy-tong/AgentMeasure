@@ -1,0 +1,10 @@
+{"timestamp":"2026-09-04T12:00:00.000Z","type":"session_meta","payload":{"id":"beefbeef-beef-beef-beef-beefbeefbeef","cli_version":"0.153.0","originator":"Codex Desktop","cwd":"/home/demo","timestamp":"2026-09-04T12:00:00.000Z","source":"fixture"}}
+not a json line at all { broken
+[1, 2, 3, "a json array is not an event object"]
+{"timestamp":"2026-09-04T12:00:01.000Z"}
+{"timestamp":"2026-09-04T12:00:02.000Z","type":"event_msg","payload":"payload is a string not an object"}
+{"type":"event_msg","payload":{"type":"task_started"}}
+{"timestamp":"2026-09-04T12:00:03.000Z","type":"event_msg","payload":{"type":"item_completed","item":{"type":"CommandExecution","id":"exec-c1","command":["true"],"exit_code":0,"duration":0.0,"status":"completed"}}}
+{"timestamp":"2026-09-04T12:00:04.000Z","type":"event_msg","payload":{"type":"item_completed","item":{"type":"CommandExecution","id":"exec-c2"}}
+{"timestamp":"2026-09-04T12:00:05.000Z","type":"event_msg","payload":{"type":"token_count","info":{"total_token_usage":{"input_tokens":100,"cached_input_tokens":0,"output_tokens":10,"reasoning_output_tokens":4,"total_tokens":110}}}}
+{"timestamp":"2026-09-04T12:00:06.000Z","type":"totally_unknown_type","payload":{}}
