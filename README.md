@@ -1,5 +1,32 @@
 # AgentMeasure
 
+**Find repeated failures and retries in your Codex sessions, with local evidence.**
+
+Healthcheck reads existing **Codex Desktop rollout logs** and produces a terminal
+summary and a local HTML report. It checks duplicate records, retry chains, and
+consecutive tool failures. Missing evidence is **UNPROVABLE**, never silently zero.
+
+```bash
+# Requires Python 3.9+, Git, and pipx. Installation uses the network.
+pipx install "git+https://github.com/roy-tong/AgentMeasure#subdirectory=healthcheck"
+agentmeasure demo   # synthetic example; no personal logs needed
+agentmeasure check  # your local Codex sessions, last 7 days
+```
+
+Analysis runs locally with no runtime network calls. **Engineering preview**:
+Codex CLI is not yet independently verified; Claude Code is not supported yet.
+The Git install above is available now; PyPI publishing is being prepared.
+
+[**Quick start and supported formats**](healthcheck/README.md) ·
+[**Try it and share feedback safely**](campaigns/healthcheck-first-run.md) ·
+[**What our contributions changed**](campaigns/measurement-casebook.md) ·
+[中文](README.zh-CN.md)
+
+Found a useful result? Keep a snapshot and compare your next run. Feedback is
+optional: you can use the tool without opening an issue or uploading logs.
+
+## Measurement infrastructure
+
 **The open yardstick for agent usage and AI outcomes.**
 **Test whether your agent metrics mean what their labels claim.**
 

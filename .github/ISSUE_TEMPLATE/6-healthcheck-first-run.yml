@@ -1,0 +1,64 @@
+name: Healthcheck first run or installation feedback
+description: Report a useful result, confusing result, or installation blocker. No raw logs needed.
+title: "[Healthcheck] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for trying the engineering preview. Feedback is optional.
+        Do not upload raw logs, full JSON reports, HTML reports, or snapshots.
+        They may contain local paths and identifiers. Use `agentmeasure share report.json`
+        to preview an aggregate summary; inspect the exported summary yourself before posting.
+  - type: dropdown
+    id: outcome
+    attributes:
+      label: What happened?
+      options:
+        - Installation blocked
+        - Installed, but own-data check blocked
+        - Own-data report generated, but result unclear
+        - Own-data report generated and understood
+        - Synthetic demo only
+        - Meaningful repeat run or comparison
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: OS, Python, AgentMeasure version, and Codex Desktop or CLI
+      placeholder: "macOS; Python 3.11; AgentMeasure 0.3.0; Codex Desktop"
+    validations:
+      required: true
+  - type: textarea
+    id: result
+    attributes:
+      label: What did you learn, or where did you get stuck?
+      description: Explain one result in your own words and your next step. For blockers, redact any personal paths from errors.
+    validations:
+      required: true
+  - type: input
+    id: time
+    attributes:
+      label: Optional time to install and time to first own-data report
+      placeholder: "Installation 2 min; own-data report 20 sec"
+  - type: textarea
+    id: summary
+    attributes:
+      label: Optional reviewed aggregate summary
+      description: Only the output of the share command, reviewed by you. You may leave this blank.
+  - type: dropdown
+    id: first_touch
+    attributes:
+      label: Optional — where did you first hear about AgentMeasure?
+      options:
+        - GitHub issue, PR, or Discussion
+        - Personal email
+        - X
+        - Search, documentation, or resource list
+        - A colleague or community
+        - Other or unknown
+  - type: input
+    id: conversion_touch
+    attributes:
+      label: Optional — what made you actually try it?
+      description: A case study, email, integration, or another reason; no private email contents needed.
