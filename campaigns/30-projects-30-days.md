@@ -25,7 +25,7 @@ This sprint asks each project one question:
 
 | # | Project | Surface checked | Invariant | Status | Upstream artifact |
 | --- | --- | --- | --- | --- | --- |
-| 1 | [OpenLIT](https://github.com/openlit/openlit) | token accounting | token subset (reasoning ⊂ output) | **FAIL → fixed** | [PR #1476 merged](https://github.com/openlit/openlit/pull/1476) |
+| 1 | [OpenLIT](https://github.com/openlit/openlit) | token accounting | token subset (reasoning ⊂ output) | **subset attribute + invariant merged** | [PR #1476 merged](https://github.com/openlit/openlit/pull/1476) |
 | 2 | [Urusilla](https://github.com/jaden3824/urusilla) | operation aggregation (checked AgentMeasure itself) | execution / reconciliation / operation grain | **3 FAILs → fixed** | vectors [001](../conformance/vectors/external/urusilla-001/) · [002](../conformance/vectors/external/urusilla-002/) · issues [#8](https://github.com/roy-tong/AgentMeasure/issues/8) [#9](https://github.com/roy-tong/AgentMeasure/issues/9) [#12](https://github.com/roy-tong/AgentMeasure/issues/12) · CI integration [PR jaden3824/urusilla#15](https://github.com/jaden3824/urusilla/pull/15) |
 | 3 | [pydantic-ai](https://github.com/pydantic/pydantic-ai) | OTel usage attributes | token subset emission | **intended / consumer-contract gap** | [issue #7975](https://github.com/pydantic/pydantic-ai/issues/7975) — emission confirmed intended; the consumer subset contract is unstated; routing to semconv |
 | 4 | [LiteLLM](https://github.com/BerriAI/litellm) | cache-hit usage logging | cache accounting | **confirmed by third party** | [issue #39057](https://github.com/BerriAI/litellm/issues/39057) — independent dev confirmed the ambiguity changes budget enforcement, not just reports |
@@ -39,6 +39,15 @@ This sprint asks each project one question:
 | 13 | [SigNoz](https://github.com/SigNoz/signoz) | dashboard filters | semconv attribute drift | reviewing | [issue #12759](https://github.com/SigNoz/signoz/issues/12759) |
 | 14 | [Phoenix](https://github.com/Arize-ai/phoenix) | cost attribution | total-only span classification | reviewing | [issue #15840](https://github.com/Arize-ai/phoenix/issues/15840) |
 | 12 | [Langfuse](https://github.com/langfuse/langfuse) | OTel vs REST ingestion | cache normalization | **current paths normalized; residual scope unverified** | [issue #16884 correction](https://github.com/langfuse/langfuse/issues/16884#issuecomment-5502836090) — the original 2.3× claim used stale line references and was withdrawn |
+
+| 15 | [Weave](https://github.com/wandb/weave) | usage aggregation | self+descendants double counting | reviewing | [issue #7831](https://github.com/wandb/weave/issues/7831) |
+| 16 | [OpenInference](https://github.com/Arize-ai/openinference) | openai instrumentation | retry invisible in single span | reviewing | [issue #3664](https://github.com/Arize-ai/openinference/issues/3664) |
+| 17 | [TruLens](https://github.com/truera/trulens) | leaderboard aggregation | avg masquerading as total; mixed currency sum | reviewing | [issue #2759](https://github.com/truera/trulens/issues/2759) |
+| 18 | [Helicone](https://github.com/Helicone/helicone) | cost calculation | accepted_prediction_tokens double count | reviewing | [issue #5805](https://github.com/Helicone/helicone/issues/5805) |
+| 19 | [Braintrust](https://github.com/braintrustdata/braintrust-sdk-python) | span idempotency | span_parents skip on merge | reviewing | (drafted, template blocked) |
+| 20 | [LiteLLM](https://github.com/BerriAI/litellm) | mid-stream fallback | partial usage loss asymmetry | reviewing | [issue #39462](https://github.com/BerriAI/litellm/issues/39462) |
+| 21 | [AgentOps](https://github.com/AgentOps-AI/agentops) | semconv naming | old prompt_tokens vs input_tokens | reviewing | [issue #1447](https://github.com/AgentOps-AI/agentops/issues/1447) |
+| 22 | [OpenLLMetry](https://github.com/traceloop/openllmetry) | anthropic reasoning | reasoning subset not emitted | reviewing | [issue #4458](https://github.com/traceloop/openllmetry/issues/4458) |
 
 *(Rows update as checks complete. Status meanings: checking = audit in
 progress; reviewing = upstream issue open; discussing = public thread active;
@@ -56,14 +65,6 @@ a change.)*
 | cost preservation | does grouping remove or duplicate real attempt cost? |
 | evidence boundary | are returned / available / influential conflated? |
 | eval repeatability | are n runs n measurements, or retries of one verdict? |
-| 15 | [Weave](https://github.com/wandb/weave) | usage aggregation | self+descendants double counting | reviewing | [issue #7831](https://github.com/wandb/weave/issues/7831) |
-| 16 | [OpenInference](https://github.com/Arize-ai/openinference) | openai instrumentation | retry invisible in single span | reviewing | [issue #3664](https://github.com/Arize-ai/openinference/issues/3664) |
-| 17 | [TruLens](https://github.com/truera/trulens) | leaderboard aggregation | avg masquerading as total; mixed currency sum | reviewing | [issue #2759](https://github.com/truera/trulens/issues/2759) |
-| 18 | [Helicone](https://github.com/Helicone/helicone) | cost calculation | accepted_prediction_tokens double count | reviewing | [issue #5805](https://github.com/Helicone/helicone/issues/5805) |
-| 19 | [Braintrust](https://github.com/braintrustdata/braintrust-sdk-python) | span idempotency | span_parents skip on merge | reviewing | (drafted, template blocked) |
-| 20 | [LiteLLM](https://github.com/BerriAI/litellm) | mid-stream fallback | partial usage loss asymmetry | reviewing | [issue #39462](https://github.com/BerriAI/litellm/issues/39462) |
-| 21 | [AgentOps](https://github.com/AgentOps-AI/agentops) | semconv naming | old prompt_tokens vs input_tokens | reviewing | [issue #1447](https://github.com/AgentOps-AI/agentops/issues/1447) |
-| 22 | [OpenLLMetry](https://github.com/traceloop/openllmetry) | anthropic reasoning | reasoning subset not emitted | reviewing | [issue #4458](https://github.com/traceloop/openllmetry/issues/4458) |
 
 ## Discipline
 
@@ -77,6 +78,10 @@ a change.)*
   (row 2) stay at the top of this table on purpose.
 
 ## Follow along
+
+[Try Healthcheck on local Codex logs](healthcheck-first-run.md) ·
+[Read the evidence casebook](measurement-casebook.md). Open issues and proposed
+PRs are work in progress, not accepted integrations or product adoption.
 
 Repo → [conformance pack](../conformance/pack/README.md) (run the same checks
 on your own fixture) · X → [@elliwoodtong](https://x.com/elliwoodtong)

@@ -1,5 +1,28 @@
 # AgentMeasure
 
+**用本地证据，找出 Codex 会话中的重复记录、重试和连续工具失败。**
+
+Healthcheck 直接读取已有的 **Codex Desktop rollout 日志**，生成终端摘要和
+本地 HTML 报告。每项发现有证据；无法判断就显示 UNPROVABLE，不伪装成零。
+
+```bash
+# 需已有 Python 3.9+、Git、pipx；安装需要网络
+pipx install "git+https://github.com/roy-tong/AgentMeasure#subdirectory=healthcheck"
+agentmeasure demo   # 合成示例，无需个人日志
+agentmeasure check  # 本机 Codex 最近 7 天日志
+```
+
+分析过程本地运行，不发网络请求。当前为工程预览版：Codex CLI 尚未独立验证，
+Claude Code 暂不支持。上面的 Git 安装现在可用，PyPI 发布仍在准备中。
+
+[**快速开始与支持范围**](healthcheck/README.md) ·
+[**试跑和安全反馈**](campaigns/healthcheck-first-run.md) ·
+[**公开贡献案例**](campaigns/measurement-casebook.md) · [English](README.md)
+
+有用的结果可以保存快照，下次运行时比较。无需上传日志或开 issue 才能使用。
+
+## 计量基础设施
+
 **Agent 经济缺一把公尺——AI 用了什么、干得怎么样，行业还没有统一的算法。**
 **度量 Agent 的真实使用——别把重试当成用户。**
 
