@@ -2,13 +2,14 @@
 
 - Status: Adopted as design rationale (Draft 0.4.4); tracked in #11
 - Date: 2026-08-25 (revised same day — two-state + ranked-evidence reframing)
-- External evidence: external reviewer (OpenAI Agents SDK ecosystem — client-side
-  taxonomy + estimator reframing, direct replies 2026-08-24/25); external reviewer
+- External evidence: external reviewer Gunjan Jaswal (@gunjanjaswal) (OpenAI Agents SDK
+  ecosystem — client-side taxonomy + estimator reframing, direct replies 2026-08-24/25;
+  named with consent, issue #11); external reviewer
   (agent/runtime instrumentation — independent four-rung convergence + provider inference
   boundary, direct reply 2026-08-24); external reviewer (hosted MCP provider —
   provider-side boundary, direct reply 2026-08-20); cross-validated from three
-  observation points. Attribution anonymous pending each reviewer's consent to
-  public naming.
+  observation points. Remaining attribution anonymous pending each reviewer's
+  consent to public naming.
 
 ## Problem
 
