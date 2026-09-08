@@ -85,3 +85,17 @@ PRs are work in progress, not accepted integrations or product adoption.
 
 Repo → [conformance pack](../conformance/pack/README.md) (run the same checks
 on your own fixture) · X → [@elliwoodtong](https://x.com/elliwoodtong)
+
+## Extended log (2026-09-07 → 09-08)
+
+| Project | Surface | Status | Artifact |
+| --- | --- | --- | --- |
+| token-monitor | Pi fork cross-session dedup | **upstream issue + regression vector accepted** | [tokscale#1306](https://github.com/junhoyeo/tokscale/issues/1306) (vector) · [token-monitor#627](https://github.com/Javis603/token-monitor/issues/627) tracker · dup [#1305](https://github.com/junhoyeo/tokscale/issues/1305) closed |
+| langfuse | OTel cache-write alias gap | **fix PR by maintainers in flight** | [langfuse#17117](https://github.com/langfuse/langfuse/issues/17117) · [PR #17118](https://github.com/langfuse/langfuse/pull/17118) · invariant + spec-text fixture offer |
+| OpenLIT | reasoning-subset on every provider path | **new checklist issue opened** | [openlit#1537](https://github.com/openlit/openlit/issues/1537) (+inline fixture comment) — after [#1476 merged](https://github.com/openlit/openlit/pull/1476) |
+| awesome-ai-devtools | AgentMeasure listing | open PR (template-compliant) | [PR #1063](https://github.com/jamesmurdza/awesome-ai-devtools/pull/1063) (replaced bot-closed #1052) |
+| cloudflare-docs | AI Gateway field→grain mapping | maintainer asked for the mapping draft; delivered | [#32983](https://github.com/cloudflare/cloudflare-docs/issues/32983) (4-case table + UNPROVABLE rule) |
+| weave | rollup double-count (leaf × ancestors) | repro delivered | [#7831](https://github.com/wandb/weave/issues/7831) |
+| helicone | accepted_prediction_tokens added to total | repro delivered | [#5805](https://github.com/Helicone/helicone/issues/5805) |
+| ragas | eval mean denominator | +1 to docs PR, n_success/n_total proposed | [#2980](https://github.com/vibrantlabsai/ragas/issues/2980) · [#2990](https://github.com/vibrantlabsai/ragas/pull/2990) |
+| phoenix | total-only span pricing fallback | follow-up after leaf-fix PR | [#15840](https://github.com/Arize-ai/phoenix/issues/15840) · [#15913](https://github.com/Arize-ai/phoenix/pull/15913) |
