@@ -18,6 +18,7 @@ Claude Code 暂不支持。上面的 Git 安装现在可用，PyPI 发布仍在�
 [**快速开始与支持范围**](healthcheck/README.md) ·
 [**试跑和安全反馈**](campaigns/healthcheck-first-run.md) ·
 [**公开贡献案例**](campaigns/measurement-casebook.md) · [English](README.md)
+[**Token 计量 Bug 报告：审计约 110 个工具、45+ 实证缺陷、10 个已合并修复**](campaigns/audit-report-2026-09.md) ·
 [**维护用量统计工具？10 分钟自检**](campaigns/tool-authors.md) ·
 
 有用的结果可以保存快照，下次运行时比较。无需上传日志或开 issue 才能使用。
