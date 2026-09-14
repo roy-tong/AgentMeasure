@@ -4,9 +4,9 @@
 - Date: 2026-08-25 (revised same day — two-state + ranked-evidence reframing)
 - External evidence: external reviewer Gunjan Jaswal (@gunjanjaswal) (OpenAI Agents SDK
   ecosystem — client-side taxonomy + estimator reframing, direct replies 2026-08-24/25;
-  named with consent, issue #11); external reviewer
+  named with consent, issue #11); external reviewer David Turner (@atomicdjt)
   (agent/runtime instrumentation — independent four-rung convergence + provider inference
-  boundary, direct reply 2026-08-24); external reviewer (hosted MCP provider —
+  boundary, direct reply 2026-08-24; named with consent, 2026-09); external reviewer (hosted MCP provider —
   provider-side boundary, direct reply 2026-08-20); cross-validated from three
   observation points. Remaining attribution anonymous pending each reviewer's
   consent to public naming.
