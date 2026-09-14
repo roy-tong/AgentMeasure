@@ -1,33 +1,56 @@
 {
-  "schema": "agentmeasure.evidence/cache-hit-accounting-basis/0.1",
-  "fixture_class": "synthetic-offline",
-  "origin": "BerriAI/litellm#39057 (external enforcement case by @renezander030)",
-  "requests": [
-    {
-      "id": "request-1",
-      "cache": "miss",
-      "attempts": 1,
-      "served_tokens": 100,
-      "provider_consumed_tokens": 100,
-      "billable_tokens": 100,
-      "cost_gt_zero": true
-    },
-    {
-      "id": "request-2",
-      "cache": "hit",
-      "attempts": 1,
-      "served_tokens": 100,
-      "provider_consumed_tokens": 0,
-      "billable_tokens": 0,
-      "cost_gt_zero": false,
-      "note": "served volume replayed from cache; no provider call"
-    }
-  ],
-  "expected_drawdowns": {
-    "provider-consumption basis": {"request-1": 100, "request-2": 0},
-    "served-volume basis": {"request-1": 100, "request-2": 100},
-    "dollar basis": {"request-1": "cost", "request-2": 0}
+ "schema": "agentmeasure.evidence/cache-hit-accounting-basis/0.1",
+ "fixture_class": "synthetic-offline",
+ "origin": "BerriAI/litellm#39057 (external enforcement case by @renezander030)",
+ "requests": [
+  {
+   "id": "request-1",
+   "cache": "miss",
+   "attempts": 1,
+   "served_tokens": 100,
+   "provider_consumed_tokens": 100,
+   "billable_tokens": 100,
+   "cost_gt_zero": true
   },
-  "invariant": "an enforcement path must declare its accounting basis; drawn amount must match the declared basis",
-  "claim_boundary": "synthetic arithmetic evidence only; no endorsement, no integration, no statement about any implementation's current behavior"
+  {
+   "id": "request-2",
+   "cache": "hit",
+   "attempts": 1,
+   "served_tokens": 100,
+   "provider_consumed_tokens": 0,
+   "billable_tokens": 0,
+   "cost_gt_zero": false,
+   "note": "served volume replayed from cache; no provider call"
+  },
+  {
+   "id": "request-3",
+   "cache": "provider-prompt-hit",
+   "attempts": 1,
+   "served_tokens": 100,
+   "provider_consumed_tokens": 100,
+   "billable_tokens": 60,
+   "cost_gt_zero": true,
+   "note": "provider WAS called; prompt cache hit lands cache_read on the invoice, so billable and cost are nonzero while served volume is unchanged. Distinct from request-2's hop replay.",
+   "origin": "case added from BerriAI/litellm#39057 review (iwasinnam2, 2026-09-14): provider prompt-cache hit is not request-2"
+  }
+ ],
+ "expected_drawdowns": {
+  "provider-consumption basis": {
+   "request-1": 100,
+   "request-2": 0,
+   "request-3": 100
+  },
+  "served-volume basis": {
+   "request-1": 100,
+   "request-2": 100,
+   "request-3": 100
+  },
+  "dollar basis": {
+   "request-1": "cost",
+   "request-2": 0,
+   "request-3": "cost"
+  }
+ },
+ "invariant": "an enforcement path must declare its accounting basis; drawn amount must match the declared basis",
+ "claim_boundary": "synthetic arithmetic evidence only; no endorsement, no integration, no statement about any implementation's current behavior"
 }

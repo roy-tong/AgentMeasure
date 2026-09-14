@@ -36,6 +36,10 @@ request 1 (cache miss):
   served_tokens       100
   cost                > 0
 
+request 3 (provider prompt-cache hit, added from the thread review): provider was called,
+served 100 / provider 100 / billable reflects the cache-discounted invoice (nonzero) / cost > 0.
+Distinct from request 2: a provider prompt-cache hit is not a hop replay.
+
 request 2 (cache hit):
   attempts            1        (served from cache; no provider call)
   provider_tokens     0
