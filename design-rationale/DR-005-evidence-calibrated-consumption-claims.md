@@ -3,8 +3,8 @@
 - Status: Adopted as design rationale (Draft 0.4.4); tracked in #11
 - Date: 2026-08-25 (revised same day — two-state + ranked-evidence reframing)
 - External evidence: external reviewer Gunjan Jaswal (@gunjanjaswal) (OpenAI Agents SDK
-  ecosystem — client-side taxonomy + estimator reframing, direct replies 2026-08-24/25;
-  named with consent, issue #11); external reviewer David Turner (@atomicdjt)
+  ecosystem — client-side taxonomy + estimator reframing + orchestration-determined influence,
+  direct replies 2026-08-24/25 and 2026-09-14; named with consent, issue #11); external reviewer David Turner (@atomicdjt)
   (agent/runtime instrumentation — independent four-rung convergence + provider inference
   boundary, direct reply 2026-08-24; named with consent, 2026-09); external reviewer (hosted MCP provider —
   provider-side boundary, direct reply 2026-08-20); cross-validated from three
@@ -53,13 +53,28 @@ Evidence for State 2, ranked:
    request = availability signal, not consumption/influence.
 4. Where the spec defines `referenced`, it MUST name both failure modes at the definition
    site, so reference cannot masquerade as causal.
-5. **Inference boundary within availability** (agent/runtime instrumentation reviewer):
+5. **Orchestration-determined influence** (client-side reviewer, third reply 2026-09-14,
+   credited by name): when the orchestration layer, not the model, consummates the use,
+   influence is provable by construction because the causal chain lives in code rather
+   than in weights. Three cases: forced or required tool calls; programmatic piping of a
+   tool's output into the next call as literal input; and data dependencies between tools
+   (tool B's argument bound to tool A's output). This adds a second admissible evidence
+   class for State 2, it does not add a third state:
+   - model-side influence still requires the experiment layer (ablation / rerun);
+   - orchestration-side influence is certified from the dependency graph itself, ranked
+     alongside ablation as strong evidence, with the certifier named (harness vs model).
+   **Mixed case boundary** (open, per the same thread): when the harness constrains the
+   choice set (tool B may only take A's output among several allowed inputs) and the model
+   picks within it, the current reading is that the graph certifies availability of the
+   constrained set while only an ablation certifies the selection, so the claim is split
+   inside the evidence rank rather than becoming a third state.
+6. **Inference boundary within availability** (agent/runtime instrumentation reviewer):
    client-side instrumentation
    proves what the framework serialized into the request — not what reached provider
    inference. Providers may truncate or transform context internally. Availability claims
    from client telemetry are therefore `serialized-as-sent`, one step short of
    `reached-inference`; the distinction is named rather than collapsed.
-6. Profiles declare which state and which boundary they can observe (see PROFILES.md P2,
+7. Profiles declare which state and which boundary they can observe (see PROFILES.md P2,
    scoped since db7fac4).
 
 This also fixes the Core/Lab relationship: Core observes what telemetry can prove;
