@@ -39,7 +39,7 @@ Each `event_msg/token_count` carries `payload.info` with:
 
 Measured facts (53 sessions / 1,313 events):
 
-1. **603 events (46%) are byte-identical repeats of their immediate
+1. **604 events (46%) are byte-identical repeats of their immediate
    predecessor** — same cumulative AND same delta, typically 0.5–3 s apart.
    Codex re-emits snapshots unchanged within a response; a parser that
    counts each event as a request over-counts by ~2x.

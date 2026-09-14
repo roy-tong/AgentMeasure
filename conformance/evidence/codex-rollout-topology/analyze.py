@@ -44,9 +44,9 @@ def main(dirpath: str) -> None:
                     agg["mono_violations"] += 1
                 if tin is not None:
                     prev_total_in = tin
-            if prev_info is not None and info == prev_info:
+            if prev_info is not None and json.dumps(info) == prev_info:
                 byte_identical_repeats += 1
-            prev_info = info
+            prev_info = json.dumps(info)
             agg["tc_events"] += 1
         files_with_tc += 1 if had_tc else 0
 
