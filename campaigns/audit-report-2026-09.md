@@ -9,8 +9,9 @@ backed filing with a pinned commit and a runnable or quoted-static argument.*
 If a tool tells you what your AI coding agents cost, there is a real chance it
 is wrong in a systematic direction. We audited ~110 repositories across the
 Claude Code / Codex / gateway / eval / observability ecosystems and filed
-65+ evidence-backed findings; **10 have already been merged or accepted by
-maintainers**, several with public credit. The majority of audited tools
+65+ evidence-backed findings; **15 have already been merged or accepted by
+maintainers** (10 at publication, 5 more in the three days since), several
+with public credit. The majority of audited tools
 passed clean — including some of the largest (promptfoo, Portkey's model
 data, TokenTracker) — so this is not "everything is broken"; it is "five
 specific, findable bug classes, one of which your tool probably hasn't
@@ -86,10 +87,50 @@ python3 conformance/pack/agentmeasure selftest   # see the expected-totals style
 Full method and per-class pointers: [tool-authors.md](tool-authors.md).
 Full case list: [measurement-casebook.md](measurement-casebook.md).
 
+## Fixes landed since publication (2026-09-11 → 09-14)
+
+- [tokscale #1306](https://github.com/junhoyeo/tokscale/issues/1306) — forked/continued Pi sessions no longer double-count (fix via #1323, closed completed)
+- [claude-usage-widget #1](https://github.com/everssauro/claude-usage-widget/issues/1) — first-wins dedup no longer drops 25% of output tokens (maintainer independently reproduced on a 2,694-file archive before merging)
+- [token-monitor #627](https://github.com/Javis603/token-monitor/issues/627) — cross-session fork dedup anchored on stable response identity (closed completed)
+- [snip #186](https://github.com/edouard-claude/snip/issues/186) — the two contradictory hardcoded price tables were unified (closed completed via #189)
+- [openusage #360](https://github.com/janekbaraniewski/openusage/issues/360) — Codex cached tokens no longer billed twice (closed completed via #365)
+
+Five further fixes landed on or just before the publication cut and were not
+part of the original count: [trulens #2766](https://github.com/truera/trulens/pull/2766)
+(mixed-currency aggregation, by a third-party contributor from this report),
+[cc-enhanced #24](https://github.com/camjac251/cc-enhanced/pull/24),
+[gortex #784](https://github.com/zzet/gortex/issues/784) (via #786),
+[one-api-pro #13](https://github.com/modelbus/one-api-pro/issues/13),
+[trace-mcp #1175](https://github.com/nikolai-vysotskyi/trace-mcp/issues/1175).
+The headline count stays criteria-consistent (publication baseline + strictly
+post-publication); the overall verified total is at least 20.
+
+## Methodology notes (added 2026-09-14)
+
+Two rules this audit learned the hard way, now part of the checklist for
+every future finding:
+
+1. **Real data decides.** A synthetic fixture can *propose* a bug, but when a
+   maintainer's existing behavior and our fixture disagree, only a real log
+   settles which side is wrong. Example: our codeburn PR initially asserted
+   that three identical consecutive `token_count` events must be three calls;
+   scanning 53 public Codex rollouts (1,313 events) showed 603 are byte-identical
+   re-emissions of the previous event — the maintainer's dedup behavior was
+   correct and our assertion was wrong
+   ([codeburn #1264](https://github.com/getagentseal/codeburn/pull/1264)).
+   Filings now carry a real-data check wherever a public corpus exists.
+2. **A consumer contract must exist before an emission shape is a bug.** If a
+   tool emits two records for one logical call but no consumer aggregates
+   them unguarded, the emission is an intended contract, not a defect —
+   file it as a semantics question, not a billing bug
+   ([pydantic-ai #7975](https://github.com/pydantic-ai/pydantic-ai/issues/7975),
+   closed not-actionable; correctly).
+
 ## Honesty notes
 
-- Counts are of *filings with pinned evidence*, as of 2026-09-10; merges
-  happen as maintainers get to them (10 accepted so far).
+- Counts are of *filings with pinned evidence*, as of 2026-09-14; merges
+  happen as maintainers get to them (15 accepted so far; see the dated
+  subsection below for what landed after publication).
 - Most audited repos passed. We name the clean ones because that matters.
 - All reproductions are synthetic; no private logs anywhere.
 - This audit was performed with the methods and fixtures of this repository —
