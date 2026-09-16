@@ -33,9 +33,10 @@ def main(dirpath: str) -> None:
             if d.get("type") != "event_msg" or p.get("type") != "token_count":
                 continue
             had_tc = True
-            info = p.get("info") or {}
+            raw_info = p.get("info")
+            info = raw_info or {}
             t = info.get("total_token_usage")
-            if info is None:
+            if raw_info is None:
                 agg["null_info_events"] += 1
             elif t is None or not isinstance(t.get("total_tokens"), (int, float)):
                 agg["partial_info_events"] += 1
