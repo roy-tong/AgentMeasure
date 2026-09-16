@@ -45,9 +45,13 @@ Measured facts (53 sessions / 1,313 events):
    counts each event as a request over-counts by ~2x.
 2. **0 monotonicity violations** — cumulative totals never regress within a
    session. A regression means you are reading a fork or a new session.
-3. **54 events (4%) carry no usable `total_token_usage`** — sessions exist
-   that emit only `last_token_usage`. Parsers need a path for these, but it
-   must not treat byte-identical re-emissions as distinct requests.
+3. **Every session opens with exactly one `info: null` `token_count` event**
+   (the rate-limit ping; 1 per session across corpora, incl. a 136k-event
+   private one) — these take a char-count estimate path, not the dedup path.
+   Events with `info` present but `total_token_usage` absent have **0
+   observed occurrences**; the earlier "54 of 1313" figure conflated the
+   null-info pings with partial-info events (caught in codeburn #1264
+   review, corrected 2026-09-16).
 4. In the corpus, `rate_limits` mutate between re-emitted events (credits
    drain) — identity for dedup purposes must be computed on `info`, not on
    the whole line.

@@ -10,7 +10,7 @@ If a tool tells you what your AI coding agents cost, there is a real chance it
 is wrong in a systematic direction. We audited ~110 repositories across the
 Claude Code / Codex / gateway / eval / observability ecosystems and filed
 65+ evidence-backed findings; **15 have already been merged or accepted by
-maintainers** (10 at publication, 8 more in the four days since), several
+maintainers** (10 at publication, 9 more in the five days since), several
 with public credit. The majority of audited tools
 passed clean — including some of the largest (promptfoo, Portkey's model
 data, TokenTracker) — so this is not "everything is broken"; it is "five
@@ -92,6 +92,7 @@ Full case list: [measurement-casebook.md](measurement-casebook.md).
 - [candor #8](https://github.com/auswm85/candor/pull/8) — OpenAI gpt-4o cached input restored 0.3125 → 1.25 per 1M with a pinned-table regression guard (merged 09-14, maintainer-invited)
 - [langfuse #17117](https://github.com/langfuse/langfuse/issues/17117) — OTel cache_write alias missing from the extractor's cache-creation list: fixed on main (34k★; the flagship cache-accounting finding of this audit)
 - [tokenfuse #267](https://github.com/TAIPANBOX/tokenfuse/issues/267) — OpenAI cached tokens no longer priced on both sides of input (closed completed 09-14)
+- [openlit #1543](https://github.com/openlit/openlit/pull/1543) — measured-zero reasoning tokens no longer conflated with unknown (merged 09-15)
 
 - [tokscale #1306](https://github.com/junhoyeo/tokscale/issues/1306) — forked/continued Pi sessions no longer double-count (fix via #1323, closed completed)
 - [claude-usage-widget #1](https://github.com/everssauro/claude-usage-widget/issues/1) — first-wins dedup no longer drops 25% of output tokens (maintainer independently reproduced on a 2,694-file archive before merging)
@@ -132,8 +133,8 @@ every future finding:
 
 ## Honesty notes
 
-- Counts are of *filings with pinned evidence*, as of 2026-09-15 morning;
-  merges happen as maintainers get to them (18 accepted so far; see the dated
+- Counts are of *filings with pinned evidence*, as of 2026-09-16 morning;
+  merges happen as maintainers get to them (19 accepted so far; see the dated
   subsection below for what landed after publication).
 - Most audited repos passed. We name the clean ones because that matters.
 - All reproductions are synthetic; no private logs anywhere.

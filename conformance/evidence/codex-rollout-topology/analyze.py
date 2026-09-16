@@ -35,8 +35,10 @@ def main(dirpath: str) -> None:
             had_tc = True
             info = p.get("info") or {}
             t = info.get("total_token_usage")
-            if t is None or not isinstance(t.get("total_tokens"), (int, float)):
-                agg["no_cumulative_events"] += 1
+            if info is None:
+                agg["null_info_events"] += 1
+            elif t is None or not isinstance(t.get("total_tokens"), (int, float)):
+                agg["partial_info_events"] += 1
             else:
                 agg["with_cumulative"] += 1
                 tin = t.get("input_tokens")
@@ -55,7 +57,8 @@ def main(dirpath: str) -> None:
     print(f"byte-identical repeats of predecessor: {byte_identical_repeats}"
           f" ({100.0 * byte_identical_repeats / max(1, agg['tc_events']):.0f}%)")
     print(f"cumulative monotonicity violations: {agg['mono_violations']}")
-    print(f"events without usable total_token_usage: {agg['no_cumulative_events']}")
+    print(f"null-info events (rate-limit ping): {agg['null_info_events']}")
+    print(f"info present but total missing: {agg['partial_info_events']}")
     print(f"corrupt lines: {agg['corrupt_lines']}")
 
 
