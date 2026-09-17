@@ -912,3 +912,11 @@ html:not(.js) .reveal { opacity: 1; transform: none; }
   .evidence-card { padding: 18px 16px; }
   .footer { padding: 52px 16px 28px; }
 }
+
+/* ── Audit band ─────────────────────────────── */
+.audit-band { display: grid; grid-template-columns: minmax(0,5fr) minmax(0,7fr); gap: 2.5rem; align-items: center; }
+.audit-numbers { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+.an { border: 1px solid rgba(255,255,255,.08); border-radius: 12px; padding: 1.1rem 1rem; background: rgba(255,255,255,.02); }
+.an-v { display: block; font-size: 1.9rem; font-weight: 700; letter-spacing: -.02em; color: #E8FFD7; }
+.an-k { display: block; margin-top: .25rem; font-size: .78rem; opacity: .66; }
+@media (max-width: 860px) { .audit-band { grid-template-columns: 1fr; } }
