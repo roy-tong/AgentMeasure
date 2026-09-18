@@ -77,8 +77,9 @@ def validate_manifest(manifest: Dict[str, Any]) -> None:
     unknown = guardrail_metrics - allowed
     if unknown:
         raise ValueError(f"unknown guardrail metrics: {sorted(unknown)}")
-    if manifest["primary_metric"] not in ("selection_rate", "operation_success_rate", "consumption_rate"):
-        raise ValueError("primary_metric must be one of selection_rate / operation_success_rate / consumption_rate")
+    if manifest["primary_metric"] not in ("selection_rate", "operation_success_rate", "consumption_rate", "outcome_rate", "effect_confirmation_rate"):
+        raise ValueError("primary_metric must be one of selection_rate / operation_success_rate / consumption_rate / outcome_rate / effect_confirmation_rate")
+
 
 
 def guardrail_metric_names():
@@ -87,6 +88,8 @@ def guardrail_metric_names():
         "consumption_rate",
         "median_steps_per_operation",
         "cost_units_per_operation",
+        "outcome_rate",
+        "effect_confirmation_rate",
     ]
 
 

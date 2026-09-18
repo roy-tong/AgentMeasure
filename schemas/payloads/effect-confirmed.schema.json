@@ -1,0 +1,83 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "payload: effect_confirmed",
+  "description": "AgentMeasure Effect Confirmation: a determination that an Effect has occurred and is attested, with evidence grade, stability window, and reversal chain. Draft 0.4.4.",
+  "type": "object",
+  "required": [
+    "effect_id",
+    "operation_id",
+    "outcome_class",
+    "observer_grade",
+    "confirmed_at"
+  ],
+  "properties": {
+    "effect_id": {
+      "type": "string",
+      "description": "Canonical identity for this effect confirmation. Immutable after first emission (append-only ledger)."
+    },
+    "operation_id": {
+      "type": "string",
+      "description": "The operation whose execution produced this effect."
+    },
+    "task_id": {
+      "type": "string",
+      "description": "Optional: the task this effect relates to, when tracked at task grain."
+    },
+    "outcome_class": {
+      "type": "string",
+      "enum": [
+        "resolved",
+        "assumed_resolved",
+        "escalated",
+        "abandoned",
+        "reopened",
+        "not_outcome"
+      ],
+      "description": "Low-cardinality outcome classification. Must be drawn from the registry vocabularies.yaml single source of truth. assumed_resolved MUST NOT be aggregated into resolved (invariant 16)."
+    },
+    "observer_grade": {
+      "type": "string",
+      "enum": [
+        "self_attested",
+        "affected_party",
+        "third_party_corroborated"
+      ],
+      "description": "Who attests this effect occurred and has the stated outcome_class. Ascending trust: self_attested < affected_party < third_party_corroborated."
+    },
+    "stability_window_seconds": {
+      "type": "integer",
+      "minimum": 0,
+      "default": 259200,
+      "description": "How long this confirmation must survive without reversal before it is settlement-grade. Default 259200 (72 hours); vertical profiles may override."
+    },
+    "confirmed_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp when this confirmation was produced (not when the effect occurred)."
+    },
+    "stability_deadline": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Confirmed_at + stability_window_seconds. Before this time, the confirmation is preliminary and may be reversed."
+    },
+    "external_ids": {
+      "type": "object",
+      "description": "External evidence references (ticket system status change, human reply, automated verification hook).",
+      "additionalProperties": { "type": "string" }
+    },
+    "reversal_of": {
+      "type": "string",
+      "description": "If this confirmation reverses a previous effect (e.g. reopened after resolved), the effect_id of the reversed confirmation. reversal_of MUST chain to an existing effect_confirmed record — silent deletion is forbidden."
+    },
+    "supersedes": {
+      "type": "string",
+      "description": "If this confirmation corrects an earlier confirmation for the same effect (not a reversal of outcome_class, but a correction of metadata), the effect_id being superseded."
+    },
+    "incrementality_evidence": {
+      "type": "string",
+      "enum": ["none", "v2_ablation", "v4_holdout"],
+      "description": "Evidence level supporting an incrementality claim for this effect. When this effect is billed on billing_basis=outcome, this field is REQUIRED (see COMMERCIAL §5). none = no incrementality evidence → billing defaults to operation basis."
+    }
+  },
+  "additionalProperties": false
+}

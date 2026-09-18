@@ -164,7 +164,10 @@ def main() -> int:
     total = 0
     for vec_file in sorted(VECTORS_DIR.glob("*.json")):
         data = json.loads(vec_file.read_text(encoding="utf-8"))
-        metric = data["metric"]
+        metric = data.get("metric")
+        if metric is None:
+            # non-metric vector files (e.g. out-001-004.json) run in their own runner
+            continue
         runner = RUNNERS.get(metric)
         if runner is None:
             print(f"  ! no runner for {metric}")

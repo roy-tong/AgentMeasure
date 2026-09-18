@@ -1,0 +1,355 @@
+{
+  "spec_version": "agentmeasure-0.4",
+  "family": "OUT Outcome Audit",
+  "description": "Outcome & Effect conformance checks for incrementality audit (uplift-audit proposal P1). Vector structure follows urusilla-001 three-part pattern: event + expectation + mapping.",
+  "vectors": [
+    {
+      "id": "OUT-001",
+      "name": "Outcome Determinability",
+      "description": "Every billing claim that references an outcome unit MUST have a registered outcome_class definition in the registry, and the raw observation MUST map to a declared outcome_class. An unmapped outcome_class at billing time = FAIL.",
+      "principle": "No outcome unit may be billed before its class is registered and the event-to-class mapping is attestable.",
+      "vectors": [
+        {
+          "id": "out-001a-registered",
+          "description": "resolved outcome with registered class → PASS",
+          "input": {
+            "observation": {
+              "type": "task_outcome",
+              "task_id": "t-1",
+              "task_success": true,
+              "outcome_class": "resolved",
+              "outcome_observer_grade": "affected_party"
+            },
+            "billing_claim": {
+              "billable_event": "effect_confirmed",
+              "billable_unit": "resolution",
+              "billable_quantity": 1,
+              "outcome_class_claimed": "resolved"
+            }
+          },
+          "expect": {
+            "outcome_determinable": true,
+            "outcome_class_registered": true,
+            "mapping_matches": true,
+            "verdict": "PASS"
+          }
+        },
+        {
+          "id": "out-001b-unregistered",
+          "description": "billing claim references outcome_class that does not exist in registry → FAIL",
+          "input": {
+            "observation": {
+              "type": "task_outcome",
+              "task_id": "t-2",
+              "task_success": true,
+              "outcome_class": "good_outcome"
+            },
+            "billing_claim": {
+              "billable_event": "effect_confirmed",
+              "billable_unit": "resolution",
+              "billable_quantity": 1,
+              "outcome_class_claimed": "good_outcome"
+            }
+          },
+          "expect": {
+            "outcome_determinable": false,
+            "class_in_registry": false,
+            "verdict": "FAIL",
+            "failure_reason": "outcome_class 'good_outcome' not registered in vocabularies.yaml"
+          }
+        },
+        {
+          "id": "out-001c-assumed-vs-resolved",
+          "description": "assumed_resolved MUST NOT be aggregated into resolved for billing → FAIL if claimed as resolved",
+          "input": {
+            "observation": {
+              "type": "task_outcome",
+              "task_id": "t-3",
+              "task_success": true,
+              "outcome_class": "assumed_resolved",
+              "outcome_observer_grade": "self_attested"
+            },
+            "billing_claim": {
+              "billable_event": "effect_confirmed",
+              "billable_unit": "resolution",
+              "billable_quantity": 1,
+              "outcome_class_claimed": "resolved"
+            }
+          },
+          "expect": {
+            "outcome_determinable": true,
+            "mapping_matches": false,
+            "verdict": "FAIL",
+            "failure_reason": "assumed_resolved must not be aggregated into resolved (invariant 16, different grains)"
+          }
+        }
+      ]
+    },
+    {
+      "id": "OUT-002",
+      "name": "Effect Confirmation Traceability",
+      "description": "Every effect-based billing line item MUST trace to at least one effect_confirmed payload carrying observer_grade and stability_window. A billable quantity that cannot be traced to a confirmation record = FAIL.",
+      "principle": "Billable quantity MUST be traceable to a published measurement fact (COMMERCIAL §3, discipline 1). For outcome-based billing, that fact is an effect_confirmed record.",
+      "vectors": [
+        {
+          "id": "out-002a-traceable",
+          "description": "billing line traces to effect_confirmed with observer_grade → PASS",
+          "input": {
+            "billing_line": {
+              "meter_event_id": "me-1",
+              "billable_event": "effect_confirmed",
+              "billable_unit": "resolution",
+              "quantity": 1,
+              "effect_confirmation_ref": "eff-c-1"
+            },
+            "effect_confirmation": {
+              "effect_id": "eff-c-1",
+              "operation_id": "op-1",
+              "outcome_class": "resolved",
+              "observer_grade": "affected_party",
+              "stability_window_seconds": 259200,
+              "confirmed_at": "2026-09-18T00:00:00Z"
+            }
+          },
+          "expect": {
+            "traceable": true,
+            "observer_grade_present": true,
+            "verdict": "PASS"
+          }
+        },
+        {
+          "id": "out-002b-no-trace",
+          "description": "billing line with no effect_confirmation_ref → FAIL",
+          "input": {
+            "billing_line": {
+              "meter_event_id": "me-2",
+              "billable_event": "effect_confirmed",
+              "billable_unit": "resolution",
+              "quantity": 1
+            }
+          },
+          "expect": {
+            "traceable": false,
+            "verdict": "FAIL",
+            "failure_reason": "no effect_confirmation_ref on billing_line; quantity cannot be traced to measurement fact"
+          }
+        },
+        {
+          "id": "out-002c-unstable",
+          "description": "effect_confirmed is within its stability window → marked preliminary, not settlement-grade",
+          "input": {
+            "billing_line": {
+              "meter_event_id": "me-3",
+              "billable_event": "effect_confirmed",
+              "billable_unit": "resolution",
+              "quantity": 1,
+              "effect_confirmation_ref": "eff-c-2"
+            },
+            "effect_confirmation": {
+              "effect_id": "eff-c-2",
+              "operation_id": "op-2",
+              "outcome_class": "resolved",
+              "observer_grade": "affected_party",
+              "stability_window_seconds": 259200,
+              "confirmed_at": "2026-09-18T00:00:00Z",
+              "stability_deadline": "2026-09-21T00:00:00Z"
+            },
+            "settlement_as_of": "2026-09-19T00:00:00Z"
+          },
+          "expect": {
+            "traceable": true,
+            "settlement_grade": false,
+            "reason": "within stability window; settlement deadline 2026-09-21T00:00:00Z",
+            "verdict": "PASS (preliminary)"
+          }
+        }
+      ]
+    },
+    {
+      "id": "OUT-003",
+      "name": "Reopen / Repeat Dedup",
+      "description": "The same task MUST NOT produce two billable outcome units. When an effect_confirmed is reversed (reopened after resolved), the reversal MUST chain to the original confirmation — silent reversal or double-billing = FAIL.",
+      "principle": "Reopen is the outcome analogue of retry: 1 logical resolution ≠ 2 billable events. reversed effect must link to original confirmed record (invariant: reversed MUST be traceable).",
+      "vectors": [
+        {
+          "id": "out-003a-no-dual-bill",
+          "description": "same task resolves once → 1 billable unit, not 2 → PASS",
+          "input": {
+            "task_id": "t-1",
+            "effects": [
+              {
+                "effect_id": "eff-1",
+                "operation_id": "op-1",
+                "outcome_class": "resolved",
+                "observer_grade": "affected_party",
+                "confirmed_at": "2026-09-18T01:00:00Z"
+              }
+            ],
+            "billing_lines": [
+              {
+                "meter_event_id": "me-1",
+                "quantity": 1,
+                "effect_confirmation_ref": "eff-1"
+              }
+            ]
+          },
+          "expect": {
+            "total_billable_outcome_units": 1,
+            "verdict": "PASS"
+          }
+        },
+        {
+          "id": "out-003b-reopen-links",
+          "description": "resolution + reopen + resolution → second billable unit is a new operation; reversal_of links to original → PASS",
+          "input": {
+            "task_id": "t-1",
+            "effects": [
+              {
+                "effect_id": "eff-1",
+                "operation_id": "op-1",
+                "outcome_class": "resolved",
+                "confirmed_at": "2026-09-18T01:00:00Z"
+              },
+              {
+                "effect_id": "eff-2",
+                "operation_id": "op-1",
+                "outcome_class": "reopened",
+                "confirmed_at": "2026-09-19T01:00:00Z",
+                "reversal_of": "eff-1"
+              },
+              {
+                "effect_id": "eff-3",
+                "operation_id": "op-3",
+                "outcome_class": "resolved",
+                "confirmed_at": "2026-09-20T01:00:00Z"
+              }
+            ],
+            "billing_lines": [
+              {
+                "meter_event_id": "me-1",
+                "quantity": 1,
+                "effect_confirmation_ref": "eff-1"
+              },
+              {
+                "meter_event_id": "me-2",
+                "quantity": 1,
+                "effect_confirmation_ref": "eff-3"
+              }
+            ]
+          },
+          "expect": {
+            "total_billable_outcome_units": 2,
+            "reversal_chain_verified": true,
+            "verdict": "PASS"
+          }
+        },
+        {
+          "id": "out-003c-silent-reversal",
+          "description": "resolution is silently deleted when reopened — no reversal_of chain → FAIL",
+          "input": {
+            "task_id": "t-1",
+            "effects": [
+              {
+                "effect_id": "eff-1",
+                "operation_id": "op-1",
+                "outcome_class": "resolved",
+                "confirmed_at": "2026-09-18T01:00:00Z"
+              },
+              {
+                "effect_id": "eff-3",
+                "operation_id": "op-1",
+                "outcome_class": "resolved",
+                "confirmed_at": "2026-09-20T01:00:00Z"
+              }
+            ],
+            "billing_lines": [
+              {
+                "meter_event_id": "me-1",
+                "quantity": 1,
+                "effect_confirmation_ref": "eff-1"
+              },
+              {
+                "meter_event_id": "me-2",
+                "quantity": 1,
+                "effect_confirmation_ref": "eff-3"
+              }
+            ],
+            "note": "eff-1 was resolved but then reopened; no reopening event recorded, eff-1 not reversed. Second billing line appears as new resolution for same task."
+          },
+          "expect": {
+            "total_billable_outcome_units": 2,
+            "possible_silent_reversal": true,
+            "reversal_chain_verified": false,
+            "verdict": "FAIL",
+            "failure_reason": "no reopening event/reversal chain observed for eff-1 before eff-3; silent reversal suspected. Audit trail incomplete."
+          }
+        }
+      ]
+    },
+    {
+      "id": "OUT-004",
+      "name": "Claim-Evidence Match",
+      "description": "When billing_basis=outcome, the billing line MUST carry incrementality_evidence. The claimed evidence level (V-ladder) must match or exceed the actual evidence available. An incrementality claim stronger than the evidence = FAIL.",
+      "principle": "Claim strength must not exceed evidence level (uplift-audit §4). correlation ≠ causation (invariant 14). This is the direct standard-layer answer to '支付宝也需要淘宝' — AgentMeasure is the ruler, not the marketplace.",
+      "vectors": [
+        {
+          "id": "out-004a-evidence-matches",
+          "description": "billing_basis=outcome with V4 holdout evidence → PASS",
+          "input": {
+            "billing_line": {
+              "billable_event": "effect_confirmed",
+              "billable_unit": "resolution",
+              "billing_basis": "outcome",
+              "incrementality_evidence": "v4_holdout",
+              "evidence_available": "v4_holdout"
+            }
+          },
+          "expect": {
+            "claim_evidence_match": true,
+            "verdict": "PASS"
+          }
+        },
+        {
+          "id": "out-004b-evidence-none",
+          "description": "billing_basis=outcome with incrementality_evidence=none → billing defaults to operation basis (never zero)",
+          "input": {
+            "billing_line": {
+              "billable_event": "effect_confirmed",
+              "billable_unit": "resolution",
+              "billing_basis": "outcome",
+              "incrementality_evidence": "none"
+            }
+          },
+          "expect": {
+            "claim_evidence_match": false,
+            "effective_billing_basis": "operation",
+            "verdict": "PASS (downgraded)",
+            "note": "outcome-basis billing line downgraded to operation-basis. Quantity is not zeroed — the line is reclassified, not cancelled."
+          }
+        },
+        {
+          "id": "out-004c-assumed-as-resolved",
+          "description": "assumed_resolved billed as resolved without affected-party corroboration → FAIL",
+          "input": {
+            "billing_line": {
+              "billable_event": "effect_confirmed",
+              "billable_unit": "resolution",
+              "billing_basis": "outcome",
+              "outcome_class_claimed": "resolved",
+              "incrementality_evidence": "none"
+            },
+            "actual_outcome": {
+              "outcome_class": "assumed_resolved",
+              "observer_grade": "self_attested"
+            }
+          },
+          "expect": {
+            "claim_evidence_match": false,
+            "verdict": "FAIL",
+            "failure_reason": "assumed_resolved claimed as resolved without affected-party corroboration; observer_grade insufficient"
+          }
+        }
+      ]
+    }
+  ]
+}

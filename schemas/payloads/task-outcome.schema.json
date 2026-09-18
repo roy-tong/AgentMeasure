@@ -1,6 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "payload: task_outcome",
+  "title": "payload: task_outcome v2",
+  "description": "AgentMeasure Task Outcome payload — v2 adds outcome_class, observer_grade, and stratified fields. v1 fields retained for backward compatibility. Draft 0.4.4.",
   "type": "object",
   "required": [
     "task_id",
@@ -11,7 +12,29 @@
       "type": "string"
     },
     "task_success": {
-      "type": "boolean"
+      "type": "boolean",
+      "description": "v1 legacy: binary success indicator. v2 consumers SHOULD prefer outcome_class for richer semantics."
+    },
+    "outcome_class": {
+      "type": "string",
+      "enum": [
+        "resolved",
+        "assumed_resolved",
+        "escalated",
+        "abandoned",
+        "reopened",
+        "not_outcome"
+      ],
+      "description": "v2: outcome classification from registry vocabularies.yaml. When present, takes precedence over task_success for semantic analysis."
+    },
+    "outcome_observer_grade": {
+      "type": "string",
+      "enum": [
+        "self_attested",
+        "affected_party",
+        "third_party_corroborated"
+      ],
+      "description": "v2: who attests this outcome. Defaults to self_attested when omitted."
     },
     "attempt_count": {
       "type": "integer",
@@ -23,8 +46,23 @@
     "task_type": {
       "type": "string"
     },
+    "capability_ids": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "v2: capabilities involved in producing this outcome. Enables stratified aggregation by capability (preventing 5-min resolution and 3-day reopens from pooling into the same outcome_count)."
+    },
+    "primary_operation_id": {
+      "type": "string",
+      "description": "v2: the primary operation whose execution determined this outcome. For stratified lift analysis."
+    },
     "ended_at": {
-      "type": "string"
+      "type": "string",
+      "format": "date-time"
+    },
+    "effect_confirmation_refs": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "v2: references to effect_confirmed payloads that support this outcome determination. Enables traceability for OUT-002."
     }
   },
   "additionalProperties": false

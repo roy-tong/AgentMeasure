@@ -90,6 +90,19 @@ observation_type:
   - result_consumed
   - task_outcome
 
+outcome_class:
+  - resolved
+  - assumed_resolved
+  - escalated
+  - abandoned
+  - reopened
+  - not_outcome
+
+outcome_observer_grade:
+  - self_attested
+  - affected_party
+  - third_party_corroborated
+
 choice_mode:
   - exclusive
   - multi_select
