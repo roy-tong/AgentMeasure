@@ -15,5 +15,5 @@
 
 | 提案 | 状态 | 摘要 |
 |---|---|---|
-| [2026-08-21-delegation-graph](2026-08-21-delegation-graph.md) | Draft | 新增第四种语义对象 Delegation：Agent 调 Agent 的委托边界、计数纪律与跨侧关联规则 |
+| [2026-08-21-delegation-graph](2026-08-21-delegation-graph.md) | Accepted（已并入 CORE 0.4.5；待 schema/registry/conformance 跟进与外部验证周期后转 Experimental） | 新增第四种语义对象 Delegation：Agent 调 Agent 的委托边界、计数纪律与跨侧关联规则 |
 | [2026-09-18-uplift-audit](2026-09-18-uplift-audit.md) | Draft | 增量审计：Effect Confirmation 状态机、outcome 词表与可计费单位注册、M5 Incremental Lift 合同、V0–V4 因果证据轴进标准、OUT- 检查家族与结算证据包 |
