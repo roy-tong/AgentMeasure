@@ -9,8 +9,9 @@ backed filing with a pinned commit and a runnable or quoted-static argument.*
 If a tool tells you what your AI coding agents cost, there is a real chance it
 is wrong in a systematic direction. We audited ~110 repositories across the
 Claude Code / Codex / gateway / eval / observability ecosystems and filed
-65+ evidence-backed findings; **15 have already been merged or accepted by
-maintainers** (10 at publication, 10 more in the six days since), several
+65+ evidence-backed findings; **14 upstream PRs merged so far** (live counter:
+[github.com/search → author:roy-tong is:merged](https://github.com/search?q=author%3Aroy-tong+type%3Apr+is%3Amerged),
+plus several maintainer-side acceptances without a PR), several
 with public credit. The majority of audited tools
 passed clean — including some of the largest (promptfoo, Portkey's model
 data, TokenTracker) — so this is not "everything is broken"; it is "five

@@ -23,14 +23,16 @@ result — when the logs cannot decide, that is disclosed, never zeroed.
 ## Install
 
 ```bash
-# 1) once v0.3.0 is published (planned this week)
+# 1) from PyPI (live since v0.4.0) — zero install, straight to a run
+pipx run agentmeasure demo
+
+# 2) install the command
 pipx install agentmeasure
 
-# 2) today, from git (no account, no PyPI needed)
+# 3) from git (tracks main)
 pipx install "git+https://github.com/roy-tong/AgentMeasure#subdirectory=healthcheck"
-# without pipx: python3 -m pip install --user "git+https://github.com/roy-tong/AgentMeasure#subdirectory=healthcheck"
 
-# 3) zero install, straight from a repository checkout
+# 4) zero install, straight from a repository checkout
 python3 healthcheck/agentmeasure demo
 ```
 

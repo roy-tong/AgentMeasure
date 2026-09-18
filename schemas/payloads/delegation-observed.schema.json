@@ -1,0 +1,77 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "payload: delegation_observed",
+  "description": "Draft 0.4.5: An observation of a delegation event — Agent A called Agent B's capability.",
+  "type": "object",
+  "required": [
+    "delegation_id",
+    "delegating_caller",
+    "called_agent",
+    "called_capability",
+    "parent_task_id",
+    "depth",
+    "observed_at"
+  ],
+  "properties": {
+    "delegation_id": {
+      "type": "string"
+    },
+    "delegating_caller": {
+      "type": "string"
+    },
+    "called_agent": {
+      "type": "string"
+    },
+    "called_capability": {
+      "type": "string"
+    },
+    "parent_task_id": {
+      "type": "string"
+    },
+    "depth": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "lineage": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "subgoal_hash": {
+      "type": "string"
+    },
+    "child_ref": {
+      "type": "string"
+    },
+    "scope": {
+      "type": "string",
+      "enum": [
+        "in_harness",
+        "cross_harness"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "completed",
+        "in_progress",
+        "abandoned",
+        "failed"
+      ]
+    },
+    "observed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "observer_side": {
+      "type": "string",
+      "enum": [
+        "client",
+        "server",
+        "platform"
+      ]
+    }
+  },
+  "additionalProperties": false
+}

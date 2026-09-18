@@ -130,5 +130,27 @@ selection_constraint:
   - forced
   - unknown
 
+delegation_scope:
+  - in_harness
+  - cross_harness
+
+delegation_depth:
+  - top_level
+  - one_hop
+  - two_hops
+  - deeper
+
+delegation_status:
+  - completed
+  - in_progress
+  - abandoned
+  - failed
+
+caller_relationship:
+  - delegating_caller
+  - called_agent
+  - platform
+  - unknown
+
 # 非枚举型契约（校验存在性，不限制取值）
 #   metric_unit / grain / runtime：开放字符串，由 metrics.yaml 与 DATA.md 约束

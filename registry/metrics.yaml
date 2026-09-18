@@ -186,3 +186,41 @@ metrics:
     dedup: outcome-unique
     evidence_required: counterfactual_arm
     unprovable_when: counterfactual_arm absent
+
+  - id: M6.1
+    name: "Delegations per Task"
+    family: delegation
+    grain: delegation
+    object: delegation
+    status: draft
+    numerator: "COUNT(DISTINCT delegation_id)"
+    denominator: "COUNT(DISTINCT task_id)"
+    qualification:
+      context: production
+      validity: normal
+    dedup: delegation-task-unique
+
+  - id: M6.2
+    name: "Delegation Depth Distribution"
+    family: delegation
+    grain: delegation
+    object: delegation
+    status: draft
+    numerator: "COUNT(DISTINCT delegation_id) BY depth"
+    denominator: "COUNT(DISTINCT delegation_id)"
+    qualification:
+      context: production
+      validity: normal
+    dedup: delegation-unique
+
+  - id: M6.3
+    name: "Cross-Harness Delegation Rate"
+    family: delegation
+    grain: delegation
+    object: delegation
+    status: draft
+    numerator: "delegations with scope=cross_harness"
+    denominator: "all delegations"
+    qualification:
+      context: production
+      validity: normal

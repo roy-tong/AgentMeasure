@@ -1,21 +1,25 @@
 # AgentMeasure
 
-**Find repeated failures and retries in your Codex sessions, with local evidence.**
+**Find repeated failures and retries in your Codex and Claude Code sessions, with local evidence.**
 
-Healthcheck reads existing **Codex Desktop rollout logs** and produces a terminal
-summary and a local HTML report. It checks duplicate records, retry chains, and
-consecutive tool failures. Missing evidence is **UNPROVABLE**, never silently zero.
+Healthcheck reads existing **Codex rollout logs** and **Claude Code session logs**
+and produces a terminal summary and a local HTML report. It checks duplicate
+records, retry chains, and consecutive tool failures (HC-01..03), plus audit
+checks for operation-resolution coverage, cache accounting, and token stability
+(HC-04..06, `--audit`). Missing evidence is **UNPROVABLE**, never silently zero.
 
 ```bash
-# Requires Python 3.9+, Git, and pipx. Installation uses the network.
-pipx install "git+https://github.com/roy-tong/AgentMeasure#subdirectory=healthcheck"
-agentmeasure demo   # synthetic example; no personal logs needed
-agentmeasure check  # your local Codex sessions, last 7 days
+# Python 3.9+. On PyPI since v0.4.0 — no repo checkout needed.
+pipx run agentmeasure demo                 # synthetic example; no personal logs needed
+pipx run agentmeasure check                # your local sessions, last 7 days
+pipx run agentmeasure check --runtime claude   # force the Claude Code adapter
 ```
 
-Analysis runs locally with no runtime network calls. **Engineering preview**:
-Codex CLI is not yet independently verified; Claude Code is not supported yet.
-The Git install above is available now; PyPI publishing is being prepared.
+Analysis runs locally with no runtime network calls. New in v0.4.0: PyPI
+package, Claude Code adapter v1, embedded conformance pack
+(`agentmeasure conformance`, also a [GitHub Action](action.yml)), OTel /
+Prometheus exports, run trends (`agentmeasure trend`), and settlement-bundle
+drafts for outcome-based billing (`agentmeasure settle` — [concept](proposals/2026-09-18-settlement-bundle-design.md)).
 
 [**Quick start and supported formats**](healthcheck/README.md) ·
 [**Try it and share feedback safely**](campaigns/healthcheck-first-run.md) ·
