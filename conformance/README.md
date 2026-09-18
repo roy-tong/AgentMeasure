@@ -25,7 +25,17 @@
 python3 conformance/runners/run_metrics.py    # 指标 vectors（M2.2 / M2.5 / M3.1+M3.3 / M4.1）
 python3 verify_vectors.py                      # receipt/correlation vectors
 python3 conformance/runners/run_external_fixture.py  # 外部 fixture（Urusilla-001，#8/#9 守卫）
+python3 conformance/runners/run_outcome_audit.py     # 效果审计（OUT-001..004）
+python3 conformance/runners/run_delegation.py        # 多 Agent 委托（DELEGATION-001..003）
 ```
+
+### 检查家族与对应不变量
+
+| 家族 | 覆盖 | 钉住的不变量 |
+| --- | --- | --- |
+| M2/M3/M4 metric vectors | 选择率、执行粒度、消费率 | 1–26 |
+| OUT-001..004 | outcome 可判定性、effect 可追溯、重开去重、主张—证据匹配 | 14 / 16 / 17 |
+| DELEGATION-001..003 | 不压平为 Operation、DAG 深度、跨 harness 成本归属 | **27–31** |
 
 ## Evidence Cases（公开 artifact 分析，≠ conformance vectors）
 
