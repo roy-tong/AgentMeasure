@@ -1,0 +1,10 @@
+{"timestamp":"2026-09-05T10:00:00.000Z","type":"session_meta","payload":{"id":"stab-001-2222-3333-4444-555555555555","session_id":"stab-001-2222-3333-4444-555555555555","cli_version":"0.155.0","originator":"Codex Desktop","cwd":"/Users/tongxiarui/demo/secret-project","timestamp":"2026-09-05T10:00:00.000Z","source":"fixture"}}
+{"timestamp":"2026-09-05T10:00:01.000Z","type":"turn_context","payload":{"model":"demo-model-c","effort":"high","turn_id":"t1"}}
+{"timestamp":"2026-09-05T10:00:02.000Z","type":"event_msg","payload":{"type":"task_started"}}
+{"timestamp":"2026-09-05T10:00:03.000Z","type":"event_msg","payload":{"type":"item_completed","item":{"type":"CommandExecution","id":"exec-s1","command":["git","checkout","-b","feat/big-refactor"],"exit_code":0,"duration":0.3,"status":"completed"}}}
+{"timestamp":"2026-09-05T10:00:08.000Z","type":"event_msg","payload":{"type":"item_completed","item":{"type":"CommandExecution","id":"exec-s2","command":["npx","tsc","--noEmit"],"exit_code":1,"duration":15.2,"status":"failed"}}}
+{"timestamp":"2026-09-05T10:00:30.000Z","type":"event_msg","payload":{"type":"item_completed","item":{"type":"CommandExecution","id":"exec-s3","command":["npx","tsc","--noEmit"],"exit_code":0,"duration":14.8,"status":"completed"}}}
+{"timestamp":"2026-09-05T10:01:00.000Z","type":"event_msg","payload":{"type":"item_completed","item":{"type":"CommandExecution","id":"exec-s4","command":["npm","run","lint:fix"],"exit_code":0,"duration":3.1,"status":"completed"}}}
+{"timestamp":"2026-09-05T10:01:10.000Z","type":"event_msg","payload":{"type":"item_completed","item":{"type":"CommandExecution","id":"exec-s5","command":["npm","test","--","--coverage"],"exit_code":0,"duration":45.0,"status":"completed"}}}
+{"timestamp":"2026-09-05T10:02:00.000Z","type":"event_msg","payload":{"type":"token_count","info":{"total_token_usage":{"input_tokens":9000,"cached_input_tokens":3000,"cache_write_input_tokens":500,"output_tokens":2500,"reasoning_output_tokens":1200,"total_tokens":11500},"last_token_usage":{},"model_context_window":272000}}}
+{"timestamp":"2026-09-05T10:02:15.000Z","type":"event_msg","payload":{"type":"task_complete"}}

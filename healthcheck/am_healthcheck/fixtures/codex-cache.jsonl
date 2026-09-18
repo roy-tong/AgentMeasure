@@ -1,0 +1,11 @@
+{"timestamp":"2026-09-04T10:00:00.000Z","type":"session_meta","payload":{"id":"cache-warn-1111-2222-3333-4444-555555555555","session_id":"cache-warn-1111-2222-3333-4444-555555555555","cli_version":"0.153.0","originator":"Codex Desktop","cwd":"/home/demo/webapp","timestamp":"2026-09-04T10:00:00.000Z","source":"fixture"}}
+{"timestamp":"2026-09-04T10:00:01.000Z","type":"turn_context","payload":{"model":"demo-model-a","effort":"medium","turn_id":"t1"}}
+{"timestamp":"2026-09-04T10:00:02.000Z","type":"event_msg","payload":{"type":"task_started"}}
+{"timestamp":"2026-09-04T10:00:03.000Z","type":"response_item","payload":{"type":"function_call","name":"exec_command","arguments":"{}","call_id":"call_cache_1"}}
+{"timestamp":"2026-09-04T10:00:04.000Z","type":"event_msg","payload":{"type":"item_completed","item":{"type":"CommandExecution","id":"exec-c1","command":["npm","install"],"exit_code":0,"duration":5.0,"status":"completed"}}}
+{"timestamp":"2026-09-04T10:00:10.000Z","type":"event_msg","payload":{"type":"token_count","info":{"total_token_usage":{"input_tokens":2000,"cached_input_tokens":800,"cache_write_input_tokens":200,"output_tokens":500,"reasoning_output_tokens":100,"total_tokens":3300},"last_token_usage":{},"model_context_window":272000}}}
+{"timestamp":"2026-09-04T10:00:15.000Z","type":"response_item","payload":{"type":"function_call_output","call_id":"call_cache_1","output":"done"}}
+{"timestamp":"2026-09-04T10:00:20.000Z","type":"event_msg","payload":{"type":"token_count","info":{"total_token_usage":{"input_tokens":2500,"cached_input_tokens":900,"cache_write_input_tokens":0,"output_tokens":600,"reasoning_output_tokens":150,"total_tokens":3100},"last_token_usage":{},"model_context_window":272000}}}
+{"timestamp":"2026-09-04T10:00:25.000Z","type":"event_msg","payload":{"type":"item_completed","item":{"type":"CommandExecution","id":"exec-c2","command":["npm","run","build"],"exit_code":0,"duration":8.0,"status":"completed"}}}
+{"timestamp":"2026-09-04T10:00:35.000Z","type":"event_msg","payload":{"type":"token_count","info":{"total_token_usage":{"input_tokens":3000,"cached_input_tokens":1200,"cache_write_input_tokens":0,"output_tokens":700,"reasoning_output_tokens":200,"total_tokens":3700},"last_token_usage":{},"model_context_window":272000}}}
+{"timestamp":"2026-09-04T10:00:45.000Z","type":"event_msg","payload":{"type":"task_complete"}}

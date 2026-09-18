@@ -1,0 +1,13 @@
+{"timestamp":"2026-09-03T10:00:00.000Z","type":"session_meta","payload":{"id":"res-low-001-2222-3333-4444-555555555555","session_id":"res-low-001-2222-3333-4444-555555555555","cli_version":"0.153.0","originator":"Codex Desktop","cwd":"/home/demo/monorepo","timestamp":"2026-09-03T10:00:00.000Z","source":"fixture"}}
+{"timestamp":"2026-09-03T10:00:01.000Z","type":"turn_context","payload":{"model":"demo-model-b","effort":"high","turn_id":"t1"}}
+{"timestamp":"2026-09-03T10:00:02.000Z","type":"event_msg","payload":{"type":"task_started"}}
+{"timestamp":"2026-09-03T10:00:03.000Z","type":"event_msg","payload":{"type":"item_completed","item":{"type":"CommandExecution","id":"op-001","command":["git","status"],"exit_code":0,"duration":0.2,"status":"completed"}}}
+{"timestamp":"2026-09-03T10:00:06.000Z","type":"event_msg","payload":{"type":"item_completed","item":{"type":"CommandExecution","id":"op-002","command":["npm","test"],"exit_code":0,"duration":4.1,"status":"completed"}}}
+{"timestamp":"2026-09-03T10:00:15.000Z","type":"event_msg","payload":{"type":"item_completed","item":{"type":"CommandExecution","id":"op-003","command":["npm","run","lint"],"exit_code":1,"duration":1.8,"status":"failed"}}}
+{"timestamp":"2026-09-03T10:00:20.000Z","type":"event_msg","payload":{"type":"item_completed","item":{"type":"CommandExecution","id":"op-004","command":["cargo","build"],"exit_code":0,"duration":12.0,"status":"completed"}}}
+{"timestamp":"2026-09-03T10:00:35.000Z","type":"event_msg","payload":{"type":"item_completed","item":{"type":"CommandExecution","id":"op-005","command":["cargo","test"],"exit_code":101,"duration":9.5,"status":"failed"}}}
+{"timestamp":"2026-09-03T10:01:00.000Z","type":"event_msg","payload":{"type":"item_completed","item":{"type":"CommandExecution","command":["echo","no-operation-id"],"exit_code":0,"duration":0.1,"status":"completed"}}}
+{"timestamp":"2026-09-03T10:01:02.000Z","type":"event_msg","payload":{"type":"item_completed","item":{"type":"CommandExecution","command":["ls","-la"],"exit_code":0,"duration":0.1,"status":"completed"}}}
+{"timestamp":"2026-09-03T10:01:05.000Z","type":"event_msg","payload":{"type":"item_completed","item":{"type":"CommandExecution","command":["cat","/etc/hosts"],"exit_code":0,"duration":0.1,"status":"completed"}}}
+{"timestamp":"2026-09-03T10:01:10.000Z","type":"event_msg","payload":{"type":"token_count","info":{"total_token_usage":{"input_tokens":2000,"cached_input_tokens":500,"cache_write_input_tokens":0,"output_tokens":400,"reasoning_output_tokens":100,"total_tokens":2400},"last_token_usage":{},"model_context_window":272000}}}
+{"timestamp":"2026-09-03T10:01:20.000Z","type":"event_msg","payload":{"type":"task_complete"}}

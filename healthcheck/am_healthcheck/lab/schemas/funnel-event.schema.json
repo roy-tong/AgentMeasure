@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentmeasure.lab/funnel-event@1.0.0",
+  "title": "AgentMeasure Lab — Funnel Event",
+  "description": "FMT-002. Reach -> Choice -> Success -> Consumption events emitted by experiment runners (or any producer). Events are evidence units; events from a non-AgentMeasure producer are valid if they satisfy this schema and can be consumed by the report layer. No timestamps: determinism is part of the contract.",
+  "type": "object",
+  "required": [
+    "schema",
+    "schema_version",
+    "event",
+    "experiment_id",
+    "assignment_id",
+    "harness_id",
+    "task_id",
+    "variant_id",
+    "replicate",
+    "subject_id",
+    "rules_version"
+  ],
+  "properties": {
+    "schema": { "const": "agentmeasure.lab/funnel-event" },
+    "schema_version": { "const": "1.0.0" },
+    "event": {
+      "enum": ["reach", "choice", "attempt", "operation_result", "consumption"]
+    },
+    "experiment_id": { "type": "string" },
+    "assignment_id": { "type": "string" },
+    "harness_id": { "type": "string" },
+    "task_id": { "type": "string" },
+    "variant_id": { "type": "string" },
+    "replicate": { "type": "integer", "minimum": 1 },
+    "subject_id": { "type": "string" },
+    "rules_version": { "type": "string" },
+    "candidate_ids": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+    "selected_id": { "type": "string" },
+    "selected_subject": { "type": "boolean" },
+    "operation_index": { "type": "integer", "minimum": 1 },
+    "attempt_index": { "type": "integer", "minimum": 1 },
+    "outcome": { "enum": ["success", "failure", "unresolved"] },
+    "steps": { "type": "integer", "minimum": 0 },
+    "latency_ms": { "type": "integer", "minimum": 0 },
+    "cost_units": { "type": "number", "minimum": 0 },
+    "attempts": { "type": "integer", "minimum": 1 },
+    "consumed": { "type": "boolean" },
+    "signal": { "enum": ["task_continuation", "operation_failed", "none", "unknown"] }
+  },
+  "oneOf": [
+    {
+      "properties": { "event": { "const": "reach" } },
+      "required": ["candidate_ids"]
+    },
+    {
+      "properties": { "event": { "const": "choice" } },
+      "required": ["selected_id", "selected_subject"]
+    },
+    {
+      "properties": { "event": { "const": "attempt" } },
+      "required": ["operation_index", "attempt_index", "outcome", "steps", "latency_ms", "cost_units"]
+    },
+    {
+      "properties": { "event": { "const": "operation_result" } },
+      "required": ["operation_index", "outcome", "attempts"]
+    },
+    {
+      "properties": { "event": { "const": "consumption" } },
+      "required": ["operation_index", "consumed", "signal"]
+    }
+  ]
+}

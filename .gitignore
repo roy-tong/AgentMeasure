@@ -19,3 +19,8 @@ prod-events.jsonl
 # 本地浏览入口（指向 ~/.agentmeasure/outreach，绝不提交）
 /funnel.html
 /funnel-data.js
+
+# 构建产物不入库（healthcheck 打包试验残留）
+healthcheck/build/
+healthcheck/agentmeasure.egg-info/
+healthcheck/dist/

@@ -27,6 +27,8 @@ from . import report_text as text_mod
 from . import share as share_mod
 from . import snapshot as snapshot_mod
 from . import schema as schema_mod
+from . import sdk_events as sdk_events_mod
+# Conformance pack loaded lazily in cmd_conformance
 
 DEFAULT_DAYS = 7
 DEFAULT_HTML = "agentmeasure-report.html"
@@ -153,7 +155,8 @@ def _collect_paths(args, since=None, until=None) -> List[str]:
 
 
 def _analyze(paths: List[str], project: Optional[str], window_label: str,
-             runtime: str = "codex"):
+             runtime: str = "codex", audit_mode: bool = False,
+             sdk_events_path: Optional[str] = None):
     """Parse, filter, and run checks. Returns everything a report needs."""
     adapter = claude_adapter if runtime == "claude" else codex_adapter
     sessions = [adapter.parse_session(p) for p in paths]
@@ -168,28 +171,41 @@ def _analyze(paths: List[str], project: Optional[str], window_label: str,
         if not sessions:
             raise _InputError("no sessions match --project %r; known projects: %s"
                               % (project, ", ".join(known) or "none"))
-    ov, check_results, coverage, top3 = checks_mod.run_checks(sessions, window_label)
+    ov, check_results, coverage, top3 = checks_mod.run_checks(
+        sessions, window_label, audit_mode=audit_mode)
     rows = checks_mod.session_summaries(sessions)
-    return sessions, ov, check_results, coverage, top3, rows
+
+    # Cross-side SDK pairing for audit mode
+    cross_side = None
+    if sdk_events_path:
+        try:
+            sdk_events = sdk_events_mod.load_sdk_events(sdk_events_path)
+            cross_side = sdk_events_mod.build_cross_side_report(sessions, sdk_events)
+        except (ValueError, OSError) as exc:
+            print("warning: --sdk-events could not be loaded: %s" % exc, file=sys.stderr)
+
+    return sessions, ov, check_results, coverage, top3, rows, cross_side
 
 
 def _run_check(paths: List[str], mode: str, window_label: str, command: str,
                html_path: str, json_path, share_path, snapshot_path,
-               use_history: bool, home=None, project=None, runtime: str = "codex") -> int:
+               use_history: bool, home=None, project=None, runtime: str = "codex",
+               audit_mode: bool = False, sdk_events_path: str = None) -> int:
     output_error = _validate_output_paths(paths, html_path, json_path, share_path,
                                           snapshot_path)
     if output_error:
         print("error: %s" % output_error, file=sys.stderr)
         return 2
     try:
-        sessions, ov, check_results, coverage, top3, rows = _analyze(
-            paths, project, window_label, runtime)
+        sessions, ov, check_results, coverage, top3, rows, cross_side = _analyze(
+            paths, project, window_label, runtime,
+            audit_mode=audit_mode,
+            sdk_events_path=sdk_events_path)
     except _InputError as exc:
         print("error: %s" % exc, file=sys.stderr)
         return 2
     summary = share_mod.build_share_summary(ov, check_results, mode, window_label)
-
-    run_no = history_mod.run_number(mode, home) if use_history else 1
+    run_no = history_mod.run_number(mode, None) if use_history else 1
     runtime_note = "runtime: %s adapter v%s" % (
         "claude-code-session" if runtime == "claude" else "codex-rollout", __version__)
 
@@ -323,7 +339,8 @@ def cmd_check(args) -> int:
     snapshot_path = _resolve_snapshot_path(args.save_snapshot)
     return _run_check(paths, mode, window_label, command, html_path,
                       args.json, args.share, snapshot_path,
-                      not args.no_history, project=args.project, runtime=runtime)
+                      not args.no_history, project=args.project, runtime=runtime,
+                      audit_mode=args.audit, sdk_events_path=args.sdk_events)
 
 
 def cmd_demo(args) -> int:
@@ -359,7 +376,7 @@ def cmd_compare(args) -> int:
             window_label = _window_label(args, since, until)
             print("reading %d %s file(s) for the fresh side…" % (
                 len(paths), "Claude Code session" if runtime == "claude" else "rollout"))
-            _sessions, ov, check_results, _cov, _top, rows = _analyze(
+            _sessions, ov, check_results, _cov, _top, rows, _cs = _analyze(
                 paths, getattr(args, "project", None), window_label, runtime)
             snap_b = snapshot_mod.build_snapshot(
                 ov, check_results, rows, "own-data", window_label, command)
@@ -469,6 +486,31 @@ def cmd_validate(args) -> int:
     print("validate: %s" % ("PASS" if problems == 0 else
                             "FAIL (%d invalid file(s))" % problems))
     return 0 if problems == 0 else 2
+
+
+def cmd_conformance(args) -> int:
+    """Run the conformance pack on a caller-provided telemetry fixture.
+
+    Delegates to the bundled AgentMeasure Conformance Pack
+    (PASS / FAIL / UNPROVABLE invariant checks).
+    """
+    try:
+        from . import pack as pack_mod
+    except ImportError as e:
+        print("error: conformance pack not available in this install (%s). "
+              "Run from the repository checkout for the full pack experience." % e,
+              file=sys.stderr)
+        return 2
+    argv = ["conformance", "--fixture", args.fixture]
+    if args.metadata:
+        argv += ["--metadata", args.metadata]
+    if args.claims:
+        argv += ["--claims", args.claims]
+    if args.json_out:
+        argv += ["--json", args.json_out]
+    if args.require:
+        argv += ["--require", args.require]
+    return pack_mod.main(argv)
 
 
 def cmd_history(args) -> int:
@@ -729,6 +771,11 @@ def build_parser() -> argparse.ArgumentParser:
                               "(default name: agentmeasure-snapshot-<date>.json)")
     p_check.add_argument("--no-history", action="store_true",
                          help="do not append to the local run history")
+    p_check.add_argument("--audit", action="store_true",
+                         help="enable increment/effect audit checks (HC-04/05/06: "
+                              "operation resolution, cache accounting, token stability)")
+    p_check.add_argument("--sdk-events", metavar="PATH", default=None,
+                         help="cross-side pairing with @agentmeasure/mcp SDK observations JSONL")
     p_check.set_defaults(func=cmd_check)
 
     p_demo = sub.add_parser("demo", help="run on a bundled synthetic session")
@@ -766,6 +813,21 @@ def build_parser() -> argparse.ArgumentParser:
                                 "against its versioned schema")
     p_val.add_argument("paths", nargs="+", metavar="FILE")
     p_val.set_defaults(func=cmd_validate)
+
+    p_conf = sub.add_parser("conformance",
+                             help="verify a telemetry fixture against measurement invariants "
+                                  "(PASS / FAIL / UNPROVABLE)")
+    p_conf.add_argument("--fixture", required=True,
+                        help="FMT-002 funnel-event JSONL (caller's telemetry data)")
+    p_conf.add_argument("--metadata", default=None,
+                        help="optional sidecar metadata JSON (source, time_window, etc.)")
+    p_conf.add_argument("--claims", default=None,
+                        help="optional observed-claims JSON for claim-evidence matching")
+    p_conf.add_argument("--json", dest="json_out", default=None,
+                        help="write machine-readable JSON results here")
+    p_conf.add_argument("--require", default="",
+                        help="comma-separated invariant ids that must be PROVEN")
+    p_conf.set_defaults(func=cmd_conformance)
 
     p_hist = sub.add_parser("history", help="show local run history")
     p_hist.add_argument("--last", type=int, default=10)

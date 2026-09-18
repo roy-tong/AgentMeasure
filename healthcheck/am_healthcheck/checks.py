@@ -294,6 +294,320 @@ def all_retry_chains(sessions: List[SessionRecord]) -> List[RetryChain]:
     return out
 
 
+# ---------------------------------------------------------------- HC-04 core
+
+def check_operation_resolution_coverage(sessions: List[SessionRecord]) -> CheckResult:
+    """Track what percentage of operations are successfully resolved.
+
+    An operation is "resolved" when it carries a non-empty operation id and
+    its outcome is ok. Executions without an id cannot be tracked, and ones
+    that failed are unresolved.
+
+    Mapped from M3.5 Operation Resolution Coverage.
+    """
+    res = CheckResult(check_id="HC-04", name="Operation Resolution Coverage Trend")
+    canonical, _duplicates, _conflicts = _canonical_execs(sessions)
+
+    if not canonical:
+        res.status = "unprovable"
+        res.unprovable_reason = ("No execution events in the window; "
+                                 "resolution coverage cannot be determined.")
+        return res
+
+    total = len(canonical)
+    resolved = sum(1 for _s, e in canonical if e.exec_id and e.status == "ok")
+    rate = resolved / total if total > 0 else 0.0
+
+    # Per-session breakdown for evidence
+    by_session: Dict[str, Dict[str, int]] = defaultdict(
+        lambda: {"total": 0, "resolved": 0, "no_opid": 0})
+    for s, e in canonical:
+        key = _short(s.session_id) if s.session_id else _session_key(s)
+        by_session[key]["total"] += 1
+        if e.exec_id and e.status == "ok":
+            by_session[key]["resolved"] += 1
+        elif not e.exec_id:
+            by_session[key]["no_opid"] += 1
+
+    if rate < 0.5:
+        f = Finding(
+            title="Low operation resolution coverage: %d/%d (%.0f%%)"
+                  % (resolved, total, rate * 100),
+            severity="finding",
+            explanation=(
+                "%.0f%% of executions have a tracked operation_id and "
+                "succeeded. Below 50%% indicates the runtime either does "
+                "not assign operation ids to all commands, or many "
+                "operations fail. The %d execution(s) without an "
+                "operation_id cannot be tracked and are treated as "
+                "unresolved."
+                % (rate * 100, sum(v["no_opid"] for v in
+                                   by_session.values()))),
+            next_step="Check that the runtime assigns unique operation ids "
+                      "to every command execution. A missing id prevents "
+                      "operation-level accounting regardless of exit code.")
+        for skey, stats in sorted(by_session.items(),
+                                  key=lambda x: -x[1]["total"]):
+            sess_rate = (stats["resolved"] / stats["total"]
+                         if stats["total"] else 0)
+            f.add(Evidence(
+                session=skey, file="", line=0,
+                detail={"total_execs": stats["total"],
+                        "resolved": stats["resolved"],
+                        "no_operation_id": stats["no_opid"],
+                        "rate": "%.0f%%" % (sess_rate * 100)}))
+        res.findings.append(f)
+        res.status = "finding"
+    elif rate < 0.8:
+        f = Finding(
+            title="Moderate operation resolution coverage: %d/%d (%.0f%%)"
+                  % (resolved, total, rate * 100),
+            severity="info",
+            explanation=(
+                "%.0f%% of operations are resolved. The 50–80%% range is "
+                "borderline — some executions lack tracking or fail. "
+                "Watch for regression below 50%%."
+                % (rate * 100)),
+            next_step="Review sessions with missing operation_ids or "
+                      "unresolved outcomes; they may indicate incomplete "
+                      "runtime instrumentation.")
+        for skey, stats in sorted(by_session.items(),
+                                  key=lambda x: -x[1]["total"]):
+            unresolved = (stats["total"] - stats["resolved"]
+                          - stats["no_opid"])
+            f.add(Evidence(
+                session=skey, file="", line=0,
+                detail={"total_execs": stats["total"],
+                        "resolved": stats["resolved"],
+                        "failed_no_operation_id": stats["no_opid"],
+                        "failed_with_operation_id": unresolved}))
+        res.findings.append(f)
+        res.status = "info"
+    else:
+        res.status = "ok"
+
+    res.evidence_count = sum(len(fl.evidence) for fl in res.findings)
+    res.summary = ("resolution rate: %d/%d (%.0f%%) across %d session(s)"
+                   % (resolved, total, rate * 100, len(by_session)))
+    return res
+
+
+# ---------------------------------------------------------------- HC-05 core
+
+def check_cache_accounting_cross_check(
+        sessions: List[SessionRecord]) -> CheckResult:
+    """Detect cache-read/cache-write confusion in token snapshots.
+
+    Patterns checked:
+    - total_tokens > input_tokens + output_tokens (cache double-counted)
+    - cached_input > input_tokens (subset exceeds superset)
+    - cache_write_input > input_tokens
+    - cached_input + output_tokens > total_tokens
+    """
+    res = CheckResult(check_id="HC-05", name="Cache Accounting Cross-Check")
+    suspicious: List = []
+
+    for s in sessions:
+        for snap in s.tokens + s.thread_tokens:
+            problems: List[str] = []
+            # total includes cache on top of input+output
+            if snap.total_tokens > snap.input_tokens + snap.output_tokens:
+                excess = (snap.total_tokens - snap.input_tokens
+                          - snap.output_tokens)
+                problems.append(
+                    "total_tokens (%d) > input_tokens (%d) + output_tokens "
+                    "(%d) by %d — cache likely double-counted"
+                    % (snap.total_tokens, snap.input_tokens,
+                       snap.output_tokens, excess))
+            # cached_input exceeds input_tokens — impossible
+            if snap.cached_input > snap.input_tokens:
+                problems.append(
+                    "cached_input (%d) > input_tokens (%d)"
+                    % (snap.cached_input, snap.input_tokens))
+            # cache_write_input exceeds input_tokens — impossible
+            if snap.cache_write_input > snap.input_tokens:
+                problems.append(
+                    "cache_write_input (%d) > input_tokens (%d)"
+                    % (snap.cache_write_input, snap.input_tokens))
+            # cached_input + output_tokens > total_tokens
+            if (snap.total_tokens > 0 and
+                    snap.cached_input + snap.output_tokens >
+                    snap.total_tokens):
+                problems.append(
+                    "cached_input (%d) + output_tokens (%d) = %d "
+                    "> total_tokens (%d)"
+                    % (snap.cached_input, snap.output_tokens,
+                       snap.cached_input + snap.output_tokens,
+                       snap.total_tokens))
+            if problems:
+                suspicious.append((s, snap, problems))
+
+    has_any_token = any(s.tokens or s.thread_tokens for s in sessions)
+    if not has_any_token:
+        res.status = "unprovable"
+        res.unprovable_reason = ("No token snapshots in any session; "
+                                 "cache accounting cannot be checked.")
+        return res
+
+    if suspicious:
+        f = Finding(
+            title="%d token snapshot(s) show possible cache accounting "
+                  "confusion" % len(suspicious),
+            severity="finding",
+            explanation="The token snapshots below have arithmetic that "
+                        "suggests cache amounts (cached_input / "
+                        "cache_write_input) were added into non-cached "
+                        "totals or overlap inconsistently. "
+                        "Cache accounting is the #1 bug class from audits: "
+                        "double-counting cache in total_tokens, or reporting "
+                        "cache subsets larger than their superset. "
+                        "Experimental check — false positives possible.",
+            next_step="Inspect the raw token_count / token_usage_record "
+                      "events around the flagged lines. Correct accounting: "
+                      "total_tokens = input_tokens + output_tokens where "
+                      "input_tokens already includes cached_input and "
+                      "cache_write_input as subsets.")
+        for s, snap, problems in suspicious[:MAX_EVIDENCE]:
+            f.add(Evidence(
+                session=(_short(s.session_id) if s.session_id else ""),
+                file=snap.file, line=snap.line,
+                detail={"input_tokens": snap.input_tokens,
+                        "cached_input": snap.cached_input,
+                        "cache_write_input": snap.cache_write_input,
+                        "output_tokens": snap.output_tokens,
+                        "total_tokens": snap.total_tokens,
+                        "issues": list(problems)}))
+        res.findings.append(f)
+        res.status = "finding"
+    else:
+        res.status = "ok"
+
+    res.evidence_count = sum(len(fl.evidence) for fl in res.findings)
+    total_snaps = sum(len(s.tokens) + len(s.thread_tokens) for s in sessions)
+    res.summary = ("token snapshots checked: %d; suspicious patterns: %d"
+                   % (total_snaps, len(suspicious)))
+    return res
+
+
+# ---------------------------------------------------------------- HC-06 core
+
+def check_token_accounting_stability(
+        sessions: List[SessionRecord]) -> CheckResult:
+    """Check whether token-to-execution ratios are stable across sessions.
+
+    Groups sessions by project. For each project with ≥2 sessions having
+    both token data and executions, computes the coefficient of variation
+    (CV) of the tokens-per-execution ratio. A CV > 0.50 flags the project.
+    """
+    res = CheckResult(check_id="HC-06", name="Token Accounting Stability")
+
+    has_any_token = any(s.tokens or s.thread_tokens for s in sessions)
+    if not has_any_token:
+        res.status = "unprovable"
+        res.unprovable_reason = ("No token snapshots in any session; "
+                                 "stability cannot be assessed.")
+        return res
+
+    if not any(s.execs for s in sessions):
+        res.status = "unprovable"
+        res.unprovable_reason = ("No executions in any session; "
+                                 "token-to-execution ratio undefined.")
+        return res
+
+    groups: Dict[str, List[SessionRecord]] = defaultdict(list)
+    for s in sessions:
+        groups[s.project or "(unknown)"].append(s)
+
+    unstable: List = []
+
+    for project, group in groups.items():
+        session_totals: List = []
+        for s in group:
+            all_snaps = s.thread_tokens or s.tokens
+            if not all_snaps:
+                continue
+            latest = max(all_snaps,
+                         key=lambda x: (x.timestamp or "", x.line, x.file))
+            if latest.total_tokens <= 0:
+                continue
+            exec_count = len(s.execs)
+            if exec_count <= 0:
+                continue
+            ratio = latest.total_tokens / exec_count
+            session_totals.append((s, ratio))
+
+        if len(session_totals) < 2:
+            continue
+
+        ratios = [r for _s, r in session_totals]
+        mean = sum(ratios) / len(ratios)
+        if mean <= 0:
+            continue
+        variance = sum((r - mean) ** 2 for r in ratios) / (len(ratios) - 1)
+        stddev = variance ** 0.5
+        cv = stddev / mean
+
+        if cv > 0.5:
+            unstable.append(
+                (project, session_totals, mean, stddev, cv))
+
+    if not unstable and not any(
+            len([s for s in group if s.tokens or s.thread_tokens]) >= 2
+            for group in groups.values()):
+        res.status = "unprovable"
+        res.unprovable_reason = ("No project has ≥2 sessions with both "
+                                 "token data and executions.")
+        return res
+
+    if unstable:
+        for project, session_totals, mean, stddev, cv in unstable:
+            f = Finding(
+                title="Unstable token ratio in '%s': CV=%.2f "
+                      "(threshold 0.50)" % (project, cv),
+                severity="finding",
+                explanation=(
+                    "Coefficient of variation across %d session(s): %.2f. "
+                    "Mean ratio: %.0f tokens/exec, σ=%.0f. A CV > 0.50 "
+                    "means the per-execution token consumption varies "
+                    "wildly across sessions in the same project, suggesting "
+                    "inconsistent context usage or cache efficiency."
+                    % (len(session_totals), cv, mean, stddev)),
+                next_step="Review the sessions below for differences in "
+                          "system prompt size, file attachments, or "
+                          "compaction frequency.")
+            for s, ratio in session_totals:
+                deviation = ((ratio - mean) / mean * 100) if mean > 0 else 0
+                total_tokens = sum(
+                    t.total_tokens
+                    for t in s.tokens + s.thread_tokens if t.total_tokens)
+                f.add(Evidence(
+                    session=(_short(s.session_id) if s.session_id else ""),
+                    file=s.path, line=0,
+                    detail={"tokens_per_exec": "%.0f" % ratio,
+                            "deviation_pct": "%+.0f%%" % deviation,
+                            "total_tokens": total_tokens,
+                            "exec_count": len(s.execs)}))
+            res.findings.append(f)
+            res.status = "finding"
+    else:
+        res.status = "ok"
+
+    res.evidence_count = sum(len(fl.evidence) for fl in res.findings)
+    token_sessions = sum(
+        1 for s in sessions
+        if any(t.total_tokens > 0 for t in s.tokens + s.thread_tokens))
+    if res.status == "ok":
+        res.summary = ("token ratio stable across %d project(s); "
+                       "all CV ≤ 0.50" % len(groups))
+    elif res.status == "unprovable":
+        res.summary = "insufficient data for token stability analysis"
+    else:
+        res.summary = ("unstable project(s): %d of %d; "
+                       "sessions checked: %d"
+                       % (len(unstable), len(groups), token_sessions))
+    return res
+
+
 def check_duplicate_records(sessions: List[SessionRecord]) -> CheckResult:
     res = CheckResult(check_id="HC-01", name="Duplicate records")
     dup_lines = sum(len(s.dup_lines) for s in sessions)
@@ -612,13 +926,20 @@ def coverage_findings(ov: Overview) -> List[Finding]:
     return out
 
 
-def run_checks(sessions: List[SessionRecord], window_label: str):
+def run_checks(sessions: List[SessionRecord], window_label: str,
+               audit_mode: bool = False):
     ov = build_overview(sessions, window_label)
     checks = [
         check_duplicate_records(sessions),
         check_retry_amplification(sessions),
         check_tool_error_runs(sessions),
+        check_operation_resolution_coverage(sessions),
     ]
+    if audit_mode:
+        checks.extend([
+            check_cache_accounting_cross_check(sessions),
+            check_token_accounting_stability(sessions),
+        ])
     coverage = coverage_findings(ov)
 
     ranked = []
