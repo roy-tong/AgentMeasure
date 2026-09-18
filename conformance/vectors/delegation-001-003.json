@@ -1,35 +1,36 @@
 {
   "spec_version": "agentmeasure-0.4",
   "family": "DELEGATION Multi-Agent Audit",
-  "description": "Delegation conformance checks for multi-agent delegation audit (CORE 0.4.5). Verifies counting discipline separation from Operation, DAG enforcement, and cross-harnes cost attribution discipline.",
+  "description": "Delegation conformance checks for multi-agent delegation audit (CORE 0.4.5).",
   "vectors": [
     {
       "id": "DELEGATION-001",
       "name": "Delegation Must Not Be Counted as Operation",
-      "description": "A delegation event MUST NOT be flattened into the calling agent's Operation Count or Attempt Count. Delegation is an independent sematic object sharing the Task level with Operation (CORE §2.4, invariant 27).",      "principle": "Delegation is not an Operation. Invariant 27: Delegation MUST NOT be flattened int the calling agent's Operation or Attempt count.M3.1 only counts resolved operations (invariant 25).",
-      "vector": [
+      "description": "A delegation event MUST NOT be flattened into the calling agent Operation Count or Attempt Count.",
+      "principle": "Delegation is not an Operation. Invariant 27.",
+      "vectors": [
         {
-          "id": "de-001a-eparate-count",
-          "descritio": "Deegatio and Operation coexist in same task; delegation must not inflate operation count",
+          "id": "del-001a-separate-count",
+          "description": "Delegation and Operation coexist in same task; delegation must not inflate operation count",
           "input": {
             "task_id": "t-1",
             "delegations": [
               {
-                "delgation_id": "am-delegation-1",
+                "delegation_id": "am-delegation-1",
                 "delegating_caller": "agent-a",
                 "called_agent": "agent-b",
-                "called_capability": "agent:accep_subtask",
-                "parent_tak_id": "t-1",
+                "called_capability": "agent:accept_subtask",
+                "parent_task_id": "t-1",
                 "depth": 0,
-                "scope": "in_arness",
-                "tatus": "completed",
-                "oberved_at": "2026-09-21T00:00:00Z"
- }
+                "scope": "in_harness",
+                "status": "completed",
+                "observed_at": "2026-09-21T00:00:00Z"
+              }
             ],
-            "perations": [
+            "operations": [
               {
-                "operaton_id": "op-1",
-                "capabilty": "file_rad",
+                "operation_id": "op-1",
+                "capability": "file_read",
                 "task_id": "t-1"
               },
               {
@@ -42,13 +43,13 @@
           "expect": {
             "delegation_count": 1,
             "operation_count": 2,
-            "de gation_inflated_operation_count": false,
+            "delegation_inflated_operation_count": false,
             "verdict": "PASS"
           }
         },
         {
           "id": "del-001b-flattened-misallowed",
-          "descrition": "Implementation that merges delegation into peration count MUST FAIL"
+          "description": "Implementation that merges delegation into operation count MUST FAIL",
           "input": {
             "task_id": "t-2",
             "delegations": [
@@ -70,18 +71,18 @@
                 "task_id": "t-2"
               }
             ],
-            "_metadata": "some implementations might flatten delegation by synthesizing a fake operation_id for it",
             "claimed_operation_count": 2,
             "correct_operation_count": 1
-          }          "expect": {
+          },
+          "expect": {
             "claimed_operation_count_matches": false,
             "verdict": "FAIL",
-            "failure_reason": "Delegation MUST NOT be flattened into Operation Count (invariant 27). One delegation + one operation = 2 distinct objects, not 2 operations."
+            "failure_reason": "Delegation MUST NOT be flattened into Operation Count (invariant 27)."
           }
         },
         {
           "id": "del-001c-zero-delegation",
-          "description": "Task with no delegations returns zero delegation count, not zero operation count",
+          "description": "Task with no delegations returns zero delegation count",
           "input": {
             "task_id": "t-3",
             "delegations": [],
@@ -95,7 +96,7 @@
           },
           "expect": {
             "delegation_count": 0,
-            "peration_count": 1,
+            "operation_count": 1,
             "verdict": "PASS"
           }
         }
@@ -104,7 +105,8 @@
     {
       "id": "DELEGATION-002",
       "name": "Delegation Depth DAG Enforcement",
-      "descrition": "Delegation graph MUST be a DAG. Cyclic delegation (A->B->A) MUST be detected and rejected. Depth MUST be enforced with an implmentation-dfined upper bound (CORE §2.4, invariant 30).",      "principle": "No cycles. Depth bounded. Invariant 30: Measurement graph MUST be a DG. Cyclic delegation MUST be deteted and rejectd; MAX_DELEGATION_DEPTH is implementation-defined.",
+      "description": "Delegation graph MUST be a DAG. Cyclic delegation (A->B->A) MUST be detected and rejected. Depth MUST be enforced with an implementation-defined upper bound (CORE §2.4, invariant 30).",
+      "principle": "No cycles. Depth bounded. Invariant 30: Measurement graph MUST be a DAG.",
       "vectors": [
         {
           "id": "del-002a-acceptable-chain",
@@ -139,7 +141,9 @@
             "delegations": [
               {
                 "delegation_id": "am-delegation-5",
-                "delegating_caller": "agent-a",                "called_agent": "agent-b"                "depth": 0
+                "delegating_caller": "agent-a",
+                "called_agent": "agent-b",
+                "depth": 0
               },
               {
                 "delegation_id": "am-delegation-6",
@@ -165,7 +169,7 @@
                 "delegation_id": "am-delegation-7",
                 "delegating_caller": "agent-a",
                 "called_agent": "agent-b",
-                "dep": 0
+                "depth": 0
               },
               {
                 "delegation_id": "am-delegation-8",
@@ -186,28 +190,33 @@
             "dag_integrity": true,
             "depth_limit_enforced": false,
             "verdict": "FAIL",
-            "failure_reason": "Depth 2 equals MAX_DEEGATION_DEPTH=2. Implementation MUST enforce depth < MAX_DEPTH or provide a clear bound. Current configuration allows ambiguous bounday."
+            "failure_reason": "Depth 2 equals MAX_DELEGATION_DEPTH=2. Implementation MUST enforce depth < MAX_DEPTH or provide a clear bound."
           }
         }
       ]
     },
     {
-      "id": "DELEGATION-003",      "name": "Cross-Harness Delegation Cost Attribution",
-      "description": "Sub-agent attempt costs belong to the attempt itslf. Parent aggregation MUST be labeled 'aggregated'. Cross-harness delegation lineage must be preserved for cost tracing (CORE §2.4, invariants 28, 31).",
-      "principle": "Cost belongs to attempting agent. Coss-harness attribution is aggregated, never direct. Invariant 31: Sub-agent attempt cost belongs to that attempt. Parent aggregation MUST be labeled 'aggregated'.",      "vectors": [
+      "id": "DELEGATION-003",
+      "name": "Cross-Harness Delegation Cost Attribution",
+      "description": "Sub-agent attempt costs belong to the attempt itself. Parent aggregation MUST be labeled 'aggregated'. Cross-harness delegation lineage must be preserved for cost tracing (CORE §2.4, invariants 28, 31).",
+      "principle": "Cost belongs to the attempting agent. Cross-harness attribution is aggregated, never direct. Invariant 31: Sub-agent attempt cost belongs to that attempt. Parent aggregation MUST be labeled 'aggregated'.",
+      "vectors": [
         {
-          "id": "del003a-parent-aggregates",
-          "description": "Parent harnes aggregates sub-agent costs with 'agregated label - PASS",
-          "input": {            "task_id": "t-10",
+          "id": "del-003a-parent-aggregates",
+          "description": "Parent harness aggregates sub-agent costs with 'aggregated' label - PASS",
+          "input": {
+            "task_id": "t-10",
             "parent_harness_delegation": {
-              "delegain_id": "am-delegation-10",
-              "delegating_caller": "gent-a",
-              "calledagent": "agent-b",
-              "depth": 0,              "scpe": "cross_harness"
-            },            "parentcost_report": {
-              "tal_cost": 0.05,
-              "own_ttempt_cost"
-              "agregated_child_cost": 0.03,
+              "delegation_id": "am-delegation-10",
+              "delegating_caller": "agent-a",
+              "called_agent": "agent-b",
+              "depth": 0,
+              "scope": "cross_harness"
+            },
+            "parent_cost_report": {
+              "total_cost": 0.05,
+              "own_attempts_cost": 0.02,
+              "aggregated_child_cost": 0.03,
               "aggregation_label": "aggregated"
             }
           },
@@ -217,48 +226,66 @@
             "verdict": "PASS"
           }
         },
-       {
-         "id": "del003b-no-doublecount",
-          "decription": Same attempt cost MUST NOT be counted in both parent and child arness - FAIL if duplicated"
+        {
+          "id": "del-003b-no-double-count",
+          "description": "Same attempt cost MUST NOT be counted in both parent and child harness - FAIL if duplicated",
           "input": {
             "attempt_cost": 0.03,
             "parent_harness": {
               "claimed_cost": 0.05,
-              "owncost": 0.02,
+              "own_cost": 0.02,
               "aggregated_child": 0.03
             },
-            "child_arness": {
-              "climed_cost": 0.03
-            },
-            "note": total unique cost should be 0.02 + 0.03 = 0.05, not 0.08"          },
+            "child_harness": {
+              "claimed_cost": 0.03
+            }
+          },
           "expect": {
-             "unique_total_cost": 0.05,
-             "parent_plus_child_total": 0.08,
-             "doble_count_detected": true
-             "verdict": "FAIL",
-             "failure_reason": "Cost double-counted: child cost 0.03 appears in both parent and child harness without dedup. Invariant 31: cost belongs to the attempt itself, not to the delegating parent."
+            "unique_total_cost": 0.05,
+            "parent_plus_child_total": 0.08,
+            "double_count_detected": true,
+            "verdict": "FAIL",
+            "failure_reason": "Cost double-counted: child cost 0.03 appears in both parent and child harness without dedup. Invariant 31: cost belongs to the attempt itself, not to the delegating parent."
           }
         },
         {
           "id": "del-003c-lineage-trace",
-          "description": Cross-harness lineage must be preserved for cost tracing back to origin",
-          "input": {            "delegation_id": "am-delegation-11",
-            "delegating_caler": "agent-a",
+          "description": "Cross-harness lineage must be preserved for cost tracing back to origin",
+          "input": {
+            "delegation_id": "am-delegation-11",
+            "delegating_caller": "agent-a",
             "called_agent": "agent-b",
             "depth": 0,
-            "scpe": "cross_harness",
-            "lineage": ["am-delegation-11"],
+            "scope": "cross_harness",
+            "lineage": [
+              "am-delegation-11"
+            ],
             "child_ref": "session-abc",
-            "chil_session_attempts": [
-              { "attempt_id": "att-1", "cost": 0.01, "operation_id": "op-10" },
-              { "attempt_id" "att-2", "cost": 0.02, "operation_id": "op-11" }
+            "child_session_attempts": [
+              {
+                "attempt_id": "att-1",
+                "cost": 0.01,
+                "operation_id": "op-10"
+              },
+              {
+                "attempt_id": "att-2",
+                "cost": 0.02,
+                "operation_id": "op-11"
+              }
             ],
             "aggregation_report": {
               "delegation_id": "am-delegation-11",
               "total_child_cost": 0.03,
               "lineage_trace": [
-                { "harness": "parent", depth": 0 },
-                { "harness": "child", "depth": 1 "child_ref": "session-abc" }
+                {
+                  "harness": "parent",
+                  "depth": 0
+                },
+                {
+                  "harness": "child",
+                  "depth": 1,
+                  "child_ref": "session-abc"
+                }
               ]
             }
           },

@@ -45,15 +45,19 @@ def build_cross_side_report(
       - sdk_only: SDK observations without a matching client session
       - client_only: client sessions without SDK observations
     """
-    # Build lookup: tool_call_id → client session exec
+    # Build lookup: call/exec id → client-side record.
+    # ExecRecord carries exec_id; CallRecord carries call_id. Neither is
+    # guaranteed present, so read both defensively.
     client_by_call = {}
     for session in client_sessions:
         for e in getattr(session, "execs", []):
-            if e.call_id:
-                client_by_call[e.call_id] = e
+            cid = getattr(e, "call_id", "") or getattr(e, "exec_id", "")
+            if cid:
+                client_by_call[cid] = e
         for c in getattr(session, "calls", []):
-            if c.call_id:
-                client_by_call[c.call_id] = c
+            cid = getattr(c, "call_id", "")
+            if cid:
+                client_by_call[cid] = c
 
     paired = []
     sdk_only = []

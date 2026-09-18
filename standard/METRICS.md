@@ -224,7 +224,43 @@ Capability Operation Reliability / Mean Attempts per Successful Operation）。
 - **关联检查**：OUT-004（主张—证据匹配）；billing_requirements 的
   `incrementality_evidence` predicate（COMMERCIAL §5）
 
-## 6. 指标之间的纪律
+## 6. Delegation Family（M6，Grain = Delegation；Draft 0.4.5）
+
+> 随 CORE 0.4.5 的 Delegation 对象并入。**Delegation 是独立计数对象**，
+> 不进入 Operation Count 或 Attempt Count（不变量 27）。
+
+### M6.1 — Delegations per Task（draft）
+
+- **Purpose**：一个 Task 把子目标交给其他 Agent 的频次——编排复杂度与费用扩散面的基线
+- **公式**：`COUNT(DISTINCT delegation_id) ÷ COUNT(DISTINCT task_id)`
+- **Grain**：Delegation；**Object**：Delegation
+- **Eligibility**：Strict Qualified（production + normal）；`parent_task_id` 可解析
+- **Dedup**：同 task 同 delegation_id 只计 1
+- **Counterexample**：把 Delegation 计入 Operation Count 会同时抬高"逻辑使用数"和
+  "执行数"两个不相干的分母（不变量 27）
+
+### M6.2 — Delegation Depth Distribution（draft）
+
+- **Purpose**：委托链有多深——深链是费用归属与失败传播的主要风险面
+- **公式**：`COUNT(DISTINCT delegation_id) BY depth ÷ COUNT(DISTINCT delegation_id)`
+- **Grain**：Delegation；**Required Dimensions**：`depth`（top_level / one_hop / two_hops / deeper）
+- **Eligibility**：`depth` 已声明；跨 harness 链必须由 `lineage` 可追溯
+- **纪律**：深度分布必须**分档披露**，不得只报均值——均值会掩盖尾部深链
+- **Counterexample**：A → B → A 的环状委托必须被拒绝（不变量 30），
+  否则 depth 无上限、分布无意义
+
+### M6.3 — Cross-Harness Delegation Rate（draft）
+
+- **Purpose**：多少委托跨越了 harness 边界——跨侧是关联证据最弱、费用归属最易争议的区间
+- **公式**：`delegations with scope=cross_harness ÷ all delegations`
+- **Grain**：Delegation
+- **Eligibility**：`scope` 已声明（in_harness / cross_harness）
+- **纪律**：跨 harness 的 outcome 至多为子侧 Task Outcome 的 `correlated` 引用
+  （不变量 28/29）；父侧 MUST NOT 自行推断子任务成败
+- **Counterexample**：把跨 harness 委托的 cost 直接计入父侧并当作直接观测
+  ——父侧聚合 MUST 标注 `aggregated`（不变量 31）
+
+## 7. 指标之间的纪律
 
 1. 不同 Grain 的指标不可互换（不变量 16）
 2. 每指标必须披露：Numerator / Denominator / Observable population / Qualified population / Runtime coverage / Choice mode / **Decision authority / Selection constraint**（Measurement Label）
@@ -233,7 +269,7 @@ Capability Operation Reliability / Mean Attempts per Successful Operation）。
 5. Category 绑定 `category_id + category_version`，SoC 类指标必须声明
 6. 比较类指标三轴声明：Choice Mode × Decision Authority × Selection Constraint（不变量 24）
 
-## 7. 待 AUP 的指标（Draft 0.4 不正式化）
+## 8. 待 AUP 的指标（Draft 0.4 不正式化）
 
 - First-choice Rate、Substitution/Switch Rate、Dependency、Substitutability
 - Task Success Association（与 M5.1 的关联区分见 uplift-audit 提案）

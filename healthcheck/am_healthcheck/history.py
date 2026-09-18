@@ -76,12 +76,16 @@ def trend(home: Optional[str] = None) -> Dict[str, object]:
     real.sort(key=lambda e: e.get("ts", ""))
 
     def _week_key(ts: str) -> str:
-        """ISO week string from timestamp."""
+        """ISO week string from timestamp.
+
+        Python 3.9's datetime.fromisoformat does not accept the trailing 'Z'
+        that our own history entries write, so normalize it first.
+        """
         try:
             from datetime import datetime
-            dt = datetime.fromisoformat(ts)
+            dt = datetime.fromisoformat(ts.replace("Z", "+00:00"))
             return "%d-W%02d" % (dt.isocalendar()[0], dt.isocalendar()[1])
-        except (ValueError, TypeError):
+        except (ValueError, TypeError, AttributeError):
             return "unknown"
 
     def _month_key(ts: str) -> str:

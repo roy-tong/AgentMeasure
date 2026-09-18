@@ -24,7 +24,7 @@ METRICS_MD = ROOT.parent / "standard" / "METRICS.md"
 
 STATUSES = ("defined", "draft", "proposed", "research")
 FAMILIES = ("adoption-relationship", "choice", "execution", "utility",
-            "outcome", "distribution")
+            "outcome", "distribution", "delegation")
 REQUIRED = ("id", "name", "family", "grain", "object", "status",
             "numerator", "denominator", "qualification", "dedup")
 

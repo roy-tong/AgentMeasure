@@ -159,7 +159,8 @@ class TestHc04ResolutionCoverage(unittest.TestCase):
         res = check_operation_resolution_coverage([s])
         self.assertEqual(res.status, "finding")
         self.assertTrue(any("Low" in f.title for f in res.findings))
-        self.assertTrue(any("50%" in f.title for f in res.findings))
+        # 3 of 10 resolved → 30%
+        self.assertTrue(any("30%" in f.title for f in res.findings))
 
     def test_hc04_resolution_coverage_info(self):
         """50-80% resolved — info (borderline)"""
@@ -187,7 +188,7 @@ class TestHc05CacheAccounting(unittest.TestCase):
         res = check_cache_accounting_cross_check([s])
         self.assertEqual(res.status, "ok")
 
-    def test_hc05_cach_accounting_finding(self):
+    def test_hc05_cache_accounting_finding(self):
         """total > input + output → double-counting finding"""
         s = SessionRecord(path="mem://csus", session_id="csus")
         s.tokens.append(TokenSnapshot(
@@ -196,7 +197,7 @@ class TestHc05CacheAccounting(unittest.TestCase):
             output_tokens=50, total_tokens=200))  # 200 > 150
         res = check_cache_accounting_cross_check([s])
         self.assertEqual(res.status, "finding")
-        self.assertIn("likely double-counted", res.findings[0].explanation)
+        self.assertIn("double-counting", res.findings[0].explanation)
 
     def test_hc05_cache_accounting_no_tokens(self):
         """No token snapshots → unprovable"""
