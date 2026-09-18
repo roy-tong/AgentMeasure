@@ -35,6 +35,7 @@
 | Independence | I0 unknown / I1 distinct runtime / I2 distinct trust domain | 是否同一主体控制 |
 | Attestation | T0 none / T1 platform-attested | 是否有受信任平台背书 |
 | Match | none / heuristic / exact-call-id / trace-verified | 关联强度（单词取值；不用 M 码，避免与商业计量等级冲突） |
+| Causality | V0 association / V1 matched-observational / V2 offline-ablation / V3 quasi-experiment / V4 randomized-holdout | 主张的因果强度（与证据等级匹配方可声称增量） |
 
 ## 4. 派生显示等级（UI/API 层）
 

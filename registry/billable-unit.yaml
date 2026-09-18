@@ -1,0 +1,44 @@
+# AgentMeasure — Billable Unit Registry（Draft 0.4.5）
+# 可计费单位的单一事实源。COMMERCIAL §3 的 billable_event 引用本注册表。
+# status: draft | stable | deprecated
+
+billable_units:
+  - id: operation
+    description: "一次逻辑使用（operation）"
+    typical_event: operation_succeeded
+    status: stable
+    notes: "基础单位；COMMERCIAL §3 默认回退"
+
+  - id: booking
+    description: "一次成功预约/预订"
+    typical_event: effect_confirmed
+    status: draft
+    notes: "outcome_class 必须为 resolved 或 assumed_resolved；resolved 与 assumed_resolved 分开聚合"
+
+  - id: qualified_lead
+    description: "一条经认证的合格线索"
+    typical_event: outcome_qualified
+    status: draft
+
+  - id: resolution
+    description: "一次工单/问题的解决"
+    typical_event: effect_confirmed
+    status: draft
+    outcome_class_required: [resolved, assumed_resolved]
+    stratification_required: true
+    notes: "resolved 与 assumed_resolved 不得合并聚合（不变量 16）"
+
+  - id: transaction
+    description: "一笔完成的交易"
+    typical_event: transaction_settled
+    status: draft
+
+  - id: compute_unit
+    description: "计算资源单位（如 GPU-second）"
+    typical_event: compute_completed
+    status: draft
+
+  - id: record
+    description: "一条数据处理记录"
+    typical_event: result_delivered
+    status: draft

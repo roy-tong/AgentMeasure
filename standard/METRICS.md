@@ -206,7 +206,25 @@ Capability Operation Reliability / Mean Attempts per Successful Operation）。
 - **公式**：`COUNT(DISTINCT client × UTC-day)`（窗口内 ≥1 次 eligible invocation）
 - **Grain**：Client-Day；跨 Codex/Claude/DSH 可比
 
-## 5. 指标之间的纪律
+## 5. Outcome Family（M5，Grain = Outcome）
+
+### M5.1 — Incremental Outcome Lift（draft，随 uplift-audit 提案 2026-09-18）
+
+- **Purpose**：按结果计费时，效果中可归因于能力本身的**增量**——
+  「合作方不会为『我们觉得有效』付钱」的可审计答案
+- **公式**：`P(outcome_qualified | capability) − P(outcome_qualified | counterfactual arm)`
+  （按条件报告：harness × task distribution；汇总值必须与分条件值并列披露）
+- **Eligibility**：仅当反事实面存在（V2 ablation / V4 holdout，TRUST 因果轴）；
+  主指标必须预注册（Lab FMT-001），生产复测走 calibrate 口径
+- **Unprovable When**：反事实面缺失 → **UNPROVABLE，不输出点估计**；
+  计费含义为「不可按效果计费，可回退按发生计费（operation basis），绝不计为零」
+- **Counterexample**：① 跨异质任务分布的合并 lift（掩盖方向相反的分条件效应）；
+  ② 无 holdout 的前后差分冒充 lift；③ guardrail 违例仍上报 significant
+  （Lab 拦截为 `effective_not_qualified`）
+- **关联检查**：OUT-004（主张—证据匹配）；billing_requirements 的
+  `incrementality_evidence` predicate（COMMERCIAL §5）
+
+## 6. 指标之间的纪律
 
 1. 不同 Grain 的指标不可互换（不变量 16）
 2. 每指标必须披露：Numerator / Denominator / Observable population / Qualified population / Runtime coverage / Choice mode / **Decision authority / Selection constraint**（Measurement Label）
@@ -215,8 +233,8 @@ Capability Operation Reliability / Mean Attempts per Successful Operation）。
 5. Category 绑定 `category_id + category_version`，SoC 类指标必须声明
 6. 比较类指标三轴声明：Choice Mode × Decision Authority × Selection Constraint（不变量 24）
 
-## 6. 待 AUP 的指标（Draft 0.4 不正式化）
+## 7. 待 AUP 的指标（Draft 0.4 不正式化）
 
 - First-choice Rate、Substitution/Switch Rate、Dependency、Substitutability
-- Task Success Association、Incremental Lift（实验设计见 AgentMeasure 0.5）
+- Task Success Association（与 M5.1 的关联区分见 uplift-audit 提案）
 - Effect 类 Utility（世界状态改变验证，见 Core §2.7）

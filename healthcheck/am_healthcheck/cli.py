@@ -28,6 +28,8 @@ from . import share as share_mod
 from . import snapshot as snapshot_mod
 from . import schema as schema_mod
 from . import sdk_events as sdk_events_mod
+from . import settle as settle_mod
+from . import export as export_mod
 # Conformance pack loaded lazily in cmd_conformance
 
 DEFAULT_DAYS = 7
@@ -190,7 +192,9 @@ def _analyze(paths: List[str], project: Optional[str], window_label: str,
 def _run_check(paths: List[str], mode: str, window_label: str, command: str,
                html_path: str, json_path, share_path, snapshot_path,
                use_history: bool, home=None, project=None, runtime: str = "codex",
-               audit_mode: bool = False, sdk_events_path: str = None) -> int:
+               audit_mode: bool = False, sdk_events_path: str = None,
+               otel_path: Optional[str] = None,
+               prom_path: Optional[str] = None) -> int:
     output_error = _validate_output_paths(paths, html_path, json_path, share_path,
                                           snapshot_path)
     if output_error:
@@ -223,16 +227,16 @@ def _run_check(paths: List[str], mode: str, window_label: str, command: str,
         print("\nerror: could not write HTML report: %s" % exc, file=sys.stderr)
         return 2
 
+    payload = {
+        "schema": schema_mod.REPORT_SCHEMA,
+        "tool": "agentmeasure-healthcheck", "version": __version__,
+        "mode": mode, "window": window_label,
+        "overview": snapshot_mod.overview_dict(ov),
+        "checks": [_check_dict(c) for c in check_results],
+        "coverage": [_finding_dict(f) for f in coverage],
+        "share_summary": summary,
+    }
     if json_path:
-        payload = {
-            "schema": schema_mod.REPORT_SCHEMA,
-            "tool": "agentmeasure-healthcheck", "version": __version__,
-            "mode": mode, "window": window_label,
-            "overview": snapshot_mod.overview_dict(ov),
-            "checks": [_check_dict(c) for c in check_results],
-            "coverage": [_finding_dict(f) for f in coverage],
-            "share_summary": summary,
-        }
         try:
             with open(json_path, "w", encoding="utf-8") as fh:
                 # ASCII escaping keeps lone Unicode surrogates from malformed
@@ -243,6 +247,24 @@ def _run_check(paths: List[str], mode: str, window_label: str, command: str,
             print("error: could not write JSON export: %s" % exc, file=sys.stderr)
             return 2
         print("JSON export  → %s" % os.path.abspath(json_path))
+
+    if otel_path:
+        try:
+            with open(otel_path, "w", encoding="utf-8") as fh:
+                fh.write(export_mod.to_otel(payload))
+        except OSError as exc:
+            print("error: could not write OTel export: %s" % exc, file=sys.stderr)
+        else:
+            print("OTel export  → %s" % os.path.abspath(otel_path))
+
+    if prom_path:
+        try:
+            with open(prom_path, "w", encoding="utf-8") as fh:
+                fh.write(export_mod.to_prometheus(payload))
+        except OSError as exc:
+            print("error: could not write Prometheus export: %s" % exc, file=sys.stderr)
+        else:
+            print("Prometheus  → %s" % os.path.abspath(prom_path))
 
     if share_path:
         if share_path.endswith(".json"):
@@ -340,7 +362,9 @@ def cmd_check(args) -> int:
     return _run_check(paths, mode, window_label, command, html_path,
                       args.json, args.share, snapshot_path,
                       not args.no_history, project=args.project, runtime=runtime,
-                      audit_mode=args.audit, sdk_events_path=args.sdk_events)
+                      audit_mode=args.audit, sdk_events_path=args.sdk_events,
+                      otel_path=getattr(args, "export_otel", None),
+                      prom_path=getattr(args, "export_prometheus", None))
 
 
 def cmd_demo(args) -> int:
@@ -528,6 +552,13 @@ def cmd_history(args) -> int:
                  e.get("executions", "?"), e.get("failed", "?"),
                  e.get("retry_chains", "?")))
     print("local file only — never uploaded; delete it to reset run numbering.")
+    return 0
+
+
+def cmd_trend(args) -> int:
+    """Aggregate local run history into a trend report (weekly/monthly)."""
+    t = history_mod.trend()
+    print(history_mod.render_trend(t))
     return 0
 
 
@@ -746,6 +777,31 @@ def _add_filter_args(parser) -> None:
                               "contains SUBSTRING, case-insensitive")
 
 
+def cmd_settle(args) -> int:
+    """Generate a settlement evidence bundle from effect-confirmed records."""
+    try:
+        bundle = settle_mod.generate_bundle(
+            effects_path=args.effects,
+            output_path=args.output,
+            metadata={"period_start": args.period_start,
+                      "period_end": args.period_end,
+                      "evidence_level": args.evidence,
+                      "provider": args.provider,
+                      "offering": args.offering}
+        )
+    except (ValueError, OSError) as e:
+        print("error: %s" % e, file=sys.stderr)
+        return 2
+
+    print("Settlement bundle  \u2192 %s" % os.path.abspath(args.output))
+
+    if args.verbose:
+        print()
+        print(settle_mod.bundle_report(bundle))
+
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="agentmeasure",
@@ -776,6 +832,10 @@ def build_parser() -> argparse.ArgumentParser:
                               "operation resolution, cache accounting, token stability)")
     p_check.add_argument("--sdk-events", metavar="PATH", default=None,
                          help="cross-side pairing with @agentmeasure/mcp SDK observations JSONL")
+    p_check.add_argument("--export-otel", metavar="PATH", default=None,
+                         help="export report to OpenTelemetry metrics JSON")
+    p_check.add_argument("--export-prometheus", metavar="PATH", default=None,
+                         help="export report to Prometheus text format")
     p_check.set_defaults(func=cmd_check)
 
     p_demo = sub.add_parser("demo", help="run on a bundled synthetic session")
@@ -829,9 +889,34 @@ def build_parser() -> argparse.ArgumentParser:
                         help="comma-separated invariant ids that must be PROVEN")
     p_conf.set_defaults(func=cmd_conformance)
 
+    p_settle = sub.add_parser("settle",
+                               help="generate a settlement evidence bundle for outcome-based billing")
+    p_settle.add_argument("--effects", required=True,
+                          help="path to effect-confirmed JSONL")
+    p_settle.add_argument("--output", required=True,
+                          help="output JSON path")
+    p_settle.add_argument("--provider", default="",
+                          help="provider identifier")
+    p_settle.add_argument("--offering", default="",
+                          help="offering identifier")
+    p_settle.add_argument("--period-start",
+                          help="billing period start (ISO 8601)")
+    p_settle.add_argument("--period-end",
+                          help="billing period end (ISO 8601)")
+    p_settle.add_argument("--evidence",
+                          choices=["none", "v2_ablation", "v4_holdout"],
+                          default="none",
+                          help="incrementality evidence level")
+    p_settle.add_argument("--verbose", "-v", action="store_true",
+                          help="print human-readable report after generation")
+    p_settle.set_defaults(func=cmd_settle)
+
     p_hist = sub.add_parser("history", help="show local run history")
     p_hist.add_argument("--last", type=int, default=10)
     p_hist.set_defaults(func=cmd_history)
+
+    p_trend = sub.add_parser("trend", help="aggregate run history into weekly/monthly trend report")
+    p_trend.set_defaults(func=cmd_trend)
 
     p_self = sub.add_parser("selftest", help="verify adapters/checks on bundled fixtures")
     p_self.set_defaults(func=cmd_selftest)

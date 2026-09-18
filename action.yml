@@ -19,6 +19,9 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - name: Install AgentMeasure
+      shell: bash
+      run: pipx install agentmeasure
     - name: Run AgentMeasure conformance pack
       shell: bash
       env:
@@ -32,7 +35,7 @@ runs:
         [ -n "$AM_METADATA" ] && ARGS+=("--metadata" "$AM_METADATA")
         [ -n "$AM_CLAIMS" ] && ARGS+=("--claims" "$AM_CLAIMS")
         [ -n "$AM_REQUIRE" ] && ARGS+=("--require" "$AM_REQUIRE")
-        python3 "${{ github.action_path }}/conformance/pack/agentmeasure" "${ARGS[@]}" | tee pack-report.txt
+        agentmeasure "${ARGS[@]}" | tee pack-report.txt
         echo '## AgentMeasure Conformance' >> "$GITHUB_STEP_SUMMARY"
         echo '```' >> "$GITHUB_STEP_SUMMARY"
         cat pack-report.txt >> "$GITHUB_STEP_SUMMARY"

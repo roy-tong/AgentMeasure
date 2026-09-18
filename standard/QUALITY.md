@@ -125,3 +125,4 @@ Choice mode:        exclusive
 | 总体推断条件满足 | Estimated Agent Ecosystem Share | — |
 | first_party_analytics 数据 | First-party analytics | Comparative / market 声称 |
 | UA/clientInfo 匹配 | Caller (declared) | Caller (correlated) / "Agent 使用量" |
+| 主张强度 ≤ 证据等级 | Incremental lift（增量效应） | 将关联数据（correlation）陈述为因果（causation） |

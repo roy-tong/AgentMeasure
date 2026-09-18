@@ -172,3 +172,17 @@ metrics:
       context: production
       validity: normal
     dedup: attempt-unique
+  - id: M5.1
+    name: Incremental Outcome Lift
+    family: outcome
+    grain: outcome
+    object: outcome
+    status: draft
+    numerator: "P(outcome_qualified | treatment) - P(outcome_qualified | control)"
+    denominator: null
+    qualification:
+      context: production
+      validity: normal
+    dedup: outcome-unique
+    evidence_required: counterfactual_arm
+    unprovable_when: counterfactual_arm absent
