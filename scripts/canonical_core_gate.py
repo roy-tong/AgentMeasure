@@ -27,6 +27,10 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "reference"))
 sys.path.insert(0, str(ROOT / "registry"))
 from collector.correlator.correlator import connect, match_invocations  # noqa: E402
+
+# Gate fixtures pin absolute timestamps (2026-08-16); anchor the window to
+# the fixtures, not now (same time-bomb class as verify_vectors).
+GATE_DAYS = 3650
 from collector.aggregator.aggregator import compute  # noqa: E402
 from collector.ingest import ingest_canonical_jsonl  # noqa: E402
 
@@ -80,7 +84,7 @@ def main() -> int:
                                {"tool_call_id": f"tc-{n}", "outcome": "success"},
                                "mcp-wrapper@t", "server", ts))
     conn, ingested = write_and_ingest(events, "bilateral")
-    s = compute(conn, PROJECT)
+    s = compute(conn, PROJECT, days=GATE_DAYS)
     if ingested["rejected"] != 0:
         fails.append(f"bilateral: rejected {ingested['rejected']} (all envelopes must be canonical)")
     if s["logical_invocations"] != 0:
@@ -115,7 +119,7 @@ def main() -> int:
                                {"tool_call_id": f"tc-op-{i}", "outcome": outcome},
                                "mcp-wrapper@t", "server", f"2026-08-16T03:00:0{i}Z"))
     conn, _ = write_and_ingest(events, "operation")
-    s = compute(conn, PROJECT)
+    s = compute(conn, PROJECT, days=GATE_DAYS)
     if s["logical_invocations"] != 1:
         fails.append(f"operation: logical_invocations {s['logical_invocations']} != 1")
     if s["attempts"] != 3:
@@ -182,7 +186,7 @@ def main() -> int:
                            {"task_id": "tk-bad", "task_success": False, "attempt_count": 5},
                            "mcp-wrapper@t", "server", "2026-08-16T05:01:10Z"))
     conn, _ = write_and_ingest(events, "reconciliation")
-    s = compute(conn, PROJECT)
+    s = compute(conn, PROJECT, days=GATE_DAYS)
     rec = s["operation_summary_reconciliation"]
     if rec["status"] != "failed":
         fails.append(f"reconciliation: status {rec['status']} != failed (mismatch must surface)")

@@ -7,6 +7,10 @@
 """
 from __future__ import annotations
 
+# Metric vectors pin absolute timestamps; anchor the window to the
+# fixtures, not the wall clock (see verify_vectors.py note).
+VECTOR_DAYS = 3650
+
 import json
 import sys
 import tempfile
@@ -30,7 +34,7 @@ def _run_selection_rate(vector: dict) -> bool:
         events.append(ev)
     path.write_text("\n".join(json.dumps(e) for e in events), encoding="utf-8")
     ingest_choice_events(conn, path)
-    sm = selection_metrics(conn, vector["input"]["project"])
+    sm = selection_metrics(conn, vector["input"]["project"], days=VECTOR_DAYS)
     exp = vector["expect"]
     if exp.get("denominator_empty"):
         # presentation 不可观察 → 无分母；绝不能产出"0% 选择"类误导值
@@ -63,7 +67,8 @@ def _run_conditional_choice_share(vector: dict) -> bool:
         choice_mode=inp.get("choice_mode"),
         category_id=inp.get("category_id"),
         decision_authority=inp.get("decision_authority"),
-        selection_constraint=inp.get("selection_constraint"))
+        selection_constraint=inp.get("selection_constraint"),
+        days=VECTOR_DAYS)
     exp = vector["expect"]
     return (s["co_presented_decisions"] == exp["co_presented"]
             and s["a_selected"] == exp["a_selected"]
@@ -100,7 +105,7 @@ def _run_consumed_rate(vector: dict) -> bool:
         json.dumps({"type": "request", "mcp_tool": "foo.search", "ts": "2026-08-16T00:01:05Z", "seq": i})
         for i, c in enumerate(vector["input"]["consumptions"])), encoding="utf-8")
     ingest_consumption_events(conn, path, project)
-    s = consumed_rate(conn, project)
+    s = consumed_rate(conn, project, days=VECTOR_DAYS)
     exp = vector["expect"]
     return (s["consumed_results"] == exp["consumed"]
             and s["consumption_observable_invocations"] == exp["observable"]
@@ -140,7 +145,7 @@ def _run_execution_grain(vector: dict) -> bool:
             store_observation(conn, o)
     match_invocations(conn)
     derive_operations(conn)
-    s = compute(conn, project, days=30)
+    s = compute(conn, project, days=VECTOR_DAYS)
     exp = vector["expect"]
     # 断言 expect 中声明的字段（disclosure vectors 可只断言其演示的字段）
     return all(s.get(k) == v for k, v in exp.items())

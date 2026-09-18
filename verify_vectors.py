@@ -13,6 +13,12 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent / "reference"))
 
+# Test vectors pin absolute timestamps; the aggregation window must be
+# anchored to the fixtures, not the wall clock (CI broke 2026-09-15 when the
+# 2026-08-16 fixtures aged out of the 30-day default: the time-bomb class our
+# own audit flags in others' repos). Vectors pass an explicit long window.
+VECTOR_DAYS = 3650
+
 FIXTURES = Path(__file__).resolve().parent / "fixtures"
 
 
@@ -84,7 +90,7 @@ def run_correlation_vectors() -> int:
                 lifecycle_stage="L2"))
             store_observation(conn, obs)
         match_invocations(conn)
-        s = compute(conn, v["input"]["project"])
+        s = compute(conn, v["input"]["project"], days=VECTOR_DAYS)
         exp = v["expect"]
         ok = True
         if "attempts" in exp and s["attempts"] != exp["attempts"]:
@@ -138,7 +144,7 @@ def run_operation_vectors() -> int:
                 task_id=o.get("task_id")))
             store_observation(conn, obs)
         match_invocations(conn)
-        s = compute(conn, v["input"]["project"])
+        s = compute(conn, v["input"]["project"], days=VECTOR_DAYS)
         exp = v["expect"]
         ok = (s["logical_invocations"] == exp["logical_invocations"]
               and s["attempts"] == exp["attempts"])
