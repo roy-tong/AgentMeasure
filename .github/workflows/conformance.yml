@@ -139,9 +139,11 @@ jobs:
           p = tmp / "events.jsonl"
           p.write_text("\n".join(json.dumps(e) for e in events))
           ingest_choice_events(conn, p)
-          sm = selection_metrics(conn, "github.com/foo/bar")
+          # fixture pins 2026-08-16; anchor window to the fixture, not the wall
+          # clock (same class c9a7824 fixed in runners)
+          sm = selection_metrics(conn, "github.com/foo/bar", days=3650)
           assert sm["tools"][0]["observed_selection_rate"] == 0.4, sm
-          cs = conditional_choice_share(conn, "Exa", "Tavily", project_id="github.com/foo/bar")
+          cs = conditional_choice_share(conn, "Exa", "Tavily", project_id="github.com/foo/bar", days=3650)
           assert cs["co_presented_decisions"] == 0, cs  # Tavily 未同台 -> fail-closed 空分母
           print("choice: M2.2=0.4, M2.5 fail-closed OK")
           PY
