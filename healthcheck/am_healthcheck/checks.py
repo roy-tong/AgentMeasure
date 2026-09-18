@@ -383,12 +383,14 @@ def check_duplicate_records(sessions: List[SessionRecord]) -> CheckResult:
             title="Format records executions twice: %d model-side calls vs %d command events"
                   % (call_events, exec_events),
             severity="info",
-            explanation="Codex writes tool calls as response_item records AND as "
-                        "item_completed events. This is by design, but any tool that "
+            explanation="The runtime (Codex: response_item records plus item_completed "
+                        "events; Claude Code: one tool_use seen as both a call and a "
+                        "command event) keeps a model-side stream and a command stream "
+                        "for the same executions. This is by design, but any tool that "
                         "sums both streams (or greps the file for command names) "
                         "double-counts executions. Ratio here: %.2fx." % ratio,
             next_step="Count executions from exactly one stream. This tool uses the "
-                      "item_completed stream (it carries exit codes).")
+                      "command/event stream (it carries outcomes).")
         res.findings.append(f)
 
     res.status = "finding" if any(fl.severity == "finding" for fl in res.findings) else (

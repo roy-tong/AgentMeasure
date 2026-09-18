@@ -2,9 +2,9 @@
 
 Supported runtimes:
 - Codex (rollout JSONL): ~/.codex/sessions/YYYY/MM/DD/rollout-*.jsonl  [supported]
-- Claude Code: ~/.claude/projects/<munged-path>/*.jsonl                 [detected, not yet supported]
+- Claude Code: ~/.claude/projects/<munged-path>/*.jsonl                 [supported]
 
-Discovery reports what it found even when the adapter is absent, so the user
+Discovery reports what it found even when no adapter matches, so the user
 always knows which of their runtimes the current release can read.
 """
 import os
@@ -83,14 +83,33 @@ def collect_codex_files(root: str, since: Optional[datetime], until: Optional[da
     return sorted(out)
 
 
-def collect_claude_files(root: str) -> List[str]:
+def collect_claude_files(root: str, since: Optional[datetime] = None,
+                         until: Optional[datetime] = None) -> List[str]:
+    """Collect Claude Code session files.
+
+    Claude session files are named by session UUID, not by date, so the window
+    filter uses the file mtime as a proxy (disclosed here): files whose mtime
+    cannot be read are kept — dropping them silently would hide data.
+    """
     out: List[str] = []
     if not os.path.isdir(root):
         return out
     for base, _dirs, names in os.walk(root):
         for name in sorted(names):
-            if name.endswith(".jsonl"):
-                out.append(os.path.join(base, name))
+            if not name.endswith(".jsonl"):
+                continue
+            full = os.path.join(base, name)
+            if since is not None or until is not None:
+                try:
+                    mtime = datetime.fromtimestamp(os.path.getmtime(full), tz=timezone.utc)
+                except OSError:
+                    out.append(full)
+                    continue
+                if since and mtime < since:
+                    continue
+                if until and mtime > until + timedelta(days=1):
+                    continue
+            out.append(full)
     return out
 
 
@@ -155,14 +174,13 @@ def discover(since_days: Optional[int] = None, explicit_dir: Optional[str] = Non
         result.runtimes.append(RuntimeFound(
             runtime="codex", supported=True, root=root, files=files, note=note))
 
-    # --- Claude Code: detected, adapter pending real-sample validation ---
+    # --- Claude Code: supported runtime (session JSONL under ~/.claude/projects) ---
     if not explicit_dir:
         croot = claude_root()
-        cfiles = collect_claude_files(croot)
+        cfiles = collect_claude_files(croot, lower, until)
+        note = ""
+        if not cfiles and (lower is not None or until is not None):
+            note = "No Claude session files in the selected window (mtime proxy); try --days N, --since/--until, or --all."
         result.runtimes.append(RuntimeFound(
-            runtime="claude", supported=False, root=croot, files=cfiles,
-            note=("Detected %d Claude Code session file(s); the Claude adapter "
-                  "ships after validation against real samples — this run only "
-                  "reads Codex logs." % len(cfiles)) if cfiles else
-                 "No Claude Code session files found."))
+            runtime="claude", supported=True, root=croot, files=cfiles, note=note))
     return result

@@ -18,6 +18,7 @@ from typing import List, Optional, Tuple
 
 from . import __version__
 from . import checks as checks_mod
+from . import claude as claude_adapter
 from . import codex as codex_adapter
 from . import discover as discover_mod
 from . import history as history_mod
@@ -116,28 +117,50 @@ def _collect_paths(args, since=None, until=None) -> List[str]:
                       "kept (window cannot be decided)" % undated)
             if not paths:
                 raise _InputError("the date filter removed every file under %s" % args.dir)
-        return paths
+        runtime = getattr(args, "runtime", "auto")
+        if runtime == "auto":
+            runtime = "codex"  # legacy default for --dir; pass --runtime claude to override
+        return paths, runtime
 
     result = discover_mod.discover(
         since_days=None if (getattr(args, "all", False) or since or until)
         else getattr(args, "days", DEFAULT_DAYS),
         scan_all=getattr(args, "all", False), since=since, until=until)
-    primary = result.primary()
     for rt in result.runtimes:
         if rt.note:
             print("note [%s]: %s" % (rt.runtime, rt.note))
-    paths = primary.files if primary else []
-    if not paths:
-        raise _InputError("no supported log files found in the selected window. "
-                          "Try --days N, --since/--until, --all, or --dir <path>.")
-    return paths
+    wanted = getattr(args, "runtime", "auto")
+    primary = None
+    if wanted in ("codex", "claude"):
+        for rt in result.runtimes:
+            if rt.runtime == wanted:
+                primary = rt
+                break
+        if primary is None or not primary.files:
+            raise _InputError("no %s log files found in the selected window. "
+                              "Try --days N, --since/--until, --all, or --dir <path>."
+                              % ("Codex rollout" if wanted == "codex" else "Claude Code session"))
+    else:
+        # auto: prefer whichever supported runtime has files; Codex first (legacy default)
+        for rt in result.runtimes:
+            if rt.supported and rt.files:
+                primary = rt
+                break
+        if primary is None:
+            raise _InputError("no supported log files found in the selected window. "
+                              "Try --days N, --since/--until, --all, or --dir <path>.")
+    return primary.files, primary.runtime
 
 
-def _analyze(paths: List[str], project: Optional[str], window_label: str):
+def _analyze(paths: List[str], project: Optional[str], window_label: str,
+             runtime: str = "codex"):
     """Parse, filter, and run checks. Returns everything a report needs."""
-    sessions = [codex_adapter.parse_session(p) for p in paths]
+    adapter = claude_adapter if runtime == "claude" else codex_adapter
+    sessions = [adapter.parse_session(p) for p in paths]
     if not any(_has_supported_signal(s) for s in sessions):
-        raise _InputError("no supported Codex rollout events found in the selected input")
+        raise _InputError("no supported %s events found in the selected input"
+                          % ("Claude Code session" if runtime == "claude"
+                             else "Codex rollout"))
     if project:
         needle = project.lower()
         known = sorted({s.project or "(unknown)" for s in sessions})
@@ -152,7 +175,7 @@ def _analyze(paths: List[str], project: Optional[str], window_label: str):
 
 def _run_check(paths: List[str], mode: str, window_label: str, command: str,
                html_path: str, json_path, share_path, snapshot_path,
-               use_history: bool, home=None, project=None) -> int:
+               use_history: bool, home=None, project=None, runtime: str = "codex") -> int:
     output_error = _validate_output_paths(paths, html_path, json_path, share_path,
                                           snapshot_path)
     if output_error:
@@ -160,14 +183,15 @@ def _run_check(paths: List[str], mode: str, window_label: str, command: str,
         return 2
     try:
         sessions, ov, check_results, coverage, top3, rows = _analyze(
-            paths, project, window_label)
+            paths, project, window_label, runtime)
     except _InputError as exc:
         print("error: %s" % exc, file=sys.stderr)
         return 2
     summary = share_mod.build_share_summary(ov, check_results, mode, window_label)
 
     run_no = history_mod.run_number(mode, home) if use_history else 1
-    runtime_note = "runtime: codex-rollout adapter v%s" % __version__
+    runtime_note = "runtime: %s adapter v%s" % (
+        "claude-code-session" if runtime == "claude" else "codex-rollout", __version__)
 
     print(text_mod.render_terminal(ov, check_results, top3, mode, run_no,
                                    runtime_note))
@@ -287,18 +311,19 @@ def cmd_check(args) -> int:
     mode = "own-data"
     try:
         since, until = _validate_run_args(args)
-        paths = _collect_paths(args, since, until)
+        paths, runtime = _collect_paths(args, since, until)
         window_label = _window_label(args, since, until)
     except _InputError as exc:
         print("error: %s" % exc, file=sys.stderr)
         return 2
 
-    print("reading %d rollout file(s)…" % len(paths))
+    print("reading %d %s file(s)…" % (
+        len(paths), "Claude Code session" if runtime == "claude" else "rollout"))
     html_path = args.html or DEFAULT_HTML
     snapshot_path = _resolve_snapshot_path(args.save_snapshot)
     return _run_check(paths, mode, window_label, command, html_path,
                       args.json, args.share, snapshot_path,
-                      not args.no_history, project=args.project)
+                      not args.no_history, project=args.project, runtime=runtime)
 
 
 def cmd_demo(args) -> int:
@@ -330,11 +355,12 @@ def cmd_compare(args) -> int:
             snap_b["_path"] = os.path.abspath(args.snapshots[1])
         else:
             since, until = _validate_run_args(args)
-            paths = _collect_paths(args, since, until)
+            paths, runtime = _collect_paths(args, since, until)
             window_label = _window_label(args, since, until)
-            print("reading %d rollout file(s) for the fresh side…" % len(paths))
+            print("reading %d %s file(s) for the fresh side…" % (
+                len(paths), "Claude Code session" if runtime == "claude" else "rollout"))
             _sessions, ov, check_results, _cov, _top, rows = _analyze(
-                paths, getattr(args, "project", None), window_label)
+                paths, getattr(args, "project", None), window_label, runtime)
             snap_b = snapshot_mod.build_snapshot(
                 ov, check_results, rows, "own-data", window_label, command)
             snap_b["_path"] = ""
@@ -530,11 +556,16 @@ def cmd_selftest(args) -> int:
         ("codex-retries.jsonl", "HC-03", "finding"),
         ("codex-duplicates.jsonl", "HC-01", "finding"),
         ("codex-corrupt.jsonl", "HC-01", "ok"),
+        ("claude-ok.jsonl", "HC-02", "ok"),
+        ("claude-retries.jsonl", "HC-02", "finding"),
+        ("claude-retries.jsonl", "HC-03", "finding"),
+        ("claude-duplicates.jsonl", "HC-01", "finding"),
     ]
     failures = 0
     for name, check_id, expected in cases:
         path = _fixture_path(name)
-        session = codex_adapter.parse_session(path)
+        adapter = claude_adapter if name.startswith("claude-") else codex_adapter
+        session = adapter.parse_session(path)
         ov, results, coverage, top3 = checks_mod.run_checks([session], "selftest")
         verdict = next((c.status for c in results if c.check_id == check_id), None)
         status = "ok" if verdict == expected else "MISMATCH"
@@ -549,6 +580,13 @@ def cmd_selftest(args) -> int:
         failures += 1
     else:
         print("  %-28s empty file → 0 records  [ok]" % "codex-empty.jsonl")
+
+    claude_empty = claude_adapter.parse_session(_fixture_path("claude-empty.jsonl"))
+    if claude_empty.line_stats.total != 0 or claude_empty.execs or claude_empty.calls:
+        print("  %-28s [MISMATCH] empty file produced records" % "claude-empty.jsonl")
+        failures += 1
+    else:
+        print("  %-28s empty file → 0 records  [ok]" % "claude-empty.jsonl")
 
     summary_session = codex_adapter.parse_session(_fixture_path("codex-ok.jsonl"))
     _ov, results, _cov, _top = checks_mod.run_checks([summary_session], "selftest")
@@ -648,8 +686,11 @@ def _selftest_export_schemas() -> int:
 
 
 def _add_filter_args(parser) -> None:
-    parser.add_argument("--dir", help="explicit directory with rollout-*.jsonl "
-                                       "(skips auto-discovery)")
+    parser.add_argument("--dir", help="explicit directory with agent session logs "
+                                       "(skips auto-discovery; --runtime picks the adapter)")
+    parser.add_argument("--runtime", choices=["auto", "codex", "claude"], default="auto",
+                        help="which runtime's logs to read (default auto: first "
+                             "supported runtime with files, Codex preferred)")
     parser.add_argument("--days", type=int, default=DEFAULT_DAYS,
                          help="look back N days (default %d)" % DEFAULT_DAYS)
     parser.add_argument("--all", action="store_true",

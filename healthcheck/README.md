@@ -10,7 +10,12 @@ Same honesty rules as the [conformance pack](../conformance/pack/README.md):
 every verdict is `OK / FINDING / UNPROVABLE`, and UNPROVABLE is a first-class
 result — when the logs cannot decide, that is disclosed, never zeroed.
 
-> Status: engineering preview (v0.3.0). First adapter: **Codex rollout logs**.
+> Status: engineering preview (v0.3.0). Adapters: **Codex rollout logs** and
+> **Claude Code session logs** (`--runtime claude`; auto-detected when Codex is
+> absent). Claude v1 scope: duplicate / retry / error-run checks fully supported;
+> session token accounting is honestly **UNPROVABLE** — Claude transcripts carry
+> per-request usage only, no cumulative counter, and per-request sums are never
+> presented as session totals.
 > Distribution name decided: **`agentmeasure`** on PyPI (command of the same
 > name). PyPI publish is armed and goes live with tag `v0.3.0` once the PyPI
 > account/trusted publisher is configured — until then use the git install.
@@ -36,8 +41,9 @@ Python 3.9+ standard library only; zero runtime dependencies; no network code
 
 ```bash
 agentmeasure demo      # synthetic session — see it work, no data needed
-agentmeasure check     # your Codex logs, last 7 days
+agentmeasure check     # your agent logs, last 7 days (Codex or Claude Code)
 agentmeasure check --all           # every local session
+agentmeasure check --runtime claude   # force the Claude Code adapter
 agentmeasure check --dir ~/.codex/sessions/2026/09/05
 agentmeasure selftest  # adapters + checks on bundled fixtures
 agentmeasure validate export.json  # check an export against its schema
