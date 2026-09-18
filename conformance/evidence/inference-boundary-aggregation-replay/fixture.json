@@ -1,0 +1,94 @@
+{
+  "fixture_id": "inference-boundary-aggregation-replay-v1",
+  "fixture_status": "synthetic_conformance_fixture",
+  "attribution": {
+    "contributor": "David Turner",
+    "github": "@atomicdjt",
+    "intended_use": "AgentMeasure evidence directory"
+  },
+  "scenario": {
+    "description": "A provider reports an aggregate tool-call count, but its source pointer resolves to two equally plausible records: a measured counter and a replayed cache.",
+    "provider": "example-agent-provider",
+    "provider_output": {
+      "window": "2026-09-16T14:00:00Z/2026-09-16T14:05:00Z",
+      "tool_calls": 12,
+      "source_pointer": "provider://usage/agent-alpha/2026-09-16T14:05:00Z",
+      "status": "complete"
+    },
+    "source_pointer": {
+      "value": "provider://usage/agent-alpha/2026-09-16T14:05:00Z",
+      "resolution": "ambiguous",
+      "plausible_candidates": [
+        {
+          "candidate_id": "counter-20260916-1405",
+          "kind": "measured_counter",
+          "recorded_tool_calls": 12,
+          "status": "observed"
+        },
+        {
+          "candidate_id": "replay-cache-20260916-1405",
+          "kind": "replayed_aggregate",
+          "recorded_tool_calls": 12,
+          "status": "observed"
+        }
+      ],
+      "ambiguity_reason": "The provider output exposes the same window and count for both records but provides no measurement-basis or replay marker."
+    }
+  },
+  "evidence": [
+    {
+      "field": "provider_output.tool_calls",
+      "value": 12,
+      "status": "observed",
+      "basis": "Value returned verbatim by the provider."
+    },
+    {
+      "field": "source_pointer.resolution",
+      "value": "two_plausible_candidates",
+      "status": "derived",
+      "basis": "The pointer resolves to one measured-counter record and one replay-cache record with identical reported counts."
+    },
+    {
+      "field": "aggregation_basis",
+      "value": null,
+      "status": "inferred",
+      "inference": "The result is consistent with either measured or replayed aggregation; the available evidence does not establish which."
+    }
+  ],
+  "expected_behavior": {
+    "decision": "preserve_uncertainty",
+    "reported_count": {
+      "value": 12,
+      "status": "observed",
+      "qualification": "Provider-reported; not independently established as measured."
+    },
+    "aggregation_basis": {
+      "value": null,
+      "status": "inferred",
+      "allowed_candidates": ["measured", "replayed"],
+      "resolution": "unresolved"
+    },
+    "source_pointer": {
+      "status": "derived",
+      "resolution": "ambiguous",
+      "preserve_candidates": true
+    },
+    "forbid": [
+      "Do not label 12 as measured without a resolved measured-counter provenance.",
+      "Do not invent a replacement count or choose a candidate from the pointer alone.",
+      "Do not treat provider status 'complete' as proof of measurement finality."
+    ]
+  },
+  "acceptance_test": {
+    "input": "provider_output plus source_pointer",
+    "pass_if": [
+      "tool_calls remains 12 with status observed",
+      "both plausible source candidates remain represented",
+      "aggregation_basis remains null and unresolved",
+      "the result is not described as measured"
+    ],
+    "fail_if": [
+      "the implementation emits a measured value or silently selects one candidate"
+    ]
+  }
+}
