@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect width="64" height="64" rx="12" fill="#090C10"/>
+  <rect x="1" y="1" width="62" height="62" rx="11" fill="none" stroke="#252D36" stroke-width="2"/>
+  <!-- caliper marks -->
+  <line x1="12" y1="10" x2="12" y2="16" stroke="#252D36" stroke-width="2"/>
+  <line x1="22" y1="10" x2="22" y2="14" stroke="#252D36" stroke-width="2"/>
+  <line x1="32" y1="10" x2="32" y2="16" stroke="#252D36" stroke-width="2"/>
+  <line x1="42" y1="10" x2="42" y2="14" stroke="#252D36" stroke-width="2"/>
+  <line x1="52" y1="10" x2="52" y2="16" stroke="#252D36" stroke-width="2"/>
+  <!-- M glyph -->
+  <path d="M14 46 L14 26 L22 38 L30 26 L30 46" fill="none" stroke="#F2F5F7" stroke-width="4.5" stroke-linecap="square" stroke-linejoin="miter"/>
+  <!-- measurement baseline cursor -->
+  <rect x="38" y="40" width="12" height="6" fill="#6EF2A3"/>
+</svg>

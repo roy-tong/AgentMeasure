@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Outcome-based AI needs a yardstick — AgentMeasure</title>
+  <meta name="description" content="AI services have started charging by the outcome. Nobody defined the outcome. Why usage and outcome measurement needs to be an open standard, and the rules we hold ourselves to.">
+  <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+  <link rel="canonical" href="https://roy-tong.github.io/AgentMeasure/blog/outcome-yardstick.html">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="AgentMeasure">
+  <meta property="og:title" content="Outcome-based AI needs a yardstick">
+  <meta property="og:description" content="AI services have started charging by the outcome. Nobody defined the outcome.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../styles.css">
+  <style>
+    .post { max-width: 44rem; margin: 0 auto; padding: 96px 24px 80px; }
+    .post-back { font-family: var(--mono); font-size: 12px; letter-spacing: 0.08em; color: var(--secondary); }
+    .post-back:hover { color: var(--spec); }
+    .post-k { font-family: var(--mono); font-size: 11px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ok); margin: 26px 0 12px; }
+    .post h1 { font-size: 2.0rem; font-weight: 700; letter-spacing: -0.02em; line-height: 1.2; margin: 10px 0 14px; }
+    .post-meta { font-size: 0.85rem; color: var(--secondary); margin-bottom: 40px; }
+    .post p { font-size: 1.0rem; line-height: 1.7; color: var(--text); margin: 0 0 18px; }
+    .post h2 { font-size: 1.25rem; font-weight: 600; margin: 40px 0 14px; letter-spacing: -0.01em; }
+    .post ul, .post ol { margin: 0 0 18px 22px; }
+    .post li { font-size: 1.0rem; line-height: 1.65; margin-bottom: 8px; }
+    .post pre { background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px 20px; overflow-x: auto; margin: 0 0 18px; }
+    .post code { font-family: var(--mono); font-size: 0.88rem; color: var(--ok); }
+    .post p code, .post li code { color: var(--spec); }
+    .post blockquote { border-left: 3px solid var(--spec); padding: 2px 0 2px 18px; margin: 0 0 18px; color: var(--secondary); }
+    .post a { color: var(--spec); }
+    .post a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <main class="post" id="main">
+    <a class="post-back" href="../index.html">← AgentMeasure</a>
+    <p class="post-k">Position note · Why we build</p>
+    <h1>Outcome-based AI needs a yardstick</h1>
+    <p class="post-meta">Roy Tong · September 2026</p>
+
+    <p>Something quiet happened in software pricing. In August 2024, Zendesk started charging per automated resolution — $1.50 to $2.00 each. Salesforce, Intercom, and Sierra followed: per-resolution billing, per-outcome contracts, money-back guarantees on AI performance. The seat is giving way to the outcome.</p>
+
+    <p>We think this is the right direction, and we think it is missing a piece: <strong>nobody defined the outcome.</strong></p>
+
+    <blockquote>What counts as one resolution? One operation? One “successfully completed task”?</blockquote>
+
+    <p>The edges of that question are exactly where the money sits. A customer who stays silent is counted as resolved by some vendors — and billed. A ticket the customer reopens three days later was, apparently, resolved twice. A retry chain inflates an API bill that was never really three requests. Every one of these is a billing dispute waiting to happen, and both sides of the dispute are currently armed with nothing but their own dashboards.</p>
+
+    <h2>“Just measure the final result” doesn’t work</h2>
+
+    <p>The obvious answer — measure the business result at the end — runs into four gaps that don’t close by themselves:</p>
+
+    <ul>
+      <li><strong>Definition.</strong> The final result itself is ambiguous at the edges. Silence ≠ resolution. Reopened ≠ resolved. The unit of account needs a spec.</li>
+      <li><strong>Attribution.</strong> The outcome happened — but was it the AI? Would it have happened anyway? Without incrementality, per-outcome pricing systematically overpays.</li>
+      <li><strong>Quality.</strong> A resolution in 5 minutes and a resolution in 3 days with two reopens are not the same unit. Without stratification, you get adverse selection and KPI gaming.</li>
+      <li><strong>Evidence.</strong> When money moves on a claim and the claim is disputed, someone needs receipts. Both parties have systems; they disagree.</li>
+    </ul>
+
+    <p>Advertising went through this exact sequence. “Just count the sales” did not kill the measurement industry — it built one: Nielsen made audience a currency, DoubleVerify and IAS verified delivery, AppsFlyer attributed installs. When money attaches to a measured quantity, a measurement layer attaches to the money. Per-outcome AI is now at the start of that same road.</p>
+
+    <h2>What we’re building, and what we refuse</h2>
+
+    <p>AgentMeasure is an attempt to be the open yardstick for that road — usage and outcomes, one semantics, evidence you can audit. The spec, the SDK, conformance checks, and the local dashboard are free and open, and they stay that way. Our first external milestone came the way we think standards actually arrive: an upstream project merged one of our measurement invariants into their main branch.</p>
+
+    <p>Three rules we wrote down before anyone asked us to bend them:</p>
+
+    <ol>
+      <li><strong>Free, forever.</strong> The free list is written into governance, not revocable later. Adoption is the product.</li>
+      <li><strong>Local-first, opt-in.</strong> Raw data never leaves your machine by default. Only aggregated, anonymized evidence returns — only if you choose.</li>
+      <li><strong>The referee doesn’t open a store.</strong> No paid rankings, no recommendation slots, no custody of funds. The moment a referee sells shelf space, the measurements stop meaning anything.</li>
+    </ol>
+
+    <p>That last rule is not a moral pose. Every measurement business that lasted — Nielsen for a hundred years, FICO through institutional adoption — kept the referee out of the storefront. Neutrality is not a constraint on the business; it <em>is</em> the business.</p>
+
+    <h2>Where this goes</h2>
+
+    <p>When enough interactions run through a shared yardstick, some questions become answerable for the first time: which tool actually works, for which kind of task, at what real cost. Those answers belong to whoever runs the measurement — which is why the measurement has to be open, and why we’d rather it be governed in public than owned in private.</p>
+
+    <p>If you run agent-facing software or bill per outcome: <a href="https://github.com/roy-tong/AgentMeasure#external-provider-trials">send us a trace, get a measurement check</a>. If you maintain a telemetry library: our conformance vectors are designed to be merged, not installed. And if you think any of the above is wrong, the <a href="https://github.com/roy-tong/AgentMeasure/discussions">discussions tab</a> is open — we publish our nulls.</p>
+  </main>
+</body>
+</html>

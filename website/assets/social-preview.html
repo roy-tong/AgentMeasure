@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=1280, initial-scale=1">
+  <title>AgentMeasure social preview</title>
+  <style>
+    * { box-sizing: border-box; }
+    html, body { margin: 0; width: 1280px; height: 640px; overflow: hidden; }
+    body {
+      background: #090c10;
+      color: #f2f5f7;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    .canvas {
+      position: relative;
+      width: 1280px;
+      height: 640px;
+      padding: 54px 64px 44px;
+      display: flex;
+      flex-direction: column;
+      isolation: isolate;
+      overflow: hidden;
+    }
+    .canvas::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: -2;
+      background-image:
+        linear-gradient(rgb(242 245 247 / 0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgb(242 245 247 / 0.025) 1px, transparent 1px);
+      background-size: 48px 48px;
+    }
+    .canvas::after {
+      content: "";
+      position: absolute;
+      width: 540px;
+      height: 540px;
+      right: -180px;
+      top: -240px;
+      z-index: -1;
+      border: 1px solid rgb(118 165 255 / 0.18);
+      border-radius: 50%;
+      box-shadow: 0 0 0 88px rgb(118 165 255 / 0.025), 0 0 0 176px rgb(110 242 163 / 0.018);
+    }
+    .top, .bottom, .trace { display: flex; align-items: center; }
+    .top { justify-content: space-between; }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font: 700 30px/1 ui-monospace, "SFMono-Regular", Menlo, monospace;
+      letter-spacing: -0.04em;
+    }
+    .brand b { color: #6ef2a3; font-weight: 700; }
+    .mark {
+      width: 46px;
+      height: 46px;
+      border: 1px solid rgb(110 242 163 / 0.55);
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      color: #6ef2a3;
+      background: rgb(110 242 163 / 0.07);
+      font: 700 17px/1 ui-monospace, "SFMono-Regular", Menlo, monospace;
+      letter-spacing: -0.06em;
+    }
+    .status {
+      border: 1px solid #252d36;
+      border-radius: 8px;
+      padding: 10px 14px;
+      color: #8b96a3;
+      background: #0c1116;
+      font: 600 12px/1 ui-monospace, "SFMono-Regular", Menlo, monospace;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+    main { margin-top: 62px; }
+    h1 {
+      margin: 0;
+      width: 1000px;
+      font-size: 70px;
+      line-height: 0.98;
+      letter-spacing: -0.055em;
+      font-weight: 780;
+    }
+    h1 em { color: #6ef2a3; font-style: normal; }
+    .sub {
+      margin: 24px 0 0;
+      color: #aab4bf;
+      font-size: 23px;
+      line-height: 1.45;
+      letter-spacing: -0.015em;
+    }
+    .bottom {
+      margin-top: auto;
+      justify-content: space-between;
+      gap: 40px;
+    }
+    .trace { gap: 12px; }
+    .trace-step {
+      min-width: 164px;
+      padding: 13px 18px;
+      border: 1px solid #252d36;
+      border-radius: 10px;
+      background: #10151b;
+      color: #f2f5f7;
+      font: 600 16px/1 ui-monospace, "SFMono-Regular", Menlo, monospace;
+    }
+    .trace-step small {
+      display: block;
+      margin-top: 7px;
+      color: #8b96a3;
+      font-size: 10px;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+    }
+    .trace-arrow { color: #6ef2a3; font: 500 19px/1 ui-monospace, monospace; }
+    .url {
+      color: #8b96a3;
+      font: 500 14px/1.4 ui-monospace, "SFMono-Regular", Menlo, monospace;
+      text-align: right;
+    }
+    .url strong { color: #76a5ff; font-weight: 600; }
+  </style>
+</head>
+<body>
+  <div class="canvas">
+    <header class="top">
+      <div class="brand"><span class="mark">AM</span><span>AgentMeasure<b>_</b></span></div>
+      <div class="status">Open source&nbsp;&nbsp; Spec 0.4.4&nbsp;&nbsp; SDK 0.1.1</div>
+    </header>
+
+    <main>
+      <h1>Know what your agent usage metrics <em>actually</em> count.</h1>
+      <p class="sub">Separate operations from attempts. Preserve evidence. Report unknowns honestly.</p>
+    </main>
+
+    <footer class="bottom">
+      <div class="trace" aria-label="One intent, two attempts, one operation">
+        <div class="trace-step">1 intent<small>User goal</small></div>
+        <span class="trace-arrow">→</span>
+        <div class="trace-step">2 attempts<small>Execution facts</small></div>
+        <span class="trace-arrow">→</span>
+        <div class="trace-step">1 operation<small>Logical usage</small></div>
+      </div>
+      <div class="url">roy-tong.github.io/<strong>AgentMeasure</strong></div>
+    </footer>
+  </div>
+</body>
+</html>
