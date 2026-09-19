@@ -1,0 +1,65 @@
+# AgentMeasure
+
+> Open measurement standard for AI agent usage and outcome claims. It defines what
+> counts as one operation, what a result may be called, and what evidence supports
+> what strength of claim. Verdicts are PASS / FAIL / UNPROVABLE.
+> Local-first. No network code in the tool. MIT.
+>
+> Last reviewed: 2026-09-19
+
+## What this standard is
+
+AgentMeasure is the **semantics layer** for agent measurement. It says what a claim
+*means*. It does not judge whether a record is authentic (that is a signing layer)
+and does not judge whether money is owed (that is a billing-reconciliation layer).
+
+Three integrity layers are orthogonal and composable:
+
+- tally integrity (is the amount right) — billing reconciliation tools
+- record integrity (is the record authentic) — signing / transparency layers
+- **classification integrity (what may the outcome be called) — AgentMeasure**
+
+## Canonical documents
+
+- [standard/CORE.md](standard/CORE.md): objects, grains, observability states, invariants
+- [standard/METRICS.md](standard/METRICS.md): metric contracts M1–M6
+- [standard/SETTLEMENT.md](standard/SETTLEMENT.md): AMS-1 settlement statement clauses S-1…S-8
+- [standard/QUALITY.md](standard/QUALITY.md): quality model, use profiles, claim discipline
+- [standard/TRUST.md](standard/TRUST.md): evidence profile axes, including causality V0–V4
+- [standard/scope.md](standard/scope.md): what this standard is not
+- [standard/hard-questions.md](standard/hard-questions.md): answers to the hostile questions
+- [standard/known-limits-unprovable-by-surface.md](standard/known-limits-unprovable-by-surface.md): expected UNPROVABLE rates by topology
+- [extensions/COMMERCIAL.md](extensions/COMMERCIAL.md): economic semantics (experimental)
+
+## Machine-readable single sources of truth
+
+- [registry/vocabularies.yaml](registry/vocabularies.yaml): every enum, generated into schema / TS / Python
+- [registry/metrics.yaml](registry/metrics.yaml): every metric contract
+- [registry/billable-unit.yaml](registry/billable-unit.yaml): billable units
+- [schemas/payloads/](schemas/payloads/): payload schemas per observation type
+
+## Verification
+
+- [conformance/](conformance/): vectors, runners, evidence cases
+- [conformance/README.md](conformance/README.md): check families mapped to invariants
+- Run: `python3 conformance/runners/run_metrics.py`, `run_outcome_audit.py`, `run_delegation.py`
+
+## Tooling
+
+- `pipx run agentmeasure check` — local transcript check (Codex, Claude Code)
+- `pipx run agentmeasure check --audit` — adds operation-resolution, cache, token checks
+- `pipx run agentmeasure conformance --fixture events.jsonl` — fixture conformance
+- `pipx run agentmeasure settle --effects effects.jsonl --statement --price 0.99` — negotiable statement
+
+## Boundaries (do not treat this as a substitute)
+
+- Not an observability platform — use OpenTelemetry, Langfuse, Arize
+- Not a signing or transparency layer — use PEAC, Glacis, IETF SCITT
+- Not a billing-amount reconciliation tool — use a billing audit layer
+- Not a quality scorer — it does not judge whether an answer was good
+- Not a payment rail — measurement never sits in the payment critical path
+
+## Optional
+
+- [proposals/](proposals/): standards-change proposals (AUP)
+- [CI-DISCIPLINE.md](CI-DISCIPLINE.md): tests-before-push rule
