@@ -32,4 +32,21 @@ cd "$tmp"
 "$tmp/venv/bin/agentmeasure" validate "$tmp/demo.json" "$tmp/demo-snap.json"
 "$tmp/venv/bin/python" "$here/examples/track-weekly.py" "$tmp/demo-snap.json" >/dev/null
 
-echo "smoke: install + demo + selftest + validate + external example ALL OK"
+# Settlement surface. `recount --list-vendors` reads the packaged
+# vendor-rules.json, so a data file missing from the wheel fails here rather
+# than only in a user's install. The recount and dispute runs then exercise the
+# rules and the pack writer against the shipped fixture.
+"$tmp/venv/bin/agentmeasure" recount --list-vendors >/dev/null
+"$tmp/venv/bin/agentmeasure" recount \
+    --export "$here/am_healthcheck/fixtures/vendor-export-intercom.csv" \
+    --vendor intercom --json "$tmp/recount.json" >/dev/null
+"$tmp/venv/bin/agentmeasure" recount \
+    --export "$here/am_healthcheck/fixtures/vendor-export-intercom.csv" \
+    --vendor intercom --inspect >/dev/null
+"$tmp/venv/bin/agentmeasure" dispute \
+    --export "$here/am_healthcheck/fixtures/vendor-export-intercom.csv" \
+    --vendor intercom --price 0.99 --out "$tmp/pack" --buyer "smoke" >/dev/null
+test -f "$tmp/pack/dispute-pack.md"
+test -f "$tmp/pack/dispute-pack.json"
+
+echo "smoke: install + demo + selftest + validate + settlement surface ALL OK"

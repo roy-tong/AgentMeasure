@@ -35,7 +35,9 @@ packages = [
 [tool.setuptools.package-data]
 am_healthcheck = [
     "fixtures/*.jsonl",
+    "fixtures/*.csv",
     "demo/*.jsonl",
     "pack_invariants.json",
+    "vendor-rules.json",
     "lab/schemas/funnel-event.schema.json",
 ]
