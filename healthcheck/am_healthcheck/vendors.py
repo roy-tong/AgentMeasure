@@ -5,61 +5,40 @@ Tier 1 of the settlement statement (COMMERCIAL 5.1 D-3) is the audited party's
 the one the vendor cannot argue with: they can dispute the data, which is the
 buyer's, but not their own published rule.
 
-This module holds those rules as data, with a source for each, and applies them
-to a counts-only export. It reads no message text.
+The rules live in `vendor-rules.json`, which is the SINGLE SOURCE OF TRUTH and
+is also read by the browser-local recount at `website/recount.js`. A parity test
+in CI fails if the two implementations disagree on the same fixture. Do not edit
+the rules here; edit the JSON.
 
-Rule confidence:
-  P  read from the vendor's own published documentation
-  S  secondary source (press, help-centre rendering, third-party summary)
-  U  unverified; the rule is recorded but the recount says so
-
-Sources are in the ``source`` field per vendor and per rule.
+This module reads no message text.
 """
 from __future__ import annotations
 
 import csv
+import json
+import os
 from typing import Any, Dict, List, Optional
+
+_RULES_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                           "vendor-rules.json")
+
+with open(_RULES_PATH, "r", encoding="utf-8") as _fh:
+    _RULES = json.load(_fh)
+
+RULES_VERSION: str = _RULES["version"]
 
 # ---------------------------------------------------------------------------
 # The canonical counts-only export shape.
 #
-# This is deliberately small. Nothing here identifies a customer or carries a
-# message. A vendor-specific reader maps that vendor's native export onto these
-# columns; anything the vendor export does not carry stays absent, and an absent
-# column lowers the verdict rather than being guessed.
+# Deliberately small. Nothing here identifies a customer or carries a message.
+# A vendor-specific reader maps that vendor's native export onto these columns;
+# anything the vendor export does not carry stays absent, and an absent column
+# lowers the verdict rather than being guessed.
 # ---------------------------------------------------------------------------
-CANONICAL_COLUMNS = [
-    "conversation_id",          # required
-    "opened_at",                # optional
-    "closed_at",                # optional
-    "human_agent_participated",  # required
-    "issue_addressed",          # required
-    "customer_recontacted_within_window",  # required
-    "vendor_billed",            # required
-]
-
-REQUIRED_COLUMNS = [
-    "conversation_id",
-    "human_agent_participated",
-    "issue_addressed",
-    "customer_recontacted_within_window",
-    "vendor_billed",
-]
-
-# Column-name aliases: the names need not match ours.
-COLUMN_ALIASES = {
-    "conversation_id": ["conversation_id", "conversation", "id", "ticket_id", "ticket"],
-    "opened_at": ["opened_at", "opened_date", "created_at", "created"],
-    "closed_at": ["closed_at", "closed_date", "solved_at", "resolved_at"],
-    "human_agent_participated": ["human_agent_participated", "human_agent_stepped_in",
-                                 "human_agent", "teammate_replied", "agent_stepped_in"],
-    "issue_addressed": ["issue_addressed", "addressed", "solution_provided"],
-    "customer_recontacted_within_window": ["customer_recontacted_within_window",
-                                           "customer_recontacted", "reopened",
-                                           "recontacted_within_window"],
-    "vendor_billed": ["vendor_billed", "billed", "vendor_billed_as_resolution",
-                      "billed_as_resolution", "resolution_billed"],
-}
+CANONICAL_COLUMNS: List[str] = _RULES["canonical_columns"]
+REQUIRED_COLUMNS: List[str] = _RULES["required_columns"]
+COLUMN_ALIASES: Dict[str, List[str]] = _RULES["column_aliases"]
+VENDORS: Dict[str, Dict[str, Any]] = _RULES["vendors"]
 
 _TRUE = {"yes", "true", "1", "y", "t"}
 
@@ -70,127 +49,9 @@ def _as_bool(value: Any) -> Optional[bool]:
     text = str(value).strip().lower()
     if text in _TRUE:
         return True
-    if text in {"no", "false", "0", "n", "f", ""}:
-        return False if text != "" else None
+    if text in {"no", "false", "0", "n", "f"}:
+        return False
     return None
-
-
-# ---------------------------------------------------------------------------
-# Vendor rules
-# ---------------------------------------------------------------------------
-VENDORS: Dict[str, Dict[str, Any]] = {
-    "intercom": {
-        "name": "Intercom Fin",
-        "unit_price": 0.99,
-        "currency": "USD",
-        "confidence": "P",
-        "source": "fin.ai pricing & outcomes; Intercom help centre (Fin AI Agent outcomes)",
-        # Intercom bills a resolution the customer confirmed OR one its own system
-        # assumed after the disengagement window. It is the only vendor found with
-        # a documented cross-billing-period reopen deduction.
-        "billing_trigger": "confirmed_or_assumed",
-        "silence_bills": True,
-        "silence_window_hours": 24,
-        "reopen_deduction": "documented_including_cross_period",
-        "closure_timers_hours": {"messaging": 24, "email": 72},
-        "notes": [
-            "confirmed resolution rate and assumed resolution rate are separate "
-            "published metrics, so a buyer can at least see the split",
-            "resolution state is filterable and exposed via API v2.11+",
-        ],
-    },
-    "zendesk": {
-        "name": "Zendesk AI Agents",
-        "unit_price": 2.00,          # PAYG; committed is 1.20-1.50
-        "currency": "USD",
-        "confidence": "P",
-        "source": "Zendesk help centre: About the automated resolutions platform; "
-                  "About automated resolution tiers (edited 2026-08-25)",
-        # The most conservative published rule in the category: silence alone is
-        # NOT billed. Only an affirmative LLM adjudication (Verified resolution)
-        # bills. Contained resolution is the failed-verification tier and is free.
-        "billing_trigger": "llm_verified_only",
-        "silence_bills": False,
-        "silence_window_hours": None,
-        "reopen_deduction": "not_documented",
-        "closure_timers_hours": {"email": 72, "messaging": 2, "voice": 0},
-        "no_reversal": "deleting a ticket with Resolution type Automated "
-                       "does not undo the consumption of an automated resolution",
-        "no_rollover": True,
-        "notes": [
-            "criteria, thresholds and error rate behind the LLM adjudication are "
-            "not published",
-            "unused allowance does not roll over to the next billing period",
-        ],
-    },
-    "hubspot": {
-        "name": "HubSpot Breeze",
-        "unit_price": 0.50,
-        "currency": "USD",
-        "confidence": "S",
-        "source": "secondary; knowledge.hubspot.com is JS-only and could not be read",
-        # Resolved = the agent shared a content source or performed an action AND
-        # no human handoff within 72h; evaluated and locked 72h after the last reply.
-        "billing_trigger": "assumed_with_lock",
-        "silence_bills": True,
-        "silence_window_hours": 72,
-        "reopen_deduction": "none_after_lock",
-        "closure_timers_hours": {"email": 72, "messaging": 72},
-        "structural_risk": "a reopen after the 72-hour lock starts a FRESH "
-                           "billable window instead of deducting the original, "
-                           "which is a double-billing risk rather than a protection",
-    },
-    "ada": {
-        "name": "Ada",
-        "unit_price": None,
-        "currency": None,
-        "confidence": "S",
-        "source": "ada.cx pricing/terms returned 403; rule reported from public docs",
-        # Relevant + Accurate + Safe + Contained, assessed after the conversation.
-        "billing_trigger": "algorithmic_classification",
-        "silence_bills": True,
-        "silence_window_hours": 24,
-        "reopen_deduction": "not_documented",
-        "closure_timers_hours": {"web": 24, "social": 24, "email": 72},
-        "operator_override": "operator feedback does not override the automatic "
-                             "classification",
-        "export_fields": [
-            "automated_resolution_classification",
-            "automated_resolution_classification_reason",
-            "is_escalated",
-            "csat.resolved",
-        ],
-    },
-    "salesforce": {
-        "name": "Salesforce Agentforce Help Agent",
-        "unit_price": None,
-        "currency": None,
-        "confidence": "U",
-        "source": "press release only; no official metering document is published",
-        "billing_trigger": "autonomous_completion",
-        "silence_bills": None,
-        "silence_window_hours": None,
-        "reopen_deduction": "not_documented",
-        "closure_timers_hours": {},
-        "notes": [
-            "no timer, no reopen rule, and no clawback are published",
-            "the broader Agentforce product is billed whether or not the issue "
-            "was resolved",
-        ],
-    },
-    "generic": {
-        "name": "Generic per-resolution vendor",
-        "unit_price": None,
-        "currency": None,
-        "confidence": "U",
-        "source": "no vendor rules; only the AgentMeasure standard is applied",
-        "billing_trigger": "unknown",
-        "silence_bills": None,
-        "silence_window_hours": None,
-        "reopen_deduction": "not_documented",
-        "closure_timers_hours": {},
-    },
-}
 
 
 def get_vendor(vendor_id: str) -> Dict[str, Any]:

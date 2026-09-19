@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AgentMeasure — recount a billing month in your browser</title>
+<style>
+:root{--ink:#1d1b17;--soft:#5b5548;--line:#ddd3c2;--panel:#faf7f0;--accent:#a4511f;
+--ok:#2c6e49;--find:#a4511f;--unprov:#7a6a2f;--info:#4a5d82;--bg:#f4efe5}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+font:15px/1.7 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC",sans-serif}
+main{max-width:900px;margin:0 auto;padding:34px 24px 70px}
+h1{font-size:25px;margin:0 0 6px;letter-spacing:-.3px}
+h2{font-size:18px;margin:32px 0 10px;border-bottom:2px solid var(--ink);padding-bottom:6px}
+p.lead{color:var(--soft);margin:0 0 18px}
+#drop{border:2px dashed var(--line);border-radius:10px;background:var(--panel);
+padding:34px 20px;text-align:center;cursor:pointer;transition:.15s}
+#drop.over{border-color:var(--accent);background:#f6ecdf}
+#drop strong{display:block;font-size:16px;margin-bottom:4px}
+#drop span{color:var(--soft);font-size:13px}
+.row{display:flex;gap:12px;flex-wrap:wrap;margin:16px 0}
+label{font-size:13px;color:var(--soft);display:block;margin-bottom:4px}
+select,input{border:1px solid var(--line);border-radius:6px;padding:7px 10px;
+font:inherit;background:#fff;min-width:190px}
+button{background:var(--ink);color:#fff;border:0;border-radius:6px;padding:9px 16px;
+font:inherit;cursor:pointer}
+button:disabled{opacity:.45;cursor:default}
+.hidden{display:none}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin:14px 0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px 14px}
+.card .k{font-size:11.5px;letter-spacing:.4px;color:var(--soft);text-transform:uppercase;font-weight:600}
+.card .v{font-size:22px;margin:3px 0 1px}
+.card .n{font-size:12px;color:var(--soft)}
+.card.over .v{color:var(--find)}.card.under .v{color:var(--ok)}.card.cannot .v{color:var(--unprov)}
+table{width:100%;border-collapse:collapse;font-size:13.5px;margin:10px 0}
+th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line)}
+th{font-size:11.5px;letter-spacing:.4px;color:var(--soft);text-transform:uppercase}
+td.num{text-align:right;font-variant-numeric:tabular-nums}
+.tag{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.4px;
+padding:2px 7px;border-radius:4px}
+.t-over{background:#f4ddcc;color:var(--find)}
+.t-under{background:#dcebe1;color:var(--ok)}
+.t-cannot{background:#efe7c6;color:var(--unprov)}
+.note{background:#f3e3c8;border:1px solid #d8bf92;border-radius:6px;padding:10px 14px;
+font-size:13px;margin:14px 0}
+.privacy{background:var(--panel);border:1px solid var(--line);border-radius:8px;
+padding:12px 16px;font-size:13px;color:var(--soft);margin-top:26px}
+code{background:#eee7da;padding:1px 5px;border-radius:3px;font-size:12.5px}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px}
+</style>
+</head>
+<body>
+<main>
+  <h1>Recount a billing month in your browser</h1>
+  <p class="lead">Drop your helpdesk export. The recount applies <strong>your vendor's
+  own published rules</strong>, line by line, and reports findings in both directions.
+  Nothing is uploaded, and no message text is read.</p>
+
+  <div id="drop" tabindex="0" role="button" aria-label="Choose a counts-only CSV export">
+    <strong>Drop a counts-only CSV here, or click to choose</strong>
+    <span>7 columns, 5 required. Column names need not match ours.</span>
+    <input type="file" id="file" accept=".csv,text/csv" class="hidden">
+  </div>
+
+  <div class="row">
+    <div>
+      <label for="vendor">Vendor rules to apply</label>
+      <select id="vendor"></select>
+    </div>
+    <div>
+      <label for="price">Price per resolution (optional override)</label>
+      <input type="number" id="price" step="0.01" min="0" placeholder="from the vendor rule">
+    </div>
+    <div>
+      <label for="buyer">Sign the statement as (optional)</label>
+      <input type="text" id="buyer" placeholder="your team">
+    </div>
+  </div>
+
+  <div id="align" class="hidden"></div>
+  <div id="out" class="hidden"></div>
+
+  <div class="privacy">
+    <strong>What leaves your machine: nothing.</strong>
+    This page makes no network request after it loads. Turn your wifi off and it
+    still works. The export is read in this tab, the recount runs here, and the
+    statement is yours to keep. No message text, no customer content, no helpdesk
+    credential is touched.
+    <br><br>
+    The vendor rules come from <code>registry/vendor-rules.json</code>, the same
+    file the command-line tool reads. A parity test in CI fails if this page and
+    the CLI disagree on the same fixture, so the two cannot drift.
+  </div>
+</main>
+
+<script src="vendor-rules.js"></script>
+<script src="recount.js"></script>
+<script>
+(function () {
+  "use strict";
+  var RULES = window.AGENTMEASURE_VENDOR_RULES;
+  var am = window.AgentMeasureRecount(RULES);
+  var current = null;
+
+  var drop = document.getElementById("drop");
+  var fileInput = document.getElementById("file");
+  var vendorSel = document.getElementById("vendor");
+  var priceInput = document.getElementById("price");
+  var buyerInput = document.getElementById("buyer");
+  var alignBox = document.getElementById("align");
+  var outBox = document.getElementById("out");
+
+  Object.keys(RULES.vendors).sort().forEach(function (id) {
+    var v = RULES.vendors[id];
+    var opt = document.createElement("option");
+    opt.value = id;
+    opt.textContent = v.name + " [" + v.confidence + "]";
+    vendorSel.appendChild(opt);
+  });
+  vendorSel.value = "intercom";
+
+  function esc(s) {
+    return String(s === null || s === undefined ? "" : s)
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  }
+  function money(cur, n) { return (cur || "") + " " + Number(n).toFixed(2); }
+
+  function readFile(file) {
+    var reader = new FileReader();
+    reader.onload = function () { handleText(String(reader.result), file.name); };
+    reader.readAsText(file);
+  }
+
+  function handleText(text, name) {
+    var exportData = am.loadExport(text);
+    alignBox.classList.remove("hidden");
+    var rows = exportData.columns_found.map(function (c) {
+      return "<tr><td class='mono'>" + esc(c) + "</td><td>matched</td></tr>";
+    }).join("");
+    var missing = exportData.columns_missing.map(function (c) {
+      return "<tr><td class='mono'>" + esc(c) + "</td><td class='tag t-cannot'>missing</td></tr>";
+    }).join("");
+    alignBox.innerHTML = "<h2>Column alignment</h2>" +
+      "<p class='lead'>Checked before any number is produced, so a wrong mapping " +
+      "cannot be misread as a finding.</p>" +
+      "<table><tr><th>field</th><th>status</th></tr>" + rows + missing + "</table>" +
+      (exportData.columns_missing.length
+        ? "<div class='note'>Required columns are missing. Every row will be " +
+          "<code>cannot_settle</code>. Fix the export before reading the recount.</div>"
+        : "");
+
+    var price = priceInput.value ? Number(priceInput.value) : null;
+    var result = am.recount(exportData, vendorSel.value);
+    if (price !== null && !isNaN(price)) {
+      // Recompute the dollar fields against the override.
+      var over = result.counts[am.BILLED_BUT_NOT_BILLABLE];
+      var under = result.counts[am.BILLABLE_BUT_NOT_BILLED];
+      var cannot = result.counts[am.CANNOT_SETTLE];
+      result.unit_price = price;
+      result.variance = Math.round((over - under) * price * 100) / 100;
+      result.overcharge_amount = Math.round(over * price * 100) / 100;
+      result.undercharge_amount = Math.round(under * price * 100) / 100;
+      result.cannot_settle_amount = Math.round(cannot * price * 100) / 100;
+    }
+    current = { result: result, name: name, exportData: exportData, text: text };
+    render(result);
+  }
+
+  function render(r) {
+    var c = r.counts;
+    var over = c[am.BILLED_BUT_NOT_BILLABLE];
+    var under = c[am.BILLABLE_BUT_NOT_BILLED];
+    var cannot = c[am.CANNOT_SETTLE];
+    var agreed = c[am.AGREES];
+
+    var html = "<h2>Tier 1 recount — " + esc(r.vendor_name) + "'s own published rules</h2>";
+    html += "<p class='lead'>Rule source: " + esc(r.vendor_rule_source) +
+            " · confidence <strong>" + esc(r.vendor_rule_confidence) + "</strong></p>";
+
+    html += "<div class='cards'>" +
+      card("over", "billed, not billable", over, "under their own rule") +
+      card("under", "billable, not billed", under, "in the vendor's favour") +
+      card("cannot", "cannot settle", cannot, "removed from the claim") +
+      card("", "agrees", agreed, "no finding") +
+      "</div>";
+
+    if (r.unit_price) {
+      html += "<div class='cards'>" +
+        card("over", "overcharge identified", money(r.currency, r.overcharge_amount), "") +
+        card("under", "undercharge", money(r.currency, r.undercharge_amount), "") +
+        card("", "net variance", money(r.currency, r.variance), "netted before claiming") +
+        card("cannot", "cannot settle", money(r.currency, r.cannot_settle_amount), "not zeroed") +
+        "</div>";
+    }
+
+    html += "<div class='note'>Under-billing is netted before any dollar is claimed, " +
+            "and rows that cannot be settled are removed from the claim rather than " +
+            "discounted. A statement that only ever found against the vendor would " +
+            "not be a statement.</div>";
+
+    var disputed = r.verdicts.filter(function (v) {
+      return v.verdict === am.BILLED_BUT_NOT_BILLABLE || v.verdict === am.BILLABLE_BUT_NOT_BILLED;
+    });
+    if (disputed.length) {
+      html += "<h2>Disputed conversations</h2><table>" +
+        "<tr><th>conversation</th><th class='num'>export line</th><th>finding</th></tr>";
+      disputed.forEach(function (v) {
+        var label = v.verdict === am.BILLED_BUT_NOT_BILLABLE
+          ? "<span class='tag t-over'>billed, not billable</span>"
+          : "<span class='tag t-under'>billable, not billed</span>";
+        html += "<tr><td class='mono'>" + esc(v.conversation_id) +
+                "</td><td class='num'>" + v.line + "</td><td>" + label + "</td></tr>";
+      });
+      html += "</table>";
+    }
+
+    var unsettled = r.verdicts.filter(function (v) { return v.verdict === am.CANNOT_SETTLE; });
+    if (unsettled.length) {
+      html += "<h2>Cannot settle (removed from the claim)</h2><table>" +
+        "<tr><th>conversation</th><th class='num'>export line</th></tr>";
+      unsettled.forEach(function (v) {
+        html += "<tr><td class='mono'>" + esc(v.conversation_id) +
+                "</td><td class='num'>" + v.line + "</td></tr>";
+      });
+      html += "</table>";
+    }
+
+    html += "<div class='row'><button id='dl'>Download the pack (JSON)</button></div>";
+
+    outBox.classList.remove("hidden");
+    outBox.innerHTML = html;
+    document.getElementById("dl").onclick = download;
+  }
+
+  function card(cls, k, v, n) {
+    return "<div class='card " + cls + "'><div class='k'>" + esc(k) + "</div>" +
+           "<div class='v'>" + esc(v) + "</div><div class='n'>" + esc(n) + "</div></div>";
+  }
+
+  function download() {
+    if (!current) return;
+    var buyer = buyerInput.value || "(unspecified)";
+    var payload = {
+      schema: "agentmeasure.commercial/dispute-pack",
+      schema_version: "0.1.0",
+      generated_at: new Date().toISOString(),
+      generated_by: "browser-local recount (no upload)",
+      vendor: {
+        id: current.result.vendor_id,
+        name: current.result.vendor_name,
+        rule_confidence: current.result.vendor_rule_confidence,
+        rule_source: current.result.vendor_rule_source
+      },
+      buyer_label: buyer,
+      unit_price: current.result.unit_price,
+      currency: current.result.currency,
+      tier1: current.result,
+      inputs: {
+        export_file: current.name,
+        export_columns: current.exportData.export_columns,
+        columns_missing: current.exportData.columns_missing
+      },
+      claim: {
+        billed_but_not_billable: current.result.counts[am.BILLED_BUT_NOT_BILLABLE],
+        billable_but_not_billed: current.result.counts[am.BILLABLE_BUT_NOT_BILLED],
+        net: current.result.net_findings,
+        cannot_settle: current.result.counts[am.CANNOT_SETTLE],
+        netting_rule: "under-billing is netted before any dollar is claimed",
+        cannot_settle_rule: "removed from the claim, not zeroed",
+        dollars: current.result.unit_price ? {
+          overcharge: current.result.overcharge_amount,
+          undercharge: current.result.undercharge_amount,
+          net_variance: current.result.variance,
+          cannot_settle_removed: current.result.cannot_settle_amount
+        } : null
+      }
+    };
+    var blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "dispute-pack.json";
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
+
+  drop.addEventListener("click", function () { fileInput.click(); });
+  drop.addEventListener("keydown", function (e) {
+    if (e.key === "Enter" || e.key === " ") { e.preventDefault(); fileInput.click(); }
+  });
+  fileInput.addEventListener("change", function () {
+    if (fileInput.files.length) readFile(fileInput.files[0]);
+  });
+  ["dragenter", "dragover"].forEach(function (ev) {
+    drop.addEventListener(ev, function (e) { e.preventDefault(); drop.classList.add("over"); });
+  });
+  ["dragleave", "drop"].forEach(function (ev) {
+    drop.addEventListener(ev, function (e) { e.preventDefault(); drop.classList.remove("over"); });
+  });
+  drop.addEventListener("drop", function (e) {
+    if (e.dataTransfer.files.length) readFile(e.dataTransfer.files[0]);
+  });
+  vendorSel.addEventListener("change", function () {
+    if (current) handleText(current.text, current.name);
+  });
+})();
+</script>
+</body>
+</html>

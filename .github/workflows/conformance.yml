@@ -75,9 +75,16 @@ jobs:
       - name: "Outcome-family conformance (OUT-001..004: definability / traceability / reopen dedup / claim-evidence)"
         run: |
           python3 conformance/runners/run_outcome_audit.py
-      - name: "Delegation-family conformance (DELEGATION-001..003: no-flattening / DAG depth / cross-harness cost)"
+      - name: "Delegation-family conformance (DELEGATION-001..007: counting + the four failure modes)"
         run: |
           python3 conformance/runners/run_delegation.py
+      - name: "Browser-local recount: rules file in sync with the registry"
+        run: |
+          python3 scripts/gen_web_rules.py --check
+      - name: "Browser-local recount: JS and Python parity on the same fixture"
+        run: |
+          python3 -m unittest discover -s tests -p "test_parity.py" -v
+        working-directory: healthcheck
       - name: "Evidence case: assumed-resolution (pins the published 70% vs 40% numbers)"
         run: |
           python3 conformance/evidence/assumed-resolution/run_case.py
