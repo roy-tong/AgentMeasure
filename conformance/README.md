@@ -19,16 +19,16 @@
 
 认证声明示例：`<your implementation> — AgentMeasure Choice Conformant (Draft 0.4)`
 
-### 结算场景渐进阶梯（AMS-1 · S-L0…S-L3）
+### 结算场景渐进阶梯（AMS-1 · Stage 0…3）
 
 面向只需结算声明能力的实现方（PEAC 式渐进采用，与上表指标族正交）：
 
 | 阶梯 | 能力 | 验证 |
 | --- | --- | --- |
-| **S-L0 Discovery** | 读懂 [standard/SETTLEMENT.md](../standard/SETTLEMENT.md) 与 [settlement.manifest.json](../standard/settlement.manifest.json) | — |
-| **S-L1 Transport** | effect-confirmed JSONL 收发（schema 校验族） | settle 校验测试 |
-| **S-L2 Policy** | OUT 审计（UNPROVABLE fail-closed + OUT-005 对称披露） | `run_outcome_audit.py` |
-| **S-L3 Commerce** | 生成 ADB + AMS-1 一页纸声明 | `settle --format md`（`test_settle.py`） |
+| **Stage 0 — Discovery** | 读懂 [standard/SETTLEMENT.md](../standard/SETTLEMENT.md) 与 [settlement.manifest.json](../standard/settlement.manifest.json) | — |
+| **Stage 1 — Transport** | effect-confirmed JSONL 收发（schema 校验族） | settle 校验测试 |
+| **Stage 2 — Policy** | OUT 审计（UNPROVABLE fail-closed + OUT-005 对称披露） | `run_outcome_audit.py` |
+| **Stage 3 — Commerce** | 生成 ADB + AMS-1 一页纸声明 | `settle --format md`（`test_settle.py`） |
 
 ## 运行
 

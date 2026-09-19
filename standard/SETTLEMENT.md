@@ -117,10 +117,10 @@ agentmeasure settle --effects effects.jsonl --format md \
 
 | 阶梯 | 能力 | 声称示例 |
 | --- | --- | --- |
-| **S-L0 Discovery** | 读懂本标准与 manifest 条款 | "AMS-1 S-L0 aware" |
-| **S-L1 Transport** | 发送/接受 effect-confirmed JSONL（schema 合规） | "AMS-1 S-L1 conformant" |
-| **S-L2 Policy** | 通过 OUT 审计向量（UNPROVABLE fail-closed、OUT-005 对称披露） | "AMS-1 S-L2 conformant" |
-| **S-L3 Commerce** | 生成 ADB + 合规一页纸声明（settle 命令） | "AMS-1 S-L3 conformant" |
+| **Stage 0 — Discovery** | 读懂本标准与 manifest 条款 | "AMS-1 Stage 0 aware" |
+| **Stage 1 — Transport** | 发送/接受 effect-confirmed JSONL（schema 合规） | "AMS-1 Stage 1 conformant" |
+| **Stage 2 — Policy** | 通过 OUT 审计向量（UNPROVABLE fail-closed、OUT-005 对称披露） | "AMS-1 Stage 2 conformant" |
+| **Stage 3 — Commerce** | 生成 ADB + 合规一页纸声明（settle 命令） | "AMS-1 Stage 3 conformant" |
 
 ## 4. 与人工重数服务的关系
 
