@@ -34,13 +34,34 @@ Zendesk 帮助中心《About the automated resolutions platform》：
 | **Contained resolution** | 「AI 把交互处理到完成，**且客户没有要求进一步帮助**」；LLM 验证**未通过**的归入此档 | **不计费** |
 | **Verified resolution** | 「AI 成功解决了交互」；LLM 验证**通过**的归入此档 | **计费** |
 
-注意 Contained resolution 的判定条件逐字是：
+Contained resolution 的判定条件逐字是：
 
 > "the customer did not do any of the following: Request further clarification.
 > Provide feedback on the AI agent's answer. Ask to speak to a human."
 
-**客户沉默 = 解决。** 这正是 Intercom「assumed resolution」的同一模式，只是
-Zendesk 把它放在「验证」这个词后面。
+### ⚠️ 更正（2026-09-19 晚，原文有误）
+
+**本文初版在这里写「客户沉默 = 解决」，这是错的。** 上表本身就与之矛盾：
+Contained resolution（沉默且 LLM 判定未通过）**不计费**。
+
+正确读法：**Zendesk 是这一品类里已公布规则中最保守的一个——沉默本身免费，
+只有 LLM 做出肯定判定（Verified）才计费。** 这与 Intercom 相反：
+Intercom 的 assumed resolution 靠沉默计费，Zendesk 要求一次肯定的模型裁决。
+
+**所以 Zendesk 的问题不是「沉默即计费」，而是另外三件：**
+
+1. **裁决者是卖方自己的模型，且判据不公开。** 两家都没有公布评分标准、
+   阈值或错误率；Zendesk 只说「一个 LLM 评估对话文本」。
+2. **没有争议流程。** 对 20 家厂商的核查发现：**没有任何一家公布过针对
+   「被错误计为 resolved」的争议、信用、退款或账单调整流程。**
+3. **计费不可逆、额度不结转。** Zendesk 文档原文：删除一个 Resolution type
+   为 Automated 的工单「**doesn't undo the consumption** of an automated
+   resolution」；且「Automated resolutions **do not roll over** to the next
+   billing period」——未使用的额度作废，错误计费不能自助撤销。
+
+**这个更正的来源**：2026-09-19 对 20 家 AI 客服厂商计费规则的逐家核查
+（见 `市场推广/DeepSeek/leads/v2v3/` 下的竞品研究）。原文只读了自己抓的
+三篇 Zendesk 文档，把「会话结束 → 进入评估」误读成「沉默即计费」。
 
 ## 会话何时算「结束」（决定计费时点）
 
@@ -50,8 +71,10 @@ Zendesk 把它放在「验证」这个词后面。
 | Messaging | 默认最后一条消息后 **2 小时**（可调至 72 小时） |
 | Voice | 挂断即刻 |
 
-**2 小时的默认窗口意味着**：客户在 messenger 里没回话两小时，这次对话就可能
-被判为已解决并计费。
+**这个窗口决定的是「何时开始评估」，不是「何时计费」。** 窗口到期后 LLM 才
+对整段对话做判定；判为 Contained 则不计费。窗口的意义在于：**在窗口内重新
+联系会改变判定结果**，而窗口长短由渠道决定——同一次交互在不同渠道下的
+可争议时间不同。
 
 ## ⚠️ 官方文档自己承认的多收费路径
 
@@ -71,28 +94,32 @@ Zendesk 文档原文（《About the automated resolutions platform》）：
 
 对照我们的 outcome 语义，Zendesk 场景下买方需要能回答：
 
-1. **这次 "Verified" 是谁判的？** —— 卖方 LLM，买方无法复现
-2. **客户有没有任何肯定表示？** —— 官方定义不要求客户确认，只要求客户没反对
-3. **人工有没有介入？** —— 依赖 automation trigger 配置，配置错就漏记
-4. **会话在哪一刻结束的？** —— 2h/72h 窗口，决定同一次交互是否重复计费
-5. **重开怎么算？** —— Intercom 有 24h 重开扣减规则；Zendesk 的对应规则未在
-   本文档中给出
+1. **这次 "Verified" 是谁判的？** —— 卖方自己的 LLM，判据、阈值、错误率均未公开
+2. **客户有没有任何肯定表示？** —— 定义不要求客户确认，只要求客户没反对；裁决交给模型
+3. **人工有没有介入？** —— 依赖 automation trigger 配置，配置错就漏记（文档自承）
+4. **会话在哪一刻结束的？** —— 2h/72h 窗口决定何时开始评估，也决定重联是否还能改变判定
+5. **判错了怎么办？** —— **删除工单不撤销已消费的 resolution；未用额度不结转；
+   没有任何争议/信用/退款流程**（对 20 家厂商的核查：全品类都没有）
 
 这五问正好映射到 AgentMeasure 的 outcome_class 词表（`resolved` /
 `assumed_resolved` / `escalated` / `abandoned` / `reopened`）与结算证据包格式。
 
-## 与 Intercom 的对比
+## 与 Intercom 的对比（已更正）
 
 | 维度 | Intercom Fin | Zendesk |
 |------|-------------|---------|
-| 声称用词 | resolution（分 confirmed / assumed） | **Verified** resolution |
-| 验证方 | 客户确认 或 沉默 | **卖方自己的 LLM** |
-| 沉默是否计费 | assumed 档（争议焦点） | Contained 档不计费，但 LLM 判定边界不可见 |
-| 文档承认的错误路径 | 曾公开撤回定价声明（2025-06） | 文档写明配置错误会多计费 |
+| 声称用词 | resolution（**分 confirmed / assumed 两个公开指标**） | **Verified** resolution |
+| 计费触发 | 客户确认 **或** 沉默（assumed 档） | **只有卖方 LLM 判定通过**；沉默本身免费 |
+| 保守程度 | 更激进（沉默计费） | **更保守**（沉默不计费） |
+| 可审计性 | **最好**：confirmed/assumed 分开公布、resolution 状态可按会话过滤并经 API 暴露（v2.11+） | 较差：只给 tier 名，无 rubric |
+| 跨周期重开扣减 | **唯一一家有明文规定的**（含跨计费周期） | 文档未给出对应规则 |
+| 判错后的补救 | 无公开流程 | **删除工单不撤销消费；额度不结转** |
+| 文档自承的问题 | 曾公开撤回定价声明（2025-06） | 配置错误会多计费；计费不可自助撤销 |
 | 已知第三方审计 | TareCount、Supportman、Drag | **无** |
 
-**Zendesk 是更大的机会**：声称更强（"verified"）、验证更不可复现（卖方 LLM）、
-且**没有任何人发布过 Zendesk 审计**。
+**结论修正**：Zendesk 的机会不在于「它把沉默计费了」（它没有），而在于
+**「Verified」这个词背后的裁决完全由卖方持有，且判错后没有任何补救路径**。
+声称更强、判据更黑箱、且**没有任何人发布过 Zendesk 审计**——这三点仍然成立。
 
 ## 引用来源
 

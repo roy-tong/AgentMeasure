@@ -1,7 +1,7 @@
 {
   "schema": "agentmeasure.commercial/settlement-bundle",
   "schema_version": "0.1.0",
-  "generated_at": "2026-09-19T06:02:22Z",
+  "generated_at": "2026-09-19T07:05:37Z",
   "billing_period": {
     "start": "2025-03-01T00:00:00Z",
     "end": "2025-03-31T23:59:59Z"
