@@ -1,0 +1,27 @@
+{
+  "case": "assumed-resolution",
+  "fixture_records": 10,
+  "provider_claim": {
+    "definition": "resolved + assumed_resolved",
+    "count": 7,
+    "rate": 0.7
+  },
+  "audited": {
+    "definition": "resolved, affected_party attested only",
+    "count": 4,
+    "rate": 0.4
+  },
+  "gap_percentage_points": 30.0,
+  "by_outcome_class": {
+    "resolved": 4,
+    "assumed_resolved": 3,
+    "escalated": 2,
+    "abandoned": 1
+  },
+  "by_observer_grade": {
+    "affected_party": 5,
+    "self_attested": 5
+  },
+  "unprovable_count": 10,
+  "claim_boundary": "Synthetic fixture modelling the publicly reported Intercom Fin dispute shape. Not Intercom data, not an endorsement, not an accusation — the case demonstrates what a settlement evidence bundle would have disclosed."
+}

@@ -78,6 +78,9 @@ jobs:
       - name: "Delegation-family conformance (DELEGATION-001..003: no-flattening / DAG depth / cross-harness cost)"
         run: |
           python3 conformance/runners/run_delegation.py
+      - name: "Evidence case: assumed-resolution (pins the published 70% vs 40% numbers)"
+        run: |
+          python3 conformance/evidence/assumed-resolution/run_case.py
       - name: "Conformance Pack selftest (caller-input contract)"
         run: |
           python3 conformance/pack/agentmeasure selftest
