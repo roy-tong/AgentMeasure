@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your AI support bill counts “resolutions” it attested itself — AgentMeasure</title>
+  <meta name="description" content="Per-resolution AI billing (Intercom Fin, Zendesk AI, Salesforce) bills outcomes the vendor's own system marked. A free, local, evidence-based way to check that bill.">
+  <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+  <link rel="canonical" href="https://roy-tong.github.io/AgentMeasure/blog/resolution-bill-check.html">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="AgentMeasure">
+  <meta property="og:title" content="Your AI support bill counts “resolutions” it attested itself">
+  <meta property="og:description" content="Per-resolution AI bills are metered by the vendor's AI. A free, local, evidence-based check.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../styles.css">
+  <style>
+    .post { max-width: 44rem; margin: 0 auto; padding: 96px 24px 80px; }
+    .post-back { font-family: var(--mono); font-size: 12px; letter-spacing: 0.08em; color: var(--secondary); }
+    .post-back:hover { color: var(--spec); }
+    .post-k { font-family: var(--mono); font-size: 11px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ok); margin: 26px 0 12px; }
+    .post h1 { font-size: 2.0rem; font-weight: 700; letter-spacing: -0.02em; line-height: 1.2; margin: 10px 0 14px; }
+    .post-meta { font-size: 0.85rem; color: var(--secondary); margin-bottom: 40px; }
+    .post p { font-size: 1.0rem; line-height: 1.7; color: var(--text); margin: 0 0 18px; }
+    .post h2 { font-size: 1.25rem; font-weight: 600; margin: 40px 0 14px; letter-spacing: -0.01em; }
+    .post ul, .post ol { margin: 0 0 18px 22px; }
+    .post li { font-size: 1.0rem; line-height: 1.65; margin-bottom: 8px; }
+    .post pre { background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px 20px; overflow-x: auto; margin: 0 0 18px; }
+    .post code { font-family: var(--mono); font-size: 0.88rem; color: var(--ok); }
+    .post p code, .post li code { color: var(--spec); }
+    .post blockquote { border-left: 3px solid var(--spec); padding: 2px 0 2px 18px; margin: 0 0 18px; color: var(--secondary); }
+    .post a { color: var(--spec); }
+    .post a:hover { text-decoration: underline; }
+    .post table { border-collapse: collapse; width: 100%; margin: 0 0 18px; font-size: 0.92rem; }
+    .post th, .post td { border: 1px solid var(--border); padding: 8px 10px; text-align: left; vertical-align: top; }
+    .post th { background: var(--panel); font-weight: 600; }
+  </style>
+</head>
+<body>
+  <main class="post" id="main">
+    <a class="post-back" href="../index.html">← AgentMeasure</a>
+    <p class="post-k">Practice note · Billing</p>
+    <h1>Your AI support bill counts “resolutions” it attested&nbsp;itself</h1>
+    <p class="post-meta">2026-09-19 · about the <a href="https://github.com/roy-tong/AgentMeasure/blob/main/standard/SETTLEMENT.md" target="_blank" rel="noopener">AMS-1 settlement-statement standard</a> · <a href="#get-checked">get your bill checked, free →</a></p>
+
+    <p>The invoice line reads <strong>8,012 resolutions × $0.99</strong>. Or × $1.50, or × $2.00 — Intercom Fin, Zendesk AI, and Salesforce all now bill AI support this way, and the model is spreading.</p>
+    <p>Here is the question nobody on the invoice answers: <strong>who confirmed that each of those 8,012 was a resolution?</strong></p>
+
+    <h2>What “resolved” quietly includes</h2>
+    <p>Across vendors, the resolution counter typically includes outcomes only the vendor's own system marked:</p>
+    <ul>
+      <li><strong>Assumed resolutions</strong> — the customer stopped replying, so the conversation closed “resolved.” Community threads full of operators discovering this the hard way are not hard to find.</li>
+      <li><strong>Deflections</strong> — counted as outcomes on some plans even when the customer never confirmed anything.</li>
+      <li><strong>Confirmation-click resolutions</strong> — the customer clicked “Yes, this helped” on a prompt. One Zendesk community commenter put it plainly: <em>“Charging an autoresolution simply because an end user clicks Yes is broken.”</em></li>
+      <li><strong>Escalations that still got counted</strong> — the AI handed off to a human, after the meter had already ticked.</li>
+    </ul>
+    <p>None of this is hidden. It is in the pricing docs, in the definitions, in the product's own semantics. The problem is structural: <strong>the vendor's AI marks the outcome, the vendor's meter counts it, and the vendor bills it.</strong> We checked twenty vendors in this space — not one publishes a dispute process for the resolution count on your invoice.</p>
+
+    <h2>One distinction does most of the work: who attested the outcome?</h2>
+    <table>
+      <tr><th>Outcome</th><th>Attested by</th><th>Billing meaning</th></tr>
+      <tr><td><code>resolved</code></td><td>the affected party (your customer actually confirmed)</td><td>settlement-grade — hard to argue with</td></tr>
+      <tr><td><code>resolved</code></td><td>the vendor's own system</td><td>billable under their rules — and negotiable</td></tr>
+      <tr><td><code>assumed_resolved</code></td><td>silence, interpreted</td><td>the largest gray zone on most bills</td></tr>
+      <tr><td><code>escalated</code></td><td>anyone</td><td>not a resolution on any honest line</td></tr>
+    </table>
+    <p>An outcome the vendor attested and an outcome your customer attested are different facts. Blending them into one number is how a bill becomes unarguable.</p>
+
+    <h2>The two-line statement (AMS-1)</h2>
+    <p>Our open settlement-statement standard refuses to blend. A statement carries exactly two lines, computed from your own export:</p>
+    <pre>Tier 1 — everything the vendor's OWN published rules would bill
+        (their resolutions + their assumed resolutions)
+Tier 2 — only resolutions an affected party actually confirmed
+
+The gap between the two lines is the disputed class.</pre>
+    <p>Tier 1 leads the negotiation for a simple reason: <strong>the vendor cannot argue with their own rules — only with the data, which is yours.</strong> Tier 2 is renewal leverage, not a dispute line. The two are never blended into a single “true number,” because a blended number is exactly the kind of claim both sides can reject.</p>
+    <p>And the discipline that makes it hard to attack: <strong>anything your export cannot prove is listed as UNPROVABLE and removed from any claim</strong> — with the missing evidence named, so the vendor can supply it or credit it. A statement that guesses zero rows is a statement that loses.</p>
+
+    <h2 id="get-checked">Get your bill checked — free, local, no sales call</h2>
+    <ul>
+      <li><strong>Run it yourself:</strong> the CLI reads your conversations/tickets export on your machine and writes the one-page statement + dispute bundle. <code>pipx run agentmeasure</code>; nothing leaves your machine.</li>
+      <li><strong>Zero install:</strong> <a href="../recount.html">recount Tier 1 in your browser</a> from a counts-only export.</li>
+      <li><strong>Or send a sanitized export</strong> — we turn around a first reconciliation within 48h while validating the method on real bills. Free; if it breaks on your data, we'll say so publicly.</li>
+    </ul>
+    <p>→ <a href="../index.html#trial">Billing-check intake</a> · <a href="https://github.com/roy-tong/AgentMeasure/discussions/21" target="_blank" rel="noopener">The offer, in full</a></p>
+
+    <h2>What this is not</h2>
+    <p>We measure, and we check conformance to declared rules. We do <strong>not</strong> adjudicate (“should have been billed”), do not touch payments, and do not take a cut of anything recovered — a meter that only earns when it finds overbilling is a meter with an incentive problem. Fixed statements, from declared rules and observed execution only.</p>
+
+    <p class="post-meta" style="margin-top:40px">AgentMeasure audits AI usage-metering in the open: <a href="https://github.com/roy-tong/AgentMeasure/blob/main/campaigns/audit-report-2026-09.md" target="_blank" rel="noopener">~110 tools audited, 45+ verified bugs, 21 fixes merged upstream</a>. This note applies the same discipline to the bill itself.</p>
+  </main>
+</body>
+</html>
