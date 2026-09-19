@@ -29,6 +29,7 @@ from . import snapshot as snapshot_mod
 from . import schema as schema_mod
 from . import sdk_events as sdk_events_mod
 from . import settle as settle_mod
+from . import vendors as vendors_mod
 from . import export as export_mod
 # Conformance pack loaded lazily in cmd_conformance
 
@@ -816,6 +817,47 @@ def cmd_settle(args) -> int:
     return 0
 
 
+def cmd_recount(args) -> int:
+    """Tier 1: apply the vendor's own published rules to a counts-only export."""
+    if args.list_vendors:
+        for v in vendors_mod.list_vendors():
+            price = ("%s %s" % (v["currency"], v["unit_price"])
+                     if v.get("unit_price") else "not published")
+            print("%-12s %-34s [%s] %s" % (v["id"], v["name"], v["confidence"], price))
+            print("             source: %s" % v["source"])
+        return 0
+
+    if not args.export or not args.vendor:
+        print("error: --export and --vendor are both required "
+              "(or use --list-vendors)", file=sys.stderr)
+        return 2
+
+    try:
+        export = vendors_mod.load_export(args.export)
+    except OSError as exc:
+        print("error: cannot read export: %s" % exc, file=sys.stderr)
+        return 2
+
+    try:
+        result = vendors_mod.recount(export, args.vendor)
+    except ValueError as exc:
+        print("error: %s" % exc, file=sys.stderr)
+        return 2
+
+    print(vendors_mod.recount_report(result))
+
+    if args.json_out:
+        try:
+            with open(args.json_out, "w", encoding="utf-8") as fh:
+                json.dump(result, fh, ensure_ascii=True, indent=2)
+        except OSError as exc:
+            print("error: could not write recount export: %s" % exc, file=sys.stderr)
+            return 2
+        print("\nRecount export \u2192 %s" % os.path.abspath(args.json_out))
+
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="agentmeasure",
@@ -935,6 +977,21 @@ def build_parser() -> argparse.ArgumentParser:
     p_settle.add_argument("--verbose", "-v", action="store_true",
                           help="print human-readable report after generation")
     p_settle.set_defaults(func=cmd_settle)
+
+    p_recount = sub.add_parser(
+        "recount",
+        help="Tier 1: apply a vendor's own published billing rules to your "
+             "counts-only export (the line the vendor cannot argue with)")
+    p_recount.add_argument("--export", metavar="PATH", default=None,
+                           help="counts-only CSV export (7 columns, 5 required)")
+    p_recount.add_argument("--vendor", default=None,
+                           help="which vendor's rules to apply: %s"
+                                % ", ".join(v["id"] for v in vendors_mod.list_vendors()))
+    p_recount.add_argument("--json", dest="json_out", metavar="PATH", default=None,
+                           help="write the machine-readable recount here")
+    p_recount.add_argument("--list-vendors", action="store_true",
+                           help="show the registry with each rule's source and confidence")
+    p_recount.set_defaults(func=cmd_recount)
 
     p_hist = sub.add_parser("history", help="show local run history")
     p_hist.add_argument("--last", type=int, default=10)

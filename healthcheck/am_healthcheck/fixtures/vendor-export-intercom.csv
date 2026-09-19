@@ -1,0 +1,11 @@
+conversation_id,opened_at,closed_at,human_agent_participated,issue_addressed,customer_recontacted_within_window,vendor_billed
+C-1001,2026-08-01T09:00:00Z,2026-08-01T09:12:00Z,no,yes,no,yes
+C-1002,2026-08-01T10:00:00Z,2026-08-01T10:20:00Z,no,yes,no,yes
+C-1003,2026-08-01T11:00:00Z,2026-08-01T11:30:00Z,no,yes,yes,yes
+C-1004,2026-08-01T12:00:00Z,2026-08-01T12:15:00Z,no,yes,yes,yes
+C-1005,2026-08-01T13:00:00Z,2026-08-01T13:40:00Z,yes,yes,no,yes
+C-1006,2026-08-01T14:00:00Z,2026-08-01T14:05:00Z,no,no,no,yes
+C-1007,2026-08-01T15:00:00Z,2026-08-01T15:25:00Z,no,yes,no,no
+C-1008,2026-08-01T16:00:00Z,2026-08-01T16:30:00Z,no,yes,no,no
+C-1009,2026-08-01T17:00:00Z,2026-08-01T17:10:00Z,,yes,no,yes
+C-1010,2026-08-01T18:00:00Z,2026-08-01T18:20:00Z,no,yes,,yes
