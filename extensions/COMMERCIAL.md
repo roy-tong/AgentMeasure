@@ -268,6 +268,46 @@ operation_resolution: explicit + replay_protection: required`）；AgentMeasure 
 定义 predicate 与判定规则——这就是商业系统里的 auditability requirement。
 `platform-attested` 当前 UNSUPPORTED（不变量 11）。
 
+### 5.1 Settlement Claim Discipline（结算索赔纪律，Draft 0.4.5）
+
+**举证责任在索赔方。** 一条无法举证的索赔，是对方用来否定其余全部的那一行。
+
+三条纪律（源自 2026-09 对效果费对账实践的外部观察，见
+`市场推广/DeepSeek/leads/v2v3/TARECOUNT-DEEP-DIVE-20260919.md`）：
+
+**D-1 · `cannot settle` 从索赔中移除，而非降档计费。**
+
+当账单行的证据不足以判定（缺字段、证据链断、无法复现验证），该行 MUST 从
+索赔总额中**移除**，并列出**具体缺什么**，使对手方可以补证或核销。
+
+```text
+支持该判决的账单行：
+  cannot_settle  →  从索赔总额移除（默认）
+  合同方 MAY 约定回退为 operation 计费（显式选择，非默认）
+```
+
+与 §5 `minimum_resolution` 的关系：那条管「没有 resolution 证据时能否计费」；
+本条管「有计费但在争议中被判定证据不足时如何处理」。**默认行为是移除，
+因为举证责任在索赔方**——把无法举证的行留在索赔里，会使整份声明可被一句话否定。
+
+**D-2 · 双向披露（对称性）。** 只报告对计费方不利发现的声明是倡导文件，不是对账文件。
+结算证据包 MUST 包含**对被审方有利的发现**（少计、漏计），且在净额计算前披露。
+
+```text
+争议行（多计）      N 行   $X
+漏计行（少计）      M 行   $Y   ← MUST 同表披露
+净额 = X − Y                  ← 先净额，再声称金额
+```
+
+**D-3 · 两线并跑，绝不混算。** 证据包 SHOULD 同时给出两条独立的判定线：
+
+| 线 | 依据 | 谈判性质 |
+|----|------|---------|
+| **Tier 1 · 对方自己的规则** | 被审方已发布的计费规则 | 对方无法反驳自己的规则，只能质疑数据 |
+| **Tier 2 · AgentMeasure 标准** | 本扩展 + CORE 不变量 | 续约议价依据，不是争议条款 |
+
+两线的美元差额 MUST 作为**两个独立数字**呈现，禁止合并为单一数字。
+
 ## 6. Commercial Attribution（商业归因）
 
 ```text

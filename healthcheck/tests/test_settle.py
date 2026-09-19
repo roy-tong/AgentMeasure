@@ -4,7 +4,8 @@ import os
 import tempfile
 import unittest
 
-from am_healthcheck.settle import bundle_report, generate_bundle
+from am_healthcheck.settle import (bundle_report, generate_bundle,
+                                    settlement_statement)
 
 
 def effect(effect_id="eff-1", outcome_class="resolved",
@@ -163,6 +164,82 @@ class TestBundleReport(unittest.TestCase):
         text = bundle_report(bundle)
         self.assertIsInstance(text, str)
         self.assertTrue(text.strip())
+
+
+class TestSettlementStatement(unittest.TestCase):
+    """The two-line statement (COMMERCIAL 5.1): both directions, netted."""
+
+    def _bundle(self, lines):
+        by_class, by_grade = {}, {}
+        for r in lines:
+            by_class[r["outcome_class"]] = by_class.get(r["outcome_class"], 0) + 1
+            by_grade[r["observer_grade"]] = by_grade.get(r["observer_grade"], 0) + 1
+        return {
+            "provider_id": "acme",
+            "offering_id": "per-resolution",
+            "evidence_level": "none",
+            "metering_summary": {
+                "total_billable_events": len(lines),
+                "by_outcome_class": by_class,
+                "by_observer_grade": by_grade,
+                "unprovable_count": len(lines),
+            },
+            "outcome_lines": lines,
+        }
+
+    def _line(self, cls, grade):
+        return {"outcome_class": cls, "observer_grade": grade}
+
+    def test_tiers_cross_class_and_grade(self):
+        # An escalated outcome the affected party attested is NOT a resolution:
+        # the two lines must cross class and grade, not count them separately.
+        b = self._bundle([
+            self._line("resolved", "affected_party"),
+            self._line("resolved", "affected_party"),
+            self._line("assumed_resolved", "self_attested"),
+            self._line("escalated", "affected_party"),
+        ])
+        text = settlement_statement(b, price_per_unit=1.0)
+        self.assertIn("Tier 1  provider's own count (resolved + assumed)   3 of 4", text)
+        self.assertIn("Tier 2  AgentMeasure settlement-grade (affected party) 2 of 4", text)
+        self.assertIn("Disputed class (Tier 1 minus Tier 2)                1", text)
+
+    def test_dollars_and_payback(self):
+        b = self._bundle([
+            self._line("resolved", "affected_party"),
+            self._line("assumed_resolved", "self_attested"),
+            self._line("assumed_resolved", "self_attested"),
+            self._line("assumed_resolved", "self_attested"),
+        ])
+        text = settlement_statement(b, price_per_unit=0.99, audit_cost=2500)
+        self.assertIn("$3.96", text)   # tier 1: 4 x 0.99
+        self.assertIn("$0.99", text)   # tier 2: 1 x 0.99
+        self.assertIn("$2.97", text)   # variance: 3 x 0.99
+        self.assertIn("Payback at this rate", text)
+
+    def test_states_underbilling_is_undeterminable(self):
+        # D-2: never silently omit the favourable direction.
+        b = self._bundle([self._line("resolved", "affected_party")])
+        text = settlement_statement(b)
+        self.assertIn("cannot determine from this input", text)
+        self.assertIn("advocacy document", text)
+
+    def test_statement_discloses_cannot_settle(self):
+        b = self._bundle([self._line("resolved", "affected_party")])
+        text = settlement_statement(b)
+        self.assertIn("Cannot settle (D-1)", text)
+        self.assertIn("removed from any outcome claim", text)
+
+    def test_two_lines_never_blended(self):
+        b = self._bundle([
+            self._line("resolved", "affected_party"),
+            self._line("assumed_resolved", "self_attested"),
+        ])
+        text = settlement_statement(b, price_per_unit=1.0)
+        # Tier 1 and Tier 2 appear as separate figures.
+        self.assertIn("Claimed by provider (Tier 1)", text)
+        self.assertIn("Settlement-grade (Tier 2)", text)
+        self.assertIn("Variance", text)
 
 
 if __name__ == "__main__":

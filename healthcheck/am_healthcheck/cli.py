@@ -795,6 +795,11 @@ def cmd_settle(args) -> int:
 
     print("Settlement bundle  \u2192 %s" % os.path.abspath(args.output))
 
+    if args.statement:
+        print()
+        print(settle_mod.settlement_statement(
+            bundle, price_per_unit=args.price, audit_cost=args.audit_cost))
+
     if args.verbose:
         print()
         print(settle_mod.bundle_report(bundle))
@@ -907,6 +912,14 @@ def build_parser() -> argparse.ArgumentParser:
                           choices=["none", "v2_ablation", "v4_holdout"],
                           default="none",
                           help="incrementality evidence level")
+    p_settle.add_argument("--statement", "-s", action="store_true",
+                          help="print the negotiable two-line settlement statement "
+                               "(COMMERCIAL 5.1: both directions, netted)")
+    p_settle.add_argument("--price", type=float, default=None,
+                          help="price per billable unit, for the dollar variance and payback")
+    p_settle.add_argument("--audit-cost", type=float, default=None,
+                          dest="audit_cost",
+                          help="cost of the audit, to compute months-to-payback")
     p_settle.add_argument("--verbose", "-v", action="store_true",
                           help="print human-readable report after generation")
     p_settle.set_defaults(func=cmd_settle)

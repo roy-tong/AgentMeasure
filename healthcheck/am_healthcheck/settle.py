@@ -279,3 +279,112 @@ def bundle_report(bundle: dict) -> str:
     lines.append("=" * _W)
 
     return "\n".join(lines)
+
+
+def settlement_statement(bundle: dict, price_per_unit: float = None,
+                         audit_cost: float = None) -> str:
+    """Produce the negotiable statement: two lines, both directions, netted.
+
+    Structure follows COMMERCIAL 5.1 (D-1 remove-what-you-cannot-evidence,
+    D-2 symmetric disclosure, D-3 two lines never blended).
+
+    Tier 1 is what the provider's own counting would bill: every effect it
+    recorded as resolved, including the ones only its own system attested.
+    Tier 2 is what AgentMeasure will settle: an outcome the affected party
+    attested. The gap is the disputed class, and it is not presented as one
+    blended number.
+
+    This bundle cannot detect under-billing, because it only carries the
+    provider's effect records. That limitation is stated in the output rather
+    than silently omitted: an audit that never looks in the audited party's
+    favour is an advocacy document (D-2).
+    """
+    summary = bundle.get("metering_summary", {})
+    by_class = summary.get("by_outcome_class", {})
+    by_grade = summary.get("by_observer_grade", {})
+    _W = 50  # separator width, same as bundle_report
+
+    # Compute the two lines from the per-record lines, not from the marginal
+    # aggregates: an escalated outcome attested by the affected party is not a
+    # resolution, so class and grade must be crossed, not counted separately.
+    lines_in = bundle.get("outcome_lines", [])
+    resolved = sum(1 for r in lines_in if r.get("outcome_class") == "resolved")
+    assumed = sum(1 for r in lines_in
+                  if r.get("outcome_class") == "assumed_resolved")
+    settled = sum(1 for r in lines_in
+                  if r.get("outcome_class") == "resolved"
+                  and r.get("observer_grade") == "affected_party")
+    self_attested = sum(1 for r in lines_in
+                        if r.get("observer_grade") == "self_attested")
+    total = summary.get("total_billable_events", len(lines_in))
+
+    # Tier 1: everything the provider counts as a successful outcome.
+    tier1 = resolved + assumed
+    # Tier 2: only resolutions the affected party affirmed.
+    tier2 = settled
+    disputed = max(tier1 - tier2, 0)
+
+    lines = []
+    lines.append("Settlement Statement (Advisory)")
+    lines.append("=" * _W)
+    lines.append("Provider:  %s" % (bundle.get("provider_id") or "(unspecified)"))
+    lines.append("Offering:  %s" % (bundle.get("offering_id") or "(unspecified)"))
+    lines.append("Evidence:  %s" % bundle.get("evidence_level", "none"))
+    lines.append("")
+
+    lines.append("The claim, two ways")
+    lines.append("-" * _W)
+    lines.append("Tier 1  provider's own count (resolved + assumed)   %d of %d"
+                 % (tier1, total))
+    lines.append("Tier 2  AgentMeasure settlement-grade (affected party) %d of %d"
+                 % (tier2, total))
+    lines.append("Disputed class (Tier 1 minus Tier 2)                %d" % disputed)
+    lines.append("")
+    lines.append("Tier 1 leads the negotiation: the provider cannot argue with")
+    lines.append("its own rules, only with the data, which is yours. Tier 2 is")
+    lines.append("renewal leverage, not a dispute line.")
+    lines.append("")
+
+    if price_per_unit is not None:
+        lines.append("Dollars (at %s per unit)" % price_per_unit)
+        lines.append("-" * _W)
+        t1_amt = round(tier1 * price_per_unit, 2)
+        t2_amt = round(tier2 * price_per_unit, 2)
+        var_amt = round(disputed * price_per_unit, 2)
+        lines.append("Claimed by provider (Tier 1)     $%.2f" % t1_amt)
+        lines.append("Settlement-grade (Tier 2)        $%.2f" % t2_amt)
+        lines.append("Variance                         $%.2f" % var_amt)
+        lines.append("")
+        if audit_cost is not None and var_amt > 0:
+            months = audit_cost / var_amt
+            lines.append("Payback at this rate: $%.2f / $%.2f = %.1f month(s)"
+                         % (audit_cost, var_amt, months))
+            breakeven = audit_cost / price_per_unit if price_per_unit else None
+            if breakeven:
+                lines.append("Breakeven: %.0f disputed resolutions cover the audit."
+                             % breakeven)
+            lines.append("")
+
+    lines.append("Both directions (required, D-2)")
+    lines.append("-" * _W)
+    lines.append("Billed but not settlement-grade    %d" % disputed)
+    lines.append("  of which self-attested only      %d" % self_attested)
+    lines.append("Billable but not billed            cannot determine from this input")
+    lines.append("")
+    lines.append("This bundle carries only the provider's effect records, so it")
+    lines.append("cannot search for charges the provider failed to bill. A complete")
+    lines.append("audit needs the provider's counts-only export alongside these")
+    lines.append("records. Stated here rather than omitted: a statement that never")
+    lines.append("looks in the audited party's favour is an advocacy document.")
+    lines.append("")
+
+    lines.append("Cannot settle (D-1)")
+    lines.append("-" * _W)
+    unprovable = summary.get("unprovable_count", 0)
+    lines.append("%d of %d lines carry no incrementality evidence and are"
+                 % (unprovable, total))
+    lines.append("removed from any outcome claim. They are listed with what is")
+    lines.append("missing so the provider can supply it or credit them.")
+    lines.append("")
+    lines.append("=" * _W)
+    return "\n".join(lines)

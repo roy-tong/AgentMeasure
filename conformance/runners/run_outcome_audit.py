@@ -106,12 +106,49 @@ def _check_out_004(vector: dict) -> bool:
     return False
 
 
+def _check_out_005(vector: dict) -> bool:
+    """Symmetric Disclosure: a bundle must report findings both ways and net them.
+
+    COMMERCIAL 5.1 D-2. A statement that only ever finds against the audited
+    party is an advocacy document; the audited party can dismiss it with one
+    counter-example in their favour.
+    """
+    cid = vector["id"]
+    b = vector["input"]["bundle"]
+    exp = vector["expect"]
+
+    disputed = b.get("disputed_lines", 0)
+    underbilled = b.get("underbilled_lines", 0)
+    searched = b.get("search_for_favourable_findings") != "not_performed"
+    both_directions = bool(underbilled) or searched
+
+    if cid == "out-005a-symmetric":
+        netted = abs(b.get("claimed_amount", -1) - (b.get("disputed_amount", 0) - b.get("underbilled_amount", 0))) < 1e-9
+        return (disputed > 0 and underbilled > 0 and both_directions
+                and netted and exp["verdict"] == PASS)
+
+    if cid == "out-005b-one-directional":
+        # No favourable search performed at all -> advocacy, not audit.
+        return (not searched and underbilled == 0
+                and exp["verdict"] == FAIL)
+
+    if cid == "out-005c-claimed-without-netting":
+        net = b.get("disputed_amount", 0) - b.get("underbilled_amount", 0)
+        claimed_gross = abs(b.get("claimed_amount", -1) - b.get("disputed_amount", 0)) < 1e-9
+        return (both_directions and claimed_gross
+                and abs(b.get("claimed_amount", -1) - net) > 1e-9
+                and exp["verdict"] == FAIL)
+
+    return False
+
+
 # Map OUT check IDs to their runner functions
 FAMILY_RUNNERS = {
     "OUT-001": _check_out_001,
     "OUT-002": _check_out_002,
     "OUT-003": _check_out_003,
     "OUT-004": _check_out_004,
+    "OUT-005": _check_out_005,
 }
 
 

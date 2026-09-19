@@ -350,6 +350,73 @@
           }
         }
       ]
+    },
+    {
+      "id": "OUT-005",
+      "name": "Symmetric Disclosure",
+      "description": "A settlement evidence bundle MUST report findings in the audited party's favour (under-billing, missed charges) in the same table as findings against them, and MUST net them before claiming a dollar amount. A bundle that only ever finds against the audited party is an advocacy document, not an audit. Draft 0.4.5, COMMERCIAL 5.1 D-2.",
+      "principle": "Asymmetry is the tell of advocacy. The audited party can dismiss the whole statement with one counter-example in their favour if the statement never looked for one.",
+      "vectors": [
+        {
+          "id": "out-005a-symmetric",
+          "description": "Bundle reports both directions and nets them before claiming -> PASS",
+          "input": {
+            "bundle": {
+              "disputed_lines": 21,
+              "disputed_amount": 20.79,
+              "underbilled_lines": 5,
+              "underbilled_amount": 4.95,
+              "claimed_amount": 15.84,
+              "claim_basis": "net_of_underbilling"
+            }
+          },
+          "expect": {
+            "reports_both_directions": true,
+            "netted_before_claiming": true,
+            "verdict": "PASS"
+          }
+        },
+        {
+          "id": "out-005b-one-directional",
+          "description": "Bundle reports only findings against the audited party -> FAIL",
+          "input": {
+            "bundle": {
+              "disputed_lines": 21,
+              "disputed_amount": 20.79,
+              "underbilled_lines": 0,
+              "underbilled_amount": null,
+              "claimed_amount": 20.79,
+              "claim_basis": "gross_disputed",
+              "search_for_favourable_findings": "not_performed"
+            }
+          },
+          "expect": {
+            "reports_both_directions": false,
+            "verdict": "FAIL",
+            "failure_reason": "No under-billing search was performed. A bundle that only ever finds against the audited party is an advocacy document (COMMERCIAL 5.1 D-2)."
+          }
+        },
+        {
+          "id": "out-005c-claimed-without-netting",
+          "description": "Bundle found favourable items but claimed the gross figure -> FAIL",
+          "input": {
+            "bundle": {
+              "disputed_lines": 21,
+              "disputed_amount": 20.79,
+              "underbilled_lines": 5,
+              "underbilled_amount": 4.95,
+              "claimed_amount": 20.79,
+              "claim_basis": "gross_disputed"
+            }
+          },
+          "expect": {
+            "reports_both_directions": true,
+            "netted_before_claiming": false,
+            "verdict": "FAIL",
+            "failure_reason": "underbilled 4.95 was disclosed but the gross 20.79 was claimed; net the favourable findings before claiming an amount."
+          }
+        }
+      ]
     }
   ]
 }
