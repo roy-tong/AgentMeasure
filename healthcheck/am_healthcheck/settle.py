@@ -534,3 +534,178 @@ def statement_markdown(bundle: dict, effects_path: str,
     out.append("disagreement = spec guilty).")
     out.append("")
     return "\n".join(out)
+
+
+# ---------------------------------------------------------------------------
+# HTML one-pager (AMS-1 · same §2 sections as the markdown, attachable form)
+#
+# Self-contained: inline CSS only, no scripts, no network resources, no
+# external links — the statement must render offline and print cleanly,
+# because the person carrying it into a renewal negotiation may open it
+# anywhere. Numbers are pinned to statement_markdown by a parity test;
+# the two renderers must never drift.
+# ---------------------------------------------------------------------------
+
+_HTML_CSS = """\
+body{font:15px/1.55 -apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;\
+color:#1a1a1a;margin:0;padding:32px 16px;background:#fafafa}
+.sheet{max-width:760px;margin:0 auto;background:#fff;padding:36px 44px;\
+border:1px solid #e3e3e3;border-radius:6px}
+h1{font-size:21px;margin:0 0 2px}
+.sub{color:#666;font-size:13px;margin-bottom:20px}
+table{border-collapse:collapse;width:100%;margin:10px 0 18px;font-size:14px}
+td,th{border:1px solid #e0e0e0;padding:7px 10px;text-align:left;vertical-align:top}
+th{background:#f5f5f5;font-weight:600;width:38%}
+h2{font-size:16px;margin:26px 0 6px;border-bottom:1px solid #e8e8e8;padding-bottom:6px}
+p{margin:8px 0}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12.5px}
+.note{color:#555;font-size:13.5px}
+pre{background:#f6f6f6;border:1px solid #e4e4e4;border-radius:4px;padding:10px 12px;\
+overflow-x:auto;font-size:12.5px}
+footer{margin-top:26px;color:#777;font-size:12.5px;border-top:1px solid #eee;padding-top:12px}
+@media print{body{background:#fff;padding:0}.sheet{border:none;max-width:none;padding:0}}
+"""
+
+
+def statement_html(bundle: dict, effects_path: str,
+                   price_per_unit: float = None,
+                   audit_cost: float = None,
+                   spec_version: str = "AMS-1 Draft 0.1") -> str:
+    """One-page Settlement Statement as standalone HTML (AMS-1 §2 sections).
+
+    The attachable form of :func:`statement_markdown`: a finance or support
+    leader attaches this to a renewal thread. Offline, script-free,
+    print-friendly; every rendered value is escaped.
+    """
+    import html as _html
+
+    esc = _html.escape
+    summary = bundle.get("metering_summary", {})
+    lines_in = bundle.get("outcome_lines", [])
+    total = summary.get("total_billable_events", len(lines_in))
+
+    resolved = sum(1 for r in lines_in if r.get("outcome_class") == "resolved")
+    assumed = sum(1 for r in lines_in
+                  if r.get("outcome_class") == "assumed_resolved")
+    settled = sum(1 for r in lines_in
+                  if r.get("outcome_class") == "resolved"
+                  and r.get("observer_grade") == "affected_party")
+    self_attested = sum(1 for r in lines_in
+                        if r.get("observer_grade") == "self_attested")
+    escalated = sum(1 for r in lines_in
+                    if r.get("outcome_class") == "escalated")
+    unprovable = summary.get("unprovable_count", 0)
+
+    tier1 = resolved + assumed
+    tier2 = settled
+    disputed = max(tier1 - tier2, 0)
+
+    def _id(value):
+        if isinstance(value, dict):
+            return value.get("id") or value.get("name") or "(unspecified)"
+        return value or "(unspecified)"
+
+    prov = [("Provider", _id(bundle.get("provider_id"))),
+            ("Offering", _id(bundle.get("offering_id"))),
+            ("Evidence level", bundle.get("evidence_level", "none")),
+            ("Standard", spec_version),
+            ("Input sha256", _sha256_of(effects_path)),
+            ("Generated", datetime.now(timezone.utc)
+             .strftime("%Y-%m-%d %H:%M UTC"))]
+
+    h = []
+    h.append("<!DOCTYPE html>")
+    h.append('<html lang="en"><head><meta charset="utf-8">')
+    h.append('<meta name="viewport" content="width=device-width, '
+             'initial-scale=1">')
+    h.append("<title>Settlement Statement (Advisory)</title>")
+    h.append("<style>%s</style></head><body><div class=\"sheet\">"
+             % _HTML_CSS)
+    h.append("<h1>Settlement Statement <small>(Advisory)</small></h1>")
+    h.append('<div class="sub">AgentMeasure · the two-line statement · '
+             "the provider’s own rules lead</div>")
+
+    h.append("<table>")
+    for label, value in prov:
+        h.append("<tr><th>%s</th><td%s>%s</td></tr>"
+                 % (esc(str(label)),
+                    ' class="mono"' if label == "Input sha256" else "",
+                    esc(str(value))))
+    h.append("</table>")
+
+    h.append("<h2>1. The claim, two ways (S-1)</h2>")
+    h.append("<table><tr><th>Line</th><th>Basis</th><th>Count</th></tr>")
+    h.append("<tr><td><b>Tier 1</b></td><td>Provider's own count "
+             "(resolved + assumed)</td><td><b>%d / %d</b></td></tr>"
+             % (tier1, total))
+    h.append("<tr><td><b>Tier 2</b></td><td>Settlement-grade "
+             "(affected-party confirmed)</td><td><b>%d / %d</b></td></tr>"
+             % (tier2, total))
+    h.append("<tr><td>Disputed class</td><td>Tier 1 minus Tier 2</td>"
+             "<td><b>%d</b></td></tr>" % disputed)
+    h.append("</table>")
+    h.append('<p class="note">Tier 1 leads the negotiation: the provider '
+             "cannot argue with its own rules, only with the data — which "
+             "is yours. Tier 2 is renewal leverage, not a dispute line "
+             "(D-3: the two lines are never blended).</p>")
+
+    if price_per_unit is not None:
+        t1_amt = round(tier1 * price_per_unit, 2)
+        t2_amt = round(tier2 * price_per_unit, 2)
+        var_amt = round(disputed * price_per_unit, 2)
+        h.append("<h2>2. Dollars (at %s per unit)</h2>" % esc(str(price_per_unit)))
+        h.append("<table>")
+        h.append("<tr><th>Claimed by provider (Tier 1)</th><td>$%.2f</td></tr>"
+                 % t1_amt)
+        h.append("<tr><th>Settlement-grade (Tier 2)</th><td>$%.2f</td></tr>"
+                 % t2_amt)
+        h.append("<tr><th>Variance</th><td><b>$%.2f</b></td></tr>" % var_amt)
+        h.append("</table>")
+        if audit_cost is not None and var_amt > 0:
+            h.append('<p class="note">Payback: $%.2f audit / $%.2f monthly '
+                     "variance = <b>%.1f months</b>.</p>"
+                     % (audit_cost, var_amt, audit_cost / var_amt))
+
+    h.append("<h2>3. Both directions (S-3, D-2)</h2>")
+    h.append("<table>")
+    h.append("<tr><th>Billed but not settlement-grade</th><td>%d</td></tr>"
+             % disputed)
+    h.append("<tr><th>— of which self-attested only</th><td>%d</td></tr>"
+             % self_attested)
+    h.append("<tr><th>Billable but not billed</th><td>cannot determine from "
+             "this input</td></tr>")
+    h.append("</table>")
+    h.append('<p class="note">This bundle carries only the provider\'s effect '
+             "records, so it cannot search for charges the provider failed "
+             "to bill. Stated here rather than omitted: a statement that "
+             "never looks in the audited party's favour is an advocacy "
+             "document.</p>")
+
+    h.append("<h2>4. Cannot settle (S-2, D-1)</h2>")
+    h.append("<p><b>%d of %d</b> lines carry no incrementality evidence and "
+             "are removed from any outcome claim; each is listed with what "
+             "is missing so the provider can supply it or credit them. "
+             "Escalated outcomes (%d) are not resolutions on any line and "
+             "are excluded from both tiers.</p>"
+             % (unprovable, total, escalated))
+
+    h.append("<h2>5. Out of scope (S-6)</h2>")
+    h.append('<p class="note">Spam, vendor-initiated sessions, '
+             "eligibility-only determinations, and merged duplicates are "
+             "excluded by definition; any such exclusions are listed with "
+             "their reason in the evidence bundle.</p>")
+
+    h.append("<h2>6. Reproduce (S-5)</h2>")
+    h.append("<pre># third-party reproduction: identical inputs must yield "
+             "identical numbers\n"
+             "agentmeasure settle --effects effects.jsonl --format html \\\n"
+             "  --price %s --audit-cost %s</pre>"
+             % (esc(str(price_per_unit or "PRICE")),
+                esc(str(audit_cost or "COST"))))
+
+    h.append("<footer>Standard: standard/SETTLEMENT.md · open governance "
+             "(GOVERNANCE.md) · tool free and open source. Any conforming "
+             "implementation given the same inputs must produce these same "
+             "numbers (implementation disagreement = spec guilty).</footer>")
+    h.append("</div></body></html>")
+    return "\n".join(h)

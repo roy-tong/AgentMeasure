@@ -5,7 +5,8 @@ import tempfile
 import unittest
 
 from am_healthcheck.settle import (bundle_report, generate_bundle,
-                                    settlement_statement, statement_markdown)
+                                    settlement_statement, statement_html,
+                                    statement_markdown)
 
 
 def effect(effect_id="eff-1", outcome_class="resolved",
@@ -303,3 +304,74 @@ class TestStatementMarkdown(unittest.TestCase):
         h1 = md1.split("`")[1]
         h2 = md2.split("`")[1]
         self.assertNotEqual(h1, h2)
+
+
+class TestStatementHtml(unittest.TestCase):
+    """AMS-1 one-pager, attachable HTML form: offline, script-free,
+    section-complete, and number-pinned to statement_markdown."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+
+    def _bundle(self, records):
+        path = os.path.join(self.tmp.name, "effects.jsonl")
+        with open(path, "w", encoding="utf-8") as fh:
+            for r in records:
+                fh.write(json.dumps(r) + "\n")
+        meta = {"provider": {"id": "acme"}, "offering": {"id": "fin"}}
+        return generate_bundle(effects_path=path,
+                               output_path=os.path.join(self.tmp.name, "b.json"),
+                               metadata=meta), path
+
+    def test_offline_self_contained(self):
+        bundle, path = self._bundle([effect("e1")])
+        html = statement_html(bundle, path)
+        self.assertIn("<!DOCTYPE html>", html)
+        self.assertNotIn("<script", html)          # no scripts
+        self.assertNotIn('src="http', html)        # no remote resources
+        self.assertNotIn('href="http', html)       # no remote links
+        self.assertIn("@media print", html)        # print-friendly
+
+    def test_contains_all_ams1_sections(self):
+        recs = [
+            effect("e1", "resolved", "affected_party"),
+            effect("e2", "assumed_resolved", "self_attested"),
+            effect("e3", "escalated", "self_attested"),
+        ]
+        bundle, path = self._bundle(recs)
+        html = statement_html(bundle, path, price_per_unit=0.99,
+                              audit_cost=2500.0)
+        for section in ("1. The claim, two ways (S-1)",
+                        "2. Dollars",
+                        "3. Both directions (S-3, D-2)",
+                        "4. Cannot settle (S-2, D-1)",
+                        "5. Out of scope (S-6)",
+                        "6. Reproduce (S-5)"):
+            self.assertIn(section, html)
+        self.assertIn("Input sha256", html)
+
+    def test_numbers_pinned_to_markdown(self):
+        """The HTML and markdown renderers must never drift: every tier,
+        dollar and count figure that appears in both must be identical."""
+        recs = [
+            effect("e1", "resolved", "affected_party"),
+            effect("e2", "resolved", "self_attested"),
+            effect("e3", "assumed_resolved", "self_attested"),
+            effect("e4", "escalated", "affected_party"),
+        ]
+        bundle, path = self._bundle(recs)
+        md = statement_markdown(bundle, path, price_per_unit=0.99,
+                                audit_cost=2500.0)
+        html = statement_html(bundle, path, price_per_unit=0.99,
+                              audit_cost=2500.0)
+        for figure in ("3 / 4", "1 / 4", "$2.97", "$0.99", "$1.98"):
+            self.assertIn(figure, md)
+            self.assertIn(figure, html)
+
+    def test_escapes_untrusted_values(self):
+        bundle, path = self._bundle([effect("e1")])
+        bundle["provider_id"] = {"id": '<script>alert("x")</script>'}
+        html = statement_html(bundle, path)
+        self.assertNotIn("<script>alert", html)
+        self.assertIn("&lt;script&gt;", html)

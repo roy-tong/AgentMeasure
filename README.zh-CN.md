@@ -1,21 +1,29 @@
 # AgentMeasure
 
-**用本地证据，找出 Codex 会话中的重复记录、重试和连续工具失败。**
+**用本地证据，找出 Codex / Claude Code 会话中的重复记录、重试链和连续工具失败。**
 
-Healthcheck 直接读取已有的 **Codex Desktop rollout 日志**，生成终端摘要和
-本地 HTML 报告。每项发现有证据；无法判断就显示 UNPROVABLE，不伪装成零。
+Healthcheck 直接读取已有的 **Codex rollout 日志**与 **Claude Code 会话日志**，
+生成终端摘要和本地 HTML 报告。检查重复记录、重试链、连续工具失败（HC-01..03），
+以及运行解析覆盖、缓存记账、token 稳定性等审计项（HC-04..06，`--audit`）。
+证据缺失一律 UNPROVABLE，不静默记零。
 
 ```bash
-# 需已有 Python 3.9+、Git、pipx；安装需要网络
-pipx install "git+https://github.com/roy-tong/AgentMeasure#subdirectory=healthcheck"
-agentmeasure demo   # 合成示例，无需个人日志
-agentmeasure check  # 本机 Codex 最近 7 天日志
+# Python 3.9+，v0.4.0 起已上 PyPI——无需克隆仓库
+pipx run agentmeasure demo                 # 合成示例，无需个人日志
+pipx run agentmeasure check                # 本机最近 7 天会话
+pipx run agentmeasure check --runtime claude   # 强制 Claude Code 适配器
 ```
 
-分析过程本地运行，不发网络请求。当前为工程预览版：Codex CLI 尚未独立验证，
-Claude Code 暂不支持。上面的 Git 安装现在可用，PyPI 发布仍在准备中。
+分析全程本地运行，不发网络请求。v0.4.0 新增：PyPI 包、Claude Code 适配器 v1、
+内置 conformance 检查（`agentmeasure conformance`，亦有
+[GitHub Action](action.yml)）、OTel / Prometheus 导出、运行趋势
+（`agentmeasure trend`），以及**按效果计费的结算声明**——
+`agentmeasure settle --format md|html` 生成
+[AMS-1](standard/SETTLEMENT.md) 一页纸（两线对照、双向披露、cannot-settle
+移除、第三方复现块）与争议包 JSON。
 
 [**快速开始与支持范围**](healthcheck/README.md) ·
+[**AMS-1：开放结算声明标准**](standard/SETTLEMENT.md) ·
 [**试跑和安全反馈**](campaigns/healthcheck-first-run.md) ·
 [**公开贡献案例**](campaigns/measurement-casebook.md) · [English](README.md)
 [**Token 计量 Bug 报告：审计约 110 个工具、45+ 实证缺陷、21 个已合并修复**](campaigns/audit-report-2026-09.md) ·

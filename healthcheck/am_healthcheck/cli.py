@@ -811,6 +811,15 @@ def cmd_settle(args) -> int:
             fh.write(md)
         print("Settlement statement (AMS-1 one-pager) \u2192 %s" % md_path)
 
+    if args.statement and args.format == "html":
+        html_path = os.path.splitext(os.path.abspath(args.output))[0] + "-statement.html"
+        html = settle_mod.statement_html(
+            bundle, effects_path=args.effects,
+            price_per_unit=args.price, audit_cost=args.audit_cost)
+        with open(html_path, "w", encoding="utf-8") as fh:
+            fh.write(html)
+        print("Settlement statement (AMS-1 one-pager, HTML) \u2192 %s" % html_path)
+
     if args.verbose:
         print()
         print(settle_mod.bundle_report(bundle))
@@ -1031,7 +1040,7 @@ def build_parser() -> argparse.ArgumentParser:
                           choices=["none", "v2_ablation", "v4_holdout"],
                           default="none",
                           help="incrementality evidence level")
-    p_settle.add_argument("--format", choices=["text", "md"], default="text",
+    p_settle.add_argument("--format", choices=["text", "md", "html"], default="text",
                           help="statement rendering: terminal text or AMS-1 "
                                "markdown one-pager (written next to --output)")
     p_settle.add_argument("--statement", "-s", action="store_true",

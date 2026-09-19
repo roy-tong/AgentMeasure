@@ -18,10 +18,14 @@ pipx run agentmeasure check --runtime claude   # force the Claude Code adapter
 Analysis runs locally with no runtime network calls. New in v0.4.0: PyPI
 package, Claude Code adapter v1, embedded conformance pack
 (`agentmeasure conformance`, also a [GitHub Action](action.yml)), OTel /
-Prometheus exports, run trends (`agentmeasure trend`), and settlement-bundle
-drafts for outcome-based billing (`agentmeasure settle` — [concept](proposals/2026-09-18-settlement-bundle-design.md)).
+Prometheus exports, run trends (`agentmeasure trend`), and settlement
+statements for outcome-based billing — `agentmeasure settle --format md|html`
+generates an [AMS-1](standard/SETTLEMENT.md) one-pager (two lines, both
+directions, cannot-settle removals, third-party reproduction block) plus the
+dispute-bundle JSON.
 
 [**Quick start and supported formats**](healthcheck/README.md) ·
+[**AMS-1: open settlement-statement standard**](standard/SETTLEMENT.md) ·
 [**Try it and share feedback safely**](campaigns/healthcheck-first-run.md) ·
 [**What our contributions changed**](campaigns/measurement-casebook.md) · [**The Token-Accounting Bug Report — ~110 tools audited, 45+ verified bugs, 21 merged fixes**](campaigns/audit-report-2026-09.md) · [**Maintain a usage tool? Audit it in 10 minutes**](campaigns/tool-authors.md) ·
 [中文](README.zh-CN.md)
@@ -56,6 +60,15 @@ Conformance checks for AI-agent telemetry — a retry is one logical operation, 
 > layer for the Agent Capability Economy. One number for your dashboards
 > (logical operations), the evidence for what each number counts, and explicit
 > disclosure for what it cannot prove.
+
+> **When machine execution produces charges, execution facts and billing facts
+> live in different systems.** AgentMeasure is the independent verification
+> layer between them: what actually happened, what the declared policy says,
+> whether the two agree — and what cannot be proven. It measures and checks
+> conformance to declared rules; it does not adjudicate (no "should have been
+> billed" verdicts, no liability). Payment receipts prove money moved;
+> **[AMS-1 settlement statements](standard/SETTLEMENT.md)** prove what the
+> money was for.
 
 **Today:** measure agent-facing capability usage — attempts, operations, retry
 inflation, success rates with numerators you can audit.
