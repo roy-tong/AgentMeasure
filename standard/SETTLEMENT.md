@@ -5,6 +5,10 @@
 > 合并为一份**开放治理、工具免费、第三方可复现**的标准。条款 S-1…S-8 每条都引用其执行测试
 > ——「声明里的名字就是代码里的名字」（ARS-1 最好的纪律，我们用 conformance 向量匹配它）。
 
+> **本标准管的是哪一半**（The Colony 评论的劈分）：计费争议 = **计数完整性 × 判定完整性**。
+> 签名、append-only、防篡改只能保证前者（计数没被改）；**后者——「resolved 这个判定本身
+> 站不站得住」——才是钱所在的地方**，也是 AMS-1 的全部管辖范围。两半都要，但不要混。
+
 ## 0. 判决词表（verdict taxonomy）
 
 | 判决 | 来源 | 结算含义 |
@@ -75,6 +79,12 @@ ARS-1 的自我修正机制是盲读者分歧（「读者分歧 = 文本有罪�
 
 ## 2. 结算声明格式（一页纸规范）
 
+证据包的正式名称：**AgentMeasure Dispute Bundle（ADB）**——`agentmeasure settle`
+输出的 JSON 容器（metering policy 引用、逐 outcome 行含可追溯性、增量性证据、
+UNPROVABLE 披露），第三方可独立重算。机器可读条款清单：
+[standard/settlement.manifest.json](settlement.manifest.json)（版本化；每条款
+`enforced_by` 指向其执行测试）。
+
 一份合规的 Settlement Statement（Markdown 交付物）按序包含：
 
 1. **Provenance 头**：被审方 / offering / 证据等级 / spec 版本 / 输入 sha256 / 生成命令
@@ -92,7 +102,27 @@ agentmeasure settle --effects effects.jsonl --format md \
   --price 0.99 --audit-cost 2500 --out statement.md
 ```
 
-## 3. 与人工重数服务的关系
+## 3. AMS-1 不替代什么
+
+显式列出边界（工具宣称越少，可验证性越强）：
+
+- **不替代厂商自己的计费系统与合同**——Tier 1 引用的正是对方规则，不是取代它；
+- **不替代客户与厂商之间的支付/争议通道**——本声明是谈判证据，不是扣款指令；
+- **不替代密码学收据基础设施**——签名与 append-only 保证计数完整性（计数没被改），
+  本标准保证判定完整性（「resolved」站不站得住）。两半都要（见 PEAC Protocol 的
+  receipt extensions；判定语义可作为其扩展组挂载）；
+- **不构成法律意见**。
+
+渐进采用阶梯（实现方可只声称已达标层）：
+
+| 阶梯 | 能力 | 声称示例 |
+| --- | --- | --- |
+| **S-L0 Discovery** | 读懂本标准与 manifest 条款 | "AMS-1 S-L0 aware" |
+| **S-L1 Transport** | 发送/接受 effect-confirmed JSONL（schema 合规） | "AMS-1 S-L1 conformant" |
+| **S-L2 Policy** | 通过 OUT 审计向量（UNPROVABLE fail-closed、OUT-005 对称披露） | "AMS-1 S-L2 conformant" |
+| **S-L3 Commerce** | 生成 ADB + 合规一页纸声明（settle 命令） | "AMS-1 S-L3 conformant" |
+
+## 4. 与人工重数服务的关系
 
 本标准与重数服务（如 TareCount）是**能力等价的两种形态**：服务把判断包成一次
 人工交付（按次收费、产能受限于人）；本标准把同样的判断纪律做成任何人可执行、

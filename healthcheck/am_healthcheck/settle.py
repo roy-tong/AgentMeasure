@@ -1,10 +1,12 @@
 """Settlement evidence bundle generator (V2 · settle --bundle).
 
-Produces a verifiable evidence package for outcome-based billing disputes.
-The bundle contains: metering policy reference, outcome lines with traceability,
+Produces the **AgentMeasure Dispute Bundle (ADB)** — a verifiable evidence
+package for outcome-based billing disputes (AMS-1, standard/SETTLEMENT.md).
+The ADB contains: metering policy reference, outcome lines with traceability,
 incrementality evidence, and UNPROVABLE disclosures.
 
 Format: single JSON file that can be independently re-computed by a third party.
+Machine-readable clause manifest: standard/settlement.manifest.json.
 """
 
 import hashlib

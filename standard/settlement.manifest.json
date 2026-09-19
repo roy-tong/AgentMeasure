@@ -1,0 +1,94 @@
+{
+  "manifest": "agentmeasure-settlement-ams1",
+  "version": "0.1.0",
+  "spec_document": "standard/SETTLEMENT.md",
+  "license": "MIT (code) / open governance (GOVERNANCE.md)",
+  "statement_format": "markdown one-pager via `agentmeasure settle --format md`",
+  "container": "AgentMeasure Dispute Bundle (ADB)",
+  "clauses": [
+    {
+      "id": "S-1",
+      "title": "Two lines, never blended",
+      "adopted_from": "TareCount practice (D-3)",
+      "enforced_by": [
+        "healthcheck/tests/test_settle.py::TestSettlementStatement",
+        "conformance/evidence/assumed-resolution/run_case.py"
+      ]
+    },
+    {
+      "id": "S-2",
+      "title": "Remove what you cannot evidence (cannot settle)",
+      "adopted_from": "TareCount practice (D-1)",
+      "enforced_by": [
+        "conformance/vectors/outcome-audit (UNPROVABLE fail-closed)"
+      ]
+    },
+    {
+      "id": "S-3",
+      "title": "Symmetric disclosure",
+      "adopted_from": "TareCount practice (D-2)",
+      "enforced_by": [
+        "conformance/vectors/outcome-audit (OUT-005, 3 vectors)"
+      ]
+    },
+    {
+      "id": "S-4",
+      "title": "Absent is not zero",
+      "adopted_from": "AM discipline",
+      "enforced_by": [
+        "healthcheck settle _validate_effect (None preserved)"
+      ]
+    },
+    {
+      "id": "S-5",
+      "title": "Provenance and third-party reproduction",
+      "adopted_from": "open-standard equivalent of ARS-1 blind recount",
+      "enforced_by": [
+        "conformance/evidence/assumed-resolution/run_case.py (CI-pinned)",
+        "verify_vectors.py (implementation parity)"
+      ]
+    },
+    {
+      "id": "S-6",
+      "title": "Out of scope, itemised not silent",
+      "adopted_from": "ARS-1 C8",
+      "enforced_by": [
+        "statement section 5"
+      ]
+    },
+    {
+      "id": "S-7",
+      "title": "Free tooling, open governance",
+      "adopted_from": "AM positioning",
+      "enforced_by": [
+        "GOVERNANCE.md",
+        "LICENSE"
+      ]
+    },
+    {
+      "id": "S-8",
+      "title": "Clause change updates its test first",
+      "adopted_from": "ARS-1 blind-reader isomorph",
+      "enforced_by": [
+        "GOVERNANCE.md process"
+      ]
+    }
+  ],
+  "posture_ladder": {
+    "source": "COMMERCIAL.md 5.2",
+    "in_claim_variance": [
+      "provider_recognized"
+    ],
+    "displayable_not_claimed": [
+      "bill_bounded",
+      "exposure_only",
+      "review_only"
+    ]
+  },
+  "does_not_replace": [
+    "the vendor's own billing system or contract",
+    "payment/dispute rails between customer and vendor",
+    "cryptographic receipt infrastructure (see PEAC Protocol; counting integrity vs judgement integrity)",
+    "legal advice"
+  ]
+}
