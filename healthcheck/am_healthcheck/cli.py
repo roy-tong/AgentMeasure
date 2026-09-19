@@ -30,6 +30,7 @@ from . import schema as schema_mod
 from . import sdk_events as sdk_events_mod
 from . import settle as settle_mod
 from . import vendors as vendors_mod
+from . import dispute as dispute_mod
 from . import export as export_mod
 # Conformance pack loaded lazily in cmd_conformance
 
@@ -838,6 +839,29 @@ def cmd_recount(args) -> int:
         print("error: cannot read export: %s" % exc, file=sys.stderr)
         return 2
 
+    if args.inspect:
+        # Align the columns before any number is produced: a wrong mapping read
+        # as a finding is the most expensive mistake this tool can make.
+        print("Column alignment — no numbers produced")
+        print("=" * 50)
+        print("export columns: %s" % ", ".join(export["export_columns"]))
+        print()
+        print("matched:")
+        for c in sorted(export["columns_found"]):
+            print("  %-36s -> %s" % (vendors_mod.COLUMN_ALIASES[c][0], c))
+        if export["columns_missing"]:
+            print()
+            print("MISSING (required):")
+            for c in export["columns_missing"]:
+                print("  %s" % c)
+            print()
+            print("Every row will be cannot_settle. Fix the export before "
+                  "reading any recount.")
+        else:
+            print()
+            print("all required columns matched. Re-run without --inspect to recount.")
+        return 0
+
     try:
         result = vendors_mod.recount(export, args.vendor)
     except ValueError as exc:
@@ -855,6 +879,50 @@ def cmd_recount(args) -> int:
             return 2
         print("\nRecount export \u2192 %s" % os.path.abspath(args.json_out))
 
+    return 0
+
+
+def cmd_dispute(args) -> int:
+    """Build the negotiable Dispute & Recovery Pack."""
+    try:
+        pack = dispute_mod.build_pack(
+            export_path=args.export,
+            vendor_id=args.vendor,
+            effects_path=args.effects,
+            price=args.price,
+            audit_cost=args.audit_cost,
+            period_start=args.period_start,
+            period_end=args.period_end,
+            buyer_label=args.buyer)
+    except ValueError as exc:
+        print("error: %s" % exc, file=sys.stderr)
+        return 2
+    except OSError as exc:
+        print("error: cannot read input: %s" % exc, file=sys.stderr)
+        return 2
+
+    try:
+        paths = dispute_mod.write_pack(pack, args.out)
+    except OSError as exc:
+        print("error: could not write pack: %s" % exc, file=sys.stderr)
+        return 2
+
+    claim = pack["claim"]
+    print("Dispute & Recovery Pack")
+    print("=" * 50)
+    print("vendor:            %s" % pack["vendor"]["name"])
+    print("billed, not billable under their own rule: %d"
+          % claim["billed_but_not_billable"])
+    print("billable, not billed (their favour):       %d"
+          % claim["billable_but_not_billed"])
+    print("net:               %+d" % claim["net"])
+    print("cannot settle:     %d" % claim["cannot_settle"])
+    if claim.get("dollars"):
+        d = claim["dollars"]
+        print("net variance:      %s %s" % (pack["currency"], d["net_variance"]))
+    print()
+    print("cover letter + appendix \u2192 %s" % os.path.abspath(paths["markdown"]))
+    print("machine-readable pack   \u2192 %s" % os.path.abspath(paths["json"]))
     return 0
 
 
@@ -991,7 +1059,33 @@ def build_parser() -> argparse.ArgumentParser:
                            help="write the machine-readable recount here")
     p_recount.add_argument("--list-vendors", action="store_true",
                            help="show the registry with each rule's source and confidence")
+    p_recount.add_argument("--inspect", action="store_true",
+                           help="print the column mapping and stop before producing "
+                                "any number, so a wrong mapping cannot be misread as "
+                                "a finding")
     p_recount.set_defaults(func=cmd_recount)
+
+    p_dispute = sub.add_parser(
+        "dispute",
+        help="build the negotiable Dispute & Recovery Pack: cover letter, "
+             "Tier 1 recount under the vendor's own rules, Tier 2 under ours")
+    p_dispute.add_argument("--export", metavar="PATH", required=True,
+                           help="counts-only CSV export from your helpdesk")
+    p_dispute.add_argument("--vendor", required=True,
+                           help="which vendor's rules to apply: %s"
+                                % ", ".join(v["id"] for v in vendors_mod.list_vendors()))
+    p_dispute.add_argument("--effects", metavar="PATH", default=None,
+                           help="optional effect-confirmed JSONL for the Tier 2 line")
+    p_dispute.add_argument("--out", metavar="DIR", default="dispute-pack",
+                           help="output directory (default ./dispute-pack)")
+    p_dispute.add_argument("--price", type=float, default=None,
+                           help="price per resolution; defaults to the vendor's published rate")
+    p_dispute.add_argument("--audit-cost", type=float, default=None, dest="audit_cost",
+                           help="cost of producing this pack, for the payback line")
+    p_dispute.add_argument("--period-start", default=None)
+    p_dispute.add_argument("--period-end", default=None)
+    p_dispute.add_argument("--buyer", default=None, help="name to sign the cover letter with")
+    p_dispute.set_defaults(func=cmd_dispute)
 
     p_hist = sub.add_parser("history", help="show local run history")
     p_hist.add_argument("--last", type=int, default=10)
