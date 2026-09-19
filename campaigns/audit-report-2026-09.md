@@ -95,6 +95,7 @@ Full case list: [measurement-casebook.md](measurement-casebook.md).
 - [tokenfuse #267](https://github.com/TAIPANBOX/tokenfuse/issues/267) — OpenAI cached tokens no longer priced on both sides of input (closed completed 09-14)
 - [openlit #1543](https://github.com/openlit/openlit/pull/1543) — measured-zero reasoning tokens no longer conflated with unknown (merged 09-15)
 - [codeburn #1264](https://github.com/getagentseal/codeburn/pull/1264) — three-layer token_count dedup with measured re-emission behavior (merged 09-16 after three review rounds; the re-review's 136k-event corpus check corrected our own analysis and is now a methodology rule)
+- [tokendash #37](https://github.com/zhangferry/tokendash/pull/37) — cumulative Claude usage snapshots reconciled (merged 09-09; under-counted at publication, corrected)
 
 - [tokscale #1306](https://github.com/junhoyeo/tokscale/issues/1306) — forked/continued Pi sessions no longer double-count (fix via #1323, closed completed)
 - [claude-usage-widget #1](https://github.com/everssauro/claude-usage-widget/issues/1) — first-wins dedup no longer drops 25% of output tokens (maintainer independently reproduced on a 2,694-file archive before merging)
@@ -135,8 +136,8 @@ every future finding:
 
 ## Honesty notes
 
-- Counts are of *filings with pinned evidence*, as of 2026-09-17 morning;
-  merges happen as maintainers get to them (20 accepted so far; see the dated
+- Counts are of *filings with pinned evidence*, as of 2026-09-19 morning;
+  merges happen as maintainers get to them (21 accepted so far; see the dated
   subsection below for what landed after publication).
 - Most audited repos passed. We name the clean ones because that matters.
 - All reproductions are synthetic; no private logs anywhere.
