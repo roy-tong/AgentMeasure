@@ -1,0 +1,295 @@
+{
+  "spec_version": "agentmeasure-0.4",
+  "family": "DELEGATION Multi-Agent Audit",
+  "description": "The four delegation cost-accounting failure modes, derived from the 2026-09 demand scan (4 L3 + 15 L2 issues across coding-agent harnesses). DELEGATION-001..003 pin the counting discipline; 004..007 pin the failure taxonomy an audit must cover. A check family that only tests roll-up arithmetic misses three of the four.",
+  "taxonomy": {
+    "under_count": "DELEGATION-004 — child spend exists but never reaches the parent's reported total",
+    "over_count": "DELEGATION-005 — a child inherits the parent's cumulative counter, so parent spend is counted twice",
+    "mis_attribution": "DELEGATION-006 — a turn is billed to an agent or model other than the one that served it",
+    "non_propagation": "DELEGATION-007 — a declared budget cannot cross the delegation boundary, so the child cannot enforce it"
+  },
+  "vectors": [
+    {
+      "id": "DELEGATION-004",
+      "name": "Under-count — Child Spend Never Rolls Up",
+      "description": "A parent that reports a total while child attempts carry cost MUST either include that cost or state that it is excluded. Silent under-reporting fails.",
+      "principle": "The most common shape in the scan: session cost excludes subagent cost. Two independent reconciliations in one issue put the invisible share at 42% and 84%.",
+      "source_evidence": [
+        "anomalyco/opencode#45417 — subagents were 42%-84% of real spend, invisible in the UI",
+        "can1357/oh-my-pi#12344 — roster 238 req/$16.24 vs child transcripts 480 req/$40.95, provider bill matched the transcripts"
+      ],
+      "vectors": [
+        {
+          "id": "del-004a-silent-under-count",
+          "description": "Child attempts carry cost; parent reports a smaller total with no exclusion stated -> FAIL",
+          "input": {
+            "task_id": "t-20",
+            "parent_report": {
+              "own_cost": 0.16,
+              "reported_total": 0.16,
+              "includes_child_cost": true,
+              "exclusion_declared": false
+            },
+            "child_attempts": [
+              { "attempt_id": "att-c1", "cost": 0.02 },
+              { "attempt_id": "att-c2", "cost": 0.21 }
+            ]
+          },
+          "expect": {
+            "child_cost_total": 0.23,
+            "expected_parent_total": 0.39,
+            "under_counted_by": 0.23,
+            "verdict": "FAIL",
+            "failure_reason": "parent reports 0.16 while child attempts carry 0.23; no exclusion is declared, so the shortfall is silent"
+          }
+        },
+        {
+          "id": "del-004b-rolls-up-labelled",
+          "description": "Parent includes child cost and labels the aggregate -> PASS",
+          "input": {
+            "task_id": "t-21",
+            "parent_report": {
+              "own_cost": 0.16,
+              "reported_total": 0.39,
+              "includes_child_cost": true,
+              "aggregation_label": "aggregated"
+            },
+            "child_attempts": [
+              { "attempt_id": "att-c1", "cost": 0.02 },
+              { "attempt_id": "att-c2", "cost": 0.21 }
+            ]
+          },
+          "expect": {
+            "child_cost_total": 0.23,
+            "expected_parent_total": 0.39,
+            "verdict": "PASS"
+          }
+        },
+        {
+          "id": "del-004c-disclosed-exclusion",
+          "description": "Parent reports own cost only but declares the exclusion -> PASS (disclosed, not silent)",
+          "input": {
+            "task_id": "t-22",
+            "parent_report": {
+              "own_cost": 0.16,
+              "reported_total": 0.16,
+              "includes_child_cost": false,
+              "exclusion_declared": true,
+              "exclusion_reason": "sub-agent cost is tracked in the child harness only"
+            },
+            "child_attempts": [
+              { "attempt_id": "att-c1", "cost": 0.23 }
+            ]
+          },
+          "expect": {
+            "child_cost_total": 0.23,
+            "verdict": "PASS",
+            "note": "an exclusion that is stated is auditable; the failure is the silent one"
+          }
+        }
+      ]
+    },
+    {
+      "id": "DELEGATION-005",
+      "name": "Over-count — Inherited Cumulative Counter",
+      "description": "A child's first cumulative snapshot MUST NOT equal the parent's final cumulative value. That signature means the child inherited the parent's counter, so the parent's spend is billed twice.",
+      "principle": "Forked subagent rollouts inherit the parent's counter. The inflation grows with fan-out and reads as ordinary volume on the invoice.",
+      "source_evidence": [
+        "steipete/CodexBar#3524 — forked subagent rollouts counted at their final cumulative total_token_usage, inflating fan-out days 30-150x; $138k-170k estimate against a true ~$6k",
+        "crewAIInc/crewAI#7259 — a shared LLM instance across N agents multiplies reported usage by N (155 real vs 310 reported)"
+      ],
+      "vectors": [
+        {
+          "id": "del-005a-inherited-counter",
+          "description": "Child first snapshot equals parent final cumulative -> FAIL",
+          "input": {
+            "task_id": "t-30",
+            "parent": { "harness": "parent", "final_cumulative_tokens": 128572 },
+            "child": {
+              "harness": "child",
+              "first_snapshot_cumulative_tokens": 128572,
+              "own_usage_tokens": 1500,
+              "final_cumulative_tokens": 130072
+            },
+            "billed_total_tokens": 130072
+          },
+          "expect": {
+            "inheritance_detected": true,
+            "double_counted_tokens": 128572,
+            "verdict": "FAIL",
+            "failure_reason": "the child's first snapshot equals the parent's final cumulative value; the parent's 128572 is counted again inside the child's total"
+          }
+        },
+        {
+          "id": "del-005b-own-counter",
+          "description": "Child starts from its own zero -> PASS",
+          "input": {
+            "task_id": "t-31",
+            "parent": { "harness": "parent", "final_cumulative_tokens": 128572 },
+            "child": {
+              "harness": "child",
+              "first_snapshot_cumulative_tokens": 0,
+              "own_usage_tokens": 1500,
+              "final_cumulative_tokens": 1500
+            },
+            "billed_total_tokens": 130072
+          },
+          "expect": {
+            "inheritance_detected": false,
+            "verdict": "PASS"
+          }
+        },
+        {
+          "id": "del-005c-shared-instance",
+          "description": "N agents share one LLM instance and the reported usage is N times the measured usage -> FAIL",
+          "input": {
+            "task_id": "t-32",
+            "shared_llm_instance": true,
+            "agents_sharing": 2,
+            "measured_usage_tokens": 155,
+            "reported_usage_tokens": 310
+          },
+          "expect": {
+            "multiplication_factor": 2.0,
+            "expected_usage_tokens": 155,
+            "verdict": "FAIL",
+            "failure_reason": "reported usage is the agent count times the measured usage; sharing an LLM instance is the usual way to write a crew, so this affects ordinary usage"
+          }
+        }
+      ]
+    },
+    {
+      "id": "DELEGATION-006",
+      "name": "Mis-attribution Across a Handoff",
+      "description": "A billing record MUST name the agent and model that actually served the turn. A handoff that mutates the current agent before the turn is closed, or a route that serves a different model than the one billed, is a mis-attribution.",
+      "principle": "Attribution is the record of who did the work. If the handoff updates state before the turn is accounted for, the wrong agent gets the cost.",
+      "source_evidence": [
+        "openai/openai-agents-python#5072 — handoff mutates _current_agent before turn_ended, so agent_end names the post-handoff agent",
+        "omnigent-ai/omnigent#4679 — a sub-agent routed to another model never appears in the per-model breakdown; all spend lands on the orchestrator's model",
+        "Arize-ai/openinference#3255 — subagent tool spans fall back to the root agent span because parent_tool_use_id is None"
+      ],
+      "vectors": [
+        {
+          "id": "del-006a-handoff-misattribution",
+          "description": "Turn served by agent-a/sonnet but billed to agent-b/opus -> FAIL",
+          "input": {
+            "task_id": "t-40",
+            "turn_id": "turn-1",
+            "serving_record": { "agent": "agent-a", "model": "sonnet" },
+            "handoff": { "before": "agent-a", "after": "agent-b", "handoff_after_turn_closed": false },
+            "billing_record": { "agent": "agent-b", "model": "opus" }
+          },
+          "expect": {
+            "served_by": "agent-a",
+            "billed_to": "agent-b",
+            "attribution_matches": false,
+            "verdict": "FAIL",
+            "failure_reason": "the turn was served by agent-a on sonnet and billed to agent-b on opus; the handoff mutated the current agent before the turn was accounted for"
+          }
+        },
+        {
+          "id": "del-006b-correct-attribution",
+          "description": "Billing record names the serving agent and model -> PASS",
+          "input": {
+            "task_id": "t-41",
+            "turn_id": "turn-2",
+            "serving_record": { "agent": "agent-a", "model": "sonnet" },
+            "handoff": { "after": "agent-b", "handoff_after_turn_closed": true },
+            "billing_record": { "agent": "agent-a", "model": "sonnet" }
+          },
+          "expect": {
+            "attribution_matches": true,
+            "verdict": "PASS",
+            "note": "the handoff happened after the turn closed, so agent-a is the correct attribution"
+          }
+        },
+        {
+          "id": "del-006c-flattened-to-root",
+          "description": "Sub-agent spans fall back to the root agent -> FAIL",
+          "input": {
+            "task_id": "t-42",
+            "spans": [
+              { "span_id": "s1", "agent": "root", "parent_span_id": null },
+              { "span_id": "s2", "agent": "subagent-1", "parent_span_id": null,
+                "expected_parent": "root" }
+            ]
+          },
+          "expect": {
+            "flattened_spans": 1,
+            "verdict": "FAIL",
+            "failure_reason": "a subagent span carries no parent, so multi-subagent runs flatten onto the root agent"
+          }
+        }
+      ]
+    },
+    {
+      "id": "DELEGATION-007",
+      "name": "Non-propagation — Budget Cannot Cross the Boundary",
+      "description": "When a delegation declares a budget, the budget MUST be propagated to the child so the child can enforce it. A declared-but-unpropagated budget is unenforceable, and the child will overspend.",
+      "principle": "A budget that cannot cross the delegation boundary is a measurement gap before it is an enforcement gap.",
+      "source_evidence": [
+        "a2aproject/A2A#2121 — no wire format to pass budget down or report incurred cost up a delegation chain",
+        "omnigent-ai/omnigent#7359 — cost-budget policy is pull-based, so a looping sub-agent reached $379 past a $100 limit"
+      ],
+      "vectors": [
+        {
+          "id": "del-007a-declared-not-propagated",
+          "description": "Budget declared but not propagated; child overspends -> FAIL",
+          "input": {
+            "task_id": "t-50",
+            "delegation": {
+              "delegation_id": "am-delegation-50",
+              "budget_declared": 100.0,
+              "budget_propagated_to_child": false,
+              "enforcement": "pull-based"
+            },
+            "child_spend": 379.0
+          },
+          "expect": {
+            "budget_enforceable_at_child": false,
+            "overspend": 279.0,
+            "verdict": "FAIL",
+            "failure_reason": "the budget was declared to the parent but never reached the child, so the child could not stop at the ceiling"
+          }
+        },
+        {
+          "id": "del-007b-propagated",
+          "description": "Budget propagated and child stayed within it -> PASS",
+          "input": {
+            "task_id": "t-51",
+            "delegation": {
+              "delegation_id": "am-delegation-51",
+              "budget_declared": 100.0,
+              "budget_propagated_to_child": true,
+              "enforcement": "in-path"
+            },
+            "child_spend": 47.5
+          },
+          "expect": {
+            "budget_enforceable_at_child": true,
+            "overspend": 0.0,
+            "verdict": "PASS"
+          }
+        },
+        {
+          "id": "del-007c-no-budget",
+          "description": "No budget declared -> PASS with disclosure (nothing to propagate)",
+          "input": {
+            "task_id": "t-52",
+            "delegation": {
+              "delegation_id": "am-delegation-52",
+              "budget_declared": null,
+              "budget_propagated_to_child": false
+            },
+            "child_spend": 12.0
+          },
+          "expect": {
+            "budget_enforceable_at_child": null,
+            "verdict": "PASS",
+            "note": "no budget was declared, so non-propagation is not a failure; the absence itself is disclosed"
+          }
+        }
+      ]
+    }
+  ]
+}
