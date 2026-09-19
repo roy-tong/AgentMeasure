@@ -7,8 +7,8 @@
   "profiles": 5,
   "conformance": "Passing",
   "verified": {
-    "sha": "97eea32",
+    "sha": "c92f962",
     "at": "2026-09-19",
-    "run": "https://github.com/roy-tong/AgentMeasure/actions/runs/35412911671"
+    "run": "https://github.com/roy-tong/AgentMeasure/actions/runs/35413395244"
   }
 }
