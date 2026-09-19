@@ -795,10 +795,19 @@ def cmd_settle(args) -> int:
 
     print("Settlement bundle  \u2192 %s" % os.path.abspath(args.output))
 
-    if args.statement:
+    if args.statement and args.format == "text":
         print()
         print(settle_mod.settlement_statement(
             bundle, price_per_unit=args.price, audit_cost=args.audit_cost))
+
+    if args.statement and args.format == "md":
+        md_path = os.path.splitext(os.path.abspath(args.output))[0] + "-statement.md"
+        md = settle_mod.statement_markdown(
+            bundle, effects_path=args.effects,
+            price_per_unit=args.price, audit_cost=args.audit_cost)
+        with open(md_path, "w", encoding="utf-8") as fh:
+            fh.write(md)
+        print("Settlement statement (AMS-1 one-pager) \u2192 %s" % md_path)
 
     if args.verbose:
         print()
@@ -912,6 +921,9 @@ def build_parser() -> argparse.ArgumentParser:
                           choices=["none", "v2_ablation", "v4_holdout"],
                           default="none",
                           help="incrementality evidence level")
+    p_settle.add_argument("--format", choices=["text", "md"], default="text",
+                          help="statement rendering: terminal text or AMS-1 "
+                               "markdown one-pager (written next to --output)")
     p_settle.add_argument("--statement", "-s", action="store_true",
                           help="print the negotiable two-line settlement statement "
                                "(COMMERCIAL 5.1: both directions, netted)")

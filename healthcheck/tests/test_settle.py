@@ -5,7 +5,7 @@ import tempfile
 import unittest
 
 from am_healthcheck.settle import (bundle_report, generate_bundle,
-                                    settlement_statement)
+                                    settlement_statement, statement_markdown)
 
 
 def effect(effect_id="eff-1", outcome_class="resolved",
@@ -244,3 +244,62 @@ class TestSettlementStatement(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestStatementMarkdown(unittest.TestCase):
+    """AMS-1 one-pager (standard/SETTLEMENT.md §2): provenance, two lines,
+    both directions, cannot-settle, reproduce block."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+
+    def _bundle(self, records):
+        path = os.path.join(self.tmp.name, "effects.jsonl")
+        with open(path, "w", encoding="utf-8") as fh:
+            for r in records:
+                fh.write(json.dumps(r) + "\n")
+        meta = {"provider": {"id": "acme"}, "offering": {"id": "fin"}}
+        return generate_bundle(effects_path=path,
+                               output_path=os.path.join(self.tmp.name, "b.json"),
+                               metadata=meta), path
+
+    def test_contains_all_ams1_sections_and_provenance(self):
+        recs = [
+            effect("e1", "resolved", "affected_party"),
+            effect("e2", "assumed_resolved", "self_attested"),
+            effect("e3", "escalated", "self_attested"),
+        ]
+        bundle, path = self._bundle(recs)
+        md = statement_markdown(bundle, path, price_per_unit=0.99,
+                                audit_cost=2500.0)
+        for section in ("## 1. The claim, two ways (S-1)",
+                        "## 2. Dollars",
+                        "## 3. Both directions (S-3, D-2)",
+                        "## 4. Cannot settle (S-2, D-1)",
+                        "## 6. Reproduce (S-5)"):
+            self.assertIn(section, md)
+        self.assertIn("Input sha256", md)
+        self.assertNotIn("{'id':", md)  # nested dicts must render as ids
+
+    def test_escalated_never_counted_in_either_tier(self):
+        bundle, path = self._bundle([
+            effect("e1", "resolved", "affected_party"),
+            effect("e2", "escalated", "affected_party"),
+        ])
+        md = statement_markdown(bundle, path)
+        self.assertIn("| **Tier 1** | Provider's own count "
+                      "(resolved + assumed) | **1 / 2** |", md)
+        self.assertIn("not resolutions on any line and are excluded from both "
+                      "tiers", md)
+
+    def test_sha256_changes_with_input(self):
+        bundle, path = self._bundle([effect("e1")])
+        md1 = statement_markdown(bundle, path)
+        with open(path, "a", encoding="utf-8") as fh:
+            fh.write(json.dumps(effect("e2")) + "\n")
+        bundle2, _ = self._bundle([effect("e1"), effect("e2")])
+        md2 = statement_markdown(bundle2, path)
+        h1 = md1.split("`")[1]
+        h2 = md2.split("`")[1]
+        self.assertNotEqual(h1, h2)

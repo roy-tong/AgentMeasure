@@ -7,6 +7,7 @@ incrementality evidence, and UNPROVABLE disclosures.
 Format: single JSON file that can be independently re-computed by a third party.
 """
 
+import hashlib
 import json
 import os
 from collections import Counter, defaultdict
@@ -388,3 +389,146 @@ def settlement_statement(bundle: dict, price_per_unit: float = None,
     lines.append("")
     lines.append("=" * _W)
     return "\n".join(lines)
+
+
+# ---------------------------------------------------------------------------
+# Markdown one-pager (AMS-1 · standard/SETTLEMENT.md §2)
+# ---------------------------------------------------------------------------
+
+def _sha256_of(path: str) -> str:
+    """sha256 of the input evidence file; the statement must be self-verifying."""
+    h = hashlib.sha256()
+    with open(path, "rb") as fh:
+        for chunk in iter(lambda: fh.read(65536), b""):
+            h.update(chunk)
+    return h.hexdigest()
+
+
+def statement_markdown(bundle: dict, effects_path: str,
+                       price_per_unit: float = None,
+                       audit_cost: float = None,
+                       spec_version: str = "AMS-1 Draft 0.1") -> str:
+    """One-page Settlement Statement per standard/SETTLEMENT.md §2.
+
+    The shareable artifact: a finance or support leader attaches this to the
+    renewal negotiation. Section order is the spec's, section 7 is the
+    reproduction block — anyone re-running the command must get these same
+    numbers (S-5), which is the open-standard answer to a blind recount.
+    """
+    summary = bundle.get("metering_summary", {})
+    lines_in = bundle.get("outcome_lines", [])
+    total = summary.get("total_billable_events", len(lines_in))
+
+    resolved = sum(1 for r in lines_in if r.get("outcome_class") == "resolved")
+    assumed = sum(1 for r in lines_in if r.get("outcome_class") == "assumed_resolved")
+    settled = sum(1 for r in lines_in
+                  if r.get("outcome_class") == "resolved"
+                  and r.get("observer_grade") == "affected_party")
+    self_attested = sum(1 for r in lines_in
+                        if r.get("observer_grade") == "self_attested")
+    escalated = sum(1 for r in lines_in
+                    if r.get("outcome_class") == "escalated")
+    unprovable = summary.get("unprovable_count", 0)
+
+    tier1 = resolved + assumed
+    tier2 = settled
+    disputed = max(tier1 - tier2, 0)
+
+    def _id(value):
+        if isinstance(value, dict):
+            return value.get("id") or value.get("name") or "(unspecified)"
+        return value or "(unspecified)"
+
+    out = []
+    out.append("# Settlement Statement (Advisory)")
+    out.append("")
+    out.append("| | |")
+    out.append("|---|---|")
+    out.append("| Provider | %s |" % _id(bundle.get("provider_id")))
+    out.append("| Offering | %s |" % _id(bundle.get("offering_id")))
+    out.append("| Evidence level | %s |" % bundle.get("evidence_level", "none"))
+    out.append("| Standard | %s |" % spec_version)
+    out.append("| Input sha256 | `%s` |" % _sha256_of(effects_path))
+    out.append("| Generated | %s |" % datetime.now(timezone.utc)
+               .strftime("%Y-%m-%d %H:%M UTC"))
+    out.append("")
+
+    out.append("## 1. The claim, two ways (S-1)")
+    out.append("")
+    out.append("| Line | Basis | Count |")
+    out.append("|---|---|---|")
+    out.append("| **Tier 1** | Provider's own count (resolved + assumed) | **%d / %d** |"
+               % (tier1, total))
+    out.append("| **Tier 2** | Settlement-grade (affected-party confirmed) | **%d / %d** |"
+               % (tier2, total))
+    out.append("| Disputed class | Tier 1 minus Tier 2 | **%d** |" % disputed)
+    out.append("")
+    out.append("Tier 1 leads the negotiation: the provider cannot argue with its own")
+    out.append("rules, only with the data — which is yours. Tier 2 is renewal leverage,")
+    out.append("not a dispute line (D-3: the two lines are never blended).")
+    out.append("")
+
+    if price_per_unit is not None:
+        t1_amt = round(tier1 * price_per_unit, 2)
+        t2_amt = round(tier2 * price_per_unit, 2)
+        var_amt = round(disputed * price_per_unit, 2)
+        out.append("## 2. Dollars (at %s per unit)" % price_per_unit)
+        out.append("")
+        out.append("| | |")
+        out.append("|---|---|")
+        out.append("| Claimed by provider (Tier 1) | $%.2f |" % t1_amt)
+        out.append("| Settlement-grade (Tier 2) | $%.2f |" % t2_amt)
+        out.append("| Variance | **$%.2f** |" % var_amt)
+        out.append("")
+        if audit_cost is not None and var_amt > 0:
+            out.append("Payback: $%.2f audit / $%.2f monthly variance = **%.1f months**."
+                       % (audit_cost, var_amt, audit_cost / var_amt))
+            if price_per_unit:
+                out.append("Breakeven: %.0f disputed resolutions cover the audit."
+                           % (audit_cost / price_per_unit))
+            out.append("")
+
+    out.append("## 3. Both directions (S-3, D-2)")
+    out.append("")
+    out.append("| Direction | Count |")
+    out.append("|---|---|")
+    out.append("| Billed but not settlement-grade | %d |" % disputed)
+    out.append("| — of which self-attested only | %d |" % self_attested)
+    out.append("| Billable but not billed | cannot determine from this input |")
+    out.append("")
+    out.append("This bundle carries only the provider's effect records, so it cannot")
+    out.append("search for charges the provider failed to bill. Stated here rather")
+    out.append("than omitted: a statement that never looks in the audited party's")
+    out.append("favour is an advocacy document.")
+    out.append("")
+
+    out.append("## 4. Cannot settle (S-2, D-1)")
+    out.append("")
+    out.append("**%d of %d** lines carry no incrementality evidence and are removed"
+               % (unprovable, total))
+    out.append("from any outcome claim; each is listed with what is missing so the")
+    out.append("provider can supply it or credit them. Escalated outcomes (%d) are" % escalated)
+    out.append("not resolutions on any line and are excluded from both tiers.")
+    out.append("")
+
+    out.append("## 5. Out of scope (S-6)")
+    out.append("")
+    out.append("Spam, vendor-initiated sessions, eligibility-only determinations, and")
+    out.append("merged duplicates are excluded from this statement by definition; any")
+    out.append("such exclusions are listed with their reason in the evidence bundle.")
+    out.append("")
+
+    out.append("## 6. Reproduce (S-5)")
+    out.append("")
+    out.append("```bash")
+    out.append("# third-party reproduction: identical inputs must yield identical numbers")
+    out.append("agentmeasure settle --effects effects.jsonl --format md \\")
+    out.append("  --price %s --audit-cost %s" % (price_per_unit or "PRICE", audit_cost or "COST"))
+    out.append("```")
+    out.append("")
+    out.append("Standard: [standard/SETTLEMENT.md](../../standard/SETTLEMENT.md) · open governance")
+    out.append("(`GOVERNANCE.md`) · tool free and open source. Any conforming implementation")
+    out.append("given the same inputs must produce these same numbers (implementation")
+    out.append("disagreement = spec guilty).")
+    out.append("")
+    return "\n".join(out)

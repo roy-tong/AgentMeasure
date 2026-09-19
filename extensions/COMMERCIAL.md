@@ -270,6 +270,8 @@ operation_resolution: explicit + replay_protection: required`）；AgentMeasure 
 
 ### 5.1 Settlement Claim Discipline（结算索赔纪律，Draft 0.4.5）
 
+> 本节纪律已升格为公开标准：**[standard/SETTLEMENT.md — AMS-1 Draft 0.1](../standard/SETTLEMENT.md)**（条款 S-1…S-8，每条引用其执行测试；一页纸声明由 `agentmeasure settle --format md` 生成，带输入 sha256 与第三方复现块）。以下 D-1/D-2/D-3 为其源条款。
+
 **举证责任在索赔方。** 一条无法举证的索赔，是对方用来否定其余全部的那一行。
 
 三条纪律（源自 2026-09 对效果费对账实践的外部观察，见
