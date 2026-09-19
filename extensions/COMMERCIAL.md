@@ -310,6 +310,34 @@ operation_resolution: explicit + replay_protection: required`）；AgentMeasure 
 
 两线的美元差额 MUST 作为**两个独立数字**呈现，禁止合并为单一数字。
 
+### 5.2 Evidence Posture（证据姿态，Draft 0.4.5）
+
+> 结构借鉴 Inferock Standard 的 Evidence Postures，其原文原则：
+> **"Missing evidence lowers the posture instead of silently filling gaps."**
+> 我们把原来的 UNPROVABLE 二元扩展为四档姿态，因为「能不能索赔」与
+> 「能不能展示」是两件事。
+
+每条结算相关的发现 MUST 携带一个 **posture**，由规则机械决定，
+**不是人工评级**：
+
+| posture | 含义 | 进入索赔差额 | 可展示 |
+|---------|------|------------|-------|
+| `provider_recognized` | 满足该信号的证据要求，且能被对方自己的记录反驳 | ✅ | ✅ |
+| `bill_bounded` | 有实测损失且绑定到可观察的计费事实，但对方当前政策不承认 | ❌（保留为已测损失） | ✅ |
+| `exposure_only` | 需与发票核对才能定性的金额（反事实、估算） | ❌ **绝不并入差额** | ✅ 单列 |
+| `review_only` | 证据不足，无法机械判定 | ❌ | ✅ 并列出缺什么 |
+
+**三条纪律：**
+
+1. **缺证据降低姿态，而不是静默补全。** 字段缺失 → 姿态下降，绝不推断填充。
+2. **姿态是检测器输出，不是维护者判断。** 同一输入 + 同一规则 = 同一姿态。
+3. **只有 `provider_recognized` 能进索赔差额。** `bill_bounded` 与
+   `exposure_only` 必须作为独立行展示——这防止弱行变成退款主张，
+   同时保留买方该核对的东西。
+
+**与 §5.1 的关系**：D-1 说「无法举证的行从索赔移除」；本节定义**移除之后它去哪**——
+不是消失，而是降到一个仍然可见、但不参与索赔的姿态。
+
 ## 6. Commercial Attribution（商业归因）
 
 ```text
