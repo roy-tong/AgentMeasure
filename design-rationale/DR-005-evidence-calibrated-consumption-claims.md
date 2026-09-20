@@ -53,16 +53,21 @@ Evidence for State 2, ranked:
    request = availability signal, not consumption/influence.
 4. Where the spec defines `referenced`, it MUST name both failure modes at the definition
    site, so reference cannot masquerade as causal.
-5. **Orchestration-determined influence** (client-side reviewer, third reply 2026-09-14,
-   credited by name): when the orchestration layer, not the model, consummates the use,
-   influence is provable by construction because the causal chain lives in code rather
-   than in weights. Three cases: forced or required tool calls; programmatic piping of a
-   tool's output into the next call as literal input; and data dependencies between tools
-   (tool B's argument bound to tool A's output). This adds a second admissible evidence
-   class for State 2, it does not add a third state:
-   - model-side influence still requires the experiment layer (ablation / rerun);
-   - orchestration-side influence is certified from the dependency graph itself, ranked
-     alongside ablation as strong evidence, with the certifier named (harness vs model).
+5. **Orchestration-determined use: two evidence grades, not one** (client-side reviewer,
+   third reply 2026-09-14, credited by name; refined 2026-09-18 by an external reviewer's
+   distinction, attribution pending consent): when the orchestration layer, not the model,
+   is involved, what the trace can prove splits into two grades:
+   - **mandated use**: the call itself is forced or required by the harness. The behavior
+     is the constraint, so the harness consummates the use and influence is provable by
+     construction, ranked alongside ablation as strong evidence, certifier named (harness).
+   - **dependency by construction**: programmatic piping of a tool's output into the next
+     call, or a data dependency between tools (tool B's argument bound to tool A's output).
+     The trace proves the value reached tool B, that is, propagation; it does not prove
+     that B's behavior depended on it, since B can receive the value and ignore it. This
+     grade certifies availability-plus-propagation and leaves the behavioral question to
+     the experiment layer.
+   This adds admissible evidence classes for State 2, it does not add a third state:
+   model-side influence still requires the experiment layer (ablation / rerun).
    **Mixed case boundary** (open, per the same thread): when the harness constrains the
    choice set (tool B may only take A's output among several allowed inputs) and the model
    picks within it, the current reading is that the graph certifies availability of the
