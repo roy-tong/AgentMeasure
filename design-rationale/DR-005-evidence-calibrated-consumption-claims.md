@@ -54,8 +54,8 @@ Evidence for State 2, ranked:
 4. Where the spec defines `referenced`, it MUST name both failure modes at the definition
    site, so reference cannot masquerade as causal.
 5. **Orchestration-determined use: two evidence grades, not one** (client-side reviewer,
-   third reply 2026-09-14, credited by name; refined 2026-09-18 by an external reviewer's
-   distinction, attribution pending consent): when the orchestration layer, not the model,
+   third reply 2026-09-14, credited by name; refined 2026-09-18 by Rajesh Sharma (OWASP),
+   named with consent, direct reply): when the orchestration layer, not the model,
    is involved, what the trace can prove splits into two grades:
    - **mandated use**: the call itself is forced or required by the harness. The behavior
      is the constraint, so the harness consummates the use and influence is provable by
