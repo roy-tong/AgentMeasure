@@ -64,6 +64,7 @@
         <a href="#how">How it works</a>
         <a href="#standard">Spec</a>
         <a href="#lab">Lab</a>
+        <a href="recount.html">Recount in your browser</a>
         <a class="ext" href="https://github.com/roy-tong/AgentMeasure" target="_blank" rel="noopener">GitHub&nbsp;↗</a>
       </nav>
       <div class="nav-cta">
@@ -128,7 +129,7 @@
       <div class="status" role="listitem"><span class="status-k">CLI</span><span class="status-v ok">v0.4.0 on PyPI</span></div>
       <div class="status" role="listitem"><span class="status-k">SDK</span><span class="status-v" data-status="sdk">v0.1.1</span></div>
       <div class="status" role="listitem"><span class="status-k">Ecosystem audit</span><span class="status-v ok">110+ tools · 45+ verified bugs</span></div>
-      <div class="status" role="listitem"><span class="status-k">Upstream fixes</span><span class="status-v ok">14 merged</span></div>
+      <div class="status" role="listitem"><span class="status-k">Upstream fixes</span><span class="status-v ok">21 merged</span></div>
     </div>
   </section>
 
@@ -139,12 +140,12 @@
         <div class="audit-numbers">
           <div class="an"><span class="an-v">124</span><span class="an-k">repositories deep-read</span></div>
           <div class="an"><span class="an-v">45+</span><span class="an-k">verified accounting bugs</span></div>
-          <div class="an"><span class="an-v">14</span><span class="an-k">fixes merged upstream</span></div>
+          <div class="an"><span class="an-v">21</span><span class="an-k">fixes merged upstream</span></div>
           <div class="an"><span class="an-v">10 min</span><span class="an-k">to audit your own tool</span></div>
         </div>
         <div class="audit-copy">
           <h2 class="reveal d1">We audited the AI usage-tool ecosystem.<br>The same five bugs kept appearing.</h2>
-          <p class="reveal d2">One assistant message billed per content block (2–5×). Re-emitted Codex events counted twice. Cache writes priced at 1.25× instead of 2×. Price tables 5× off — including in the industry's pricing source of record. Sessions wiped on resume. Every finding: pinned commit, runnable repro, public filing — <strong>14 merged with maintainer credit</strong>.</p>
+          <p class="reveal d2">One assistant message billed per content block (2–5×). Re-emitted Codex events counted twice. Cache writes priced at 1.25× instead of 2×. Price tables 5× off — including in the industry's pricing source of record. Sessions wiped on resume. Every finding: pinned commit, runnable repro, public filing — <strong>21 merged with maintainer credit</strong>.</p>
           <p class="note reveal d3"><a href="https://github.com/roy-tong/AgentMeasure/blob/main/campaigns/audit-report-2026-09.md">Read the Token-Accounting Bug Report&nbsp;→</a></p>
           <p class="note reveal d4"><a href="https://github.com/roy-tong/AgentMeasure/blob/main/campaigns/tool-authors.md">Maintain a usage tool? Audit it in 10 minutes with our fixtures&nbsp;→</a></p>
         </div>
@@ -166,13 +167,30 @@
         </div>
         <div class="who-card reveal d2">
           <span class="who-k">$1.50–2.00 per resolution</span>
-          <p>Zendesk launched outcome-based pricing in Aug 2024; Salesforce, Intercom, and Sierra followed.</p>
+          <p>Zendesk launched outcome-based pricing in Aug 2024; Salesforce at $2 per conversation, Intercom, Sierra, Ada, and Decagon followed. Per-outcome billing is now the industry default.</p>
           <span class="who-v">Per-outcome billing is live</span>
         </div>
         <div class="who-card reveal d3">
           <span class="who-k">$0.99 per resolution</span>
           <p>Intercom Fin bills per resolution with a money-back guarantee. Buyers dispute what was counted; sellers refund what cannot be proven.</p>
           <span class="who-v">Both sides need a referee</span>
+        </div>
+      </div>
+      <div class="who-grid" style="margin-top:16px">
+        <div class="who-card reveal d1">
+          <span class="who-k">The buyer’s side of the bill</span>
+          <p>Billed per resolution, per task, or per usage — re-run the bill on your own machine and get an AMS-1 settlement statement: what was charged, what the vendor’s own rules would charge, and what the evidence cannot prove. Data never leaves your machine.</p>
+          <span class="who-v">One semantics, three billing units</span>
+        </div>
+        <div class="who-card reveal d2">
+          <span class="who-k">2026-05 · “Verified” only</span>
+          <p>Zendesk now bills only “Verified Resolutions.” When vendors compete to define what “solved” means, the buyer needs an independent count.</p>
+          <span class="who-v">The unit itself is contested</span>
+        </div>
+        <div class="who-card reveal d3">
+          <span class="who-k">20 vendors checked</span>
+          <p>Not one publishes a dispute or refund process for miscounts. Intercom’s own docs: “We cannot guarantee the limit will be 100% accurate.”</p>
+          <span class="who-v">No appeals process, anywhere</span>
         </div>
       </div>
 
@@ -514,7 +532,16 @@
       <h2 class="reveal d1">Find out what your agent traffic actually&nbsp;is.</h2>
       <p class="lede-sm reveal d2">Start with one sample. Scale to 7 days when it pays. Your data stays on your machine.</p>
 
-      <p class="trial-what reveal d2"><strong>Start smaller — a zero-install measurement check.</strong> Send 20–100 anonymized trace or log rows (or point to a public export). We map them locally and send back a short check: what safely counts as attempts vs operations, where retries may inflate usage, and what the telemetry cannot prove. No SDK, no integration, no 7-day commitment. Raw data stays local by default — a sanitized sample is only shared if you explicitly authorize it. A sample check is not a full audit and claims no causal effect. Production samples and synthetic fixtures enter through separate intakes.</p>
+      <p class="trial-what reveal d2"><strong>Billed per AI “resolution” (Intercom Fin, Zendesk AI, Salesforce)? — get an evidence-based check of that bill.</strong> Send a sanitized conversations/tickets export, or run our free CLI locally — data never leaves your machine. You get back a two-line settlement statement (<a href="https://github.com/roy-tong/AgentMeasure/blob/main/standard/SETTLEMENT.md" target="_blank" rel="noopener">AMS-1</a>): <em>Tier&nbsp;1</em>, everything the vendor’s own published rules would bill — including resolutions only its own system attested; <em>Tier&nbsp;2</em>, only resolutions an affected party actually confirmed. Every line traces to a named rule, and anything the export cannot prove is listed as unprovable, never guessed. No charge — we are validating the method on real bills.</p>
+      <div class="trial-actions reveal d2">
+        <a class="btn btn-primary" href="mailto:tongroy18@gmail.com?subject=AI%20resolution%20bill%20check%20-%20%5Byour%20vendor%5D&amp;body=Hi%2C%0A%0AI%27d%20like%20an%20evidence-based%20check%20of%20our%20AI%20support%20bill.%0A%0A1.%20Vendor%20and%20plan%20%28Intercom%20Fin%20%2F%20Zendesk%20AI%20%2F%20other%29%3A%0A%0A2.%20Roughly%20how%20many%20resolutions%20per%20month%2C%20and%20your%20per-resolution%20rate%3A%0A%0A3.%20The%20decision%20this%20should%20inform%20%28renewal%2C%20dispute%2C%20budget%2C%20vendor%20selection%29%3A%0A%0AData%3A%20I%27ll%20send%20a%20sanitized%20export%2C%20or%20run%20the%20tool%20locally%20and%20share%20only%20the%20two%20line%20counts.">Send an export</a>
+        <a class="btn btn-ghost" href="https://github.com/roy-tong/AgentMeasure/blob/main/standard/SETTLEMENT.md" target="_blank" rel="noopener">The AMS-1 standard&nbsp;↗</a>
+      </div>
+      <div class="trial-links reveal d2" style="margin-top:.8rem">
+        <a class="link-quiet" href="./blog/resolution-bill-check.html">Read the 5-minute guide: who attested the resolutions on your bill?&nbsp;→</a>
+      </div>
+
+      <p class="trial-what reveal d2" style="margin-top:1.6rem"><strong>Not on per-resolution billing? Start smaller — a zero-install measurement check.</strong> Send 20–100 anonymized trace or log rows (or point to a public export). We map them locally and send back a short check: what safely counts as attempts vs operations, where retries may inflate usage, and what the telemetry cannot prove. No SDK, no integration, no 7-day commitment. Raw data stays local by default — a sanitized sample is only shared if you explicitly authorize it. A sample check is not a full audit and claims no causal effect. Production samples and synthetic fixtures enter through separate intakes.</p>
       <div class="trial-actions reveal d2">
         <a class="btn btn-primary" href="mailto:tongroy18@gmail.com?subject=AgentMeasure%20measurement%20check%20-%20%5Byour%20capability%5D&amp;body=Hi%2C%0A%0AI%27d%20like%20a%20zero-install%20measurement%20check.%0A%0A1.%20Data%3A%2020-100%20anonymized%20trace/log%20rows%2C%20or%20a%20link%20to%20a%20public%20export%20%28production%20or%20synthetic%20-%20please%20say%20which%29%3A%0A%0A2.%20Source%20and%20time%20window%3A%0A%0A3.%20The%20decision%20this%20should%20inform%3A%0A%0ANote%3A%20raw%20data%20stays%20local%20by%20default.%20If%20I%20share%20a%20sanitized%20sample%2C%20I%27ll%20state%20what%20may%20be%20done%20with%20it.">Send a sample</a>
       </div>
@@ -724,6 +751,7 @@
           <a href="https://github.com/roy-tong/AgentMeasure/blob/main/standard/METRICS.md" target="_blank" rel="noopener">Metrics</a>
           <a href="https://github.com/roy-tong/AgentMeasure/blob/main/standard/ENTITY.md" target="_blank" rel="noopener">Entity</a>
           <a href="https://github.com/roy-tong/AgentMeasure/blob/main/standard/QUALITY.md" target="_blank" rel="noopener">Quality</a>
+          <a href="https://github.com/roy-tong/AgentMeasure/blob/main/standard/SETTLEMENT.md" target="_blank" rel="noopener">Settlement (AMS-1)</a>
         </nav>
         <nav class="footer-col" aria-label="Research">
           <span class="footer-k">Research</span>
