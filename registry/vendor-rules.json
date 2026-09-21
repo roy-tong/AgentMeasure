@@ -23,19 +23,25 @@
       "conversation",
       "id",
       "ticket_id",
-      "ticket"
+      "ticket",
+      "ticket id",
+      "conversation id"
     ],
     "opened_at": [
       "opened_at",
       "opened_date",
       "created_at",
-      "created"
+      "created",
+      "created at",
+      "conversation created at"
     ],
     "closed_at": [
       "closed_at",
       "closed_date",
       "solved_at",
-      "resolved_at"
+      "resolved_at",
+      "solved at",
+      "closed at"
     ],
     "human_agent_participated": [
       "human_agent_participated",

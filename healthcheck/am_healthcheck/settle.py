@@ -13,6 +13,8 @@ import hashlib
 import json
 import os
 from collections import Counter, defaultdict
+import csv
+import io
 from datetime import datetime, timezone
 from typing import Any, Dict, List
 
@@ -389,8 +391,101 @@ def settlement_statement(bundle: dict, price_per_unit: float = None,
     lines.append("removed from any outcome claim. They are listed with what is")
     lines.append("missing so the provider can supply it or credit them.")
     lines.append("")
+
+    lines.append("Coverage (S-2 companion)")
+    lines.append("-" * _W)
+    t2_pct = 100.0 * tier2 / total if total else 0.0
+    unprov_pct = 100.0 * unprovable / total if total else 0.0
+    lines.append("Lines in evidence file          %d" % total)
+    lines.append("Entered judgment                %d (100.0%%) — every line is"
+                 % total)
+    lines.append("                                 crossed on class x grade")
+    lines.append("Settlement-grade (Tier 2)       %d (%.1f%%)" % (tier2, t2_pct))
+    lines.append("Removed as UNPROVABLE           %d (%.1f%%)" % (unprovable, unprov_pct))
+    lines.append("Provenance: provider=%s period=%s..%s rules=AMS-1 Draft 0.1"
+                 % (bundle.get("provider_id") or "(unspecified)",
+                    (bundle.get("billing_period") or {}).get("start", "?"),
+                    (bundle.get("billing_period") or {}).get("end", "?")))
+    lines.append("(tier 1 = provider's own count; tier 2 = affected-party"
+                 " confirmed)")
+    lines.append("Coverage note: this statement judges only lines present in")
+    lines.append("the evidence file. Rows the provider billed but did not")
+    lines.append("export are invisible to it (D-2).")
+    lines.append("")
     lines.append("=" * _W)
     return "\n".join(lines)
+
+
+
+# ---------------------------------------------------------------------------
+# Line-level CSV for finance (F1.6): one row per billed line, pure data,
+# no totals row — anything finance needs to sum, they sum themselves.
+# ---------------------------------------------------------------------------
+
+_CSV_COLUMNS = [
+    "line_id", "conversation_id", "task_id", "outcome_class",
+    "observer_grade", "incrementality_evidence",
+    "billed_tier1", "settled_tier2", "verdict",
+    "unit_price", "amount_billed", "amount_supported", "amount_disputed",
+    "confirmed_at", "stability_window_days",
+]
+
+_CONVERSATION_ID_KEYS = (
+    "conversation_id", "conversation", "intercom_conversation_id",
+    "zendesk_ticket_id", "ticket_id",
+)
+
+
+def _conversation_id_of(line: dict) -> str:
+    ext = line.get("external_ids") or {}
+    if isinstance(ext, dict):
+        for key in _CONVERSATION_ID_KEYS:
+            if ext.get(key):
+                return str(ext[key])
+    return ""
+
+
+def _csv_safe(value) -> str:
+    """Guard against spreadsheet formula injection: a cell that starts with
+    = + - @ or a tab gets a leading apostrophe. Data unchanged, risk removed."""
+    s = "" if value is None else str(value)
+    if s and s[0] in "=+-@\t":
+        return "'" + s
+    return s
+
+
+def settlement_csv(bundle: dict, price_per_unit: float = None) -> str:
+    """Render the settlement bundle as a line-level CSV a finance team can
+    consume directly: one row per outcome line, Tier 1/Tier 2 membership as
+    0/1 flags, per-row verdict, and per-row dollar amounts at the given unit
+    price. Row order follows the bundle; sums are left to the reader because
+    a totals row inside the data breaks re-import.
+    """
+    price = price_per_unit
+    buf = io.StringIO()
+    writer = csv.writer(buf, lineterminator="\n")
+    writer.writerow(_CSV_COLUMNS)
+    for r in bundle.get("outcome_lines", []):
+        t1 = 1 if r.get("outcome_class") in ("resolved", "assumed_resolved") else 0
+        t2 = 1 if (r.get("outcome_class") == "resolved"
+                   and r.get("observer_grade") == "affected_party") else 0
+        verdict = "SUPPORTED" if t1 and t2 else ("DISPUTED" if t1 else "NOT_BILLED")
+        unit = "%.2f" % price if price is not None else ""
+        amt_billed = "%.2f" % round(t1 * price, 2) if price is not None else ""
+        amt_supported = "%.2f" % round(t2 * price, 2) if price is not None else ""
+        amt_disputed = "%.2f" % round((t1 - t2) * price, 2) if price is not None else ""
+        writer.writerow([
+            _csv_safe(r.get("line_id")),
+            _csv_safe(_conversation_id_of(r)),
+            _csv_safe(r.get("task_id")),
+            _csv_safe(r.get("outcome_class")),
+            _csv_safe(r.get("observer_grade")),
+            _csv_safe(r.get("incrementality_evidence")),
+            t1, t2, verdict, unit, amt_billed, amt_supported, amt_disputed,
+            _csv_safe(r.get("confirmed_at")),
+            round((r.get("stability_window_seconds") or 0) / 86400.0, 2),
+        ])
+    return buf.getvalue()
 
 
 # ---------------------------------------------------------------------------
@@ -513,6 +608,30 @@ def statement_markdown(bundle: dict, effects_path: str,
     out.append("not resolutions on any line and are excluded from both tiers.")
     out.append("")
 
+    _cov_t2 = sum(1 for r in lines_in
+                  if r.get("outcome_class") == "resolved"
+                  and r.get("observer_grade") == "affected_party")
+    _cov_t2_pct = 100.0 * _cov_t2 / total if total else 0.0
+    _cov_unp_pct = 100.0 * unprovable / total if total else 0.0
+    out.append("")
+    out.append("**Coverage (S-2 companion)**")
+    out.append("")
+    out.append("| | |")
+    out.append("|---|---|")
+    out.append("| Lines in evidence file | %d |" % total)
+    out.append("| Entered judgment | %d (100.0%%) — every line crossed on class x grade |" % total)
+    out.append("| Settlement-grade (Tier 2) | %d (%.1f%%) |" % (_cov_t2, _cov_t2_pct))
+    out.append("| Removed as UNPROVABLE | %d (%.1f%%) |" % (unprovable, _cov_unp_pct))
+    out.append("")
+    out.append("Provenance: provider=%s, period=%s..%s, rules=AMS-1 Draft 0.1"
+               % (_id(bundle.get("provider_id")),
+                  (bundle.get("billing_period") or {}).get("start", "?"),
+                  (bundle.get("billing_period") or {}).get("end", "?")))
+    out.append("(tier 1 = provider's own count; tier 2 = affected-party confirmed.)")
+    out.append("This statement judges only lines present in the evidence file;"
+               " rows the provider billed but did not export are invisible to"
+               " it (D-2).")
+    out.append("")
     out.append("## 5. Out of scope (S-6)")
     out.append("")
     out.append("Spam, vendor-initiated sessions, eligibility-only determinations, and")
@@ -689,6 +808,30 @@ def statement_html(bundle: dict, effects_path: str,
              "are excluded from both tiers.</p>"
              % (unprovable, total, escalated))
 
+    _cov_t2 = sum(1 for r in lines_in
+                  if r.get("outcome_class") == "resolved"
+                  and r.get("observer_grade") == "affected_party")
+    _cov_t2_pct = 100.0 * _cov_t2 / total if total else 0.0
+    _cov_unp_pct = 100.0 * unprovable / total if total else 0.0
+    h.append("<h3>Coverage (S-2 companion)</h3>")
+    h.append("<table>")
+    h.append("<tr><th></th><th></th></tr>")
+    h.append("<tr><td>Lines in evidence file</td><td>%d</td></tr>" % total)
+    h.append("<tr><td>Entered judgment</td><td>%d (100.0%%) &mdash; every line crossed on class &times; grade</td></tr>" % total)
+    h.append("<tr><td>Settlement-grade (Tier 2)</td><td>%d (%.1f%%)</td></tr>"
+             % (_cov_t2, _cov_t2_pct))
+    h.append("<tr><td>Removed as UNPROVABLE</td><td>%d (%.1f%%)</td></tr>"
+             % (unprovable, _cov_unp_pct))
+    h.append("</table>")
+    h.append("<p>Provenance: provider=%s, period=%s..%s, rules=AMS-1 Draft 0.1"
+             " (tier&nbsp;1 = provider's own count; tier&nbsp;2 ="
+             " affected-party confirmed).</p>"
+             % (esc(str(_pid)) if (_pid := bundle.get("provider_id")) else "(unspecified)",
+                esc(str((bundle.get("billing_period") or {}).get("start", "?"))),
+                esc(str((bundle.get("billing_period") or {}).get("end", "?")))))
+    h.append("<p>This statement judges only lines present in the evidence"
+             " file; rows the provider billed but did not export are"
+             " invisible to it (D-2).</p>")
     h.append("<h2>5. Out of scope (S-6)</h2>")
     h.append('<p class="note">Spam, vendor-initiated sessions, '
              "eligibility-only determinations, and merged duplicates are "

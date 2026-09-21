@@ -819,6 +819,13 @@ def cmd_settle(args) -> int:
         with open(html_path, "w", encoding="utf-8") as fh:
             fh.write(html)
         print("Settlement statement (AMS-1 one-pager, HTML) \u2192 %s" % html_path)
+    if args.statement and args.format == "csv":
+        csv_path = os.path.splitext(os.path.abspath(args.output))[0] + "-statement.csv"
+        csv_text = settle_mod.settlement_csv(
+            bundle, price_per_unit=args.price)
+        with open(csv_path, "w", encoding="utf-8", newline="") as fh:
+            fh.write(csv_text)
+        print("Settlement line detail (finance CSV) -> %s" % csv_path)
 
     if args.verbose:
         print()
@@ -1040,9 +1047,10 @@ def build_parser() -> argparse.ArgumentParser:
                           choices=["none", "v2_ablation", "v4_holdout"],
                           default="none",
                           help="incrementality evidence level")
-    p_settle.add_argument("--format", choices=["text", "md", "html"], default="text",
-                          help="statement rendering: terminal text or AMS-1 "
-                               "markdown one-pager (written next to --output)")
+    p_settle.add_argument("--format", choices=["text", "md", "html", "csv"], default="text",
+                          help="statement rendering: terminal text, AMS-1 "
+                               "one-pager (md/html), or line-level finance CSV "
+                               "(written next to --output)")
     p_settle.add_argument("--statement", "-s", action="store_true",
                           help="print the negotiable two-line settlement statement "
                                "(COMMERCIAL 5.1: both directions, netted)")

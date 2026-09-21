@@ -1,12 +1,13 @@
 """Settlement bundle tests: effect-confirmed validation and bundle shape."""
+import io
 import json
 import os
 import tempfile
 import unittest
 
 from am_healthcheck.settle import (bundle_report, generate_bundle,
-                                    settlement_statement, statement_html,
-                                    statement_markdown)
+                                    settlement_csv, settlement_statement,
+                                    statement_html, statement_markdown)
 
 
 def effect(effect_id="eff-1", outcome_class="resolved",
@@ -375,3 +376,115 @@ class TestStatementHtml(unittest.TestCase):
         html = statement_html(bundle, path)
         self.assertNotIn("<script>alert", html)
         self.assertIn("&lt;script&gt;", html)
+
+class TestSettlementCsv(unittest.TestCase):
+    """F1.6: line-level finance CSV. One row per outcome line, tier flags as
+    0/1, per-row verdict and amounts, no totals row inside the data."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        path = os.path.join(self.tmp.name, "effects.jsonl")
+        records = [
+            effect("e1", "resolved", "affected_party",
+                   task_id="=SUM(A1:A9)", external_ids={"conversation_id": "cv-1"}),
+            effect("e2", "resolved", "self_attested",
+                   external_ids={"zendesk_ticket_id": "tk-2"}),
+            effect("e3", "assumed_resolved", "self_attested"),
+            effect("e4", "escalated", "affected_party"),
+        ]
+        with open(path, "w", encoding="utf-8") as fh:
+            for r in records:
+                fh.write(json.dumps(r) + "\n")
+        self.bundle = generate_bundle(path, os.path.join(self.tmp.name, "b.json"),
+                                      {"provider": "acme"})
+        import csv as _csv
+        self._csv = _csv
+
+    def _rows(self, price=0.99):
+        text = settlement_csv(self.bundle, price_per_unit=price)
+        return list(self._csv.reader(io.StringIO(text)))
+
+    def test_header_and_rowcount(self):
+        rows = self._rows()
+        self.assertEqual(rows[0][0], "line_id")
+        self.assertIn("verdict", rows[0])
+        self.assertIn("amount_disputed", rows[0])
+        self.assertEqual(len(rows), 5)  # header + 4 lines
+
+    def test_tier_math_matches_statement(self):
+        rows = self._rows()[1:]
+        t1 = sum(int(r[6]) for r in rows)
+        t2 = sum(int(r[7]) for r in rows)
+        self.assertEqual((t1, t2), (3, 1))  # escalated is not billed tier 1
+
+    def test_verdicts(self):
+        verdicts = sorted(r[8] for r in self._rows()[1:])
+        self.assertEqual(verdicts,
+                         ["DISPUTED", "DISPUTED", "NOT_BILLED", "SUPPORTED"])
+
+    def test_amount_columns(self):
+        rows = self._rows()[1:]
+        disputed_sum = round(sum(float(r[12]) for r in rows), 2)
+        self.assertEqual(disputed_sum, round(2 * 0.99, 2))
+
+    def test_conversation_id_extraction(self):
+        rows = self._rows()[1:]
+        self.assertEqual(rows[0][1], "cv-1")
+        self.assertEqual(rows[1][1], "tk-2")
+
+    def test_formula_injection_guarded(self):
+        rows = self._rows()[1:]
+        self.assertTrue(rows[0][2].startswith("'"))  # '=SUM(...)' neutralised
+
+    def test_no_price_leaves_amounts_blank(self):
+        rows = self._rows(price=None)[1:]
+        self.assertEqual(rows[0][9], "")   # unit_price
+        self.assertEqual(rows[0][10], "")  # amount_billed
+
+
+class TestStatementCoverage(unittest.TestCase):
+    """F1.2: every statement format carries the coverage block and the
+    provenance line, with numbers consistent with the bundle."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        path = os.path.join(self.tmp.name, "effects.jsonl")
+        records = [
+            effect("e1", "resolved", "affected_party"),
+            effect("e2", "resolved", "affected_party"),
+            effect("e3", "assumed_resolved", "self_attested"),
+            effect("e4", "escalated", "self_attested"),
+        ]
+        with open(path, "w", encoding="utf-8") as fh:
+            for r in records:
+                fh.write(json.dumps(r) + "\n")
+        self.effects_path = path
+        self.bundle = generate_bundle(
+            path, os.path.join(self.tmp.name, "b.json"),
+            {"provider": "acme", "period_start": "2026-09-01",
+             "period_end": "2026-09-30"})
+
+    def test_text_statement_coverage(self):
+        text = settlement_statement(self.bundle)
+        self.assertIn("Coverage (S-2 companion)", text)
+        self.assertIn("Entered judgment", text)
+        self.assertIn("100.0%", text)
+        self.assertIn("Provenance: provider=acme period=2026-09-01..2026-09-30",
+                      text)
+        self.assertIn("invisible to it (D-2)", text)
+
+    def test_markdown_coverage(self):
+        md = statement_markdown(self.bundle, self.effects_path)
+        self.assertIn("Coverage (S-2 companion)", md)
+        self.assertIn("Settlement-grade (Tier 2) | 2 (50.0%)", md)
+        self.assertIn("Provenance: provider=acme, period=2026-09-01..2026-09-30",
+                      md)
+
+    def test_html_coverage(self):
+        html = statement_html(self.bundle, self.effects_path)
+        self.assertIn("Coverage (S-2 companion)", html)
+        self.assertIn("50.0%", html)
+        self.assertIn("Provenance: provider=acme", html)
+        self.assertNotIn("<script", html)  # still offline-safe

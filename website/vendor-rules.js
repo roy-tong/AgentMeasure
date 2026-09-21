@@ -26,14 +26,18 @@
       "closed_at",
       "closed_date",
       "solved_at",
-      "resolved_at"
+      "resolved_at",
+      "solved at",
+      "closed at"
     ],
     "conversation_id": [
       "conversation_id",
       "conversation",
       "id",
       "ticket_id",
-      "ticket"
+      "ticket",
+      "ticket id",
+      "conversation id"
     ],
     "customer_recontacted_within_window": [
       "customer_recontacted_within_window",
@@ -57,7 +61,9 @@
       "opened_at",
       "opened_date",
       "created_at",
-      "created"
+      "created",
+      "created at",
+      "conversation created at"
     ],
     "vendor_billed": [
       "vendor_billed",

@@ -213,3 +213,41 @@ class TestRecountCli(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+class TestNativeHeaderAliases(unittest.TestCase):
+    """F1.1a: real vendor export headers use display forms with spaces
+    ("Ticket ID", "Solved at"). After lower() they keep the space, so the
+    alias table must carry the space forms or native exports silently fail
+    to map."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+
+    def _export(self, header):
+        path = os.path.join(self.tmp.name, "export.csv")
+        with open(path, "w", encoding="utf-8", newline="") as fh:
+            fh.write(",".join(header) + "\n")
+        return path
+
+    def test_zendesk_style_headers_map(self):
+        from am_healthcheck.vendors import load_export
+        path = self._export([
+            "Ticket ID", "Created at", "Solved at",
+            "human_agent_participated", "issue_addressed",
+            "customer_recontacted_within_window", "vendor_billed"])
+        export = load_export(path)
+        self.assertIn("conversation_id", export["columns_found"])
+        self.assertIn("opened_at", export["columns_found"])
+        self.assertIn("closed_at", export["columns_found"])
+        self.assertEqual(export["columns_missing"], [])
+
+    def test_intercom_label_headers_map(self):
+        from am_healthcheck.vendors import load_export
+        path = self._export([
+            "Conversation ID", "Conversation created at",
+            "human_agent_participated", "issue_addressed",
+            "customer_recontacted_within_window", "vendor_billed"])
+        export = load_export(path)
+        self.assertIn("conversation_id", export["columns_found"])
+        self.assertIn("opened_at", export["columns_found"])
