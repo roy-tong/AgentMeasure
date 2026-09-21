@@ -22,8 +22,14 @@ result — when the logs cannot decide, that is disclosed, never zeroed.
 
 ## Install
 
+> **Note (2026-09-21):** PyPI still serves **0.4.0**, which crashes on the
+> first command (`NameError` in `_run_check`; `demo` / `check` / `compare`
+> all affected). The fix is in 0.4.1 and already on main. Until the 0.4.1
+> wheel lands on the index, install from git instead (option 3 below) —
+> that path runs clean.
+
 ```bash
-# 1) from PyPI (live since v0.4.0) — zero install, straight to a run
+# 1) from PyPI (live since v0.4.0 — see note above; 0.4.1 pending upload)
 pipx run agentmeasure demo
 
 # 2) install the command
