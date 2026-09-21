@@ -133,7 +133,7 @@
     {
       "id": "cross-file-fork-replay-mixed-identity",
       "description": "fork 场景：子文件 verbatim 重放父文件 N 个 turn（记录带不同 file/session ID，部分记录无跨文件稳定身份）并新增 M 个 turn。期望：重放前缀只计一次 + 子新增 M 各计一次；attempt/cost 对真正的新工作保留；operation_id 防逻辑膨胀但不防 attempt/cost 双计。情形双包：稳定跨文件 ID（ID 去重可用）与无稳定 ID（需结构前缀检测）。",
-      "external_evidence": "external reviewers via direct replies 2026-09-19/20 (attribution pending consent): cross-file response_id 不保证稳定；向量不应假设 ID 去重充分",
+      "external_evidence": "case identified and described by Azest Kingscrown (named with consent, direct reply 2026-09-21); semantics confirmed jointly with Taehyuk Kim (tokscale corner thread); runner enforcement for the cross-file shape is planned and disclosed as not-yet-machine-checked",
       "input": {
         "project": "p1",
         "files": [
