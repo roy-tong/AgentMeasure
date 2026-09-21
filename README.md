@@ -68,7 +68,9 @@ Conformance checks for AI-agent telemetry — a retry is one logical operation, 
 > conformance to declared rules; it does not adjudicate (no "should have been
 > billed" verdicts, no liability). Payment receipts prove money moved;
 > **[AMS-1 settlement statements](standard/SETTLEMENT.md)** prove what the
-> money was for.
+> money was for. Verdicts come only from named rules with tests behind them —
+> models, where used at all, sort and summarize but never judge — so the same
+> inputs re-run to the same statement on any machine.
 
 **Today:** measure agent-facing capability usage — attempts, operations, retry
 inflation, success rates with numerators you can audit.
@@ -83,7 +85,11 @@ now being billed (what counts as one resolution, one completed task).
 
 ## Why now
 
-AI services have started charging by the outcome: [Zendesk at $1.50–2.00 per automated resolution](https://www.zendesk.com/newsroom/articles/zendesk-outcome-based-pricing/) since Aug 2024, [Intercom Fin at $0.99 per resolution](https://www.intercom.com/pricing/fin) with a money-back guarantee, [Sierra's outcome-based enterprise contracts](https://sierra.ai/blog/outcome-based-pricing-for-ai-agents). But *what counts as one outcome* has no standard — retries, reopens, and silent "assumed resolutions" all change the number, and the bill. When money rides on a measured unit, someone has to define the unit. That is what we build. → [Read the note](https://roy-tong.github.io/AgentMeasure/blog/outcome-yardstick.html)
+AI services have started charging by the outcome: [Zendesk at $1.50–2.00 per automated resolution](https://www.zendesk.com/newsroom/articles/zendesk-outcome-based-pricing/) since Aug 2024, [Intercom Fin at $0.99 per resolution](https://www.intercom.com/pricing/fin) with a money-back guarantee, [Salesforce Agentforce at $2 per conversation](https://www.salesforce.com/agentforce/pricing/), plus Sierra, Ada, and Decagon. In two years, per-outcome pricing went from differentiator to industry default. In May 2026 Zendesk went a step further and began billing only "Verified Resolutions" — vendors are now competing to define what one outcome is.
+
+The buyer still has no checker. The rules are written by the seller and the bill is computed by the seller; Intercom's own documentation says "We cannot guarantee the limit will be 100% accurate." We checked 20 vendors' public docs — none publishes a dispute or refund process for miscounts. So we are building the buyer's side of the bill: re-run it on your own machine and get an [AMS-1 settlement statement](standard/SETTLEMENT.md) — what was charged, what the vendor's own rules would charge, and what the evidence cannot prove. Per resolution, per task, or per usage: one settlement semantics for all three billing units.
+
+When money rides on a measured unit, someone has to define the unit. That is what we build. → [Read the note](https://roy-tong.github.io/AgentMeasure/blog/outcome-yardstick.html)
 
 ## Principles (written down before anyone asked)
 
@@ -351,6 +357,9 @@ defines the agent-to-agent boundary the object model was missing.
 
 | Audience | Why |
 | --- | --- |
+| **Teams billed per outcome** (AI support: Intercom Fin, Zendesk, Salesforce Agentforce) | re-run the bill locally; AMS-1 settlement statements for renewals and disputes |
+| **Teams billed per task / compute** (Copilot premium requests, Cursor, Devin ACU) | one semantics for "what counts as one task" when retries and loops keep billing |
+| **Teams billed per usage** (APIs and gateways, multiple vendors) | align incommensurable meters into one auditable statement |
 | **Capability Provider** | measure and eventually meter agent usage of your capabilities |
 | **Agent Runtime** | expose decision / usage signals consistently |
 | **Registry / Marketplace** | compare capabilities using standardized signals |

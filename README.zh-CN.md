@@ -45,7 +45,9 @@ pipx run agentmeasure check --runtime claude   # 强制 Claude Code 适配器
 > **AgentMeasure 把执行事实与逻辑操作分开、把证据与推断分开、把经济结算与价值分开**
 > ——一套面向 Agent Capability Economy 的开放计量层。给仪表盘一个可用的数字
 > （逻辑操作数），给每个数字可审计的证据，给测不到的部分明确的披露，
-> 而不是一个装作精确的估计。
+> 而不是一个装作精确的估计。判定只来自具名规则与其背后的测试——模型至多做
+> 整理与叙述，永不参与判定；同样的输入，换台机器重跑，得到同一份声明。
+> 支付回单证明钱动了，[AMS-1 结算声明](standard/SETTLEMENT.md)证明这钱是为了什么。
 
 **今天：** 度量 Agent 对软件能力的使用——attempts、operations、retry 膨胀、
 分子可审计的成功率。
@@ -60,7 +62,11 @@ pipx run agentmeasure check --runtime claude   # 强制 Claude Code 适配器
 
 ## 为什么是现在
 
-AI 服务已经开始按效果收钱：Zendesk 2024 年 8 月起[按"解决一单"收 1.50–2.00 美金](https://www.zendesk.com/newsroom/articles/zendesk-outcome-based-pricing/)，[Intercom Fin 一单 0.99 美金](https://www.intercom.com/pricing/fin)还带退款保证，[Sierra 按效果签企业合同](https://sierra.ai/blog/outcome-based-pricing-for-ai-agents)。但**"什么算一次解决"没有标准**——重试、工单重开、"客户沉默就算已解决"，都改着这个数，也改着账单。钱挂在一个可测量的量上，就得有人把这个量定义清楚。这就是我们在做的事。→ [读这篇说明](https://roy-tong.github.io/AgentMeasure/blog/outcome-yardstick.html)
+AI 服务已经开始按效果收钱：Zendesk 2024 年 8 月起[按"解决一单"收 1.50–2.00 美金](https://www.zendesk.com/newsroom/articles/zendesk-outcome-based-pricing/)，[Intercom Fin 一单 0.99 美金](https://www.intercom.com/pricing/fin)还带退款保证，[Salesforce Agentforce 一段会话 2 美金](https://www.salesforce.com/agentforce/pricing/)，Sierra、Ada、Decagon 全部跟上——两年里，按效果收费从卖点变成了行规。2026 年 5 月，Zendesk 更进一步，只对 "Verified Resolutions" 计费：厂商开始抢"什么算一次解决"的定义权。
+
+买方这边始终没有核对工具。规则是卖方写的，账单是卖方算的；Intercom 自己的文档写着 "We cannot guarantee the limit will be 100% accurate"。我们查了 20 家厂商的公开文档——没有一家写明计错了怎么办。所以我们在做账单的买方一侧：在你自己的机器上重算，拿到 [AMS-1 结算声明](standard/SETTLEMENT.md)——实际收了多少、按厂商自己的规则该收多少、哪些证据证明不了。按解决次数、按任务、还是按用量：三种计费单位，一套结算语义。
+
+钱挂在一个可测量的量上，就得有人把这个量定义清楚。这就是我们在做的事。→ [读这篇说明](https://roy-tong.github.io/AgentMeasure/blog/outcome-yardstick.html)
 
 ## 我们的原则（先写下来，免得以后被要求破例）
 
@@ -291,6 +297,9 @@ AgentMeasure 正在**渐进标准化**从发现与选择、经执行到效用与
 
 | 受众 | 为什么 |
 | --- | --- |
+| **按产出付费的团队**（AI 客服：Intercom Fin、Zendesk、Salesforce Agentforce） | 本地重算账单；续约与争议用 AMS-1 结算声明 |
+| **按任务/算力付费的团队**（Copilot premium requests、Cursor、Devin ACU） | 重试和循环还在扣钱时，"什么算一次任务"需要一套语义 |
+| **按用量付费的团队**（API 与网关、多厂商） | 把口径对不齐的各家计量汇成一份可审计的声明 |
 | **Capability Provider** | 度量并最终计量 Agent 对你能力的使用 |
 | **Agent Runtime** | 一致地暴露决策 / 使用信号 |
 | **Registry / Marketplace** | 用标准化信号比较能力 |
