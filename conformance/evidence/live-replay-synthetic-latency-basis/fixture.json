@@ -1,0 +1,111 @@
+{
+  "fixture_id": "live-replay-synthetic-latency-basis-v1",
+  "fixture_status": "synthetic_conformance_fixture",
+  "attribution": {
+    "contributor": "Chandan Kumar",
+    "github": "@modelpath-dev",
+    "email": "cml.codes@gmail.com",
+    "intended_use": "AgentMeasure evidence directory",
+    "date": "2026-09-21"
+  },
+  "scenario": {
+    "description": "Same operation_id has one live row and one replay row with different latency, plus one synthetic row. Correct aggregates use live-only; the wrong all-rows mean mixes bases.",
+    "operation_id": "op-eval-dashboard-001",
+    "invocations": [
+      {
+        "row_id": "row-live-1",
+        "operation_id": "op-eval-dashboard-001",
+        "attempt_index": 1,
+        "provenance": "live",
+        "outcome": "success",
+        "latency_ms": 100,
+        "validity": "normal",
+        "note": "observed production attempt"
+      },
+      {
+        "row_id": "row-replay-1",
+        "operation_id": "op-eval-dashboard-001",
+        "attempt_index": 1,
+        "provenance": "replay",
+        "outcome": "success",
+        "latency_ms": 20,
+        "validity": "normal",
+        "note": "derived from a stored prior result; not a second live observation"
+      },
+      {
+        "row_id": "row-synthetic-1",
+        "operation_id": "op-eval-dashboard-001",
+        "attempt_index": 1,
+        "provenance": "synthetic",
+        "outcome": "success",
+        "latency_ms": 300,
+        "validity": "normal",
+        "note": "declared synthetic; excluded from production aggregates"
+      }
+    ]
+  },
+  "evidence": [
+    {
+      "field": "invocations[].provenance",
+      "value": ["live", "replay", "synthetic"],
+      "status": "observed",
+      "basis": "Each row declares its measurement basis explicitly."
+    },
+    {
+      "field": "operation_id",
+      "value": "op-eval-dashboard-001",
+      "status": "observed",
+      "basis": "All three rows share one user intent."
+    },
+    {
+      "field": "latency_ms_by_provenance",
+      "value": {"live": 100, "replay": 20, "synthetic": 300},
+      "status": "observed",
+      "basis": "Latencies differ; mixing them changes the mean."
+    }
+  ],
+  "expected_aggregates": {
+    "live_only_view": {
+      "rows": ["row-live-1"],
+      "mean_latency_ms": 100,
+      "status": "correct_production_aggregate"
+    },
+    "replay_only_view": {
+      "rows": ["row-replay-1"],
+      "mean_latency_ms": 20,
+      "status": "side_view_not_production"
+    },
+    "synthetic_excluded_from_production": {
+      "rows_excluded": ["row-synthetic-1"],
+      "status": "required"
+    },
+    "wrong_all_rows_mean": {
+      "rows": ["row-live-1", "row-replay-1", "row-synthetic-1"],
+      "mean_latency_ms": 140,
+      "formula": "(100 + 20 + 300) / 3",
+      "status": "mixed_basis_failure"
+    }
+  },
+  "expected_behavior": {
+    "decision": "separate_views_by_provenance",
+    "rule": "operation_id groups intent; each try stays its own row; production averages default to provenance=live only; replay has its own view; synthetic is excluded from production aggregates.",
+    "forbid": [
+      "Do not report 140 as measured production mean latency.",
+      "Do not average live with replay in the same production mean.",
+      "Do not include synthetic rows in production aggregates."
+    ]
+  },
+  "acceptance_test": {
+    "input": "three invocation rows under one operation_id with provenance tags",
+    "pass_if": [
+      "live-only mean_latency_ms equals 100",
+      "replay-only mean_latency_ms equals 20",
+      "synthetic row is excluded from production aggregates",
+      "wrong all-rows mean of 140 is not emitted as measured"
+    ],
+    "fail_if": [
+      "an implementation emits 140 (or any mixed live+replay+synthetic mean) as the production latency"
+    ]
+  },
+  "claim_boundary": "Synthetic conformance fixture. It is not a real provider observation, an endorsement of any dashboard, or a claim about a specific product's current behavior."
+}
