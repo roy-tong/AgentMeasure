@@ -10,9 +10,30 @@
       "input": {
         "project": "p1",
         "invocations": [
-          {"tool_call_id": "tc-1", "observer": "claude-otel@a", "outcome": "failure", "context": "production", "validity": "normal", "operation_id": "op-a"},
-          {"tool_call_id": "tc-2", "observer": "claude-otel@a", "outcome": "failure", "context": "production", "validity": "normal", "operation_id": "op-a"},
-          {"tool_call_id": "tc-3", "observer": "claude-otel@a", "outcome": "success", "context": "production", "validity": "normal", "operation_id": "op-a"}
+          {
+            "tool_call_id": "tc-1",
+            "observer": "claude-otel@a",
+            "outcome": "failure",
+            "context": "production",
+            "validity": "normal",
+            "operation_id": "op-a"
+          },
+          {
+            "tool_call_id": "tc-2",
+            "observer": "claude-otel@a",
+            "outcome": "failure",
+            "context": "production",
+            "validity": "normal",
+            "operation_id": "op-a"
+          },
+          {
+            "tool_call_id": "tc-3",
+            "observer": "claude-otel@a",
+            "outcome": "success",
+            "context": "production",
+            "validity": "normal",
+            "operation_id": "op-a"
+          }
         ]
       },
       "expect": {
@@ -20,7 +41,9 @@
         "attempts": 3,
         "success_rate": 0.333,
         "attempts_per_operation": 3.0,
-        "operation_resolution": {"explicit": 3}
+        "operation_resolution": {
+          "explicit": 3
+        }
       }
     },
     {
@@ -29,9 +52,27 @@
       "input": {
         "project": "p1",
         "invocations": [
-          {"tool_call_id": "tc-1", "observer": "claude-otel@a", "outcome": "success", "context": "production", "validity": "normal"},
-          {"tool_call_id": "tc-2", "observer": "claude-otel@a", "outcome": "success", "context": "production", "validity": "normal"},
-          {"tool_call_id": "tc-3", "observer": "claude-otel@a", "outcome": "success", "context": "production", "validity": "normal"}
+          {
+            "tool_call_id": "tc-1",
+            "observer": "claude-otel@a",
+            "outcome": "success",
+            "context": "production",
+            "validity": "normal"
+          },
+          {
+            "tool_call_id": "tc-2",
+            "observer": "claude-otel@a",
+            "outcome": "success",
+            "context": "production",
+            "validity": "normal"
+          },
+          {
+            "tool_call_id": "tc-3",
+            "observer": "claude-otel@a",
+            "outcome": "success",
+            "context": "production",
+            "validity": "normal"
+          }
         ]
       },
       "expect": {
@@ -39,7 +80,9 @@
         "attempts": 3,
         "success_rate": 1.0,
         "attempts_per_operation": 0.0,
-        "operation_resolution": {"unknown": 3},
+        "operation_resolution": {
+          "unknown": 3
+        },
         "legacy_attempt_equivalent": 3
       }
     },
@@ -49,9 +92,30 @@
       "input": {
         "project": "p1",
         "invocations": [
-          {"tool_call_id": "tc-1", "observer": "claude-otel@a", "outcome": "failure", "context": "production", "validity": "normal", "operation_id": "op-a"},
-          {"tool_call_id": "tc-2", "observer": "claude-otel@a", "outcome": "failure", "context": "production", "validity": "normal", "operation_id": "op-a"},
-          {"tool_call_id": "tc-3", "observer": "claude-otel@a", "outcome": "success", "context": "production", "validity": "normal", "operation_id": "op-a"}
+          {
+            "tool_call_id": "tc-1",
+            "observer": "claude-otel@a",
+            "outcome": "failure",
+            "context": "production",
+            "validity": "normal",
+            "operation_id": "op-a"
+          },
+          {
+            "tool_call_id": "tc-2",
+            "observer": "claude-otel@a",
+            "outcome": "failure",
+            "context": "production",
+            "validity": "normal",
+            "operation_id": "op-a"
+          },
+          {
+            "tool_call_id": "tc-3",
+            "observer": "claude-otel@a",
+            "outcome": "success",
+            "context": "production",
+            "validity": "normal",
+            "operation_id": "op-a"
+          }
         ]
       },
       "expect": {
@@ -59,7 +123,67 @@
         "attempts": 3,
         "success_rate": 0.333,
         "attempts_per_operation": 3.0,
-        "outcome_shares": {"success": 1, "failure": 2, "unknown": 0}
+        "outcome_shares": {
+          "success": 1,
+          "failure": 2,
+          "unknown": 0
+        }
+      }
+    },
+    {
+      "id": "cross-file-fork-replay-mixed-identity",
+      "description": "fork 场景：子文件 verbatim 重放父文件 N 个 turn（记录带不同 file/session ID，部分记录无跨文件稳定身份）并新增 M 个 turn。期望：重放前缀只计一次 + 子新增 M 各计一次；attempt/cost 对真正的新工作保留；operation_id 防逻辑膨胀但不防 attempt/cost 双计。情形双包：稳定跨文件 ID（ID 去重可用）与无稳定 ID（需结构前缀检测）。",
+      "external_evidence": "external reviewers via direct replies 2026-09-19/20 (attribution pending consent): cross-file response_id 不保证稳定；向量不应假设 ID 去重充分",
+      "input": {
+        "project": "p1",
+        "files": [
+          {
+            "file": "parent.jsonl",
+            "invocations": [
+              {
+                "tool_call_id": "pc-1",
+                "operation_id": "op-p",
+                "outcome": "success"
+              },
+              {
+                "tool_call_id": "pc-2",
+                "operation_id": "op-p",
+                "outcome": "success"
+              }
+            ]
+          },
+          {
+            "file": "child.jsonl",
+            "invocations": [
+              {
+                "tool_call_id": "pc-1",
+                "operation_id": "op-p",
+                "outcome": "success",
+                "note": "verbatim replay of parent turn 1, new file/session-scoped id"
+              },
+              {
+                "tool_call_id": "pc-2",
+                "operation_id": "op-p",
+                "outcome": "success",
+                "note": "verbatim replay of parent turn 2, new file/session-scoped id"
+              },
+              {
+                "tool_call_id": "cc-1",
+                "operation_id": "op-c",
+                "outcome": "success",
+                "note": "child genuinely new turn"
+              }
+            ]
+          }
+        ]
+      },
+      "expected": {
+        "unique_turns": 3,
+        "replayed_prefix_counted": 1,
+        "child_new_counted": 1,
+        "attempts_retained": 5,
+        "cost_for_new_work_only": "replayed prefix contributes no fresh cost",
+        "unstable_identity_mode": "no stable cross-file id: structural prefix detection required; ID-dedup insufficient (UNPROVABLE for identity, never a confident single)"
       }
     }
   ]
