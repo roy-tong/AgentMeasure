@@ -1,0 +1,43 @@
+{
+  "fixture_scope": "external-worked-example-hop-replay-bifurcation",
+  "variant_id": "iwasinnam-projection",
+  "events": 5,
+  "external_source": {
+    "contributor": "iwasinnam2 (Ivan)",
+    "origin_thread": "BerriAI/litellm#39057",
+    "provenance": "sanitized worked example against real formulae; request id redacted",
+    "date_received": "2026-09-22"
+  },
+  "expected_metrics": {
+    "reach": 1,
+    "selected": 1,
+    "operations": 1,
+    "selection_rate": {"numerator": 1, "denominator": 1, "value": 1.0},
+    "operation_success_rate": {"numerator": 1, "denominator": 1, "value": 1.0}
+  },
+  "hop_replay_bifurcation": {
+    "comment": "served / provider_consumed / billable are three independent columns; collapsing any two is lossy by construction. pipe_usd is the only money that moves and stays > 0 on a hit. estimated_provider_usd is the avoided-provider counterfactual and fires ONLY on the hit — a fixture asserting it is 0 on the miss catches the tempting-but-wrong implementation that fills the column on every row.",
+    "miss_row": {
+      "served_tokens": 2347,
+      "provider_consumed_tokens": 2347,
+      "billable_units": 3,
+      "pipe_usd": 0.003000,
+      "estimated_provider_usd": 0.0,
+      "cache_hit": false
+    },
+    "hit_row": {
+      "served_tokens": 2347,
+      "provider_consumed_tokens": 0,
+      "billable_units": 3,
+      "pipe_usd": 0.006000,
+      "estimated_provider_usd": 0.035205,
+      "cache_hit": true
+    },
+    "assertions": [
+      "hit_row.pipe_usd > 0 while hit_row.provider_consumed_tokens == 0",
+      "hit_row.estimated_provider_usd > 0 AND miss_row.estimated_provider_usd == 0",
+      "hit_row.served_tokens == miss_row.served_tokens (served survives the hit/miss bifurcation)",
+      "hit_row.billable_units == ceil(served_tokens/1000) == 3"
+    ]
+  }
+}
