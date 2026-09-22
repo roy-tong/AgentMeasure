@@ -68,6 +68,18 @@ AI 服务已经开始按效果收钱：Zendesk 2024 年 8 月起[按"解决一�
 
 钱挂在一个可测量的量上，就得有人把这个量定义清楚。这就是我们在做的事。→ [读这篇说明](https://roy-tong.github.io/AgentMeasure/blog/outcome-yardstick.html)
 
+## 定价
+
+标准和本地工具永久免费开源。我们卖的是架在上面的对账服务——下面每一档收费都映射到可数的单位，我们觉得所有 AI 计费都该这样。
+
+| 档位 | 价格 | 你拿到什么 |
+|---|---|---|
+| 开源 | **$0，永久** | CLI 检查器、conformance 包、CI Action、自助生成 AMS-1 声明——[自己跑](healthcheck/README.md) |
+| First-Look 首查 | **$990 一次性**，按厂商导出 | 你提供导出（Intercom Fin / Zendesk / Decagon），我们交付 AMS-1 一页单——确认与假定的 resolutions 分列、美元差额、每个数字背后一条具名规则——外加争议行标记、争议证据包、30 分钟讲解。全程本地处理。 |
+| 月度对账 | **$490/月起** | 每月同一份一页单、厂商改计数规则时的规则更新、争议行监测、季度复盘。按 resolution 量分档；多厂商栈按企业版报价。 |
+
+不承诺准确率 SLA——每份交付物带 Coverage 块（哪些进了计算、哪些保持 UNPROVABLE）。不做追回分成——我们产出证据，谈判归你。Design Partner：前五家免费，换一份公开证言。→ [定价页](https://roy-tong.github.io/AgentMeasure/#pricing) · [tongroy18@gmail.com](mailto:tongroy18@gmail.com)
+
 ## 我们的原则（先写下来，免得以后被要求破例）
 
 - **永久免费。** 规范、引擎、SDK、conformance、本地看板——免费清单写进治理，不秋后算账。用起来，就是产品。

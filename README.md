@@ -91,6 +91,18 @@ The buyer still has no checker. The rules are written by the seller and the bill
 
 When money rides on a measured unit, someone has to define the unit. That is what we build. → [Read the note](https://roy-tong.github.io/AgentMeasure/blog/outcome-yardstick.html)
 
+## Pricing
+
+The standard and the local tooling are open source and free, permanently. What we sell is reconciliation work on top of them — every fee below maps to a countable unit, the way we think all AI billing should work.
+
+| Tier | Price | What you get |
+|---|---|---|
+| Open source | **$0, forever** | CLI checker, conformance pack, CI action, self-serve AMS-1 statements — [run it yourself](healthcheck/README.md) |
+| First-Look reconciliation | **$990 one-time**, per vendor export | You send the export (Intercom Fin / Zendesk / Decagon); we return the AMS-1 one-pager — confirmed vs assumed resolutions, the dollar delta, a named rule behind every figure — plus flagged dispute lines, the dispute bundle, and a 30-minute walkthrough. Processed locally. |
+| Monthly reconciliation | **from $490/month** | The same statement every month, rule updates when a vendor changes how it counts, dispute-line watch, quarterly review. Tiered by resolution volume; multi-vendor stacks quoted as enterprise. |
+
+No accuracy SLAs — every deliverable ships a coverage block instead (what entered the computation, what stayed UNPROVABLE). No recovery commissions — we produce the evidence; the negotiation stays yours. Design partners: the first five are free, in exchange for a public testimonial. → [Pricing page](https://roy-tong.github.io/AgentMeasure/#pricing) · [tongroy18@gmail.com](mailto:tongroy18@gmail.com)
+
 ## Principles (written down before anyone asked)
 
 - **Free, forever.** Spec, engine, SDK, conformance, local dashboard — the free list is part of governance, not revocable later. Adoption is the product.
