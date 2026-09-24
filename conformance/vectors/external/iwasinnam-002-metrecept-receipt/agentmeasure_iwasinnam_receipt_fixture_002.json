@@ -1,0 +1,63 @@
+{
+  "fixture_scope": "external-production-receipt-semantics-hop-replay-request-2",
+  "variant_id": "metrecept-receipt",
+  "external_source": {
+    "contributor": "iwasinnam2 (Ivan)",
+    "origin_thread": "BerriAI/litellm#39057",
+    "provenance": "real minted receipt from the Metrecept production signing path (src/at_utility/receipts.py::mint_receipt), demo key — kid does not resolve against the live directory; decoded payload is the fixture level",
+    "date_received": "2026-09-23",
+    "stranger_verification_path": "scripts/verify_receipt.py against public JWKS (RFC 7638 kid thumbprint); verifier shipped independently three times (python script, python SDK receipt_check.py, browser-side TS port)"
+  },
+  "wire_format": {
+    "alg": "Ed25519",
+    "type": "ohm-receipt+jws",
+    "transport": "dual-emitted header X-Ohm-Receipt / X-Metrecept-Receipt (same value) on every served hit"
+  },
+  "decoded_payload": {
+    "v": 1,
+    "kind": "cache_hit",
+    "iat": 1790125370,
+    "region": "local",
+    "plane": "python",
+    "model": "gpt-4o-mini",
+    "tokens_replayed": 100,
+    "pipe_usd": 0.0002,
+    "request_sha256": "63c79dc424921f8c470d13eb9d3230e9bd005cf624ae0d23a696cf9258781bbb",
+    "tenant_sha256": "a1ac5b5f5eb07eaa",
+    "admit": "allow",
+    "meter_event_id": "xng_demo_20260923_0001",
+    "rl_epoch": "20260923"
+  },
+  "field_semantics": {
+    "tokens_replayed": "served volume; provider tokens are 0 by construction on this hit shape (provider never called) — cost > 0 on zero provider-reported tokens is a first-class signed claim, not a logging edge case",
+    "meter_event_id": "deliberately NOT request_sha256 — repeat hits on the byte-identical request produce distinct metered crossings, one per HTTP request, each with its own money identity",
+    "admit/plane/rl_epoch": "provenance: admitted after dual-plane admission control; the edge never holds the signing key (edge-served hits are minted by the control plane during the edge-hit gate); bound to a UTC calendar day"
+  },
+  "limits": [
+    {
+      "id": "L1-pipe-rent-not-provider-cost",
+      "rule": "The receipt signs pipe rent, not provider cost. pipe_usd is what the pipe billed for the crossing and never claims to be the provider invoice amount. Provider-cost assertions must come from provider-side columns, never from this payload."
+    },
+    {
+      "id": "L2-counterfactual-not-in-receipt",
+      "rule": "estimated_provider_avoided_usd is NOT a receipt field: it lives in the usage ledger, is hit-only by design, and is unsigned, estimate-only, always labelled as such. A separate surface with a weaker trust posture — conflating it with the receipt overstates what the signature proves."
+    },
+    {
+      "id": "L3-request-2-only",
+      "rule": "The receipt schema cannot express the request-3 shape. Provider prompt-cache hits (provider called, cache_read/cache_write on the invoice, discounted-but-nonzero) are invisible to the cache_hit kind: served / provider / billable as three independent counts must be modeled on the meter side for request-3."
+    },
+    {
+      "id": "L4-iat-is-a-claim",
+      "rule": "iat is a claim, not a proof of time. The signature proves this key signed these bytes; the timestamp is another field in them. When-proofs are handled separately (Merkle clock over signature hashes)."
+    },
+    {
+      "id": "L5-exact-match-only",
+      "rule": "request_sha256 is the digest of the canonicalized request: a semantically-identical-but-textually-different prompt is a different digest and a miss. tenant_sha256 is a truncated fingerprint — self-verifiable, not identifying."
+    }
+  ],
+  "observer_grade_mapping": {
+    "signed_receipt_fields": "settlement-grade (signature proves key signed bytes; L1/L3 bound the claim scope)",
+    "estimated_provider_avoided_usd": "estimate-only, unsigned — self_attested class at best, hit-only by design (L2)",
+    "iat": "declared timestamp, not a when-proof (L4)"
+  }
+}
