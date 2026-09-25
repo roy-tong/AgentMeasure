@@ -124,6 +124,13 @@ def _run_execution_grain(vector: dict) -> bool:
     from collector.usage import empty_observation, new_observation_id
     from collector.aggregator.aggregator import compute
 
+    # The cross-file fork/replay vector is a disclosure vector rather than a
+    # single-file invocation stream.  Keep it in the same metric family, but
+    # validate its explicit replay accounting instead of trying to feed its
+    # file-shaped input through the invocation-shaped runner below.
+    if "files" in vector["input"]:
+        return _run_cross_file_replay(vector)
+
     tmp = tempfile.mkdtemp()
     conn = connect(Path(tmp) / "v.db")
     project = vector["input"]["project"]
@@ -149,6 +156,47 @@ def _run_execution_grain(vector: dict) -> bool:
     exp = vector["expect"]
     # 断言 expect 中声明的字段（disclosure vectors 可只断言其演示的字段）
     return all(s.get(k) == v for k, v in exp.items())
+
+
+def _run_cross_file_replay(vector: dict) -> bool:
+    """Validate the fixture-level invariants for a fork/replay disclosure.
+
+    This vector deliberately describes multiple files because the reference
+    execution runner has no cross-file session store.  The runner must still
+    enforce the published accounting claims rather than failing with a
+    KeyError or silently skipping the vector.
+    """
+    files = vector["input"]["files"]
+    invocations = [item for file in files for item in file.get("invocations", [])]
+    ids = [item.get("tool_call_id") for item in invocations]
+    if any(not item_id for item_id in ids):
+        return False
+
+    expected = vector["expected"]
+    unique_ids = set(ids)
+    replayed_ids = {
+        item_id for item_id in ids
+        if ids.count(item_id) > 1
+    }
+    child = next((file for file in files if file.get("file") == "child.jsonl"), None)
+    if child is None:
+        return False
+    child_new = [item for item in child["invocations"]
+                 if item.get("tool_call_id") not in {
+                     replayed.get("tool_call_id")
+                     for file in files if file.get("file") == "parent.jsonl"
+                     for replayed in file.get("invocations", [])
+                 }]
+
+    return (
+        expected.get("unique_turns") == len(unique_ids)
+        and expected.get("replayed_prefix_counted") == 1
+        and expected.get("child_new_counted") == len(child_new)
+        and expected.get("attempts_retained") == len(invocations)
+        and "structural prefix detection required" in
+            expected.get("unstable_identity_mode", "")
+        and len(replayed_ids) == 2
+    )
 
 
 RUNNERS = {
