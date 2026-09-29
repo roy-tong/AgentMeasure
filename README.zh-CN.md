@@ -26,7 +26,7 @@ pipx run agentmeasure check --runtime claude   # 强制 Claude Code 适配器
 [**AMS-1：开放结算声明标准**](standard/SETTLEMENT.md) ·
 [**试跑和安全反馈**](campaigns/healthcheck-first-run.md) ·
 [**公开贡献案例**](campaigns/measurement-casebook.md) · [English](README.md)
-[**Token 计量 Bug 报告：审计约 110 个工具、45+ 实证缺陷、21 个已合并修复**](campaigns/audit-report-2026-09.md) ·
+[**Token 计量 Bug 报告：审计约 110 个工具、45+ 实证缺陷、修复已合并进 openlit、langfuse、codeburn 等上游**](campaigns/audit-report-2026-09.md) ·
 [**维护用量统计工具？10 分钟自检**](campaigns/tool-authors.md) ·
 
 有用的结果可以保存快照，下次运行时比较。无需上传日志或开 issue 才能使用。
