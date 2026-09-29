@@ -27,7 +27,7 @@ dispute-bundle JSON.
 [**Quick start and supported formats**](healthcheck/README.md) ·
 [**AMS-1: open settlement-statement standard**](standard/SETTLEMENT.md) ·
 [**Try it and share feedback safely**](campaigns/healthcheck-first-run.md) ·
-[**What our contributions changed**](campaigns/measurement-casebook.md) · [**The Token-Accounting Bug Report — ~110 tools audited, 45+ verified bugs, 21 merged fixes**](campaigns/audit-report-2026-09.md) · [**Maintain a usage tool? Audit it in 10 minutes**](campaigns/tool-authors.md) ·
+[**What our contributions changed**](campaigns/measurement-casebook.md) · [**The Token-Accounting Bug Report — ~110 tools audited, 45+ verified bugs, fixes merged upstream in openlit, langfuse, codeburn and more**](campaigns/audit-report-2026-09.md) · [**Maintain a usage tool? Audit it in 10 minutes**](campaigns/tool-authors.md) ·
 [中文](README.zh-CN.md)
 
 Found a useful result? Keep a snapshot and compare your next run. Feedback is
