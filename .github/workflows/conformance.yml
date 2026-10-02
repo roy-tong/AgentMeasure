@@ -78,6 +78,9 @@ jobs:
       - name: "Delegation-family conformance (DELEGATION-001..007: counting + the four failure modes)"
         run: |
           python3 conformance/runners/run_delegation.py
+      - name: "SSE usage conformance (SSE-001: Anthropic message_start input bucket)"
+        run: |
+          python3 conformance/runners/run_sse_usage.py
       - name: "Browser-local recount: rules file in sync with the registry"
         run: |
           python3 scripts/gen_web_rules.py --check
