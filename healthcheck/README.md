@@ -217,7 +217,7 @@ New cli versions are handled defensively: unknown event types are accounted
 ## Development
 
 ```bash
-python3 -m unittest discover -s healthcheck/tests   # 109 tests
+python3 -m unittest discover -s healthcheck/tests   # 248 tests
 python3 healthcheck/agentmeasure selftest           # fixtures + redaction + compare + schemas
 bash healthcheck/scripts/smoke_install.sh           # clean-venv install smoke (packaged artifact)
 ```

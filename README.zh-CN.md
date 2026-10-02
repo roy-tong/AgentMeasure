@@ -8,13 +8,15 @@ Healthcheck 直接读取已有的 **Codex rollout 日志**与 **Claude Code 会�
 证据缺失一律 UNPROVABLE，不静默记零。
 
 ```bash
-# Python 3.9+，v0.4.0 起已上 PyPI——无需克隆仓库
-pipx run agentmeasure demo                 # 合成示例，无需个人日志
-pipx run agentmeasure check                # 本机最近 7 天会话
-pipx run agentmeasure check --runtime claude   # 强制 Claude Code 适配器
+# Python 3.9+。注意：PyPI 仍是 0.4.0，首条命令会崩（demo/check/compare 触发 NameError）。
+# 0.4.1 修复已在 GitHub，但尚未上 PyPI——在此之前请从 git 安装。
+pipx install "git+https://github.com/roy-tong/AgentMeasure#subdirectory=healthcheck"
+agentmeasure demo                          # 合成示例，无需个人日志
+agentmeasure check                         # 本机最近 7 天会话
+agentmeasure check --runtime claude        # 强制 Claude Code 适配器
 ```
 
-分析全程本地运行，不发网络请求。v0.4.0 新增：PyPI 包、Claude Code 适配器 v1、
+分析全程本地运行，不发网络请求。v0.4.0/v0.4.1 已交付：Claude Code 适配器 v1、
 内置 conformance 检查（`agentmeasure conformance`，亦有
 [GitHub Action](action.yml)）、OTel / Prometheus 导出、运行趋势
 （`agentmeasure trend`），以及**按效果计费的结算声明**——
@@ -26,7 +28,7 @@ pipx run agentmeasure check --runtime claude   # 强制 Claude Code 适配器
 [**AMS-1：开放结算声明标准**](standard/SETTLEMENT.md) ·
 [**试跑和安全反馈**](campaigns/healthcheck-first-run.md) ·
 [**公开贡献案例**](campaigns/measurement-casebook.md) · [English](README.md)
-[**Token 计量 Bug 报告：审计约 110 个工具、45+ 实证缺陷、修复已合并进 openlit、langfuse、codeburn 等上游**](campaigns/audit-report-2026-09.md) ·
+[**Token 计量 Bug 报告：审计约 110 个工具、45+ 实证缺陷、23 项修复已合并或被接受进 openlit、langfuse、codeburn 等上游**](campaigns/audit-report-2026-09.md) ·
 [**维护用量统计工具？10 分钟自检**](campaigns/tool-authors.md) ·
 
 有用的结果可以保存快照，下次运行时比较。无需上传日志或开 issue 才能使用。
@@ -35,6 +37,12 @@ pipx run agentmeasure check --runtime claude   # 强制 Claude Code 适配器
 
 **Agent 经济缺一把公尺——AI 用了什么、干得怎么样，行业还没有统一的算法。**
 **度量 Agent 的真实使用——别把重试当成用户。**
+
+外部证据持续进来：一项去重修复经受住了维护者 136k 事件语料的复审
+（[codeburn #1264](https://github.com/getagentseal/codeburn/pull/1264)）；
+首个由外部送来的真实案例——公开的 436k → 54,154 token 误算（重放的缓存前缀
+被当作每次 spawn 的新增开销）——已入库为带来源引用的
+[conformance 证据案例](conformance/evidence/rulestack-cache-prefix-overhead/README.md)。
 
 [![CI: conformance](https://github.com/roy-tong/AgentMeasure/actions/workflows/conformance.yml/badge.svg)](https://github.com/roy-tong/AgentMeasure/actions/workflows/conformance.yml)
 [![Spec](https://img.shields.io/badge/spec-Draft_0.4-blue)](standard/CORE.md)
@@ -76,7 +84,7 @@ AI 服务已经开始按效果收钱：Zendesk 2024 年 8 月起[按"解决一�
 |---|---|---|
 | 开源 | **$0，永久** | CLI 检查器、conformance 包、CI Action、自助生成 AMS-1 声明——[自己跑](healthcheck/README.md) |
 | First-Look 首查 | **$990 一次性**，按厂商导出 | 你提供导出（Intercom Fin / Zendesk / Decagon），我们交付 AMS-1 一页单——确认与假定的 resolutions 分列、美元差额、每个数字背后一条具名规则——外加争议行标记、争议证据包、30 分钟讲解。全程本地处理。 |
-| 月度对账 | **$490/月起** | 每月同一份一页单、厂商改计数规则时的规则更新、争议行监测、季度复盘。按 resolution 量分档；多厂商栈按企业版报价。 |
+| 月度对账 | **$490/月起** | 每月同一份一页单、厂商改计数规则时的规则更新、争议行监测、季度复盘。分档：≤10k resolutions/月 **$490** · 10k–50k **$990** · 更大量或多厂商栈按企业版报价。 |
 
 不承诺准确率 SLA——每份交付物带 Coverage 块（哪些进了计算、哪些保持 UNPROVABLE）。不做追回分成——我们产出证据，谈判归你。Design Partner：前五家免费，换一份公开证言。→ [定价页](https://roy-tong.github.io/AgentMeasure/#pricing) · [tongroy18@gmail.com](mailto:tongroy18@gmail.com)
 
@@ -375,7 +383,7 @@ AgentMeasure/
 
 ## 状态与路线图
 
-**Draft 0.4.3（Canonicalization & Reference Convergence）** —— 唯一 Canonical
+**Draft 0.4.5** —— 唯一 Canonical
 Observation（schemas/observation.schema.json，6 类 payload）；Choice/Execution 从同一
 Envelope 派生；M3.1 只计已解析 operation（无回退）；Attempt 级 qualification 派生；
 metrics.yaml 单一事实源；四维正交（Evidence/Caller/Use Profile/Billing）。

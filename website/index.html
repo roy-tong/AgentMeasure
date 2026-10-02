@@ -90,7 +90,7 @@
           <a class="btn btn-primary" href="#conformance">Add AgentMeasure to CI</a>
           <a class="btn btn-ghost" href="#try">Run conformance locally</a>
         </div>
-        <p class="note reveal d5" style="margin-top:14px">New (09-18): CLI v0.4.0 on PyPI — Codex <em>and</em> Claude Code logs, one offline command: <span class="mono-xs">pipx run agentmeasure check</span></p>
+        <p class="note reveal d5" style="margin-top:14px">New (09-28): CLI <strong>v0.4.1</strong> — Codex <em>and</em> Claude Code logs, one offline command, plus <span class="mono-xs">agentmeasure settle</span> for AMS-1 settlement statements. PyPI still serves a crashing 0.4.0; <a href="https://github.com/roy-tong/AgentMeasure/blob/main/healthcheck/README.md#install">install from git until 0.4.1 lands</a>.</p>
       </div>
 
       <!-- Conformance report console -->
@@ -127,10 +127,10 @@
     <div class="status-strip reveal d5" role="list" aria-label="Project status">
       <div class="status" role="listitem"><span class="status-k">Open source</span><span class="status-v ok">MIT</span></div>
       <div class="status" role="listitem"><span class="status-k">Spec</span><span class="status-v spec" data-status="spec">Draft 0.4.5</span></div>
-      <div class="status" role="listitem"><span class="status-k">CLI</span><span class="status-v ok">v0.4.0 on PyPI</span></div>
+      <div class="status" role="listitem"><span class="status-k">CLI</span><span class="status-v">v0.4.1 · PyPI pending</span></div>
       <div class="status" role="listitem"><span class="status-k">SDK</span><span class="status-v" data-status="sdk">v0.1.1</span></div>
       <div class="status" role="listitem"><span class="status-k">Ecosystem audit</span><span class="status-v ok">110+ tools · 45+ verified bugs</span></div>
-      <div class="status" role="listitem"><span class="status-k">Upstream fixes</span><span class="status-v ok">21 merged</span></div>
+      <div class="status" role="listitem"><span class="status-k">Upstream fixes</span><span class="status-v ok">23 merged or accepted</span></div>
     </div>
   </section>
 
@@ -139,15 +139,16 @@
     <div class="wrap">
       <div class="audit-band">
         <div class="audit-numbers">
-          <div class="an"><span class="an-v">124</span><span class="an-k">repositories deep-read</span></div>
+          <div class="an"><span class="an-v">110+</span><span class="an-k">repositories deep-read</span></div>
           <div class="an"><span class="an-v">45+</span><span class="an-k">verified accounting bugs</span></div>
-          <div class="an"><span class="an-v">21</span><span class="an-k">fixes merged upstream</span></div>
-          <div class="an"><span class="an-v">10 min</span><span class="an-k">to audit your own tool</span></div>
+          <div class="an"><span class="an-v">23</span><span class="an-k">fixes merged or accepted upstream</span></div>
+          <div class="an"><span class="an-v">136K</span><span class="an-k">events in a third-party re-review</span></div>
         </div>
         <div class="audit-copy">
           <h2 class="reveal d1">We audited the AI usage-tool ecosystem.<br>The same five bugs kept appearing.</h2>
-          <p class="reveal d2">One assistant message billed per content block (2–5×). Re-emitted Codex events counted twice. Cache writes priced at 1.25× instead of 2×. Price tables 5× off — including in the industry's pricing source of record. Sessions wiped on resume. Every finding: pinned commit, runnable repro, public filing — <strong>21 merged with maintainer credit</strong>.</p>
+          <p class="reveal d2">One assistant message billed per content block (2–5×). Re-emitted Codex events counted twice. Cache writes priced at 1.25× instead of 2×. Price tables 5× off — including in the industry's pricing source of record. Sessions wiped on resume. Every finding: pinned commit, runnable repro, public filing — <strong>23 merged or accepted upstream</strong>, one confirmed by a maintainer's 136k-event corpus re-review.</p>
           <p class="note reveal d3"><a href="https://github.com/roy-tong/AgentMeasure/blob/main/campaigns/audit-report-2026-09.md">Read the Token-Accounting Bug Report&nbsp;→</a></p>
+          <p class="note reveal d4"><a href="https://github.com/roy-tong/AgentMeasure/blob/main/conformance/evidence/rulestack-cache-prefix-overhead/README.md">First external real-world case: 436k → 54,154 tokens, cache replay read as per-spawn overhead&nbsp;→</a></p>
           <p class="note reveal d4"><a href="https://github.com/roy-tong/AgentMeasure/blob/main/campaigns/tool-authors.md">Maintain a usage tool? Audit it in 10 minutes with our fixtures&nbsp;→</a></p>
         </div>
       </div>
@@ -626,6 +627,11 @@
       <aside class="evidence-card reveal d5" aria-label="Recent published evidence">
         <div class="evidence-k">Recent evidence / published 2026-08-25</div>
         <p class="evidence-line">Three real Langfuse demo traces, run through the canonical pipeline: <strong>12 attempts; grouping evidence 0%; safe operation coverage 0%</strong>. All attempts succeeded, so the retry-chain rule never fires and logical usage is genuinely undecidable. A report that prints a number here would be inventing it; this one says <a href="https://github.com/roy-tong/AgentMeasure/blob/main/conformance/evidence/langfuse-demo-traces/README.md" target="_blank" rel="noopener">not computable</a>.</p>
+      </aside>
+
+      <aside class="evidence-card reveal d5" aria-label="External real-world case" style="margin-top:.8rem">
+        <div class="evidence-k">External real-world case / surfaced 2026-09-20</div>
+        <p class="evidence-line">A public AI-usage write-up claimed one subagent spawn costs ~436k tokens; the author's own re-measurement corrected it to <strong>54,154</strong> — a replayed cache prefix had been read as fresh per-spawn overhead. Surfaced by an external contributor and mapped to our <a href="https://github.com/roy-tong/AgentMeasure/blob/main/conformance/evidence/rulestack-cache-prefix-overhead/README.md" target="_blank" rel="noopener">cache-distinction invariant</a>: cached replay counts once toward served volume, never as fresh per-spawn input.</p>
       </aside>
     </div>
   </section>

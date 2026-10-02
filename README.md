@@ -9,14 +9,17 @@ checks for operation-resolution coverage, cache accounting, and token stability
 (HC-04..06, `--audit`). Missing evidence is **UNPROVABLE**, never silently zero.
 
 ```bash
-# Python 3.9+. On PyPI since v0.4.0 — no repo checkout needed.
-pipx run agentmeasure demo                 # synthetic example; no personal logs needed
-pipx run agentmeasure check                # your local sessions, last 7 days
-pipx run agentmeasure check --runtime claude   # force the Claude Code adapter
+# Python 3.9+. NOTE: PyPI still serves 0.4.0, which crashes on the first
+# command (NameError on demo/check/compare). The 0.4.1 fix is on GitHub but
+# not yet on the index — install from git until it lands.
+pipx install "git+https://github.com/roy-tong/AgentMeasure#subdirectory=healthcheck"
+agentmeasure demo                          # synthetic example; no personal logs needed
+agentmeasure check                         # your local sessions, last 7 days
+agentmeasure check --runtime claude        # force the Claude Code adapter
 ```
 
-Analysis runs locally with no runtime network calls. New in v0.4.0: PyPI
-package, Claude Code adapter v1, embedded conformance pack
+Analysis runs locally with no runtime network calls. Shipped in v0.4.0/v0.4.1:
+Claude Code adapter v1, embedded conformance pack
 (`agentmeasure conformance`, also a [GitHub Action](action.yml)), OTel /
 Prometheus exports, run trends (`agentmeasure trend`), and settlement
 statements for outcome-based billing — `agentmeasure settle --format md|html`
@@ -27,7 +30,7 @@ dispute-bundle JSON.
 [**Quick start and supported formats**](healthcheck/README.md) ·
 [**AMS-1: open settlement-statement standard**](standard/SETTLEMENT.md) ·
 [**Try it and share feedback safely**](campaigns/healthcheck-first-run.md) ·
-[**What our contributions changed**](campaigns/measurement-casebook.md) · [**The Token-Accounting Bug Report — ~110 tools audited, 45+ verified bugs, fixes merged upstream in openlit, langfuse, codeburn and more**](campaigns/audit-report-2026-09.md) · [**Maintain a usage tool? Audit it in 10 minutes**](campaigns/tool-authors.md) ·
+[**What our contributions changed**](campaigns/measurement-casebook.md) · [**The Token-Accounting Bug Report — ~110 tools audited, 45+ verified bugs, 23 fixes merged or accepted upstream (openlit, langfuse, codeburn and more)**](campaigns/audit-report-2026-09.md) · [**Maintain a usage tool? Audit it in 10 minutes**](campaigns/tool-authors.md) ·
 [中文](README.zh-CN.md)
 
 Found a useful result? Keep a snapshot and compare your next run. Feedback is
@@ -39,6 +42,13 @@ optional: you can use the tool without opening an issue or uploading logs.
 **Test whether your agent metrics mean what their labels claim.**
 
 Conformance checks for AI-agent telemetry — a retry is one logical operation, not two requests; a reasoning-token subset must not be added into totals; a cache hit is not a new measurement. Every check reports **PASS / FAIL / UNPROVABLE**, and UNPROVABLE is a first-class result: when the evidence to decide is absent, it is disclosed, never zeroed.
+
+External evidence keeps arriving: one dedup fix survived a maintainer's
+136k-event corpus re-review ([codeburn #1264](https://github.com/getagentseal/codeburn/pull/1264)),
+and the first externally surfaced real-world case — a public 436k → 54,154-token
+miscount where a replayed cache prefix was read as fresh per-spawn overhead —
+is now a [conformance evidence case](conformance/evidence/rulestack-cache-prefix-overhead/README.md)
+with cited sources.
 
 ```yaml
 # .github/workflows/conformance.yml — turn measurement assumptions into CI checks
@@ -99,7 +109,7 @@ The standard and the local tooling are open source and free, permanently. What w
 |---|---|---|
 | Open source | **$0, forever** | CLI checker, conformance pack, CI action, self-serve AMS-1 statements — [run it yourself](healthcheck/README.md) |
 | First-Look reconciliation | **$990 one-time**, per vendor export | You send the export (Intercom Fin / Zendesk / Decagon); we return the AMS-1 one-pager — confirmed vs assumed resolutions, the dollar delta, a named rule behind every figure — plus flagged dispute lines, the dispute bundle, and a 30-minute walkthrough. Processed locally. |
-| Monthly reconciliation | **from $490/month** | The same statement every month, rule updates when a vendor changes how it counts, dispute-line watch, quarterly review. Tiered by resolution volume; multi-vendor stacks quoted as enterprise. |
+| Monthly reconciliation | **from $490/month** | The same statement every month, rule updates when a vendor changes how it counts, dispute-line watch, quarterly review. Tiers: ≤10k resolutions/mo **$490** · 10k–50k **$990** · larger or multi-vendor stacks quoted as enterprise. |
 
 No accuracy SLAs — every deliverable ships a coverage block instead (what entered the computation, what stayed UNPROVABLE). No recovery commissions — we produce the evidence; the negotiation stays yours. Design partners: the first five are free, in exchange for a public testimonial. → [Pricing page](https://roy-tong.github.io/AgentMeasure/#pricing) · [tongroy18@gmail.com](mailto:tongroy18@gmail.com)
 
@@ -436,7 +446,7 @@ AgentMeasure/
 
 ## Current status & roadmap
 
-**Draft 0.4.4（Canonicalization & Reference Convergence）** — 唯一 Canonical
+**Draft 0.4.5** — 唯一 Canonical
 Observation（schemas/observation.schema.json，6 类 payload）；Choice/Execution 从同一
 Envelope 派生；M3.1 只计已解析 operation（无回退）；Attempt 级 qualification 派生；
 metrics.yaml 单一事实源；四维正交（Evidence/Caller/Use Profile/Billing）。
