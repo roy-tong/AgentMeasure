@@ -113,6 +113,7 @@ python3 registry/validate_metrics.py
 python3 conformance/runners/run_metrics.py
 python3 conformance/runners/run_outcome_audit.py
 python3 conformance/runners/run_delegation.py
+python3 conformance/runners/run_sse_usage.py
 ```
 
 CI red means do not merge. See `CI-DISCIPLINE.md`.

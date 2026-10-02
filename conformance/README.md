@@ -38,6 +38,7 @@ python3 verify_vectors.py                      # receipt/correlation vectors
 python3 conformance/runners/run_external_fixture.py  # 外部 fixture（Urusilla-001，#8/#9 守卫）
 python3 conformance/runners/run_outcome_audit.py     # 效果审计（OUT-001..005）
 python3 conformance/runners/run_delegation.py        # 多 Agent 委托（DELEGATION-001..007）
+python3 conformance/runners/run_sse_usage.py         # Anthropic SSE usage（SSE-001，#24）
 ```
 
 ### 检查家族与对应不变量
@@ -48,6 +49,7 @@ python3 conformance/runners/run_delegation.py        # 多 Agent 委托（DELEGA
 | OUT-001..005 | outcome 可判定性、effect 可追溯、重开去重、主张—证据匹配、对称披露 | 14 / 16 / 17 |
 | DELEGATION-001..003 | 不压平为 Operation、DAG 深度、跨 harness 成本归属 | **27–31** |
 | **DELEGATION-004..007** | **四类委托计费失败模式：少计 / 多计 / 错误归属 / 不传播** | **27–31 + D-2** |
+| SSE-001 | Anthropic `message_start` 携带 input/cache，只读 `message_delta` 会丢掉 input bucket | #24 |
 
 > DELEGATION-004..007 来自 2026-09 的需求扫描（**强信号 4 条 + 中信号 15 条**），
 > 见 `市场推广/DeepSeek/leads/v2v3/COMPETITIVE-LANDSCAPE-20260919.md`。

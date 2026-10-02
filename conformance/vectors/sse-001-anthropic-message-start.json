@@ -1,0 +1,53 @@
+{
+  "spec_version": "agentmeasure-0.4",
+  "family": "SSE Stream Usage",
+  "description": "Anthropic Messages streaming places prompt-side usage on message_start and the cumulative output count on the final message_delta. A gateway that reads only message_delta drops the input bucket. Transcripts are synthetic and minimal; they are not captured customer traffic. Pins roy-tong/AgentMeasure#24 (precedent: atopos31/llmio#71, modelbus/one-api-pro#13).",
+  "claim_boundary": "synthetic fixture, not a production observation and not an endorsement of any gateway",
+  "vectors": [
+    {
+      "id": "SSE-001",
+      "name": "Anthropic prompt usage on message_start",
+      "description": "Prompt-side buckets (input_tokens, cache_creation_input_tokens, cache_read_input_tokens) are observed on message_start.message.usage. The final message_delta.usage.output_tokens is the cumulative output count and is not added to the small output_tokens that message_start also carries.",
+      "principle": "A reader that only inspects message_delta cannot see prompt-side usage when the provider puts those buckets only on message_start. Missing input is a failed check, never a zero.",
+      "vectors": [
+        {
+          "id": "sse-001a-start-and-delta",
+          "description": "usage on message_start and the final message_delta → PASS",
+          "input": {
+            "provider": "anthropic",
+            "sse": "event: message_start\ndata: {\"type\":\"message_start\",\"message\":{\"id\":\"msg_synthetic_001\",\"type\":\"message\",\"role\":\"assistant\",\"content\":[],\"model\":\"claude-synthetic\",\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":25,\"cache_creation_input_tokens\":4,\"cache_read_input_tokens\":100,\"output_tokens\":1}}}\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"ok\"}}\n\nevent: message_delta\ndata: {\"type\":\"message_delta\",\"delta\":{\"stop_reason\":\"end_turn\",\"stop_sequence\":null},\"usage\":{\"output_tokens\":15}}\n\nevent: message_stop\ndata: {\"type\":\"message_stop\"}\n"
+          },
+          "expect": {
+            "verdict": "PASS",
+            "passing_checks": [
+              "anthropic_message_start_input_bucket",
+              "anthropic_message_delta_output_bucket"
+            ],
+            "usage": {
+              "input_tokens": 25,
+              "cache_creation_input_tokens": 4,
+              "cache_read_input_tokens": 100,
+              "output_tokens": 15
+            }
+          }
+        },
+        {
+          "id": "sse-001b-delta-only",
+          "description": "same stream, but usage exists only on message_delta → FAIL",
+          "input": {
+            "provider": "anthropic",
+            "sse": "event: message_start\ndata: {\"type\":\"message_start\",\"message\":{\"id\":\"msg_synthetic_001\",\"type\":\"message\",\"role\":\"assistant\",\"content\":[],\"model\":\"claude-synthetic\",\"stop_reason\":null,\"stop_sequence\":null}}\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"ok\"}}\n\nevent: message_delta\ndata: {\"type\":\"message_delta\",\"delta\":{\"stop_reason\":\"end_turn\",\"stop_sequence\":null},\"usage\":{\"output_tokens\":15}}\n\nevent: message_stop\ndata: {\"type\":\"message_stop\"}\n"
+          },
+          "expect": {
+            "verdict": "FAIL",
+            "failing_check": "anthropic_message_start_input_bucket",
+            "passing_checks": [
+              "anthropic_message_delta_output_bucket"
+            ],
+            "failure_reason": "anthropic_message_start_input_bucket: message_start has no input_tokens, and message_delta usage carries only output_tokens. The prompt-side input bucket is missing; a gateway that reads only message_delta drops it."
+          }
+        }
+      ]
+    }
+  ]
+}
