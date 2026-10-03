@@ -96,14 +96,12 @@ def _claimed_by_conversation(pack: Dict[str, Any]) -> Dict[str, Dict[str, Any]]:
     return claimed
 
 
-def build_ledger(pack_path: str, confirmations_path: str) -> Dict[str, Any]:
-    """Join confirmations to the pack's disputed lines. Refuses to guess."""
-    with open(pack_path, "r", encoding="utf-8") as fh:
-        pack = json.load(fh)
+def build_ledger_from_pack(pack: Dict[str, Any],
+                           confirmations_path: str) -> Dict[str, Any]:
+    """Join confirmations to an in-memory dispute pack. Refuses to guess."""
     if pack.get("schema") != PACK_SCHEMA:
         raise RecoveryError(
-            "%s is not a dispute pack (schema %r)"
-            % (pack_path, pack.get("schema")))
+            "not a dispute pack (schema %r)" % pack.get("schema"))
     claimed = _claimed_by_conversation(pack)
     confirmations = load_confirmations(confirmations_path)
 
@@ -159,7 +157,7 @@ def build_ledger(pack_path: str, confirmations_path: str) -> Dict[str, Any]:
     pending = sum(1 for r in rows
                   if r["status"] in ("no_concession", "accepted", "pending"))
     return {
-        "pack_file": os.path.basename(pack_path),
+        "pack_file": "(pack)",
         "confirmations_file": os.path.basename(confirmations_path),
         "currency": pack.get("currency"),
         "rows": rows,
@@ -173,6 +171,15 @@ def build_ledger(pack_path: str, confirmations_path: str) -> Dict[str, Any]:
             "pending_lines": pending,
         },
     }
+
+
+def build_ledger(pack_path: str, confirmations_path: str) -> Dict[str, Any]:
+    """Join confirmations to a dispute pack on disk. Refuses to guess."""
+    with open(pack_path, "r", encoding="utf-8") as fh:
+        pack = json.load(fh)
+    ledger = build_ledger_from_pack(pack, confirmations_path)
+    ledger["pack_file"] = os.path.basename(pack_path)
+    return ledger
 
 
 def ledger_csv(ledger: Dict[str, Any]) -> str:

@@ -1,0 +1,10 @@
+{
+  "schema_version": "agentmeasure-outcome-0.1",
+  "unit_id": "lead-bad-001",
+  "unit_type": "qualified_lead",
+  "occurred_at": "2026-09-12T14:30:00Z",
+  "declared_by": "vendor",
+  "observer_grade": "self_attested",
+  "qualification": {"criteria_met": ["budget stated"]},
+  "status": "counted"
+}

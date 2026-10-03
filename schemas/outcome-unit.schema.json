@@ -1,0 +1,111 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "AgentMeasure Outcome Unit (v1)",
+  "description": "BP r28 p14 'Emerging · Outcome' row: the billable unit for outcome-priced contracts beyond per-resolution support — a qualified lead, a completed case. This schema defines the unit BEFORE any engine reads it: one file, one unit, every field traceable to a contract clause or an observer. Judgement discipline mirrors AMS-1: a criterion that cannot be evidenced is listed in criteria_unproven, never silently counted; status 'unproven' is a first-class state. vendor and buyer each keep their own units; agreement is a separate reconciliation, never assumed.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "unit_id",
+    "unit_type",
+    "contract_ref",
+    "occurred_at",
+    "declared_by",
+    "observer_grade",
+    "qualification",
+    "status"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "enum": ["agentmeasure-outcome-0.1"]
+    },
+    "unit_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+      "description": "Stable id of this billable outcome in the declaring party's system."
+    },
+    "unit_type": {
+      "type": "string",
+      "enum": ["qualified_lead", "completed_case"],
+      "description": "qualified_lead: sales outcome pricing. completed_case: BPO / services outcome pricing. Per-resolution support stays on the canonical seven-column export (registry/vendor-rules.json)."
+    },
+    "contract_ref": {
+      "type": "string",
+      "minLength": 1,
+      "description": "The contract clause that defines qualification / completion, cited by section. A unit without a clause is not a unit."
+    },
+    "occurred_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the outcome happened (lead qualified, case completed). ISO 8601."
+    },
+    "declared_by": {
+      "type": "string",
+      "enum": ["vendor", "buyer"],
+      "description": "Which side counts this unit. Both sides' ledgers reconcile; neither is authoritative by itself."
+    },
+    "observer_grade": {
+      "type": "string",
+      "enum": ["self_attested", "affected_party", "third_party_corroborated"],
+      "description": "Same evidence ladder as AMS-1 settlement (standard/SETTLEMENT.md): who observed the outcome."
+    },
+    "qualification": {
+      "type": "object",
+      "required": ["criteria_met"],
+      "properties": {
+        "criteria_met": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1},
+          "description": "Each contract criterion this unit satisfies, in the contract's own words."
+        },
+        "criteria_unproven": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Criteria that cannot be evidenced from the supplied records. Listed, never guessed away."
+        }
+      }
+    },
+    "status": {
+      "type": "string",
+      "enum": ["counted", "disputed", "retracted", "unproven"],
+      "description": "counted: both the criteria and the evidence stand. disputed: a party contests it. retracted: declarer withdrew. unproven: criteria_unproven is non-empty, so it must not enter any claim total."
+    },
+    "window": {
+      "type": "object",
+      "properties": {
+        "stability_hours": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "Contractual observation window after which the outcome is stable (e.g. lead not withdrawn within N hours)."
+        },
+        "reopened_at": {
+          "type": "array",
+          "items": {"type": "string", "format": "date-time"},
+          "description": "Timestamps of any reopen/withdrawal events inside the window."
+        }
+      }
+    },
+    "value": {
+      "type": "object",
+      "properties": {
+        "currency": {"type": "string", "minLength": 3, "maxLength": 3},
+        "amount": {"type": "number", "minimum": 0}
+      },
+      "description": "Contracted value of one unit, when priced."
+    },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["kind", "ref"],
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": ["system_record", "export", "attestation", "corroboration"]
+          },
+          "ref": {"type": "string", "minLength": 1}
+        }
+      }
+    }
+  }
+}

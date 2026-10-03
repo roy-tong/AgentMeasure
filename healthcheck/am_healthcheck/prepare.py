@@ -18,6 +18,7 @@ Nothing here reads message text, and no number is produced.
 from __future__ import annotations
 
 import csv
+import hashlib
 import os
 from typing import Any, Dict, List
 
@@ -87,12 +88,22 @@ def prepare(export_path: str, vendor_id: str) -> Dict[str, Any]:
                 if f not in mapped_headers
                 and f.strip().lower() not in signal_columns]
 
+    # Which columns a native export really carries is the reusable part of an
+    # engagement: two buyers on the same vendor with the same provenance map
+    # share the mapping work. Names only, never values.
+    fingerprint_src = "\n".join(
+        "%s=%s" % (col, provenance[col])
+        for col in vendors_mod.CANONICAL_COLUMNS + vendors_mod.OPTIONAL_COLUMNS)
+    mapping_fingerprint = hashlib.sha256(
+        fingerprint_src.encode("utf-8")).hexdigest()[:16]
+
     return {
         "vendor_id": vendor_id,
         "vendor_name": vendor["name"],
         "rows": len(records),
         "records": records,
         "provenance": provenance,
+        "mapping_fingerprint": mapping_fingerprint,
         "hint_targets": hint_targets,
         "columns_missing": [c for c in vendors_mod.REQUIRED_COLUMNS
                             if c not in mapping],
@@ -134,6 +145,8 @@ def prepare_report(prepared: Dict[str, Any]) -> str:
     out.append("=" * W)
     out.append("Vendor: %s" % prepared["vendor_name"])
     out.append("Rows:   %d" % prepared["rows"])
+    out.append("Mapping fingerprint: %s (log it with `agentmeasure delivery`)"
+               % prepared["mapping_fingerprint"])
     out.append("")
     out.append("Column mapping")
     out.append("-" * W)

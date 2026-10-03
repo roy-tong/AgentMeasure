@@ -1,0 +1,21 @@
+{
+  "schema_version": "agentmeasure-outcome-0.1",
+  "unit_id": "case-2026-09-1187",
+  "unit_type": "completed_case",
+  "contract_ref": "SOW-3 §2.2 — a case is completed when the deliverable is accepted in writing",
+  "occurred_at": "2026-09-20T09:00:00Z",
+  "declared_by": "vendor",
+  "observer_grade": "third_party_corroborated",
+  "qualification": {
+    "criteria_met": [
+      "deliverable v2 accepted by buyer project lead in writing"
+    ]
+  },
+  "status": "counted",
+  "window": {"stability_hours": 168, "reopened_at": []},
+  "value": {"currency": "USD", "amount": 40},
+  "evidence": [
+    {"kind": "system_record", "ref": "jira/PROJ-1187"},
+    {"kind": "corroboration", "ref": "acceptance-email-2026-09-20"}
+  ]
+}

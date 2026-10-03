@@ -34,6 +34,12 @@ from . import dispute as dispute_mod
 from . import export as export_mod
 from . import prepare as prepare_mod
 from . import recovery as recovery_mod
+from . import crosscheck as crosscheck_mod
+from . import ledger as ledger_mod
+from . import rulesdiff as rulesdiff_mod
+from . import narrative as narrative_mod
+from . import delivery as delivery_mod
+from . import dashboard as dashboard_mod
 # Conformance pack loaded lazily in cmd_conformance
 
 DEFAULT_DAYS = 7
@@ -1014,6 +1020,202 @@ def cmd_recovery(args) -> int:
     return 0
 
 
+def cmd_crosscheck(args) -> int:
+    """Put the export and the billing ledger side by side; name disagreements."""
+    try:
+        export = vendors_mod.load_export(args.export)
+        rows = crosscheck_mod.load_ledger(args.ledger)
+        result = crosscheck_mod.crosscheck(export, rows, args.vendor)
+    except (ValueError, OSError) as exc:
+        print("error: %s" % exc, file=sys.stderr)
+        return 2
+
+    print(crosscheck_mod.crosscheck_report(result))
+    if args.json_out:
+        try:
+            with open(args.json_out, "w", encoding="utf-8") as fh:
+                json.dump(result, fh, ensure_ascii=True, indent=2)
+        except OSError as exc:
+            print("error: could not write crosscheck export: %s" % exc,
+                  file=sys.stderr)
+            return 2
+        print("\nCrosscheck export \u2192 %s" % os.path.abspath(args.json_out))
+    return 0
+
+
+def cmd_verify(args) -> int:
+    """Compose the Verified Ledger: every lane, one artifact."""
+    try:
+        doc = ledger_mod.build_ledger_document(
+            export_path=args.export,
+            vendor_id=args.vendor,
+            contract_path=args.contract,
+            effects_path=args.effects,
+            ledger_path=args.ledger,
+            confirmations_path=args.confirmations,
+            price=args.price,
+            audit_cost=args.audit_cost,
+            period_start=args.period_start,
+            period_end=args.period_end,
+            buyer_label=args.buyer)
+    except (ValueError, OSError) as exc:
+        print("error: %s" % exc, file=sys.stderr)
+        return 2
+
+    try:
+        paths = ledger_mod.write_ledger_document(doc, args.out)
+    except OSError as exc:
+        print("error: could not write verified ledger: %s" % exc, file=sys.stderr)
+        return 2
+
+    t1 = doc["tier1"]
+    t = t1["three_state_counts"]
+    print("Verified Ledger")
+    print("=" * 50)
+    print("vendor:         %s (registry v%s)"
+          % (doc["vendor"]["name"], doc["vendor"]["rules_version"]))
+    print("three-state:    PASS %d / FAIL %d / UNPROVABLE %d"
+          % (t["PASS"], t["FAIL"], t["UNPROVABLE"]))
+    for label, key in (("outcome lane", "outcome_lane"),
+                       ("ledger crosscheck", "billing_crosscheck"),
+                       ("recovery", "recovery"),
+                       ("tier 2", "tier2")):
+        print("%-15s %s" % (label + ":", "included" if doc.get(key) else "-"))
+    print()
+    print("ledger MD   \u2192 %s" % os.path.abspath(paths["markdown"]))
+    print("ledger JSON \u2192 %s" % os.path.abspath(paths["json"]))
+    print("next: agentmeasure dashboard --pack %s --out dashboard.html"
+          % paths["json"])
+    return 0
+
+
+def cmd_rules_diff(args) -> int:
+    """Diff two vendor-rules snapshots; exit 1 on a material change."""
+    try:
+        old_doc = rulesdiff_mod.load_rules(args.old)
+        new_doc = (rulesdiff_mod.load_rules(args.rules)
+                   if args.rules else vendors_mod._RULES)
+        result = rulesdiff_mod.diff_rules(old_doc, new_doc)
+    except (ValueError, OSError) as exc:
+        print("error: %s" % exc, file=sys.stderr)
+        return 2
+
+    print(rulesdiff_mod.rules_diff_report(result))
+    if args.json_out:
+        try:
+            with open(args.json_out, "w", encoding="utf-8") as fh:
+                json.dump(result, fh, ensure_ascii=True, indent=2)
+        except OSError as exc:
+            print("error: could not write diff export: %s" % exc, file=sys.stderr)
+            return 2
+    return 1 if result["material"] else 0
+
+
+def cmd_narrative(args) -> int:
+    """Two-step narrative: emit the prompt, then check the model's draft.
+
+    The package never runs a model (offline discipline). Step 1 writes the
+    prompt built from the pack; you run your own model command on it. Step 2
+    checks every number in the draft against the pack — any invented or
+    rounded number refuses the draft and the rule-based template ships.
+    """
+    try:
+        pack = dashboard_mod.load_document(args.pack)
+        if pack.get("schema") != "agentmeasure.commercial/dispute-pack":
+            print("error: narrative needs a dispute pack (dispute-pack.json)",
+                  file=sys.stderr)
+            return 2
+    except (ValueError, OSError) as exc:
+        print("error: %s" % exc, file=sys.stderr)
+        return 2
+
+    if args.emit_prompt:
+        prompt = narrative_mod.build_prompt(pack, args.audience)
+        try:
+            with open(args.emit_prompt, "w", encoding="utf-8") as fh:
+                fh.write(prompt + "\n")
+        except OSError as exc:
+            print("error: could not write prompt: %s" % exc, file=sys.stderr)
+            return 2
+        print("Prompt (%s) \u2192 %s" % (args.audience, os.path.abspath(args.emit_prompt)))
+        print("next: run your own model command on it, then --check-draft.")
+        return 0
+
+    draft = None
+    if args.check_draft:
+        try:
+            with open(args.check_draft, "r", encoding="utf-8") as fh:
+                draft = fh.read()
+        except OSError as exc:
+            print("error: cannot read draft: %s" % exc, file=sys.stderr)
+            return 2
+
+    text, source, violations = narrative_mod.render_or_draft(
+        pack, draft, args.audience)
+
+    if args.out:
+        try:
+            with open(args.out, "w", encoding="utf-8") as fh:
+                fh.write(text + "\n")
+        except OSError as exc:
+            print("error: could not write narrative: %s" % exc, file=sys.stderr)
+            return 2
+        print("Narrative (%s) \u2192 %s" % (source, os.path.abspath(args.out)))
+    else:
+        print(text)
+    if violations:
+        print()
+        print("LLM draft REFUSED — numbers not present in the pack: %s"
+              % ", ".join(violations[:8]), file=sys.stderr)
+        print("shipped the rule-based template instead. The model never "
+              "touches the numbers.", file=sys.stderr)
+    return 0
+
+
+def cmd_delivery(args) -> int:
+    """Log delivery phases as they happen; report 附录 E metrics."""
+    if args.log_event:
+        try:
+            event = delivery_mod.log_event(
+                args.log, engagement=args.engagement, vendor=args.vendor,
+                period_index=args.period_index, phase=args.phase,
+                minutes=args.minutes, fingerprint=args.fingerprint or "",
+                note=args.note or "")
+        except (ValueError, OSError) as exc:
+            print("error: %s" % exc, file=sys.stderr)
+            return 2
+        print("logged: %s %s p%s %s %.1fmin"
+              % (event["engagement"], event["vendor"], event["period_index"],
+                 event["phase"], event["minutes"]))
+        return 0
+
+    try:
+        events = delivery_mod.load_events(args.log)
+    except (ValueError, OSError) as exc:
+        print("error: %s" % exc, file=sys.stderr)
+        return 2
+    print(delivery_mod.report_text(delivery_mod.report(events)))
+    return 0
+
+
+def cmd_dashboard(args) -> int:
+    """Render the offline single-file dashboard from a ledger or pack JSON."""
+    try:
+        doc = dashboard_mod.load_document(args.pack)
+        html_text = dashboard_mod.render_dashboard(doc)
+    except (ValueError, OSError) as exc:
+        print("error: %s" % exc, file=sys.stderr)
+        return 2
+    try:
+        with open(args.out, "w", encoding="utf-8") as fh:
+            fh.write(html_text + "\n")
+    except OSError as exc:
+        print("error: could not write dashboard: %s" % exc, file=sys.stderr)
+        return 2
+    print("Dashboard \u2192 %s" % os.path.abspath(args.out))
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="agentmeasure",
@@ -1211,6 +1413,105 @@ def build_parser() -> argparse.ArgumentParser:
     p_recovery.add_argument("--out", metavar="DIR", default="recovery-ledger",
                             help="output directory (default ./recovery-ledger)")
     p_recovery.set_defaults(func=cmd_recovery)
+
+    p_xcheck = sub.add_parser(
+        "crosscheck",
+        help="put your export and your billing ledger side by side; "
+             "disagreements are named, never resolved")
+    p_xcheck.add_argument("--export", metavar="PATH", required=True,
+                          help="canonical counts-only CSV export")
+    p_xcheck.add_argument("--ledger", metavar="PATH", required=True,
+                          help="buyer billing ledger CSV (conversation_id,amount,billed_at)")
+    p_xcheck.add_argument("--vendor", required=True,
+                          help="which vendor's registry entry applies")
+    p_xcheck.add_argument("--json", dest="json_out", metavar="PATH", default=None)
+    p_xcheck.set_defaults(func=cmd_crosscheck)
+
+    p_verify = sub.add_parser(
+        "verify",
+        help="compose the Verified Ledger: Tier 1 + outcome lane + ledger "
+             "cross-check + recovery, one artifact")
+    p_verify.add_argument("--export", metavar="PATH", required=True)
+    p_verify.add_argument("--vendor", required=True)
+    p_verify.add_argument("--contract", metavar="JSON", default=None,
+                          help="buyer outcome-standard overlay")
+    p_verify.add_argument("--effects", metavar="PATH", default=None,
+                          help="effect-confirmed JSONL for the Tier 2 lane")
+    p_verify.add_argument("--ledger", metavar="PATH", default=None,
+                          help="buyer billing ledger CSV (计费流水)")
+    p_verify.add_argument("--confirmations", metavar="CSV", default=None,
+                          help="vendor concessions CSV for the recovery lane")
+    p_verify.add_argument("--price", type=float, default=None)
+    p_verify.add_argument("--audit-cost", type=float, default=None, dest="audit_cost")
+    p_verify.add_argument("--period-start", default=None)
+    p_verify.add_argument("--period-end", default=None)
+    p_verify.add_argument("--buyer", default=None)
+    p_verify.add_argument("--out", metavar="DIR", default="verified-ledger",
+                          help="output directory (default ./verified-ledger)")
+    p_verify.set_defaults(func=cmd_verify)
+
+    p_rdiff = sub.add_parser(
+        "rules-diff",
+        help="diff two vendor-rules snapshots; exit 1 on a material change "
+             "(the monthly subscription ritual)")
+    p_rdiff.add_argument("old", metavar="OLD.json",
+                         help="last period's registry snapshot")
+    p_rdiff.add_argument("--rules", metavar="NEW.json", default=None,
+                         help="the new registry (default: the packaged one)")
+    p_rdiff.add_argument("--json", dest="json_out", metavar="PATH", default=None)
+    p_rdiff.set_defaults(func=cmd_rules_diff)
+
+    p_narr = sub.add_parser(
+        "narrative",
+        help="two-step letter drafting: --emit-prompt writes the prompt built "
+             "from the pack; run your own model on it; --check-draft verifies "
+             "every number against the pack and refuses a violating draft "
+             "(the rule-based template ships instead)")
+    p_narr.add_argument("--pack", metavar="JSON", required=True,
+                        help="a `dispute` pack (dispute-pack.json)")
+    p_narr.add_argument("--audience", choices=["vendor", "finance"],
+                        default="vendor",
+                        help="vendor letter or internal finance note")
+    p_narr.add_argument("--emit-prompt", metavar="PATH", default=None,
+                        dest="emit_prompt",
+                        help="step 1: write the drafting prompt here")
+    p_narr.add_argument("--check-draft", metavar="PATH", default=None,
+                        dest="check_draft",
+                        help="step 2: the model's draft to verify and ship "
+                             "(or fall back from)")
+    p_narr.add_argument("--out", metavar="PATH", default=None,
+                        help="write the narrative here (default: stdout)")
+    p_narr.set_defaults(func=cmd_narrative)
+
+    p_deli = sub.add_parser(
+        "delivery",
+        help="log first-look phases as they happen and report the appendix-E "
+             "metrics: first look ≤10h, third period ≤1h, reuse ≥70%%")
+    p_deli.add_argument("--log", metavar="JSONL", required=True,
+                        help="local delivery journal (append-only)")
+    p_deli.add_argument("--log-event", action="store_true",
+                        help="append one phase event (requires the options below)")
+    p_deli.add_argument("--engagement", default=None, help="engagement label")
+    p_deli.add_argument("--vendor", default=None)
+    p_deli.add_argument("--period-index", type=int, default=None,
+                        help="billing period: 1 = first look")
+    p_deli.add_argument("--phase", default=None,
+                        help="one of: %s" % ", ".join(delivery_mod.PHASES))
+    p_deli.add_argument("--minutes", type=float, default=None)
+    p_deli.add_argument("--fingerprint", default=None,
+                        help="mapping fingerprint from `prepare` (reuse tracking)")
+    p_deli.add_argument("--note", default=None)
+    p_deli.set_defaults(func=cmd_delivery)
+
+    p_dash = sub.add_parser(
+        "dashboard",
+        help="render the offline single-file HTML dashboard from a "
+             "verified-ledger.json or dispute-pack.json")
+    p_dash.add_argument("--pack", metavar="JSON", required=True,
+                        dest="pack", help="verified-ledger.json or dispute-pack.json")
+    p_dash.add_argument("--out", metavar="PATH", required=True,
+                        help="dashboard HTML path")
+    p_dash.set_defaults(func=cmd_dashboard)
 
     p_hist = sub.add_parser("history", help="show local run history")
     p_hist.add_argument("--last", type=int, default=10)

@@ -32,7 +32,13 @@ value carries provenance); `recount` applies the vendor's own published rules
 line by line, with an optional `--contract` overlay that lists outcome-standard
 findings as a separate lane, never netted into the claim; `dispute` builds the
 negotiable pack; `recovery` records what the vendor actually conceded, counted
-separately from the claim.
+separately from the claim. `verify` composes all lanes into one Verified
+Ledger (json + md), `crosscheck` puts your billing ledger beside the export,
+`dashboard` renders the whole story as an offline single-file HTML page,
+`rules-diff` gates a material vendor-rule change (exit 1), `narrative`
+drafts the settlement letter in two steps where the model's draft is refused
+if any number does not come from the pack, and `delivery` logs engagements
+to report the appendix-E reuse metrics.
 
 [**Quick start and supported formats**](healthcheck/README.md) ·
 [**AMS-1: open settlement-statement standard**](standard/SETTLEMENT.md) ·

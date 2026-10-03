@@ -27,7 +27,11 @@ agentmeasure check --runtime claude        # 强制 Claude Code 适配器
 （判断列留空等人工复核，每个值带出处）；`recount` 按厂商自己公布的规则逐笔
 重算，`--contract` 可叠加买方结果标准——结果标准差异单列一栏，绝不并入索赔
 金额；`dispute` 生成可递交的争议包；`recovery` 记录厂商实际兑现的退还，
-与索赔分开计数。
+与索赔分开计数。`verify` 把全部 lane 合成一份 Verified Ledger（json+md）；
+`crosscheck` 把你的计费流水与导出并排核对；`dashboard` 把整个核验故事渲染成
+离线单文件 HTML 仪表盘；`rules-diff` 对厂商规则实质变更退出码 1（月度例行动作）；
+`narrative` 两步起草结算函——模型草稿里任何一个不是来自 pack 的数字都会被拒绝、
+回退纯规则模板；`delivery` 记录交付耗时并报告附录 E 的复用指标。
 
 [**快速开始与支持范围**](healthcheck/README.md) ·
 [**AMS-1：开放结算声明标准**](standard/SETTLEMENT.md) ·

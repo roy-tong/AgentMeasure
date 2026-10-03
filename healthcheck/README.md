@@ -112,6 +112,52 @@ source and confidence (P = primary/official, S = secondary, U = unverified).
 The browser-local recount at [the website](../website/) runs the same Tier 1
 with no upload; a cross-language parity test keeps the two from drifting.
 
+### The whole story in one artifact
+
+```bash
+agentmeasure crosscheck --export prepared.csv --vendor zendesk --ledger billing.csv
+#   your billing ledger (计费流水) against the export: charges the export
+#   doesn't flag, billed flags the ledger doesn't confirm, amounts off the
+#   published price. Disagreements are named, never resolved.
+
+agentmeasure verify --export prepared.csv --vendor zendesk --contract contract.json \
+    --ledger billing.csv --confirmations confirmations.csv --out vledger
+#   the Verified Ledger: Tier 1 + outcome lane + ledger cross-check +
+#   realized recovery in ONE document (json + md), each lane labelled
+#   claim / leverage / realized and never summed across.
+
+agentmeasure dashboard --pack vledger/verified-ledger.json --out dashboard.html
+#   offline single-file HTML: cards, tables, recovery bar. No JS, no
+#   network, printable — renders, never recomputes.
+
+agentmeasure rules-diff last-month-registry.json
+#   the monthly ritual: diff last period's rules snapshot against the
+#   packaged registry. Exit 1 = a material change (trigger, price, reopen
+#   rule) — re-verify the period under the new rule and disclose it.
+
+agentmeasure narrative --pack pack/dispute-pack.json --audience vendor \
+    --emit-prompt prompt.txt
+#   step 1 of two: the drafting prompt, built from the pack. Run YOUR OWN
+#   model on it, then:
+agentmeasure narrative --pack pack/dispute-pack.json --check-draft draft.txt --out letter.md
+#   step 2: every number in the draft is checked against the pack; any
+#   invented or rounded number refuses the draft and the rule-based
+#   template ships. The model never touches the numbers. No model? The
+#   template is the default.
+
+agentmeasure delivery --log delivery.jsonl --log-event \
+    --engagement ACME --vendor zendesk --period-index 1 --phase mapping --minutes 45
+agentmeasure delivery --log delivery.jsonl
+#   appendix-E metrics from logged phases: first look ≤10h, third period
+#   ≤1h, repeat-period reuse ≥70%. Use the mapping fingerprint `prepare`
+#   prints to track which engagements share the reusable mapping.
+```
+
+Outcome pricing beyond per-resolution support (qualified lead, completed
+case) is defined — schema first, per the BP — at
+[schemas/outcome-unit.schema.json](../schemas/outcome-unit.schema.json) with
+worked examples.
+
 ## Sharing results: preview first, export second
 
 The recommended flow never writes a shareable file until you have read it:

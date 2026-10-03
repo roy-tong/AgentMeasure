@@ -1,0 +1,25 @@
+{
+  "schema_version": "agentmeasure-outcome-0.1",
+  "unit_id": "lead-2026-09-0142",
+  "unit_type": "qualified_lead",
+  "contract_ref": "MSA 2026 §5.1 — a lead is qualified when budget, authority, need and timeline are each evidenced",
+  "occurred_at": "2026-09-12T14:30:00Z",
+  "declared_by": "vendor",
+  "observer_grade": "affected_party",
+  "qualification": {
+    "criteria_met": [
+      "budget stated by prospect in recorded call",
+      "timeline confirmed in writing"
+    ],
+    "criteria_unproven": [
+      "authority: decision-maker identity not evidenced"
+    ]
+  },
+  "status": "unproven",
+  "window": {"stability_hours": 336, "reopened_at": []},
+  "value": {"currency": "USD", "amount": 150},
+  "evidence": [
+    {"kind": "system_record", "ref": "crm/opportunity/8841"},
+    {"kind": "attestation", "ref": "call-recording-2026-09-12"}
+  ]
+}
