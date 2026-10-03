@@ -53,6 +53,11 @@ def load_ledger(path: str) -> List[Dict[str, Any]]:
                     raise LedgerError(
                         "line %d: amount %r is not a number" % (i + 2, text)
                     ) from None
+                if amount < 0:
+                    raise LedgerError(
+                        "line %d: negative amount — a credit or adjustment "
+                        "belongs to the recovery ledger, not the charges "
+                        "ledger" % (i + 2))
             rows.append({
                 "line": i + 2,
                 "conversation_id": row.get("conversation_id"),
@@ -70,10 +75,18 @@ def crosscheck(export: Dict[str, Any], ledger_rows: List[Dict[str, Any]],
     price = vendor.get("unit_price")
 
     export_by_id: Dict[str, Dict[str, Any]] = {}
+    seen_ids: Dict[str, int] = {}
     for rec in export["records"]:
         cid = rec.get("conversation_id")
-        if cid is not None:
-            export_by_id[str(cid)] = rec
+        if cid is None:
+            continue
+        cid = str(cid)
+        seen_ids[cid] = seen_ids.get(cid, 0) + 1
+        export_by_id[cid] = rec
+    # A repeated conversation id is a metering anomaly in its own right: the
+    # join keeps the last row, but the duplication is named, never swallowed.
+    duplicate_ids = [{"conversation_id": cid, "rows": n}
+                     for cid, n in sorted(seen_ids.items()) if n > 1]
 
     ledger_ids = set()
     flag_without_charge: List[Dict[str, Any]] = []
@@ -142,6 +155,7 @@ def crosscheck(export: Dict[str, Any], ledger_rows: List[Dict[str, Any]],
             1 for cid, rec in export_by_id.items()
             if vendors_mod._as_bool(rec.get("vendor_billed")) is True
             and cid in ledger_by_id),
+        "duplicate_ids_in_export": duplicate_ids,
         "flag_without_charge": flag_without_charge,
         "charge_without_export_flag": charge_without_flag,
         "not_in_export": not_in_export,
@@ -178,6 +192,13 @@ def crosscheck_report(result: Dict[str, Any]) -> str:
                % len(result["not_in_export"]))
     out.append("amount deviates from published price:    %d"
                % len(result["amount_deviation"]))
+    if result["duplicate_ids_in_export"]:
+        out.append("DUPLICATE conversation ids in export:    %d"
+               % len(result["duplicate_ids_in_export"]))
+        out.append("  (%s — repeated ids are a metering anomaly; the join"
+                   % ", ".join(r["conversation_id"]
+                               for r in result["duplicate_ids_in_export"][:5]))
+        out.append("   keeps the last row, but the duplication needs a human)")
     if result["flag_without_charge"] or result["charge_without_export_flag"] \
             or result["not_in_export"]:
         out.append("")

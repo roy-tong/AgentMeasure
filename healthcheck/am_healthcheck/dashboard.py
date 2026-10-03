@@ -93,6 +93,24 @@ def _section(title: str, tag: Optional[str], body: str,
     return "\n".join(out)
 
 
+def _three_state(t1: Dict[str, Any]) -> Dict[str, int]:
+    """Three-state counts, computed from counts when absent.
+
+    Packs produced before the three-state vocabulary existed carry only the
+    directional counts; the dashboard renders those too instead of failing.
+    """
+    counts = t1.get("three_state_counts")
+    if counts:
+        return counts
+    c = t1.get("counts", {})
+    return {
+        "PASS": c.get("agrees", 0),
+        "FAIL": (c.get("billed_but_not_billable", 0)
+                 + c.get("billable_but_not_billed", 0)),
+        "UNPROVABLE": c.get("cannot_settle", 0),
+    }
+
+
 def render_dashboard(doc: Dict[str, Any]) -> str:
     schema = doc.get("schema", "")
     if schema == "agentmeasure.commercial/verified-ledger":
@@ -125,7 +143,7 @@ def render_dashboard(doc: Dict[str, Any]) -> str:
     ]
     out.append(_cards(t1, currency))
 
-    t = t1["three_state_counts"]
+    t = _three_state(t1)
     out.append(_section(
         "Line judgements — vendor's own published rules", "claim",
         _table(["PASS", "FAIL", "UNPROVABLE", "net"],
