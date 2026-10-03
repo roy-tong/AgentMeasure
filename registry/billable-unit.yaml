@@ -42,3 +42,24 @@ billable_units:
     description: "一条数据处理记录"
     typical_event: result_delivered
     status: draft
+
+  # BP r28 p14: one evidence plane across Spend / Outcome / Performance.
+  # action family = Spend-stage per-action billing (v0.2 outcome-unit schema);
+  # usage_aggregate = A3 metered usage; the vendor's telemetry is input only.
+  - id: action_consumption
+    description: "一次按动作计费的消耗（premium request / credit / ACU）"
+    typical_event: action_consumed
+    status: draft
+    notes: "allowance 内与 overage 是两种钱，禁止合并聚合（outcome-unit schema v0.2 billing_context）"
+
+  - id: usage_aggregate
+    description: "一个计量周期内的用量聚合（compute/A3 计量）"
+    typical_event: usage_measured
+    status: draft
+    notes: "telemetry 为厂商侧输入，AgentMeasure 验证计费不重新计量"
+
+  - id: incrementality_claim
+    description: "一条带对照证据的增量主张（performance 阶段）"
+    typical_event: effect_confirmed
+    status: draft
+    notes: "须携带 treatment/holdout 统计证据；无对照=incrementality_evidence none，不得按增量计价"

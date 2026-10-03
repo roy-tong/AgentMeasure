@@ -12,6 +12,6 @@ Honesty rules inherited from the conformance pack:
 Python 3.9+ standard library only.
 """
 
-__version__ = "0.4.1"
+__version__ = "0.5.0"
 
 RUNTIME_NAME = "codex-rollout"

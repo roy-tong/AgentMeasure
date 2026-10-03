@@ -156,7 +156,25 @@ agentmeasure delivery --log delivery.jsonl
 Outcome pricing beyond per-resolution support (qualified lead, completed
 case) is defined — schema first, per the BP — at
 [schemas/outcome-unit.schema.json](../schemas/outcome-unit.schema.json) with
-worked examples.
+worked examples. The outcome **engine** now ships too:
+`agentmeasure outcomes --units units.jsonl` verifies them fail-closed, and the
+schema covers action and usage-aggregate units — one evidence plane across the
+BP's three stages.
+
+```bash
+agentmeasure crm-join --export prepared.csv --crm crm.csv --out joined.csv
+agentmeasure outcomes --units outcome-units.jsonl --json outcome-ledger.json
+agentmeasure period-compare last-month/verified-ledger.json vledger/verified-ledger.json
+agentmeasure template --export --vendor intercom --fingerprint <fp> --contract contract.json
+agentmeasure certify --pack vledger/verified-ledger.json --digest-out digest.txt
+agentmeasure incrementality --events treatment-holdout.csv
+```
+
+`certify` grades the artifact on the AMS-1 adoption ladder (Stage 0..3) and
+emits the deterministic digest; hand the digest to your own signing tool —
+this package never runs one. `incrementality` produces statistics about a
+difference, never a verdict: the BP's line between rule judgement and causal
+inference stays visible in the output itself.
 
 ## Sharing results: preview first, export second
 

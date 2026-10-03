@@ -40,6 +40,12 @@ from . import rulesdiff as rulesdiff_mod
 from . import narrative as narrative_mod
 from . import delivery as delivery_mod
 from . import dashboard as dashboard_mod
+from . import outcomes as outcomes_mod
+from . import crm as crm_mod
+from . import periods as periods_mod
+from . import certify as certify_mod
+from . import incrementality as inc_mod
+from . import templates as templates_mod
 # Conformance pack loaded lazily in cmd_conformance
 
 DEFAULT_DAYS = 7
@@ -1216,6 +1222,160 @@ def cmd_dashboard(args) -> int:
     return 0
 
 
+def cmd_outcomes(args) -> int:
+    """Verify outcome-unit JSONL against its schema and its own consistency."""
+    schema_path = args.schema
+    if not schema_path:
+        repo_root = os.path.dirname(os.path.dirname(
+            os.path.dirname(os.path.abspath(__file__))))
+        candidate = os.path.join(repo_root, "schemas",
+                                 "outcome-unit.schema.json")
+        if os.path.exists(candidate):
+            schema_path = candidate
+        else:
+            print("error: no schema found next to this checkout; pass "
+                  "--schema /path/to/outcome-unit.schema.json", file=sys.stderr)
+            return 2
+    try:
+        schema = outcomes_mod.load_schema(schema_path)
+        units = outcomes_mod.load_units(args.units)
+        result = outcomes_mod.verify_units(units, schema,
+                                           contract_label=args.contract_label or "")
+    except (ValueError, OSError) as exc:
+        print("error: %s" % exc, file=sys.stderr)
+        return 2
+    print(outcomes_mod.outcome_ledger_markdown(result))
+    if args.json_out:
+        try:
+            with open(args.json_out, "w", encoding="utf-8") as fh:
+                json.dump(result, fh, ensure_ascii=True, indent=2)
+        except OSError as exc:
+            print("error: could not write outcome ledger: %s" % exc,
+                  file=sys.stderr)
+            return 2
+        print("\nOutcome ledger \u2192 %s" % os.path.abspath(args.json_out))
+    return 0
+
+
+def cmd_crm_join(args) -> int:
+    """Join buyer CRM records to the export: fill empties, name conflicts."""
+    try:
+        rows = crm_mod.load_crm(args.crm)
+        result = crm_mod.crm_join(args.export, rows, args.out)
+    except (ValueError, OSError) as exc:
+        print("error: %s" % exc, file=sys.stderr)
+        return 2
+    print(crm_mod.crm_join_report(result))
+    print()
+    print("Joined export \u2192 %s" % os.path.abspath(args.out))
+    return 0
+
+
+def cmd_period_compare(args) -> int:
+    """Two verified ledgers in, one honest delta out."""
+    try:
+        result = periods_mod.compare_periods(args.previous, args.current)
+    except (ValueError, OSError) as exc:
+        print("error: %s" % exc, file=sys.stderr)
+        return 2
+    print(periods_mod.compare_markdown(result))
+    if args.out:
+        try:
+            with open(args.out, "w", encoding="utf-8") as fh:
+                fh.write(periods_mod.compare_markdown(result) + "\n")
+        except OSError as exc:
+            print("error: could not write compare: %s" % exc, file=sys.stderr)
+            return 2
+        print("Compare report \u2192 %s" % os.path.abspath(args.out))
+    return 0
+
+
+def cmd_certify(args) -> int:
+    """Grade a verification artifact on the AMS-1 adoption ladder."""
+    try:
+        doc = certify_mod.load_artifact(args.pack)
+        result = certify_mod.certify(doc)
+    except (ValueError, OSError) as exc:
+        print("error: %s" % exc, file=sys.stderr)
+        return 2
+    print(certify_mod.certification_report(result))
+    if args.digest_out:
+        try:
+            with open(args.digest_out, "w", encoding="utf-8") as fh:
+                fh.write(result["digest"] + "\n")
+        except OSError as exc:
+            print("error: could not write digest: %s" % exc, file=sys.stderr)
+            return 2
+        print("Digest \u2192 %s" % os.path.abspath(args.digest_out))
+    return 0
+
+
+def cmd_incrementality(args) -> int:
+    """Treatment-vs-holdout statistics. Evidence, never a verdict."""
+    try:
+        groups = inc_mod.load_groups(args.events,
+                                     group_col=args.group_col,
+                                     outcome_col=args.outcome_col)
+        result = inc_mod.analyze(groups)
+    except (ValueError, OSError) as exc:
+        print("error: %s" % exc, file=sys.stderr)
+        return 2
+    print(inc_mod.report_text(result))
+    if args.json_out:
+        try:
+            with open(args.json_out, "w", encoding="utf-8") as fh:
+                json.dump(result, fh, ensure_ascii=True, indent=2)
+        except OSError as exc:
+            print("error: could not write incrementality export: %s" % exc,
+                  file=sys.stderr)
+            return 2
+    return 0
+
+
+def cmd_template(args) -> int:
+    """Export/import/list engagement templates (method, never client data)."""
+    if args.template_export:
+        contract = None
+        if args.contract:
+            try:
+                with open(args.contract, "r", encoding="utf-8") as fh:
+                    contract = json.load(fh)
+            except (ValueError, OSError) as exc:
+                print("error: cannot read contract: %s" % exc, file=sys.stderr)
+                return 2
+        cases = []
+        if args.boundary:
+            try:
+                with open(args.boundary, "r", encoding="utf-8") as fh:
+                    cases = json.load(fh)
+            except (ValueError, OSError) as exc:
+                print("error: cannot read boundary cases: %s" % exc,
+                      file=sys.stderr)
+                return 2
+        doc = templates_mod.export_template(
+            args.vendor, args.fingerprint or "", contract=contract,
+            boundary_cases=cases, note=args.note or "")
+        try:
+            path = templates_mod.save_template(doc, args.dir)
+        except (ValueError, OSError) as exc:
+            print("error: %s" % exc, file=sys.stderr)
+            return 2
+        print("Template \u2192 %s" % os.path.abspath(path))
+        return 0
+
+    templates = templates_mod.list_templates(args.dir)
+    if not templates:
+        print("no templates in %s" % args.dir)
+        return 0
+    print("Engagement templates (method artifacts — no client data)")
+    print("=" * 58)
+    for t in templates:
+        print("%-40s %-10s fp=%s contract=%s cases=%d"
+              % (t["file"], t["vendor"], t["fingerprint"][:12] or "-",
+                 "yes" if t["contract"] else "no", t["boundary_cases"]))
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="agentmeasure",
@@ -1512,6 +1672,79 @@ def build_parser() -> argparse.ArgumentParser:
     p_dash.add_argument("--out", metavar="PATH", required=True,
                         help="dashboard HTML path")
     p_dash.set_defaults(func=cmd_dashboard)
+
+    p_out = sub.add_parser(
+        "outcomes",
+        help="verify outcome-unit JSONL (schema + internal consistency, "
+             "fail-closed): counted/unproven/disputed/retracted/invalid")
+    p_out.add_argument("--units", required=True, help="outcome-unit JSONL")
+    p_out.add_argument("--schema", default=None,
+                       help="outcome-unit schema (default: repo copy)")
+    p_out.add_argument("--contract-label", default=None, dest="contract_label")
+    p_out.add_argument("--json", dest="json_out", metavar="PATH", default=None)
+    p_out.set_defaults(func=cmd_outcomes)
+
+    p_crm = sub.add_parser(
+        "crm-join",
+        help="join buyer CRM/business records to the export: fills EMPTY "
+             "judgement cells (provenance says so), conflicts are named, "
+             "never resolved")
+    p_crm.add_argument("--export", required=True, help="canonical export CSV")
+    p_crm.add_argument("--crm", required=True,
+                       help="CRM CSV: conversation_id[,reopened_at,human_handover_at]")
+    p_crm.add_argument("--out", required=True, help="joined export path")
+    p_crm.set_defaults(func=cmd_crm_join)
+
+    p_per = sub.add_parser(
+        "period-compare",
+        help="two verified ledgers in, one honest delta out (three-state, "
+             "variance, new/cleared disputes, recovery)")
+    p_per.add_argument("previous", metavar="PREV.json")
+    p_per.add_argument("current", metavar="CURR.json")
+    p_per.add_argument("--out", metavar="PATH", default=None,
+                       help="write the compare report here")
+    p_per.set_defaults(func=cmd_period_compare)
+
+    p_cert = sub.add_parser(
+        "certify",
+        help="grade a verified ledger / dispute pack on the AMS-1 adoption "
+             "ladder (stage-0 self-attested .. stage-3 counterparty accepted) "
+             "+ deterministic digest")
+    p_cert.add_argument("--pack", required=True, metavar="JSON")
+    p_cert.add_argument("--digest-out", metavar="PATH", default=None,
+                        dest="digest_out",
+                        help="write the deterministic digest here (for your "
+                             "own signing tool)")
+    p_cert.set_defaults(func=cmd_certify)
+
+    p_inc = sub.add_parser(
+        "incrementality",
+        help="treatment-vs-holdout statistics (two-proportion z + Newcombe "
+             "CI). Evidence about a difference — never a billing verdict")
+    p_inc.add_argument("--events", required=True,
+                       help="CSV: group(treatment|holdout),converted(0/1)")
+    p_inc.add_argument("--group-col", default="group", dest="group_col")
+    p_inc.add_argument("--outcome-col", default="converted", dest="outcome_col")
+    p_inc.add_argument("--json", dest="json_out", metavar="PATH", default=None)
+    p_inc.set_defaults(func=cmd_incrementality)
+
+    p_tpl = sub.add_parser(
+        "template",
+        help="engagement templates: mapping fingerprint + contract overlay + "
+             "boundary cases — the reusable method, never client data")
+    p_tpl.add_argument("--dir", default="engagement-templates",
+                       help="template directory (default ./engagement-templates)")
+    p_tpl.add_argument("--export", dest="template_export", action="store_true",
+                       help="export a new template (with --vendor)")
+    p_tpl.add_argument("--vendor", default=None)
+    p_tpl.add_argument("--fingerprint", default=None,
+                       help="mapping fingerprint from `prepare`")
+    p_tpl.add_argument("--contract", metavar="JSON", default=None,
+                       help="buyer contract overlay to embed")
+    p_tpl.add_argument("--boundary", metavar="JSON", default=None,
+                       help="boundary cases JSON: [{name?, columns, expected_3state}]")
+    p_tpl.add_argument("--note", default=None)
+    p_tpl.set_defaults(func=cmd_template)
 
     p_hist = sub.add_parser("history", help="show local run history")
     p_hist.add_argument("--last", type=int, default=10)

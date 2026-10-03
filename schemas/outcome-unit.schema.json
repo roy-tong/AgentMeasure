@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "AgentMeasure Outcome Unit (v1)",
+  "title": "AgentMeasure Outcome Unit (v1, rev 0.2: + action / usage_aggregate)",
   "description": "BP r28 p14 'Emerging · Outcome' row: the billable unit for outcome-priced contracts beyond per-resolution support — a qualified lead, a completed case. This schema defines the unit BEFORE any engine reads it: one file, one unit, every field traceable to a contract clause or an observer. Judgement discipline mirrors AMS-1: a criterion that cannot be evidenced is listed in criteria_unproven, never silently counted; status 'unproven' is a first-class state. vendor and buyer each keep their own units; agreement is a separate reconciliation, never assumed.",
   "type": "object",
   "required": [
@@ -26,8 +26,8 @@
     },
     "unit_type": {
       "type": "string",
-      "enum": ["qualified_lead", "completed_case"],
-      "description": "qualified_lead: sales outcome pricing. completed_case: BPO / services outcome pricing. Per-resolution support stays on the canonical seven-column export (registry/vendor-rules.json)."
+      "enum": ["qualified_lead", "completed_case", "action", "usage_aggregate"],
+      "description": "qualified_lead: sales outcome pricing. completed_case: BPO / services outcome pricing. action: per-action billing (Copilot premium request, Cursor credit, Devin ACU) — v0.2, one unit = one consumed action, allowance via billing_context. usage_aggregate: metered usage (A3, e.g. compute units) — v0.2, quantity via measured_quantity. Per-resolution support stays on the canonical seven-column export (registry/vendor-rules.json). One evidence plane, four unit types."
     },
     "contract_ref": {
       "type": "string",
@@ -92,6 +92,25 @@
         "amount": {"type": "number", "minimum": 0}
       },
       "description": "Contracted value of one unit, when priced."
+    },
+    "billing_context": {
+      "type": "object",
+      "properties": {
+        "plan_allowance_included": {"type": "number", "minimum": 0},
+        "consumed_in_period": {"type": "number", "minimum": 0},
+        "overage_billed": {"type": "boolean"}
+      },
+      "description": "For action units: where this consumption sits relative to the plan allowance. An action inside the allowance and an overage action are different money; they are never merged."
+    },
+    "measured_quantity": {
+      "type": "object",
+      "required": ["metric", "quantity"],
+      "properties": {
+        "metric": {"type": "string", "minLength": 1},
+        "quantity": {"type": "number", "minimum": 0},
+        "unit": {"type": "string"}
+      },
+      "description": "For usage_aggregate units: the measured quantity as recorded, with its unit. The metering is the vendor's telemetry, taken as input — AgentMeasure verifies billing, not telemetry."
     },
     "evidence": {
       "type": "array",
