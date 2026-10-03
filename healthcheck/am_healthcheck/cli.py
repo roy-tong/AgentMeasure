@@ -47,6 +47,11 @@ from . import certify as certify_mod
 from . import incrementality as inc_mod
 from . import templates as templates_mod
 from . import commerce as commerce_mod
+from . import pnl as pnl_mod
+from . import audit as audit_mod
+from . import taxonomy as tax_mod
+from . import policy as policy_mod
+from . import benchmark as bench_mod
 # Conformance pack loaded lazily in cmd_conformance
 
 DEFAULT_DAYS = 7
@@ -1426,6 +1431,107 @@ def _load_json(path: str):
         return json.load(fh)
 
 
+def cmd_pnl_trees(args) -> int:
+    """Organic / Paid trees, metered separately; ROAS inside Paid only."""
+    try:
+        orders = pnl_mod.load_channel_orders(args.orders)
+        campaigns = (pnl_mod.load_campaigns(args.campaigns)
+                     if args.campaigns else None)
+        report = pnl_mod.pnl_trees(orders, campaigns)
+    except (ValueError, OSError) as exc:
+        print("error: %s" % exc, file=sys.stderr)
+        return 2
+    print(pnl_mod.trees_markdown(report))
+    return 0
+
+
+def cmd_cm_ledger(args) -> int:
+    """Contribution Margin ledger — the monthly operating-review basis."""
+    try:
+        orders = pnl_mod.load_channel_orders(args.orders)
+        costs = pnl_mod.load_costs(args.costs)
+        report = pnl_mod.contribution_margin(orders, costs,
+                                             period_label=args.period or "")
+    except (ValueError, OSError) as exc:
+        print("error: %s" % exc, file=sys.stderr)
+        return 2
+    print(pnl_mod.cm_markdown(report))
+    return 0
+
+
+def cmd_demand_audit(args) -> int:
+    """Channel potential vs operator performance -> Launch/Watch/Not ready."""
+    try:
+        thresholds = audit_mod.load_thresholds(args.thresholds)
+        measurements = audit_mod.load_measurements(args.measurements)
+        result = audit_mod.audit_channel(measurements, thresholds,
+                                         channel=args.channel or "")
+    except (ValueError, OSError) as exc:
+        print("error: %s" % exc, file=sys.stderr)
+        return 2
+    print(audit_mod.audit_markdown(result))
+    return 0
+
+
+def cmd_intent_taxonomy(args) -> int:
+    """Validate and health-check an intent-cluster taxonomy."""
+    if args.seed:
+        path = tax_mod.write_seed_template(args.file)
+        print("Seed taxonomy with worked examples \u2192 %s" % os.path.abspath(path))
+        return 0
+    try:
+        doc = tax_mod.load_taxonomy(args.file)
+        stats = tax_mod.validate_taxonomy(doc)
+    except (ValueError, OSError) as exc:
+        print("error: %s" % exc, file=sys.stderr)
+        return 2
+    print(tax_mod.taxonomy_markdown(stats))
+    return 0
+
+
+def cmd_decision_audit(args) -> int:
+    """Grade agent commercial executions against the decision policy."""
+    try:
+        policy = policy_mod.load_policy(args.policy)
+        executions = policy_mod.load_executions(args.executions)
+        result = policy_mod.audit_executions(policy, executions)
+    except (ValueError, OSError) as exc:
+        print("error: %s" % exc, file=sys.stderr)
+        return 2
+    print(policy_mod.audit_markdown(result))
+    return 0
+
+
+def cmd_benchmark_export(args) -> int:
+    """Export the anonymous cross-brand benchmark; verify before sharing."""
+    try:
+        rows = bench_mod.load_brand_rows(args.rows)
+        doc = bench_mod.export_benchmark(
+            rows, min_brands=args.min_brands,
+            taxonomy_version=args.taxonomy_version or "",
+            method_ref=args.method_ref or "")
+        violations = bench_mod.verify_benchmark(doc)
+    except (ValueError, OSError) as exc:
+        print("error: %s" % exc, file=sys.stderr)
+        return 2
+    if violations:
+        print("error: benchmark failed its own anonymisation check:",
+              file=sys.stderr)
+        for v in violations:
+            print("  %s" % v, file=sys.stderr)
+        return 2
+    print(bench_mod.benchmark_markdown(doc))
+    if args.out:
+        try:
+            with open(args.out, "w", encoding="utf-8") as fh:
+                json.dump(doc, fh, ensure_ascii=False, indent=2)
+        except OSError as exc:
+            print("error: could not write benchmark: %s" % exc, file=sys.stderr)
+            return 2
+        print("\nBenchmark \u2192 %s" % os.path.abspath(args.out))
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="agentmeasure",
@@ -1816,6 +1922,77 @@ def build_parser() -> argparse.ArgumentParser:
                        help="commerce profile schema (default: repo copy)")
     p_com.add_argument("--json", dest="json_out", metavar="PATH", default=None)
     p_com.set_defaults(func=cmd_commerce_ledger)
+
+    p_pnl = sub.add_parser(
+        "pnl-trees",
+        help="Organic and Paid trees metered separately (F2.10): an order "
+             "belongs to exactly one tree; ROAS is computed inside Paid only")
+    p_pnl.add_argument("--orders", required=True,
+                       help="order CSV with channel(organic|paid)[,campaign_id]")
+    p_pnl.add_argument("--campaigns", default=None,
+                       help="campaign ledger CSV: campaign_id,spend,conversations,"
+                            "engagements,conversions")
+    p_pnl.set_defaults(func=cmd_pnl_trees)
+
+    p_cml = sub.add_parser(
+        "cm-ledger",
+        help="Contribution Margin ledger (F2.11): revenue - coupon - media "
+             "spend - platform/payment cost - service fee - fulfillment "
+             "variance - refund = CM")
+    p_cml.add_argument("--orders", required=True)
+    p_cml.add_argument("--costs", required=True,
+                       help="cost CSV: category(coupon|media_spend|platform_cost|"
+                            "payment_cost|service_fee|fulfillment_variance|refund),"
+                            "amount[,order_id]")
+    p_cml.add_argument("--period", default=None)
+    p_cml.set_defaults(func=cmd_cm_ledger)
+
+    p_aud = sub.add_parser(
+        "demand-audit",
+        help="channel potential vs operator performance (F2.12) -> "
+             "Launch / Watch / Not ready")
+    p_aud.add_argument("--measurements", required=True,
+                       help="metrics CSV: metric,value")
+    p_aud.add_argument("--thresholds", required=True,
+                       help="thresholds JSON: {metric: {threshold}}")
+    p_aud.add_argument("--channel", default=None)
+    p_aud.set_defaults(func=cmd_demand_audit)
+
+    p_tax = sub.add_parser(
+        "intent-taxonomy",
+        help="validate an intent-cluster taxonomy (F2.13): Operating Cell = "
+             "cluster x surface x proposition")
+    p_tax.add_argument("--file", required=True, help="taxonomy JSON")
+    p_tax.add_argument("--seed", action="store_true",
+                       help="write a starter taxonomy with worked examples")
+    p_tax.set_defaults(func=cmd_intent_taxonomy)
+
+    p_pol = sub.add_parser(
+        "decision-audit",
+        help="grade agent commercial executions against the decision policy "
+             "(F2.14): auto / approval / forbidden, every decision with its "
+             "policy basis")
+    p_pol.add_argument("--policy", required=True,
+                       help="policy JSON (schema agentmeasure.commerce/decision-policy)")
+    p_pol.add_argument("--executions", required=True,
+                       help="execution log JSONL: execution_id,action_type,"
+                            "value[,approver]")
+    p_pol.set_defaults(func=cmd_decision_audit)
+
+    p_ben = sub.add_parser(
+        "benchmark-export",
+        help="export the anonymous cross-brand benchmark (F2.15): "
+             "min-brands suppression, identifier columns refused, "
+             "customer data never enters the shared pool")
+    p_ben.add_argument("--rows", required=True,
+                       help="brand metric rows CSV: brand_key,bucket,value")
+    p_ben.add_argument("--min-brands", type=int,
+                       default=bench_mod.DEFAULT_MIN_BRANDS,
+                       help="minimum distinct brands per published bucket")
+    p_ben.add_argument("--taxonomy-version", default=None)
+    p_ben.add_argument("--method-ref", default=None)
+    p_ben.add_argument("--out", metavar="PATH", default=None)
+    p_ben.set_defaults(func=cmd_benchmark_export)
 
     p_hist = sub.add_parser("history", help="show local run history")
     p_hist.add_argument("--last", type=int, default=10)

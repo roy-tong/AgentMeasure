@@ -187,7 +187,18 @@ agentmeasure commerce-ledger \
 
 live / replay / synthetic never mix inside one aggregation (error, not a
 blend); metric names carry their strength prefix and are linted against the
-evidence that backs them; every input is sha256-anchored. Schema:
+evidence that backs them; every input is sha256-anchored. The operating layer on top:
+
+```bash
+agentmeasure pnl-trees --orders orders.csv --campaigns campaigns.csv   # Organic / Paid, ROAS in Paid only
+agentmeasure cm-ledger --orders orders.csv --costs costs.csv --period 2026-09
+agentmeasure demand-audit --measurements m.csv --thresholds t.json     # Launch / Watch / Not ready
+agentmeasure intent-taxonomy --file clusters.json                      # Operating Cell health
+agentmeasure decision-audit --policy policy.json --executions log.jsonl
+agentmeasure benchmark-export --rows brand-rows.csv --min-brands 5     # aggregates only, ever
+```
+
+ Schema:
 [schemas/commerce-profile.schema.json](../schemas/commerce-profile.schema.json);
 canonical retry vector pinned in CI at
 `conformance/vectors/commerce-retry-baseline/`.
