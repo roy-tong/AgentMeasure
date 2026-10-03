@@ -52,6 +52,7 @@ from . import audit as audit_mod
 from . import taxonomy as tax_mod
 from . import policy as policy_mod
 from . import benchmark as bench_mod
+from . import console as console_mod
 # Conformance pack loaded lazily in cmd_conformance
 
 DEFAULT_DAYS = 7
@@ -1532,6 +1533,28 @@ def cmd_benchmark_export(args) -> int:
     return 0
 
 
+def cmd_console(args) -> int:
+    """Compose the user-facing console page from verification documents."""
+    def _doc(path):
+        return dashboard_mod.load_document(path) if path else None
+    try:
+        page = console_mod.build_console(
+            meta={"title": args.title, "vendor": args.vendor,
+                  "period": args.period, "buyer": args.buyer},
+            ledger=_doc(args.ledger),
+            receipt=_doc(args.receipt),
+            margin=_doc(args.margin),
+            channel_audit=_doc(args.channel_audit),
+            decisions=_doc(args.decisions))
+        written = console_mod.write_console(page, args.out)
+    except (ValueError, OSError) as exc:
+        print("error: %s" % exc, file=sys.stderr)
+        return 2
+    print("Console \u2192 %s" % os.path.abspath(written))
+    print("open it in a browser - it is a single offline file.")
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="agentmeasure",
@@ -1993,6 +2016,28 @@ def build_parser() -> argparse.ArgumentParser:
     p_ben.add_argument("--method-ref", default=None)
     p_ben.add_argument("--out", metavar="PATH", default=None)
     p_ben.set_defaults(func=cmd_benchmark_export)
+
+    p_con = sub.add_parser(
+        "console",
+        help="compose the user-facing console page (one integrated, "
+             "plain-language page) from verification documents")
+    p_con.add_argument("--ledger", metavar="JSON", default=None,
+                       help="verified-ledger.json (drives the billing flow)")
+    p_con.add_argument("--receipt", metavar="JSON", default=None,
+                       help="commerce measurement receipt")
+    p_con.add_argument("--margin", metavar="JSON", default=None,
+                       help="contribution margin report")
+    p_con.add_argument("--channel-audit", metavar="JSON", default=None,
+                       dest="channel_audit", help="channel demand audit")
+    p_con.add_argument("--decisions", metavar="JSON", default=None,
+                       help="commercial decision audit")
+    p_con.add_argument("--title", default="Bill verification")
+    p_con.add_argument("--vendor", default=None)
+    p_con.add_argument("--period", default=None)
+    p_con.add_argument("--buyer", default=None)
+    p_con.add_argument("--out", metavar="PATH", required=True,
+                       help="console HTML path")
+    p_con.set_defaults(func=cmd_console)
 
     p_hist = sub.add_parser("history", help="show local run history")
     p_hist.add_argument("--last", type=int, default=10)
