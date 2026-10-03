@@ -37,7 +37,8 @@
       "created_at",
       "created",
       "created at",
-      "conversation created at"
+      "conversation created at",
+      "created time"
     ],
     "closed_at": [
       "closed_at",
@@ -45,7 +46,9 @@
       "solved_at",
       "resolved_at",
       "solved at",
-      "closed at"
+      "closed at",
+      "closed time",
+      "resolved time"
     ],
     "human_agent_participated": [
       "human_agent_participated",

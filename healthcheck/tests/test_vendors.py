@@ -265,3 +265,33 @@ class TestNativeHeaderAliases(unittest.TestCase):
         export = load_export(path)
         self.assertIn("conversation_id", export["columns_found"])
         self.assertIn("opened_at", export["columns_found"])
+
+    def test_freshdesk_style_headers_map(self):
+        """Freshdesk's standard ticket export labels its timestamps
+        "Created time" / "Closed time" / "Resolved time" (Freshworks support:
+        "How do I export my tickets from Freshdesk?"). None of those space
+        forms were in the alias table, so a native export silently lost both
+        timestamps and the recount could not place a single line in time."""
+        from am_healthcheck.vendors import load_export
+        path = self._export([
+            "Ticket ID", "Created time", "Closed time",
+            "human_agent_participated", "issue_addressed",
+            "customer_recontacted_within_window", "vendor_billed"])
+        export = load_export(path)
+        self.assertIn("conversation_id", export["columns_found"])
+        self.assertIn("opened_at", export["columns_found"])
+        self.assertIn("closed_at", export["columns_found"])
+        self.assertEqual(export["columns_missing"], [])
+
+    def test_freshdesk_resolved_time_maps_to_closed_at(self):
+        """Freshdesk splits "Resolved time" (status 4) from "Closed time"
+        (status 5); either one ends the conversation, so both map to
+        closed_at, matching the existing Zendesk "Solved at" alias."""
+        from am_healthcheck.vendors import load_export
+        path = self._export([
+            "Ticket ID", "Created time", "Resolved time",
+            "human_agent_participated", "issue_addressed",
+            "customer_recontacted_within_window", "vendor_billed"])
+        export = load_export(path)
+        self.assertIn("closed_at", export["columns_found"])
+        self.assertEqual(export["columns_missing"], [])
