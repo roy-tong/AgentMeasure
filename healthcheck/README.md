@@ -170,6 +170,28 @@ agentmeasure certify --pack vledger/verified-ledger.json --digest-out digest.txt
 agentmeasure incrementality --events treatment-holdout.csv
 ```
 
+### Agent commerce: the receipt where the click disappears
+
+Traditional attribution starts at the click; agent commerce has none. The
+merchant-side measurement receipt (F2.1-F2.9):
+
+```bash
+agentmeasure commerce-ledger \
+    --events agent-events.jsonl --orders merchant-orders.csv \
+    --payments merchant-payments.csv --policy-version 1.0.0
+#   metric + value + evidence table; retries reconcile to 1 Operation /
+#   2 Attempts / 1 verified order; net GMV is strong; incremental is
+#   UNPROVABLE (no holdout, no claim); materiality prints the discrepancy
+#   vs the naive dashboard in currency AND percent.
+```
+
+live / replay / synthetic never mix inside one aggregation (error, not a
+blend); metric names carry their strength prefix and are linted against the
+evidence that backs them; every input is sha256-anchored. Schema:
+[schemas/commerce-profile.schema.json](../schemas/commerce-profile.schema.json);
+canonical retry vector pinned in CI at
+`conformance/vectors/commerce-retry-baseline/`.
+
 `certify` grades the artifact on the AMS-1 adoption ladder (Stage 0..3) and
 emits the deterministic digest; hand the digest to your own signing tool —
 this package never runs one. `incrementality` produces statistics about a

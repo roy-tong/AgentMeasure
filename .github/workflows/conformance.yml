@@ -78,6 +78,9 @@ jobs:
       - name: "Delegation-family conformance (DELEGATION-001..007: counting + the four failure modes)"
         run: |
           python3 conformance/runners/run_delegation.py
+      - name: "Commerce retry baseline (F2.4: 1 Operation / 2 Attempts / 1 verified order / net GMV = 0)"
+        run: |
+          python3 conformance/runners/run_commerce_retry.py
       - name: "Browser-local recount: rules file in sync with the registry"
         run: |
           python3 scripts/gen_web_rules.py --check

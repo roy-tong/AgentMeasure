@@ -1,0 +1,119 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "AgentMeasure Commerce Profile (v0.1)",
+  "description": "F2.1-F2.3/F2.7: the record envelope for agent-commerce measurement — the chain where the click disappears. One record = one fact on the Invocation -> Order -> Payment -> Refund chain, or one agent decision observation. Discipline baked in at the schema layer: live / replay / synthetic observation modes are DISTINCT values and must never be mixed inside one aggregation (synthetic lab probes entering a production aggregate is the exact mistake most GEO tools make); every record carries the measurement_policy_version it was collected under (governance 1); decision observations record OBSERVED merchants, never a candidate_set — a black-box platform does not show the full candidate set and pretending otherwise is fabrication (F2.2).",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "record_type",
+    "observation_mode",
+    "measurement_policy_version",
+    "occurred_at"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "enum": ["agentmeasure-commerce-0.1"]
+    },
+    "record_type": {
+      "type": "string",
+      "enum": [
+        "decision_observation",
+        "attempt_event",
+        "order_event",
+        "payment_event",
+        "refund_event",
+        "attribution_link"
+      ]
+    },
+    "observation_mode": {
+      "type": "string",
+      "enum": ["live", "replay", "synthetic"],
+      "description": "live: production, happened. replay: re-processed production records. synthetic: controlled experiment (Experiment Lab probes). Modes are segregated at aggregation time; a synthetic record inside a live aggregation is an error, not a blend."
+    },
+    "measurement_policy_version": {
+      "type": "string",
+      "minLength": 3,
+      "description": "Governance 1: the versioned, public methodology this record was collected and will be judged under. Mixed policy versions inside one aggregation are refused."
+    },
+    "occurred_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "platform": {
+      "type": "string",
+      "description": "decision_observation: the agent platform that made the decision (as observed, never inferred)."
+    },
+    "query_family": {
+      "type": "string",
+      "description": "decision_observation: the family of the user query (e.g. 'best CRM for dentists'), never the raw query text."
+    },
+    "observed_merchants": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1},
+      "description": "F2.2: merchants OBSERVED in the answer or action. Deliberately NOT named candidate_set: a black-box platform does not expose the full candidate set, and a field named candidate_set invites fabricating one."
+    },
+    "selected_entity": {
+      "type": "string",
+      "description": "decision_observation: the merchant/entity the agent actually acted on, if any."
+    },
+    "stated_rationale": {
+      "type": "string",
+      "description": "decision_observation: the rationale the agent STATED. A stated rationale is a fact about the statement; it is never treated as the causal reason (F2.6)."
+    },
+    "operation_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "The commercial intent: one user-facing goal (one operation)."
+    },
+    "attempt_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "One agent decision run towards the operation. A retry is a NEW attempt under the SAME operation — never a second operation."
+    },
+    "attempt_outcome": {
+      "type": "string",
+      "enum": ["succeeded", "failed", "timeout"]
+    },
+    "order_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "amount": {"type": "number", "minimum": 0},
+    "currency": {"type": "string", "minLength": 3, "maxLength": 3},
+    "status": {
+      "type": "string",
+      "enum": ["created", "confirmed", "failed", "cancelled"]
+    },
+    "idempotency_key": {
+      "type": "string",
+      "description": "Merchant-side key that collapses retries; two orders sharing one key are one order, whatever the request log says."
+    },
+    "payment_id": {"type": "string", "minLength": 1},
+    "refund_id": {"type": "string", "minLength": 1},
+    "payment_type": {
+      "type": "string",
+      "enum": ["charge", "refund"]
+    },
+    "link_type": {
+      "type": "string",
+      "enum": [
+        "invocation_to_order",
+        "order_to_payment",
+        "payment_to_refund",
+        "order_to_fulfillment"
+      ]
+    },
+    "left_ref": {"type": "string", "minLength": 1},
+    "right_ref": {"type": "string", "minLength": 1},
+    "evidence_level": {
+      "type": "string",
+      "enum": ["observed", "correlated", "inferred", "UNPROVABLE"],
+      "description": "F2.3: observed = both records exist and share a key; correlated = amount+time window agree without a shared key; inferred = only one record claims the link; UNPROVABLE = no link evidence. Metric strength must never exceed this level (F2.6)."
+    },
+    "rule_basis": {
+      "type": "string",
+      "description": "Which named rule assigned the evidence level — every grade is attributable."
+    }
+  }
+}

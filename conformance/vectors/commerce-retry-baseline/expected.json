@@ -1,0 +1,17 @@
+{
+  "case": "create_order timeout -> retry -> success; merchant sees 2 requests, 1 order, 1 payment, later refunded",
+  "expected": {
+    "operations": 1,
+    "attempts_by_operation": {"O-1": 2},
+    "verified_orders": 1,
+    "duplicate_rows": 0,
+    "gross": 120.0,
+    "refunded": 120.0,
+    "net": 0.0,
+    "incremental_value": null,
+    "naive_net": 120.0,
+    "discrepancy": 120.0,
+    "discrepancy_pct": 1.0
+  },
+  "reading": "1 Operation / 2 Attempts / 1 verified order / net GMV = 0. The naive dashboard claims 120 of GMV that does not exist; the discrepancy is economically material (100%)."
+}

@@ -46,6 +46,7 @@ from . import periods as periods_mod
 from . import certify as certify_mod
 from . import incrementality as inc_mod
 from . import templates as templates_mod
+from . import commerce as commerce_mod
 # Conformance pack loaded lazily in cmd_conformance
 
 DEFAULT_DAYS = 7
@@ -1376,6 +1377,55 @@ def cmd_template(args) -> int:
     return 0
 
 
+def cmd_commerce_ledger(args) -> int:
+    """Merchant-side measurement receipt for the agent-commerce chain."""
+    schema_path = args.schema
+    if not schema_path:
+        repo_root = os.path.dirname(os.path.dirname(
+            os.path.dirname(os.path.abspath(__file__))))
+        candidate = os.path.join(repo_root, "schemas",
+                                 "commerce-profile.schema.json")
+        if os.path.exists(candidate):
+            schema_path = candidate
+        else:
+            print("error: no schema found next to this checkout; pass "
+                  "--schema /path/to/commerce-profile.schema.json",
+                  file=sys.stderr)
+            return 2
+    try:
+        events = commerce_mod.load_events(args.events,
+                                          outcomes_mod.load_schema(schema_path))
+        orders = commerce_mod.load_orders(args.orders)
+        payments = commerce_mod.load_payments(args.payments)
+        receipt = commerce_mod.reconcile(
+            events, orders, payments,
+            policy_version=args.policy_version,
+            inputs={
+                "events": commerce_mod._sha256_of(args.events),
+                "orders": commerce_mod._sha256_of(args.orders),
+                "payments": commerce_mod._sha256_of(args.payments),
+            })
+    except (ValueError, OSError) as exc:
+        print("error: %s" % exc, file=sys.stderr)
+        return 2
+
+    print(commerce_mod.receipt_markdown(receipt))
+    if args.json_out:
+        try:
+            with open(args.json_out, "w", encoding="utf-8") as fh:
+                json.dump(receipt, fh, ensure_ascii=True, indent=2)
+        except OSError as exc:
+            print("error: could not write receipt: %s" % exc, file=sys.stderr)
+            return 2
+        print("\nReceipt \u2192 %s" % os.path.abspath(args.json_out))
+    return 0
+
+
+def _load_json(path: str):
+    with open(path, "r", encoding="utf-8") as fh:
+        return json.load(fh)
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="agentmeasure",
@@ -1745,6 +1795,27 @@ def build_parser() -> argparse.ArgumentParser:
                        help="boundary cases JSON: [{name?, columns, expected_3state}]")
     p_tpl.add_argument("--note", default=None)
     p_tpl.set_defaults(func=cmd_template)
+
+    p_com = sub.add_parser(
+        "commerce-ledger",
+        help="merchant-side measurement receipt for the agent-commerce chain "
+             "(F2.5): invocation/order/payment/refund logs in, metric+value+"
+             "evidence table out, materiality vs the naive dashboard view")
+    p_com.add_argument("--events", required=True,
+                       help="agent commerce events JSONL (commerce profile)")
+    p_com.add_argument("--orders", required=True,
+                       help="merchant order log CSV: order_id,agent_operation_id,"
+                            "amount,currency,status,created_at[,idempotency_key]")
+    p_com.add_argument("--payments", required=True,
+                       help="merchant payment log CSV: payment_id,order_id,"
+                            "amount,type(charge|refund),created_at")
+    p_com.add_argument("--policy-version", required=True,
+                       help="measurement policy version (governance: mixed "
+                            "versions are refused)")
+    p_com.add_argument("--schema", default=None,
+                       help="commerce profile schema (default: repo copy)")
+    p_com.add_argument("--json", dest="json_out", metavar="PATH", default=None)
+    p_com.set_defaults(func=cmd_commerce_ledger)
 
     p_hist = sub.add_parser("history", help="show local run history")
     p_hist.add_argument("--last", type=int, default=10)

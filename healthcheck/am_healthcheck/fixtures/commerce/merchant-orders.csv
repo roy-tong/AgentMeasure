@@ -1,0 +1,2 @@
+order_id,agent_operation_id,amount,currency,status,created_at,idempotency_key
+EV-1001,O-1,120.00,USD,confirmed,2026-09-10T10:01:23Z,idem-acme-77
