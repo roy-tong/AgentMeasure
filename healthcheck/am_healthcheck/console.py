@@ -1,10 +1,27 @@
-"""The AgentMeasure console — the app shell users already know how to use.
+"""The AgentMeasure console — organised around the user's journey.
 
-Redesigned under Operate-mode discipline (impeccable): a verification tool
-is an app, not a scrolled report. The familiar logic users bring with them —
-**sidebar navigation, a content pane, an overview that recommends the next
-action** — is the interface. The old long-scroll anchor page is treated as
-the anti-reference.
+Users do not arrive asking for documents; they arrive somewhere in a flow.
+Two journeys cover everyone this product serves:
+
+**Journey A — vendor bill review** (CX Ops starts it, finance finishes it):
+suspect the bill -> bring the export -> read the recount -> check your own
+service standard -> reconcile the money -> send the evidence pack -> track
+what comes back -> re-run next month.
+
+**Journey B — agent channel operations** (brand/growth operator): see the
+honest count -> see the month's real margin -> decide whether to invest ->
+keep agents inside their guardrails.
+
+The console is built FROM these flows: the overview renders each journey as
+a progress stepper with per-stage state (done / action needed / not part of
+this review) derived from the verification documents themselves; the
+sidebar mirrors the stages with status dots; every stage view answers what
+this stage is, what you do here, and how to read the result.
+
+Operate-mode discipline (impeccable) still governs the shell: sidebar
+navigation, hash-routed views, familiar app logic, restrained color, full
+component states. Composition rules unchanged: renders, never recomputes;
+banned-marker guard on the final page; single offline file.
 
 Composition is unchanged where it was right:
 
@@ -94,6 +111,7 @@ _CSS = """
 --line:#e4e8ef;--line2:#eef1f5;--accent:#3050c8;--accent-soft:#e9edfb;
 --ok:#0c7a48;--ok-bg:#e5f4ec;--bad:#b3261e;--bad-bg:#fbeae9;
 --warn:#8a5a0d;--warn-bg:#fbf1de}
+p.intro{color:var(--soft);font-size:13.5px;margin:0 0 14px;max-width:70ch}
 *{box-sizing:border-box}
 html,body{margin:0}
 body{background:var(--canvas);color:var(--ink);
@@ -152,6 +170,7 @@ padding:2px 9px;border-radius:11px}
 .b-ok{background:var(--ok-bg);color:var(--ok)}
 .b-bad{background:var(--bad-bg);color:var(--bad)}
 .b-warn{background:var(--warn-bg);color:var(--warn)}
+.b-info{background:#e9edfb;color:#3050c8}
 .bar-track{background:#e9edf3;border-radius:7px;height:14px;overflow:hidden;margin:10px 0 4px}
 .bar-track>span{display:block;height:100%;background:var(--ok)}
 ul.actions{list-style:none;margin:0;padding:0}
@@ -166,6 +185,49 @@ ul.actions .go{margin-left:auto;font-size:12.5px;color:var(--accent);
 text-decoration:none;font-weight:600;white-space:nowrap}
 ul.actions .go:hover{text-decoration:underline}
 footer{padding:0 30px 34px;font-size:11.5px;color:#98a2b3;max-width:920px}
+
+/* journey stepper */
+.stepper{display:flex;align-items:flex-start;margin:6px 0 18px;overflow-x:auto;
+padding-bottom:4px}
+.stage-chip{flex:1;min-width:104px;text-align:center;position:relative;
+font-size:11.5px;color:var(--soft);text-decoration:none;padding:0 4px}
+.stage-chip:hover .stage-name{color:var(--accent)}
+.stage-chip::before{content:"";position:absolute;top:9px;left:-50%;right:50%;
+height:2px;background:var(--line)}
+.stage-chip:first-child::before{display:none}
+.stage-chip.done::before{background:var(--ok)}
+.stage-dot{width:19px;height:19px;border-radius:50%;background:var(--surface);
+border:2px solid var(--line);display:inline-flex;align-items:center;
+justify-content:center;margin-bottom:5px;position:relative;z-index:1}
+.stage-chip.done .stage-dot{border-color:var(--ok);background:var(--ok)}
+.stage-chip.action .stage-dot{border-color:var(--warn);background:var(--warn)}
+.stage-chip.action .stage-name{color:var(--warn);font-weight:600}
+.stage-chip.skip .stage-dot{border-style:dashed;background:var(--canvas)}
+.stage-dot svg{width:10px;height:10px;stroke:#fff;stroke-width:2.4;fill:none;
+stroke-linecap:round;stroke-linejoin:round}
+.stage-dot .dot-tick{display:none}
+.stage-chip.done .dot-tick{display:block}
+.stage-chip.action .dot-tick{display:block;stroke:none;fill:#fff;width:7px;
+height:7px;border-radius:50%}
+.stage-name{display:block;margin-top:1px}
+.stage-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
+gap:14px}
+.stage-card{background:var(--surface);border:1px solid var(--line);
+border-radius:12px;padding:15px 18px;display:flex;flex-direction:column;gap:6px}
+.stage-card .row1{display:flex;align-items:center;gap:8px}
+.stage-card .st-title{font-weight:600;font-size:13.5px}
+.stage-card .st-detail{font-size:12.5px;color:var(--soft)}
+.stage-card a.go{font-size:12.5px;color:var(--accent);text-decoration:none;
+font-weight:600}
+.stage-card a.go:hover{text-decoration:underline}
+
+/* sidebar status dots */
+.nav-item .st-dot{width:7px;height:7px;border-radius:50%;margin-left:auto;
+flex:0 0 7px}
+.st-dot.done{background:#34d399}
+.st-dot.action{background:#fbbf24}
+.st-dot.info{background:#7d95f0}
+.st-dot.skip{background:transparent;border:1px dashed var(--side-dim)}
 
 /* responsive: the sidebar becomes a top strip */
 @media (max-width:860px){
@@ -289,7 +351,7 @@ def _billing_views(ledger: Dict[str, Any]) -> List[View]:
         "id": "data", "label": "Data reviewed", "icon": "data",
         "title": "Data reviewed", "group": "billing",
         "description": "Everything was computed from the export you "
-                       "provided — nothing was uploaded, and no customer "
+                       "provided; nothing was uploaded, and no customer "
                        "conversations were read.",
         "body": _stats([
             ("", t1.get("total_conversations", 0), "Rows reviewed"),
@@ -303,7 +365,7 @@ def _billing_views(ledger: Dict[str, Any]) -> List[View]:
              + "…"],
         ])),
         "note": ("Some fields were missing (%s). Rows without them are "
-                 "counted under cannot decide — never guessed."
+                 "counted under cannot decide (never guessed)."
                  % ", ".join(missing)) if missing else
                 ("Every input is fingerprinted when the review runs, so "
                  "these numbers can always be tied back to the exact data."),
@@ -312,7 +374,7 @@ def _billing_views(ledger: Dict[str, Any]) -> List[View]:
     body = _stats([
         ("bad", over, "Charged, but their own rules say no"),
         ("ok", under, "Not charged, though their rules allow it"),
-        ("warn", cannot, "Cannot decide — not guessed"),
+        ("warn", cannot, "Cannot decide (not guessed)"),
         ("", agreed, "Charged correctly"),
     ])
     if t1.get("variance") is not None:
@@ -320,7 +382,7 @@ def _billing_views(ledger: Dict[str, Any]) -> List[View]:
             ["", "Amount (%s)" % currency], [
                 ["Overcharged, by their own rulebook",
                  "%.2f" % t1.get("overcharge_amount", 0)],
-                ["Undercharged — reported too, in their favour",
+                ["Undercharged, reported in their favour too",
                  "%.2f" % t1.get("undercharge_amount", 0)],
                 ["Net difference to raise with %s" % vendor,
                  "%.2f" % t1["variance"]],
@@ -329,7 +391,7 @@ def _billing_views(ledger: Dict[str, Any]) -> List[View]:
         "id": "recount", "label": "The recount", "icon": "recount",
         "title": "The recount", "group": "billing",
         "description": "Every conversation re-counted using %s's own "
-                       "published billing rules — not ours. A finding only "
+                       "published billing rules, not ours. A finding only "
                        "counts when their rulebook says so; that is what "
                        "makes it hard to argue with." % vendor,
         "body": body,
@@ -346,8 +408,8 @@ def _billing_views(ledger: Dict[str, Any]) -> List[View]:
             "title": "Your own service standard", "group": "billing",
             "description": "Separately from money: conversations the vendor "
                            "counted as resolved that do not meet the "
-                           "standard written in YOUR contract — for example, "
-                           "a customer back within 72 hours of closing.",
+                           "standard written in YOUR contract (for example, "
+                           "a customer back within 72 hours of closing).",
             "body": _stats([
                 ("bad", lc.get("fails_buyer_standard", 0),
                  "Miss your standard"),
@@ -356,7 +418,7 @@ def _billing_views(ledger: Dict[str, Any]) -> List[View]:
                 ("warn", lc.get("unprovable", 0),
                  "Cannot judge from this data"),
             ]),
-            "note": "Use this in renewal and vendor-review conversations — "
+            "note": "Use this in renewal and vendor-review conversations: "
                     "leverage about quality, never a refund claim. It is "
                     "never mixed into the money amounts.",
         })
@@ -368,7 +430,7 @@ def _billing_views(ledger: Dict[str, Any]) -> List[View]:
             "title": "Does the money match?", "group": "billing",
             "description": "Your helpdesk report and your billing system "
                            "are two different witnesses. This puts them side "
-                           "by side and lists every disagreement — it "
+                           "by side and lists every disagreement; it "
                            "deliberately does not decide who is right.",
             "body": _card("Disagreements, by kind", _table(
                 ["Disagreement", "Count"], [
@@ -391,7 +453,7 @@ def _billing_views(ledger: Dict[str, Any]) -> List[View]:
         "title": "The evidence pack", "group": "billing",
         "description": "Everything above, packaged to send to %s: a short "
                        "letter quoting their own rulebook for every finding, "
-                       "the conversation list, and the amounts — including "
+                       "the conversation list, and the amounts, including "
                        "what they got right." % vendor,
         "body": _stats([
             ("", t1.get("net_findings", 0), "Net findings in the pack"),
@@ -400,7 +462,7 @@ def _billing_views(ledger: Dict[str, Any]) -> List[View]:
         "note": "Generate the pack from the same data with one command. The "
                 "refund is the vendor's decision; the evidence is yours. A "
                 "statement that only ever finds against them would not be a "
-                "statement — undercharges are reported too.",
+                "statement: undercharges are reported too.",
     })
 
     rec = ledger.get("recovery")
@@ -413,7 +475,7 @@ def _billing_views(ledger: Dict[str, Any]) -> List[View]:
             "id": "recovery", "label": "Recovery", "icon": "recovery",
             "title": "What came back", "group": "billing",
             "description": "A finding is not money. This tracks what %s "
-                           "actually confirmed, credited, or repaid — each "
+                           "actually confirmed, credited, or repaid, each "
                            "tied back to the original finding with a date "
                            "and a reference." % vendor,
             "body": _card("Recovered so far", _table(
@@ -445,9 +507,9 @@ def _channel_views(receipt: Optional[Dict[str, Any]],
         mat = receipt.get("materiality") or {}
         note = None
         if mat:
-            note = ("Your dashboard reports %s. The verified number is %s — "
-                    "a difference of %s, or %.1f%% of what the dashboard "
-                    "claims. %s"
+            note = ("Your dashboard reports %s. The verified number is %s, "
+                    "a difference of %s (%.1f%% of what the dashboard "
+                    "claims). %s"
                     % (mat.get("naive_net"), mat.get("verified_net"),
                        mat.get("discrepancy"),
                        abs(mat.get("discrepancy_pct") or 0) * 100,
@@ -499,7 +561,7 @@ def _channel_views(receipt: Optional[Dict[str, Any]],
             ])
             + _card("Deductions", _table(["Category", "Amount"], rows,
                                          numeric=[1])),
-            "note": "Bring this to the monthly review — it is the number "
+            "note": "Bring this to the monthly review: it is the number "
                     "the business can act on.",
         })
 
@@ -542,8 +604,8 @@ def _channel_views(receipt: Optional[Dict[str, Any]],
             "id": "guardrails", "label": "Offer guardrails",
             "icon": "guardrails", "title": "Offer guardrails",
             "group": "channel",
-            "description": "Every commercial action an agent took — "
-                           "discounts, offers, price changes — checked "
+            "description": "Every commercial action an agent took "
+                           "(discounts, offers, price changes) is checked "
                            "against the authorisation policy: what an agent "
                            "may do alone, what required a named approval, "
                            "and what is out of bounds entirely.",
@@ -567,7 +629,9 @@ def _channel_views(receipt: Optional[Dict[str, Any]],
 # Overview — the workbench
 # ---------------------------------------------------------------------------
 def _overview_view(meta: Dict[str, Any],
-                   ledger: Optional[Dict[str, Any]]) -> View:
+                   ledger: Optional[Dict[str, Any]],
+                   billing_stages: Optional[List[Dict[str, Any]]] = None,
+                   channel_stages: Optional[List[Dict[str, Any]]] = None) -> View:
     actions: List[Tuple[str, str, str]] = []
     if ledger:
         t1 = ledger.get("tier1", {})
@@ -581,7 +645,7 @@ def _overview_view(meta: Dict[str, Any],
                 "Review the %d conversation(s) %s charged against its own "
                 "rulebook%s"
                 % (over, vendor,
-                   " — net difference %.2f %s" % (variance,
+                   ": net difference %.2f %s" % (variance,
                                                   ledger.get("currency") or "")
                    if variance is not None else "")))
         actions.append((
@@ -598,25 +662,184 @@ def _overview_view(meta: Dict[str, Any],
         if cannot:
             actions.append((
                 "data", "data",
-                "Decide the %d row(s) that could not be judged — the export "
-                "was missing fields" % cannot))
+                "Decide the %d row(s) that could not be judged (the export "
+                "was missing fields)" % cannot))
 
     items = "".join(
         '<li>%s<a href="#/%s"><span class="what">%s</span></a>'
         '<a class="go" href="#/%s">Open →</a></li>'
         % (_icon(icon), _e(vid), _e(text), _e(vid))
         for vid, icon, text in actions)
-    body = _card("Recommended next steps",
-                 '<ul class="actions">%s</ul>' % items
-                 if actions else "<p>No action needed on this review.</p>")
+    next_card = _card("Recommended next steps",
+                      '<ul class="actions">%s</ul>' % items
+                      if actions else "<p>No action needed on this review.</p>")
+    stepper = ""
+    journey_cards = ""
+    if billing_stages:
+        stepper += _stepper_html(billing_stages)
+        journey_cards += _card("Journey: vendor bill review",
+                               _stage_cards(billing_stages))
+    if channel_stages:
+        stepper += _stepper_html(channel_stages)
+        journey_cards += _card("Journey: agent channel operations",
+                               _stage_cards(channel_stages))
+    body = (('<p class="intro">Your review, end to end. Each stage below '
+             'shows where you stand; the sidebar follows the same order.'
+             '</p>') if stepper else "") + stepper + journey_cards
     sub_parts = [meta.get(k) for k in ("vendor", "period", "buyer")
                  if meta.get(k)]
     return {
         "id": "overview", "label": "Overview", "icon": "overview",
         "title": "Overview", "group": None,
         "description": " · ".join(sub_parts),
-        "body": body, "note": None,
+        "body": body, "next_card": next_card, "note": None,
     }
+
+
+# ---------------------------------------------------------------------------
+# Journey stages — state derived from the documents, never invented
+# ---------------------------------------------------------------------------
+_TICK = ('<svg viewBox="0 0 12 12" aria-hidden="true">'
+         '<path class="dot-tick" d="M2.5 6.5l2.5 2.5 4.5-5"/></svg>')
+_ACTION_DOT = '<svg viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="3"/></svg>'
+
+STAGE_META = {
+    "data": "Bring your data",
+    "recount": "Read the recount",
+    "standard": "Check your own bar",
+    "money": "Reconcile the money",
+    "pack": "Send the evidence pack",
+    "recovery": "Track what comes back",
+    "next": "Re-run next month",
+    "receipt": "See the honest count",
+    "margin": "See the month's margin",
+    "readiness": "Decide the investment",
+    "guardrails": "Keep agents in bounds",
+}
+
+
+def _stage(view_id: str, state: str, detail: str) -> Dict[str, Any]:
+    return {"id": view_id, "state": state, "detail": detail,
+            "label": STAGE_META.get(view_id, view_id)}
+
+
+def _billing_stages(ledger: Optional[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    if not ledger:
+        return []
+    t1 = ledger.get("tier1", {})
+    c = t1.get("counts", {})
+    over = c.get("billed_but_not_billable", 0)
+    cannot = c.get("cannot_settle", 0)
+    vendor = (ledger.get("vendor") or {}).get("name", "the vendor")
+    stages: List[Dict[str, Any]] = [
+        _stage("data", "done", "Export reviewed and fingerprinted."),
+        _stage("recount",
+               "action" if over else "done",
+               ("%d conversation(s) charged against %s's own rulebook."
+                % (over, vendor)) if over
+               else "No charge contradicts the vendor's own rules."),
+    ]
+    if ledger.get("outcome_lane"):
+        stages.append(_stage(
+            "standard", "done",
+            "Your own service standard is applied to the vendor's counted "
+            "resolutions."))
+    if ledger.get("billing_crosscheck"):
+        cc = ledger.get("billing_crosscheck", {})
+        disagreements = sum(len(cc.get(k, [])) for k in
+                            ("flag_without_charge", "charge_without_export_flag",
+                             "not_in_export", "amount_deviation"))
+        stages.append(_stage(
+            "money", "action" if disagreements else "done",
+            ("%d disagreement(s) between the report and the billing system "
+             "need a human." % disagreements) if disagreements
+            else "Report and billing system agree on every line."))
+    stages.append(_stage(
+        "pack", "action" if over else "done",
+        ("The pack is ready to send to %s." % vendor) if over
+        else "Nothing to dispute this period; keep the pack for your "
+             "records."))
+    rec = ledger.get("recovery")
+    if rec:
+        outstanding = (rec.get("totals", {}) or {}).get("outstanding") or 0
+        realized = (rec.get("totals", {}) or {}).get("realized") or 0
+        stages.append(_stage(
+            "recovery", "action" if outstanding else "done",
+            ("%s still outstanding; %s already recovered."
+             % (outstanding, realized)) if outstanding
+            else "%s recovered in full." % realized))
+    stages.append(_stage(
+        "next", "info",
+        "Re-run on the next invoice and check the vendor's rules for "
+        "changes: the same command, one month of difference."))
+    return stages
+
+
+def _channel_stages(receipt: Optional[Dict[str, Any]],
+                    margin: Optional[Dict[str, Any]],
+                    channel: Optional[Dict[str, Any]],
+                    decisions: Optional[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    stages: List[Dict[str, Any]] = []
+    if receipt:
+        net = {m["metric"]: m["value"] for m in receipt.get("metrics", [])}
+        mat = receipt.get("materiality") or {}
+        stages.append(_stage(
+            "receipt", "action" if mat.get("discrepancy") else "done",
+            ("Dashboard and verified numbers differ by %s; quote the "
+             "verified one." % mat.get("discrepancy"))
+            if mat.get("discrepancy")
+            else "Verified orders and net revenue confirmed."))
+    if margin:
+        cm_value = margin.get("contribution_margin")
+        stages.append(_stage(
+            "margin", "done",
+            "Contribution margin %s for the period." % cm_value))
+    if channel:
+        verdict = channel.get("verdict", "")
+        stages.append(_stage(
+            "readiness",
+            {"Launch": "action", "Watch": "action"}.get(verdict, "done"),
+            "Verdict: %s." % verdict))
+    if decisions:
+        c = decisions.get("counts", {})
+        problems = c.get("violates", 0) + c.get("outside_policy", 0)
+        stages.append(_stage(
+            "guardrails", "action" if problems else "done",
+            ("%d execution(s) crossed the line or fell outside the policy."
+             % problems) if problems
+            else "Every commercial execution stayed inside the policy."))
+    return stages
+
+
+def _stepper_html(stages: List[Dict[str, Any]]) -> str:
+    chips = []
+    for s in stages:
+        inner = _TICK if s["state"] == "done" else (
+            _ACTION_DOT if s["state"] == "action" else "")
+        chips.append(
+            '<a class="stage-chip %s" href="#/%s" title="%s">'
+            '<span class="stage-dot">%s</span>'
+            '<span class="stage-name">%s</span></a>'
+            % (_e(s["state"]), _e(s["id"]), _e(s["detail"]),
+               inner, _e(s["label"])))
+    return '<div class="stepper">%s</div>' % "".join(chips)
+
+
+def _stage_cards(stages: List[Dict[str, Any]]) -> str:
+    cards = []
+    badge = {"done": ("ok", "Done"), "action": ("warn", "Action needed"),
+             "skip": ("b-warn", "Not part of this review"),
+             "info": ("info", "Routine")}
+    for s in stages:
+        kind, label = badge.get(s["state"], ("", s["state"]))
+        cards.append(
+            '<div class="stage-card"><div class="row1">%s'
+            '<span class="st-title">%s</span></div>'
+            '<div class="st-detail">%s</div>'
+            '<a class="go" href="#/%s">Open →</a></div>'
+            % (_badge(kind, label), _e(s["label"]), _e(s["detail"]),
+               _e(s["id"])))
+    return '<div class="stage-grid">%s</div>' % "".join(cards)
 
 
 # ---------------------------------------------------------------------------
@@ -632,7 +855,16 @@ def build_console(meta: Dict[str, Any],
     only when their document exists."""
     billing = _billing_views(ledger) if ledger else []
     channel = _channel_views(receipt, margin, channel_audit, decisions)
-    all_views = ([_overview_view(meta, ledger)] + billing + channel)
+    b_stages = _billing_stages(ledger)
+    c_stages = _channel_stages(receipt, margin, channel_audit, decisions)
+    stage_by_id = {s["id"]: s for s in b_stages + c_stages}
+    for v in billing + channel:
+        s = stage_by_id.get(v["id"])
+        if s:
+            v["state"] = s["state"]
+            v["state_text"] = s["label"] + ": " + s["detail"]
+    all_views = ([_overview_view(meta, ledger, b_stages, c_stages)]
+                 + billing + channel)
 
     out = ["<!doctype html><html lang='en'><head><meta charset='utf-8'>",
            "<meta name='viewport' content='width=device-width,initial-scale=1'>",
@@ -650,10 +882,14 @@ def build_console(meta: Dict[str, Any],
                            % _e("Bill verification"
                                 if current_group == "billing"
                                 else "Agent channel"))
+        dot = ""
+        if v.get("state"):
+            dot = "<span class='st-dot %s' title='%s'></span>" % (
+                _e(v["state"]), _e(v.get("state_text") or ""))
         out.append("<a class='nav-item' data-view='%s' href='#/%s'>%s"
-                   "<span>%s</span></a>"
+                   "<span>%s</span>%s</a>"
                    % (_e(v["id"]), _e(v["id"]), _icon(v["icon"]),
-                      _e(v["label"])))
+                      _e(v["label"]), dot))
     out.append("<div class='foot'>Computed locally.<br>Nothing uploaded, "
                "nothing tracked.</div></aside>")
 
@@ -664,6 +900,8 @@ def build_console(meta: Dict[str, Any],
                "</header><main>")
     for v in all_views:
         body = v["body"]
+        if v["id"] == "overview" and v.get("next_card"):
+            body += v["next_card"]
         if v.get("note"):
             body += ('<div class="card"><div class="note">%s</div></div>'
                      % _e(v["note"]))

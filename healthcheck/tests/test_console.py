@@ -185,3 +185,68 @@ class TestWriteConsole(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestJourneyModel(unittest.TestCase):
+    """The console is organised around the user's journey, and the journey
+    state is DERIVED from the documents — never invented."""
+
+    def setUp(self):
+        self.doc, self.paths = build_ledger()
+        for p in self.paths:
+            self.addCleanup(lambda p=p: os.path.exists(p) and os.unlink(p))
+        self.page = console_mod.build_console(
+            meta={"title": "t", "vendor": "Intercom Fin",
+                  "period": "August 2026"},
+            ledger=self.doc)
+
+    def test_billing_journey_stepper_renders_all_stages(self):
+        from am_healthcheck.console import _billing_stages
+        stages = _billing_stages(self.doc)
+        ids = [s["id"] for s in stages]
+        self.assertEqual(ids, ["data", "recount", "standard", "money",
+                               "pack", "recovery", "next"])
+        self.assertIn("stage-chip", self.page)
+        self.assertIn("Journey: vendor bill review", self.page)
+        self.assertIn("Re-run next month", self.page)
+
+    def test_state_derivation_follows_the_documents(self):
+        from am_healthcheck.console import _billing_stages
+        by_id = {s["id"]: s for s in _billing_stages(self.doc)}
+        # findings exist -> recount and pack demand action
+        self.assertEqual(by_id["recount"]["state"], "action")
+        self.assertEqual(by_id["pack"]["state"], "action")
+        self.assertEqual(by_id["data"]["state"], "done")
+        # recovery has outstanding balance -> action
+        self.assertEqual(by_id["recovery"]["state"], "action")
+        # the monthly re-run is routine, never urgent
+        self.assertEqual(by_id["next"]["state"], "info")
+
+    def test_clean_period_produces_no_action_stages(self):
+        from am_healthcheck.console import _billing_stages
+        doc = json.loads(json.dumps(self.doc))
+        doc["tier1"]["counts"]["billed_but_not_billable"] = 0
+        doc["recovery"]["totals"]["outstanding"] = 0
+        doc["billing_crosscheck"] = {
+            "flag_without_charge": [], "charge_without_export_flag": [],
+            "not_in_export": [], "amount_deviation": []}
+        stages = {s["id"]: s for s in _billing_stages(doc)}
+        for sid in ("recount", "pack", "money", "recovery"):
+            self.assertEqual(stages[sid]["state"], "done", sid)
+
+    def test_channel_stages_need_their_documents(self):
+        from am_healthcheck.console import _channel_stages
+        self.assertEqual(_channel_stages(None, None, None, None), [])
+
+    def test_overview_shows_where_you_are(self):
+        self.assertIn("Your review, end to end", self.page)
+        self.assertIn("stage-grid", self.page)
+        self.assertIn("Action needed", self.page)
+        self.assertIn("Routine", self.page)
+
+    def test_sidebar_carries_status_dots(self):
+        self.assertIn("st-dot action", self.page)
+        self.assertIn("st-dot done", self.page)
+        # the monthly re-run has no view of its own; its info state lives
+        # in the stepper, not the sidebar
+        self.assertIn("stage-chip info", self.page)
