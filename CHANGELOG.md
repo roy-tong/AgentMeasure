@@ -3,7 +3,7 @@
 All notable changes to AgentMeasure (standard, SDK, and reference product) are
 documented here. Format follows [Keep a Changelog](https://keepachangelog.com/).
 
-## [Unreleased]
+## [v0.5.0] - 2026-10-03
 
 ### Added
 
