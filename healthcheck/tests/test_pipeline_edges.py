@@ -199,7 +199,7 @@ class TestCliEdgeExits(unittest.TestCase):
         rc, _, err = self._run("dashboard", "--pack", bad,
                                "--out", os.path.join(tempfile.mkdtemp(), "d.html"))
         self.assertEqual(rc, 2)
-        self.assertIn("not a verified ledger", err)
+        self.assertIn("not a supported dashboard document", err)
 
     def test_narrative_needs_dispute_pack(self):
         bad = tmpfile(".json", '{"schema": "other"}')

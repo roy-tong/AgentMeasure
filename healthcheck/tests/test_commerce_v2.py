@@ -10,6 +10,8 @@ import os
 import tempfile
 import unittest
 
+from _support import REPO_ROOT
+
 from am_healthcheck import pnl as pnl_mod
 from am_healthcheck import audit as audit_mod
 from am_healthcheck import taxonomy as tax_mod
@@ -342,3 +344,67 @@ class TestCliWave2(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestDashboardWave2(unittest.TestCase):
+    """The four new commerce schemas render as offline dashboards."""
+
+    def _render(self, doc):
+        from am_healthcheck import dashboard as dash
+        return dash.render_dashboard(doc)
+
+    def test_receipt_renders(self):
+        from _support import FIXTURES_DIR
+        import am_healthcheck.commerce as cm
+        schema = json.loads(open(os.path.join(
+            REPO_ROOT, "schemas", "commerce-profile.schema.json"),
+            encoding="utf-8").read())
+        fix = os.path.join(FIXTURES_DIR, "commerce")
+        events = cm.load_events(os.path.join(fix, "agent-events.jsonl"), schema)
+        orders = cm.load_orders(os.path.join(fix, "merchant-orders.csv"))
+        payments = cm.load_payments(os.path.join(fix, "merchant-payments.csv"))
+        receipt = cm.reconcile(events, orders, payments, "1.0.0")
+        html_text = self._render(receipt)
+        self.assertIn("Measurement receipt", html_text)
+        self.assertIn("Materiality", html_text)
+        self.assertIn("economically material", html_text)
+        self.assertIn("no data left this machine", html_text)
+
+    def test_cm_audit_decision_render(self):
+        report = pnl_mod.contribution_margin(_orders_rows(), [
+            {"category": "coupon", "amount": 10.0, "order_id": "", "line": 2}],
+            "2026-09")
+        html_text = self._render(report)
+        self.assertIn("Contribution Margin", html_text)
+        self.assertIn("− coupon", html_text)
+
+        audit = audit_mod.audit_channel(
+            {"agent_traffic": 5000, "brand_category_intent_share": 0.08,
+             "paid_inventory_depth": 80, "commercial_task_frequency": 400,
+             "conversion_rate": 0.01, "contribution_margin_pct": 0.02},
+            THRESHOLDS)
+        html_text = self._render(audit)
+        self.assertIn("Channel Demand Audit", html_text)
+        self.assertIn("Watch", html_text)
+
+        policy_path = tmpfile(".json", json.dumps(POLICY))
+        self.paths = [policy_path]
+        policy = policy_mod.load_policy(policy_path)
+        result = policy_mod.audit_executions(policy, policy_mod.load_executions(
+            tmpfile(".jsonl", json.dumps(
+                {"execution_id": "E-9", "action_type": "coupon",
+                 "value": 40.0}) + "\n")))
+        html_text = self._render(result)
+        self.assertIn("Violates", html_text)
+        self.assertIn("no approver", html_text)
+
+    def tearDown(self):
+        for p in getattr(self, "paths", []):
+            os.unlink(p)
+
+    def test_hostile_labels_escaped_everywhere(self):
+        doc = {"schema": "agentmeasure.commerce/demand-audit",
+               "channel": "<script>alert(1)</script>",
+               "reading": "x", "verdict": "Watch", "axes": {}}
+        html_text = self._render(doc)
+        self.assertNotIn("<script>", html_text)

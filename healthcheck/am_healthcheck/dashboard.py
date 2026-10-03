@@ -113,7 +113,36 @@ def _three_state(t1: Dict[str, Any]) -> Dict[str, int]:
 
 def render_dashboard(doc: Dict[str, Any]) -> str:
     schema = doc.get("schema", "")
-    if schema == "agentmeasure.commercial/verified-ledger":
+    if schema in ("agentmeasure.commercial/verified-ledger",
+                  "agentmeasure.commercial/dispute-pack"):
+        title, sub, body = _billing_body(doc)
+    elif schema == "agentmeasure.commerce/measurement-receipt":
+        title, sub, body = _receipt_body(doc)
+    elif schema == "agentmeasure.commerce/contribution-margin":
+        title, sub, body = _cm_body(doc)
+    elif schema == "agentmeasure.commerce/demand-audit":
+        title, sub, body = _audit_body(doc)
+    elif schema == "agentmeasure.commerce/decision-audit":
+        title, sub, body = _decision_body(doc)
+    else:
+        raise ValueError("not a supported dashboard document: %r" % schema)
+
+    out = [
+        "<!doctype html><html><head><meta charset='utf-8'>",
+        "<title>%s</title><style>%s</style></head><body>" % (_e(title), _CSS),
+        "<header><h1>%s</h1><div class='sub'>%s</div></header>" % (_e(title), _e(sub)),
+        "<main>",
+    ]
+    out += body
+    out.append("</main>")
+    out.append("<footer>Rendered locally from %s · no data left this machine · "
+               "AgentMeasure dashboard</footer>" % _e(schema))
+    out.append("</body></html>")
+    return "\n".join(out)
+
+
+def _billing_body(doc: Dict[str, Any]):
+    if doc["schema"] == "agentmeasure.commercial/verified-ledger":
         t1 = doc["tier1"]
         lane = doc.get("outcome_lane")
         cc = doc.get("billing_crosscheck")
@@ -123,7 +152,7 @@ def render_dashboard(doc: Dict[str, Any]) -> str:
             doc.get("period", {}).get("start") or "—",
             doc.get("buyer_label"), doc.get("generated_at"),
             doc.get("vendor", {}).get("rules_version", "?"))
-    elif schema == "agentmeasure.commercial/dispute-pack":
+    else:
         t1 = doc["tier1"]
         lane = doc.get("outcome_lane")
         cc = None
@@ -131,16 +160,9 @@ def render_dashboard(doc: Dict[str, Any]) -> str:
         title = "Dispute Pack — %s" % doc["vendor"]["name"]
         sub = "buyer %s · generated %s" % (doc.get("buyer_label"),
                                            doc.get("generated_at"))
-    else:
-        raise ValueError("not a verified ledger or dispute pack: %r" % schema)
 
     currency = doc.get("currency") or ""
-    out = [
-        "<!doctype html><html><head><meta charset='utf-8'>",
-        "<title>%s</title><style>%s</style></head><body>" % (_e(title), _CSS),
-        "<header><h1>%s</h1><div class='sub'>%s</div></header>" % (_e(title), _e(sub)),
-        "<main>",
-    ]
+    out = []
     out.append(_cards(t1, currency))
 
     t = _three_state(t1)
@@ -220,11 +242,151 @@ def render_dashboard(doc: Dict[str, Any]) -> str:
             "Recovery — realized, counted separately", "realized", body,
             "Only credited/paid cash counts. Renewal savings are never added."))
 
-    out.append("</main>")
-    out.append("<footer>Rendered locally from %s · no data left this machine · "
-               "AgentMeasure dashboard</footer>" % _e(schema))
-    out.append("</body></html>")
-    return "\n".join(out)
+    return title, sub, out
+
+
+def _receipt_body(doc: Dict[str, Any]):
+    """Measurement receipt (F2.5/F2.9): the agent-commerce story on one page."""
+    g = doc.get("governance", {})
+    title = "Measurement receipt — agent commerce (M1A merchant-side)"
+    sub = "mode %s · policy v%s · metric definitions frozen under it" % (
+        g.get("observation_mode") or "—",
+        g.get("measurement_policy_version") or "—")
+    out = []
+    metrics = {m["metric"]: m for m in doc.get("metrics", [])}
+    net = metrics.get("net_gmv_strong", {})
+    orders = metrics.get("observed_verified_orders", {})
+    inv = metrics.get("observed_invocations", {})
+    attempts = sum((doc.get("attempts_by_operation") or {}).values())
+    out.append('<div class="cards">'
+               '<div class="card"><div class="n">%s</div><div class="l">Operations</div></div>'
+               '<div class="card"><div class="n">%s</div><div class="l">Attempts</div></div>'
+               '<div class="card pass"><div class="n">%s</div><div class="l">Verified orders</div></div>'
+               '<div class="card fail"><div class="n">%s %s</div><div class="l">Net GMV (strong)</div></div>'
+               '</div>'
+               % (_e(inv.get("value", 0)), _e(attempts),
+                  _e(orders.get("value", 0)), _e(doc.get("currency", "")),
+                  _e(net.get("value", 0))))
+
+    out.append(_section(
+        "Metrics — value with its evidence, never above it", "claim",
+        _table(["metric", "value", "evidence"],
+               [[m["metric"], "—" if m["value"] is None else m["value"],
+                 m["evidence"]] for m in doc.get("metrics", [])],
+               numeric_cols={1}),
+        doc.get("claim_rule")))
+
+    if doc.get("duplicate_rows") or doc.get("double_charges"):
+        rows = [[d["order_id"], d["line"], d.get("reason", "")]
+                for d in doc.get("duplicate_rows", [])]
+        rows += [[d["order_id"], d.get("charges"), d.get("reason", "")]
+                 for d in doc.get("double_charges", [])]
+        out.append(_section(
+            "Collapsed rows and double charges (named, not summed)", "claim",
+            _table(["order", "line/charges", "reason"], rows, numeric_cols={1})))
+
+    m = doc.get("materiality", {})
+    if m:
+        pct = (m.get("discrepancy_pct") or 0) * 100
+        body = _table(["naive net", "verified net", "discrepancy", "% of naive"],
+                      [[m.get("naive_net"), m.get("verified_net"),
+                        m.get("discrepancy"), "%.2f%%" % pct]],
+                      numeric_cols={0, 1, 2, 3})
+        rows = [[c["category"], c["amount"], c["rows"]]
+                for c in m.get("categories", [])]
+        if rows:
+            body += _section("Discrepancy categories", None,
+                             _table(["category", "amount", "rows"], rows,
+                                    numeric_cols={1, 2}))
+        out.append(_section(
+            "Materiality — naive dashboard vs verified ledger", "claim", body,
+            m.get("reading")))
+
+    if doc.get("input_digests"):
+        rows = [[name, digest[:16] + "…"]
+                for name, digest in sorted(doc["input_digests"].items())]
+        out.append(_section("Evidence anchors (immutable inputs)", "realized",
+                            _table(["input", "sha256"], rows)))
+    return title, sub, out
+
+
+def _cm_body(doc: Dict[str, Any]):
+    """Contribution Margin ledger (F2.11): the monthly operating page."""
+    title = "Contribution Margin — %s" % doc.get("period", "")
+    sub = doc.get("formula", "")
+    out = []
+    cm = doc.get("contribution_margin", 0)
+    pct = doc.get("contribution_margin_pct")
+    out.append('<div class="cards">'
+               '<div class="card"><div class="n">%s</div><div class="l">Attributed revenue (organic %s / paid %s)</div></div>'
+               '<div class="card fail"><div class="n">%s</div><div class="l">Total deductions</div></div>'
+               '<div class="card pass"><div class="n">%s%s</div><div class="l">Contribution Margin</div></div>'
+               '</div>'
+               % (_e(doc.get("attributed_revenue")),
+                  _e(doc.get("trees", {}).get("organic")),
+                  _e(doc.get("trees", {}).get("paid")),
+                  _e(doc.get("total_deductions")), _e(cm),
+                  (" (%.1f%%)" % (pct * 100)) if pct is not None else ""))
+
+    rows = [["− %s" % cat, b["amount"], b["rows"]]
+            for cat, b in doc.get("deductions", {}).items()]
+    out.append(_section(
+        "Deductions — each with its source row count", "claim",
+        _table(["category", "amount", "rows"], rows, numeric_cols={1, 2})))
+    return title, sub, out
+
+
+def _audit_body(doc: Dict[str, Any]):
+    """Channel Demand Audit (F2.12): potential vs performance, one verdict."""
+    title = "Channel Demand Audit — %s" % doc.get("channel", "")
+    sub = "%s" % doc.get("reading", "")
+    verdict = doc.get("verdict", "")
+    cls = {"Launch": "pass", "Watch": "unpr", "Not ready": "fail"}.get(verdict, "")
+    out = ['<div class="cards">'
+           '<div class="card %s"><div class="n">%s</div><div class="l">Verdict</div></div>'
+           '</div>' % (cls, _e(verdict))]
+    rows = []
+    for axis_name, axis in doc.get("axes", {}).items():
+        for r in axis.get("rows", []):
+            rows.append([axis_name, r["metric"],
+                         "—" if r["value"] is None else r["value"],
+                         r["threshold"],
+                         ("yes" if r["meets"] else "NO")
+                         if r["meets"] is not None else "not measured"])
+    out.append(_section(
+        "Thresholds — potential and performance, separate questions", None,
+        _table(["axis", "metric", "value", "threshold", "meets"],
+               rows, numeric_cols={2, 3}),
+        doc.get("rule")))
+    return title, sub, out
+
+
+def _decision_body(doc: Dict[str, Any]):
+    """Commercial decision audit (F2.14): every decision with its basis."""
+    title = "Commercial decision audit — policy v%s" % doc.get("policy_version", "")
+    sub = "risk policy link: %s" % doc.get("risk_policy_ref", "")
+    c = doc.get("counts", {})
+    out = []
+    out.append('<div class="cards">'
+               '<div class="card pass"><div class="n">%s</div><div class="l">Complies</div></div>'
+               '<div class="card fail"><div class="n">%s</div><div class="l">Violates</div></div>'
+               '<div class="card unpr"><div class="n">%s</div><div class="l">Outside policy</div></div>'
+               '</div>'
+               % (_e(c.get("complies", 0)), _e(c.get("violates", 0)),
+                  _e(c.get("outside_policy", 0))))
+    problems = [l for l in doc.get("lines", []) if l.get("grade") != "complies"]
+    if problems:
+        out.append(_section(
+            "Findings — each with its policy basis", "claim",
+            _table(["execution", "action", "grade", "basis"],
+                   [[l["execution_id"], l["action_type"], l["grade"],
+                     l["basis"]] for l in problems])))
+    out.append(_section(
+        "All executions", None,
+        _table(["execution", "action", "grade", "basis"],
+               [[l.get("execution_id"), l.get("action_type"), l.get("grade"),
+                 l.get("basis")] for l in doc.get("lines", [])])))
+    return title, sub, out
 
 
 def load_document(path: str) -> Dict[str, Any]:
