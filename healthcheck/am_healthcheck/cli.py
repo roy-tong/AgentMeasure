@@ -32,6 +32,8 @@ from . import settle as settle_mod
 from . import vendors as vendors_mod
 from . import dispute as dispute_mod
 from . import export as export_mod
+from . import prepare as prepare_mod
+from . import recovery as recovery_mod
 # Conformance pack loaded lazily in cmd_conformance
 
 DEFAULT_DAYS = 7
@@ -884,9 +886,24 @@ def cmd_recount(args) -> int:
         print("error: %s" % exc, file=sys.stderr)
         return 2
 
+    contract_lane = None
+    if args.contract:
+        try:
+            contract = vendors_mod.load_contract(args.contract)
+        except (ValueError, OSError) as exc:
+            print("error: bad contract overlay: %s" % exc, file=sys.stderr)
+            return 2
+        contract_lane = vendors_mod.outcome_lane(export, args.vendor, contract)
+
     print(vendors_mod.recount_report(result))
 
+    if contract_lane is not None:
+        print()
+        print(vendors_mod.outcome_lane_report(contract_lane))
+
     if args.json_out:
+        if contract_lane is not None:
+            result["contract_lane"] = contract_lane
         try:
             with open(args.json_out, "w", encoding="utf-8") as fh:
                 json.dump(result, fh, ensure_ascii=True, indent=2)
@@ -909,7 +926,8 @@ def cmd_dispute(args) -> int:
             audit_cost=args.audit_cost,
             period_start=args.period_start,
             period_end=args.period_end,
-            buyer_label=args.buyer)
+            buyer_label=args.buyer,
+            contract_path=args.contract)
     except ValueError as exc:
         print("error: %s" % exc, file=sys.stderr)
         return 2
@@ -939,6 +957,60 @@ def cmd_dispute(args) -> int:
     print()
     print("cover letter + appendix \u2192 %s" % os.path.abspath(paths["markdown"]))
     print("machine-readable pack   \u2192 %s" % os.path.abspath(paths["json"]))
+    return 0
+
+
+def cmd_prepare(args) -> int:
+    """Map a native vendor export onto the canonical columns. Judges nothing."""
+    try:
+        prepared = prepare_mod.prepare(args.export, args.vendor)
+    except OSError as exc:
+        print("error: cannot read export: %s" % exc, file=sys.stderr)
+        return 2
+    except ValueError as exc:
+        print("error: %s" % exc, file=sys.stderr)
+        return 2
+
+    print(prepare_mod.prepare_report(prepared))
+    if args.inspect:
+        return 0
+
+    try:
+        written = prepare_mod.write_prepared(prepared, args.out)
+    except OSError as exc:
+        print("error: could not write prepared export: %s" % exc, file=sys.stderr)
+        return 2
+    print()
+    print("Prepared canonical export \u2192 %s" % os.path.abspath(written))
+    return 0
+
+
+def cmd_recovery(args) -> int:
+    """Join vendor concessions to the disputed lines: the realized-value table."""
+    try:
+        ledger = recovery_mod.build_ledger(args.pack, args.confirmations)
+    except recovery_mod.RecoveryError as exc:
+        print("error: %s" % exc, file=sys.stderr)
+        return 2
+    except (ValueError, OSError) as exc:
+        print("error: %s" % exc, file=sys.stderr)
+        return 2
+
+    paths = recovery_mod.write_ledger(ledger, args.out)
+    t = ledger["totals"]
+    print("Recovery ledger")
+    print("=" * 50)
+    print("disputed lines:    %d" % t["disputed_lines"])
+    print("claimed:           %s %s" % (ledger.get("currency") or "", t["claimed"]))
+    print("realized:          %s %s  (credited + paid)"
+          % (ledger.get("currency") or "", t["realized"]))
+    print("outstanding:       %s %s" % (ledger.get("currency") or "", t["outstanding"]))
+    if ledger["unmatched"]:
+        print("unmatched rows:    %d (listed in the ledger, never counted)"
+              % len(ledger["unmatched"]))
+    print()
+    print("ledger CSV \u2192 %s" % os.path.abspath(paths["csv"]))
+    print("ledger MD  \u2192 %s" % os.path.abspath(paths["markdown"]))
     return 0
 
 
@@ -1080,6 +1152,10 @@ def build_parser() -> argparse.ArgumentParser:
                            help="print the column mapping and stop before producing "
                                 "any number, so a wrong mapping cannot be misread as "
                                 "a finding")
+    p_recount.add_argument("--contract", metavar="JSON", default=None,
+                           help="buyer contract overlay (outcome standard). Its "
+                                "findings are listed as a separate outcome lane — "
+                                "renewal leverage, never netted into the claim")
     p_recount.set_defaults(func=cmd_recount)
 
     p_dispute = sub.add_parser(
@@ -1101,8 +1177,40 @@ def build_parser() -> argparse.ArgumentParser:
                            help="cost of producing this pack, for the payback line")
     p_dispute.add_argument("--period-start", default=None)
     p_dispute.add_argument("--period-end", default=None)
+    p_dispute.add_argument("--contract", metavar="JSON", default=None,
+                           help="buyer contract overlay (outcome standard); "
+                                "rendered as a separate outcome lane, never "
+                                "part of the claim")
     p_dispute.add_argument("--buyer", default=None, help="name to sign the cover letter with")
     p_dispute.set_defaults(func=cmd_dispute)
+
+    p_prepare = sub.add_parser(
+        "prepare",
+        help="map a native Intercom/Zendesk export onto the canonical columns; "
+             "judgement columns stay empty for human review (no verdicts)")
+    p_prepare.add_argument("--export", metavar="PATH", required=True,
+                           help="native vendor export CSV")
+    p_prepare.add_argument("--vendor", required=True,
+                           help="which vendor's registry entry to prepare against: %s"
+                                % ", ".join(v["id"] for v in vendors_mod.list_vendors()))
+    p_prepare.add_argument("--out", metavar="PATH", default="prepared-export.csv",
+                           help="canonical skeleton path (default ./prepared-export.csv)")
+    p_prepare.add_argument("--inspect", action="store_true",
+                           help="print the alignment report only; write nothing")
+    p_prepare.set_defaults(func=cmd_prepare)
+
+    p_recovery = sub.add_parser(
+        "recovery",
+        help="join vendor concessions to the disputed lines: the realized-value "
+             "ledger, counted separately from the claim")
+    p_recovery.add_argument("--pack", metavar="JSON", required=True,
+                            help="a `dispute` pack (dispute-pack.json)")
+    p_recovery.add_argument("--confirmations", metavar="CSV", required=True,
+                            help="concessions CSV: conversation_id,status,confirmed_date,"
+                                 "amount,evidence_ref[,note]")
+    p_recovery.add_argument("--out", metavar="DIR", default="recovery-ledger",
+                            help="output directory (default ./recovery-ledger)")
+    p_recovery.set_defaults(func=cmd_recovery)
 
     p_hist = sub.add_parser("history", help="show local run history")
     p_hist.add_argument("--last", type=int, default=10)

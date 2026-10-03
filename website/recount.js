@@ -27,6 +27,15 @@
   var CANNOT_SETTLE = "cannot_settle";
   var AGREES = "agrees";
 
+  /* Same three-state vocabulary as vendors.py (AMS-1 §judgement): the
+   * directional verdicts carry the direction of a FAIL, the three-state
+   * carries the decision. Kept in lockstep for the parity test. */
+  var THREE_STATE = {};
+  THREE_STATE[AGREES] = "PASS";
+  THREE_STATE[BILLED_BUT_NOT_BILLABLE] = "FAIL";
+  THREE_STATE[BILLABLE_BUT_NOT_BILLED] = "FAIL";
+  THREE_STATE[CANNOT_SETTLE] = "UNPROVABLE";
+
   var TRUE_VALUES = ["yes", "true", "1", "y", "t"];
   var FALSE_VALUES = ["no", "false", "0", "n", "f"];
 
@@ -166,13 +175,16 @@
     counts[BILLABLE_BUT_NOT_BILLED] = 0;
     counts[CANNOT_SETTLE] = 0;
     counts[AGREES] = 0;
+    var threeState = { PASS: 0, FAIL: 0, UNPROVABLE: 0 };
     var billedCount = 0;
     var verdicts = [];
     exportData.records.forEach(function (rec, i) {
       var verdict = judgeOne(rec, vendor);
       counts[verdict]++;
+      threeState[THREE_STATE[verdict]]++;
       if (asBool(rec.vendor_billed)) billedCount++;
-      verdicts.push({ line: i + 2, conversation_id: rec.conversation_id, verdict: verdict });
+      verdicts.push({ line: i + 2, conversation_id: rec.conversation_id,
+                      verdict: verdict, verdict_3state: THREE_STATE[verdict] });
     });
 
     var over = counts[BILLED_BUT_NOT_BILLABLE];
@@ -190,6 +202,7 @@
       total_conversations: total,
       billed_by_vendor: billedCount,
       counts: counts,
+      three_state_counts: threeState,
       net_findings: over - under,
       cannot_settle_share: total ? round4(cannot / total) : 0,
       columns_missing: exportData.columns_missing,

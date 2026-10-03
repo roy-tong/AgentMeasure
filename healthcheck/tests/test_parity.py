@@ -32,7 +32,8 @@ HARNESS = os.path.join(REPO_ROOT, "conformance", "runners", "parity_recount.js")
 COMPARED = [
     "vendor_id", "vendor_name", "vendor_rule_confidence", "vendor_rule_source",
     "unit_price", "currency", "total_conversations", "billed_by_vendor",
-    "counts", "net_findings", "cannot_settle_share", "columns_missing",
+    "counts", "three_state_counts", "net_findings", "cannot_settle_share",
+    "columns_missing",
     "variance", "overcharge_amount", "undercharge_amount",
     "cannot_settle_amount",
 ]

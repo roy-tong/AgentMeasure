@@ -15,6 +15,7 @@ This module reads no message text.
 from __future__ import annotations
 
 import csv
+import datetime
 import json
 import os
 from typing import Any, Dict, List, Optional
@@ -37,6 +38,9 @@ RULES_VERSION: str = _RULES["version"]
 # ---------------------------------------------------------------------------
 CANONICAL_COLUMNS: List[str] = _RULES["canonical_columns"]
 REQUIRED_COLUMNS: List[str] = _RULES["required_columns"]
+# Optional columns are mapped when the export carries them and stay absent
+# otherwise; an absent optional column lowers a verdict, it never blocks one.
+OPTIONAL_COLUMNS: List[str] = _RULES.get("optional_columns", [])
 COLUMN_ALIASES: Dict[str, List[str]] = _RULES["column_aliases"]
 VENDORS: Dict[str, Dict[str, Any]] = _RULES["vendors"]
 
@@ -103,8 +107,6 @@ def load_export(path: str) -> Dict[str, Any]:
         "columns_missing": missing,
         "export_columns": fieldnames,
     }
-
-
 # ---------------------------------------------------------------------------
 # The recount
 # ---------------------------------------------------------------------------
@@ -112,6 +114,22 @@ BILLED_BUT_NOT_BILLABLE = "billed_but_not_billable"
 BILLABLE_BUT_NOT_BILLED = "billable_but_not_billed"
 CANNOT_SETTLE = "cannot_settle"
 AGREES = "agrees"
+
+# ---------------------------------------------------------------------------
+# The three-state vocabulary of the standard (AMS-1 §judgement): every line is
+# PASS, FAIL, or UNPROVABLE. The directional verdicts above carry the direction
+# of a FAIL; the three-state carries the decision. Both always travel together.
+# ---------------------------------------------------------------------------
+PASS = "PASS"
+FAIL = "FAIL"
+UNPROVABLE = "UNPROVABLE"
+
+THREE_STATE: Dict[str, str] = {
+    AGREES: PASS,
+    BILLED_BUT_NOT_BILLABLE: FAIL,
+    BILLABLE_BUT_NOT_BILLED: FAIL,
+    CANNOT_SETTLE: UNPROVABLE,
+}
 
 
 def _judge_one(rec: Dict[str, Any], vendor: Dict[str, Any]) -> str:
@@ -168,17 +186,20 @@ def recount(export: Dict[str, Any], vendor_id: str) -> Dict[str, Any]:
 
     counts = {BILLED_BUT_NOT_BILLABLE: 0, BILLABLE_BUT_NOT_BILLED: 0,
               CANNOT_SETTLE: 0, AGREES: 0}
+    three_state_counts = {PASS: 0, FAIL: 0, UNPROVABLE: 0}
     billed_count = 0
     verdicts = []
     for i, rec in enumerate(records):
         verdict = _judge_one(rec, vendor)
         counts[verdict] += 1
+        three_state_counts[THREE_STATE[verdict]] += 1
         if _as_bool(rec.get("vendor_billed")):
             billed_count += 1
         verdicts.append({
             "line": i + 2,  # 1-based with header
             "conversation_id": rec.get("conversation_id"),
             "verdict": verdict,
+            "verdict_3state": THREE_STATE[verdict],
         })
 
     over = counts[BILLED_BUT_NOT_BILLABLE]
@@ -196,6 +217,7 @@ def recount(export: Dict[str, Any], vendor_id: str) -> Dict[str, Any]:
         "total_conversations": len(records),
         "billed_by_vendor": billed_count,
         "counts": counts,
+        "three_state_counts": three_state_counts,
         "net_findings": net,
         "cannot_settle_share": round(cannot / len(records), 4) if records else 0.0,
         "columns_missing": export["columns_missing"],
@@ -229,6 +251,7 @@ def recount_report(result: Dict[str, Any]) -> str:
         out.append("")
 
     c = result["counts"]
+    t = result["three_state_counts"]
     out.append("Findings, both directions (D-2)")
     out.append("-" * W)
     out.append("billed but not billable     %d" % c[BILLED_BUT_NOT_BILLABLE])
@@ -237,6 +260,8 @@ def recount_report(result: Dict[str, Any]) -> str:
     out.append("cannot settle               %d (%.1f%%)"
                % (c[CANNOT_SETTLE], result["cannot_settle_share"] * 100))
     out.append("agrees with the vendor      %d" % c[AGREES])
+    out.append("three-state: PASS %d / FAIL %d / UNPROVABLE %d"
+               % (t[PASS], t[FAIL], t[UNPROVABLE]))
     out.append("")
 
     if "variance" in result:
@@ -251,4 +276,211 @@ def recount_report(result: Dict[str, Any]) -> str:
         out.append("Undercharge is netted before any dollar is claimed.")
         out.append("cannot_settle amounts are removed from the claim, not zeroed.")
 
+    return "\n".join(out)
+
+
+# ---------------------------------------------------------------------------
+# The buyer's outcome standard (contract overlay) — the second lane.
+#
+# Tier 1 asks "did the vendor follow its own rule". The outcome lane asks a
+# different question: "did the outcome meet the buyer's contracted standard".
+# Its findings are renewal leverage, NOT a billing claim: they are listed
+# separately and never netted into the Tier 1 variance (BP r28 p2/p5/p8:
+# 合同口径差异是钱，结果标准差异是筹码，分开列，不混算).
+#
+# An absent field lowers the verdict here too: an unevaluable criterion is
+# UNPROVABLE with the missing field named, never guessed.
+# ---------------------------------------------------------------------------
+CONTRACT_KEYS = frozenset({
+    "label", "reopen_window_hours",
+    "human_takeover_disqualifies", "require_issue_addressed",
+})
+
+
+def load_contract(path: str) -> Dict[str, Any]:
+    """Load and validate a buyer-side contract overlay (the outcome standard)."""
+    with open(path, "r", encoding="utf-8") as fh:
+        doc = json.load(fh)
+    if not isinstance(doc, dict):
+        raise ValueError("contract overlay must be a JSON object")
+    unknown = sorted(set(doc) - CONTRACT_KEYS)
+    if unknown:
+        raise ValueError("unknown contract keys: %s; known: %s"
+                         % (", ".join(unknown), ", ".join(sorted(CONTRACT_KEYS))))
+
+    contract: Dict[str, Any] = {
+        "label": doc.get("label") or "buyer contract overlay",
+        "reopen_window_hours": None,
+        "human_takeover_disqualifies": bool(doc.get("human_takeover_disqualifies",
+                                                     False)),
+        "require_issue_addressed": bool(doc.get("require_issue_addressed", False)),
+    }
+    window = doc.get("reopen_window_hours")
+    if window is not None:
+        if not isinstance(window, int) or isinstance(window, bool) or window <= 0:
+            raise ValueError("reopen_window_hours must be a positive integer")
+        contract["reopen_window_hours"] = window
+
+    if (contract["reopen_window_hours"] is None
+            and not contract["human_takeover_disqualifies"]
+            and not contract["require_issue_addressed"]):
+        raise ValueError(
+            "contract overlay is empty: set at least one of reopen_window_hours, "
+            "human_takeover_disqualifies, require_issue_addressed")
+    return contract
+
+
+def _parse_ts(text: Any) -> Optional[datetime.datetime]:
+    """Parse an ISO-8601 timestamp; naive values are read as UTC."""
+    if text is None or not str(text).strip():
+        return None
+    raw = str(text).strip()
+    if raw.endswith(("Z", "z")):
+        raw = raw[:-1] + "+00:00"
+    try:
+        parsed = datetime.datetime.fromisoformat(raw)
+    except ValueError:
+        return None
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=datetime.timezone.utc)
+    return parsed
+
+
+def outcome_lane(export: Dict[str, Any], vendor_id: str,
+                 contract: Dict[str, Any]) -> Dict[str, Any]:
+    """Apply the buyer's outcome standard to the vendor-billed lines.
+
+    Verdicts per line: fails_buyer_standard / meets_buyer_standard /
+    unprovable / not_reviewed (the vendor did not bill the line, so there is
+    no vendor outcome to contest). Each failing or unevaluable criterion names
+    its reason; a missing timestamp is UNPROVABLE, never a guess.
+    """
+    vendor = get_vendor(vendor_id)
+    price = vendor.get("unit_price")
+    window = contract["reopen_window_hours"]
+
+    fails = unprovables = meets = not_reviewed = 0
+    at_risk = 0.0
+    lines = []
+    for i, rec in enumerate(export["records"]):
+        billed = _as_bool(rec.get("vendor_billed"))
+        reasons: List[str] = []
+        missing: List[str] = []
+
+        if billed is None:
+            missing.append("vendor_billed")
+        elif not billed:
+            not_reviewed += 1
+            lines.append({
+                "line": i + 2,
+                "conversation_id": rec.get("conversation_id"),
+                "outcome_verdict": "not_reviewed",
+                "reasons": ["vendor did not bill this line"],
+            })
+            continue
+
+        if contract["human_takeover_disqualifies"]:
+            human = _as_bool(rec.get("human_agent_participated"))
+            if human is None:
+                missing.append("human_agent_participated")
+            elif human:
+                reasons.append("human agent finished the conversation")
+
+        if contract["require_issue_addressed"]:
+            addressed = _as_bool(rec.get("issue_addressed"))
+            if addressed is None:
+                missing.append("issue_addressed")
+            elif not addressed:
+                reasons.append("issue not addressed under the buyer's standard")
+
+        if window:
+            closed = _parse_ts(rec.get("closed_at"))
+            recontact = _parse_ts(rec.get("customer_recontacted_at"))
+            if closed is None:
+                missing.append("closed_at")
+            elif recontact is None:
+                # The exported within-window boolean is judged against the
+                # vendor's window, not the contractual one. Using it here
+                # would be a guess in either direction.
+                missing.append("customer_recontacted_at")
+            elif recontact >= closed:
+                delta = (recontact - closed).total_seconds() / 3600.0
+                if delta <= window:
+                    reasons.append(
+                        "customer recontacted %.1fh after close, inside the "
+                        "contractual %dh window" % (delta, window))
+            # recontact before close is not a reopen; the criterion passes.
+
+        if reasons:
+            fails += 1
+            if billed and price:
+                at_risk += price
+            verdict = "fails_buyer_standard"
+        elif missing:
+            unprovables += 1
+            verdict = "unprovable"
+        else:
+            meets += 1
+            verdict = "meets_buyer_standard"
+
+        entry: Dict[str, Any] = {
+            "line": i + 2,
+            "conversation_id": rec.get("conversation_id"),
+            "outcome_verdict": verdict,
+            "reasons": reasons,
+        }
+        if missing:
+            entry["missing_evidence"] = missing
+        lines.append(entry)
+
+    lane: Dict[str, Any] = {
+        "label": contract["label"],
+        "criteria": {
+            "reopen_window_hours": window,
+            "human_takeover_disqualifies": contract["human_takeover_disqualifies"],
+            "require_issue_addressed": contract["require_issue_addressed"],
+        },
+        "reviewed_scope": "vendor-billed lines only",
+        "counts": {
+            "fails_buyer_standard": fails,
+            "meets_buyer_standard": meets,
+            "unprovable": unprovables,
+            "not_reviewed": not_reviewed,
+        },
+        "lines": lines,
+        "claim_rule": "outcome findings are renewal leverage; they are not "
+                      "netted into the Tier 1 billing claim",
+    }
+    if price:
+        lane["at_risk_amount"] = round(at_risk, 2)
+        lane["at_risk_note"] = "not part of the claim"
+    return lane
+
+
+def outcome_lane_report(lane: Dict[str, Any]) -> str:
+    """Human-readable outcome-standard lane, kept visibly separate from Tier 1."""
+    W = 58
+    c = lane["counts"]
+    out = []
+    out.append("Outcome-standard lane — %s" % lane["label"])
+    out.append("=" * W)
+    criteria = lane["criteria"]
+    active = []
+    if criteria["reopen_window_hours"]:
+        active.append("reopen window %dh" % criteria["reopen_window_hours"])
+    if criteria["human_takeover_disqualifies"]:
+        active.append("human takeover disqualifies")
+    if criteria["require_issue_addressed"]:
+        active.append("issue must be addressed")
+    out.append("Criteria: %s" % "; ".join(active))
+    out.append("")
+    out.append("fails the buyer's standard    %d" % c["fails_buyer_standard"])
+    out.append("meets the buyer's standard    %d" % c["meets_buyer_standard"])
+    out.append("unprovable from this export   %d" % c["unprovable"])
+    out.append("not reviewed (vendor didn't bill) %d" % c["not_reviewed"])
+    if "at_risk_amount" in lane:
+        out.append("at-risk amount (informational only): %s" % lane["at_risk_amount"])
+    out.append("")
+    out.append("These findings are renewal leverage. They are listed")
+    out.append("separately and never netted into the billing claim.")
     return "\n".join(out)

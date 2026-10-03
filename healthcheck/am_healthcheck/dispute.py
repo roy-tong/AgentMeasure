@@ -55,13 +55,21 @@ def build_pack(export_path: str,
                audit_cost: Optional[float] = None,
                period_start: Optional[str] = None,
                period_end: Optional[str] = None,
-               buyer_label: Optional[str] = None) -> Dict[str, Any]:
+               buyer_label: Optional[str] = None,
+               contract_path: Optional[str] = None) -> Dict[str, Any]:
     """Build the pack from a counts-only export and, optionally, effect records."""
     export = vendors_mod.load_export(export_path)
     tier1 = vendors_mod.recount(export, vendor_id)
     vendor = vendors_mod.get_vendor(vendor_id)
 
     unit_price = price if price is not None else tier1.get("unit_price")
+
+    outcome_lane = None
+    contract_file = None
+    if contract_path:
+        contract = vendors_mod.load_contract(contract_path)
+        outcome_lane = vendors_mod.outcome_lane(export, vendor_id, contract)
+        contract_file = os.path.basename(contract_path)
 
     pack: Dict[str, Any] = {
         "schema": PACK_SCHEMA,
@@ -86,6 +94,8 @@ def build_pack(export_path: str,
             "export_columns": export["export_columns"],
             "columns_missing": export["columns_missing"],
         },
+        "outcome_lane": outcome_lane,
+        "contract_file": contract_file,
         "tier2": None,
     }
 
@@ -253,6 +263,65 @@ def render_pack_markdown(pack: Dict[str, Any]) -> str:
             out.append("| `%s` | %d |" % (v["conversation_id"], v["line"]))
         out.append("")
 
+    if pack.get("outcome_lane"):
+        lane = pack["outcome_lane"]
+        lc = lane["counts"]
+        out.append("## Outcome-standard lane — %s" % lane["label"])
+        out.append("")
+        out.append("**Not part of the claim.** These findings compare the "
+                   "vendor's counted outcomes with our own contracted "
+                   "standard. They are renewal leverage, listed separately "
+                   "and never netted into the billing variance above.")
+        out.append("")
+        criteria = lane["criteria"]
+        active = []
+        if criteria["reopen_window_hours"]:
+            active.append("reopen window %dh" % criteria["reopen_window_hours"])
+        if criteria["human_takeover_disqualifies"]:
+            active.append("human takeover disqualifies")
+        if criteria["require_issue_addressed"]:
+            active.append("issue must be addressed")
+        out.append("Criteria: %s." % "; ".join(active))
+        out.append("")
+        out.append("| outcome standard | conversations |")
+        out.append("|---|---:|")
+        out.append("| fails our standard | %d |" % lc["fails_buyer_standard"])
+        out.append("| meets our standard | %d |" % lc["meets_buyer_standard"])
+        out.append("| unprovable from this export | %d |" % lc["unprovable"])
+        out.append("| not reviewed (vendor did not bill) | %d |"
+                   % lc["not_reviewed"])
+        if "at_risk_amount" in lane:
+            out.append("")
+            out.append("Amount at risk under our standard: %s %s "
+                       "(informational only, not claimed here)."
+                       % (pack["currency"], lane["at_risk_amount"]))
+        out.append("")
+
+        failing = [l for l in lane["lines"]
+                   if l["outcome_verdict"] == "fails_buyer_standard"]
+        if failing:
+            out.append("### Fails our standard")
+            out.append("")
+            out.append("| conversation | export line | reason |")
+            out.append("|---|---:|---|")
+            for l in failing:
+                out.append("| `%s` | %d | %s |"
+                           % (l["conversation_id"], l["line"],
+                              "; ".join(l["reasons"])))
+            out.append("")
+        unprov = [l for l in lane["lines"]
+                  if l["outcome_verdict"] == "unprovable"]
+        if unprov:
+            out.append("### Outcome standard unprovable (what is missing)")
+            out.append("")
+            out.append("| conversation | export line | missing |")
+            out.append("|---|---:|---|")
+            for l in unprov:
+                out.append("| `%s` | %d | %s |"
+                           % (l["conversation_id"], l["line"],
+                              ", ".join(l.get("missing_evidence", []))))
+            out.append("")
+
     if pack.get("tier2"):
         t2 = pack["tier2"]
         summary = t2["metering_summary"]
@@ -292,6 +361,9 @@ def render_pack_markdown(pack: Dict[str, Any]) -> str:
     inp = pack["inputs"]
     out.append("- export: `%s` sha256 `%s`" % (inp["export_file"],
                                                inp["export_sha256"][:16]))
+    if pack.get("outcome_lane"):
+        out.append("- contract overlay: `%s` (outcome standard, not a claim line)"
+                   % pack.get("contract_file"))
     if pack.get("tier2"):
         ti = pack["tier2"]["inputs"]
         out.append("- effects: `%s` sha256 `%s`" % (ti["effects_file"],

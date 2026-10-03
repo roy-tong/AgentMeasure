@@ -75,6 +75,43 @@ Input filters for `check` and `compare`:
                                         # (project = cwd basename, case-insensitive)
 ```
 
+## Outcome-billing verification: prepare → recount → dispute → recovery
+
+The buyer-side bill check for per-resolution vendors (Intercom Fin, Zendesk AI
+Agents, …). Rules live in the [vendor-rules registry](../registry/vendor-rules.json)
+(single source of truth, each rule cited and confidence-graded). Four commands,
+one pipeline:
+
+```bash
+agentmeasure prepare --export native-export.csv --vendor zendesk --inspect
+agentmeasure prepare --export native-export.csv --vendor zendesk --out prepared.csv
+#   native Intercom/Zendesk export -> canonical skeleton. Judgement columns
+#   stay EMPTY for human review; native signal columns travel as hint_*
+#   cells; prov_* cells record where every value came from. No verdicts.
+
+agentmeasure recount --export prepared.csv --vendor zendesk --inspect
+agentmeasure recount --export prepared.csv --vendor zendesk --json recount.json
+agentmeasure recount --export prepared.csv --vendor zendesk --contract contract.json
+#   Tier 1: the vendor's own published rules, line by line. Findings in BOTH
+#   directions; absent evidence is UNPROVABLE, never guessed. --contract adds
+#   the buyer's outcome standard (e.g. reopen_window_hours: 72) as a separate
+#   outcome lane — renewal leverage, never netted into the claim.
+
+agentmeasure dispute --export prepared.csv --vendor zendesk --contract contract.json
+#   the negotiable pack: cover letter citing the vendor's own rule per
+#   finding + appendix + (optionally) Tier 2 under the AMS-1 standard.
+
+agentmeasure recovery --pack pack/dispute-pack.json --confirmations confirmations.csv
+#   what the vendor actually conceded: credited/paid per disputed line, with
+#   confirmation dates and evidence refs. Realized value is counted
+#   separately from the claim — an argument won is not cash.
+```
+
+`agentmeasure recount --list-vendors` shows the registry with each rule's
+source and confidence (P = primary/official, S = secondary, U = unverified).
+The browser-local recount at [the website](../website/) runs the same Tier 1
+with no upload; a cross-language parity test keeps the two from drifting.
+
 ## Sharing results: preview first, export second
 
 The recommended flow never writes a shareable file until you have read it:

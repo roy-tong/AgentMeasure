@@ -22,7 +22,12 @@ agentmeasure check --runtime claude        # 强制 Claude Code 适配器
 （`agentmeasure trend`），以及**按效果计费的结算声明**——
 `agentmeasure settle --format md|html` 生成
 [AMS-1](standard/SETTLEMENT.md) 一页纸（两线对照、双向披露、cannot-settle
-移除、第三方复现块）与争议包 JSON。
+移除、第三方复现块）与争议包 JSON。对按 resolution 计费的厂商另有完整买方
+流水线：`agentmeasure prepare` 把 Intercom/Zendesk 原生导出映射到规范列
+（判断列留空等人工复核，每个值带出处）；`recount` 按厂商自己公布的规则逐笔
+重算，`--contract` 可叠加买方结果标准——结果标准差异单列一栏，绝不并入索赔
+金额；`dispute` 生成可递交的争议包；`recovery` 记录厂商实际兑现的退还，
+与索赔分开计数。
 
 [**快速开始与支持范围**](healthcheck/README.md) ·
 [**AMS-1：开放结算声明标准**](standard/SETTLEMENT.md) ·

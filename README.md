@@ -25,7 +25,14 @@ Prometheus exports, run trends (`agentmeasure trend`), and settlement
 statements for outcome-based billing — `agentmeasure settle --format md|html`
 generates an [AMS-1](standard/SETTLEMENT.md) one-pager (two lines, both
 directions, cannot-settle removals, third-party reproduction block) plus the
-dispute-bundle JSON.
+dispute-bundle JSON. For per-resolution vendors there is a full buyer-side
+pipeline: `agentmeasure prepare` maps a native Intercom/Zendesk export onto
+the canonical columns (judgement columns stay empty for human review, every
+value carries provenance); `recount` applies the vendor's own published rules
+line by line, with an optional `--contract` overlay that lists outcome-standard
+findings as a separate lane, never netted into the claim; `dispute` builds the
+negotiable pack; `recovery` records what the vendor actually conceded, counted
+separately from the claim.
 
 [**Quick start and supported formats**](healthcheck/README.md) ·
 [**AMS-1: open settlement-statement standard**](standard/SETTLEMENT.md) ·

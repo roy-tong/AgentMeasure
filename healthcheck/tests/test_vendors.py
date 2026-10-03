@@ -101,6 +101,20 @@ class TestRecount(unittest.TestCase):
         r = self._recount([("C1", "no", "yes", "no", "yes")], vendor="zendesk")
         self.assertEqual(r["counts"][CANNOT_SETTLE], 1)
 
+    def test_three_state_travels_with_every_verdict(self):
+        # AMS-1 three-state vocabulary: PASS / FAIL / UNPROVABLE rides on every
+        # line and every summary, so a BP reader and a CLI user share one words
+        # for the same decision.
+        r = self._recount([
+            ("C1", "no", "yes", "no", "yes"),    # PASS
+            ("C2", "no", "yes", "yes", "yes"),   # FAIL (over)
+            ("C3", "", "yes", "no", "yes"),      # UNPROVABLE
+        ])
+        self.assertEqual(r["three_state_counts"],
+                         {"PASS": 1, "FAIL": 1, "UNPROVABLE": 1})
+        states = [v["verdict_3state"] for v in r["verdicts"]]
+        self.assertEqual(states, ["PASS", "FAIL", "UNPROVABLE"])
+
     def test_net_is_over_minus_under(self):
         r = self._recount([
             ("C1", "no", "yes", "yes", "yes"),   # over
