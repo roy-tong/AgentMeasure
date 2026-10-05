@@ -1,0 +1,89 @@
+{
+  "fixture_scope": "external-production-receipt-semantics-hop-replay-request-3",
+  "variant_id": "metrecept-session-receipt",
+  "external_source": {
+    "contributor": "iwasinnam2 (Ivan)",
+    "origin_thread": "BerriAI/litellm#39057",
+    "provenance": "real minted receipt from the Metrecept production signing path (src/at_utility/receipts.py::mint_session_receipt) over a real served session read via GET /v1/sessions/{id}; gateway at iwasinnam2/ohm@53bc7f3; demo key — kid does not resolve against the live directory; decoded payload is the fixture level",
+    "date_received": "2026-09-24",
+    "stranger_verification_path": "scripts/verify_receipt.py <jws> --base <gateway> against the gateway's public JWKS (RFC 7638 kid thumbprint); same kind-agnostic verifier as -002 — the signature covers the whole payload regardless of kind"
+  },
+  "scenario": {
+    "description": "One session (X-Ohm-Session: iwasinnam-003-demo), one byte-identical prompt sent three times: crossing 1 MISS (provider path, pipe_usd 0.001), crossings 2 and 3 served HITs (provider never called, pipe_usd 0.002 each). Each crossing carried its own per-request receipt in the X-Ohm-Receipt response header (-002 shape) with a distinct meter_event_id. The fixture receipt is the single aggregate cover minted at read time over those three already-ledgered crossings.",
+    "session_header": "X-Ohm-Session: iwasinnam-003-demo",
+    "crossings": [
+      { "n": 1, "kind": "cache_miss", "pipe_usd": 0.001 },
+      { "n": 2, "kind": "cache_hit", "pipe_usd": 0.002 },
+      { "n": 3, "kind": "cache_hit", "pipe_usd": 0.002 }
+    ],
+    "read": "GET /v1/sessions/iwasinnam-003-demo (tenant-scoped, read-only over already-billed events; no new call is made)"
+  },
+  "wire_format": {
+    "alg": "Ed25519",
+    "type": "ohm-receipt+jws",
+    "transport": "inline `receipt` field of the GET /v1/sessions/{session_id} JSON body — aggregate kinds travel inline; per-request kinds travel detached in response headers, same JWS format either way",
+    "jws_header": {
+      "alg": "EdDSA",
+      "kid": "zC1YoE2T2z7_mWIy7X3p3WWMceGH08zAd3s0NCdm7qk",
+      "typ": "ohm-receipt+jws"
+    }
+  },
+  "raw_jws": "eyJhbGciOiJFZERTQSIsImtpZCI6InpDMVlvRTJUMno3X21XSXk3WDNwM1dXTWNlR0gwOHpBZDNzME5DZG03cWsiLCJ0eXAiOiJvaG0tcmVjZWlwdCtqd3MifQ.eyJhcGlfY2FsbHMiOjAsImNhY2hlX2hpdHMiOjIsImNhY2hlX21pc3NlcyI6MSwiZXZlbnRfY291bnQiOjMsImZldGNoZXMiOjAsImZpcnN0X3RzIjoxNzkwMjU3ODc1LCJpYXQiOjE3OTAyNTc4OTAsImtpbmQiOiJzZXNzaW9uIiwibGFzdF90cyI6MTc5MDI1Nzg3NywicGlwZV91c2QiOjAuMDA1LCJyZWdpb24iOiJsb2NhbCIsInNlc3Npb25fc2hhMjU2IjoiNzc2M2MzNWFmMGVhYmUwZTBlYWZlYjU3NDBlNjY5ZmIxYzEyOWQwZjI1ZDA5YWJjNzVjYzQ0MTQ3Mzg2YTY0MyIsInYiOjF9.hKL1fWEvlmC-aOpcAKvzIJwelFJdDvFp0yd9uw-G1ho4mpK_AMsbGQDqea8pXATBeQT-sUwAd2MGMawoWW8EAA",
+  "decoded_payload": {
+    "api_calls": 0,
+    "cache_hits": 2,
+    "cache_misses": 1,
+    "event_count": 3,
+    "fetches": 0,
+    "first_ts": 1790257875,
+    "iat": 1790257890,
+    "kind": "session",
+    "last_ts": 1790257877,
+    "pipe_usd": 0.005,
+    "region": "local",
+    "session_sha256": "7763c35af0eabe0e0eafeb5740e669fb1c129d0f25d09abc75cc44147386a643",
+    "v": 1
+  },
+  "field_semantics": {
+    "session_sha256": "sha256 of the raw session id; the raw id never appears in the signed payload. Self-checkable: sha256('iwasinnam-003-demo') == session_sha256.",
+    "pipe_usd": "sum of per-crossing pipe rent over the aggregate (0.001 + 0.002 + 0.002 = 0.005). The per-crossing receipts (meter_event_id) remain the money identities; this is a cover over them, not a collapse.",
+    "event_count / cache_hits / cache_misses / fetches / api_calls": "per-kind counts across every metered event tagged with this session id — chat completions and API-passthrough calls aggregate into the same cover.",
+    "first_ts / last_ts": "earliest / latest metered-event timestamps inside the aggregate window.",
+    "iat": "mint time at the GET — read-time, not write-time. Re-fetching the same session re-mints a fresh receipt with a new iat over the same underlying events.",
+    "no tenant_sha256": "omitted by design: the receipt is fetched tenant-scoped (the tenant's own bearer key), unlike a header receipt which travels detached and so carries a truncated tenant fingerprint.",
+    "no model / tokens fields": "per-request fields don't apply to an aggregate over potentially many requests of different models and kinds."
+  },
+
+
+  "limits": [
+    {
+      "id": "L1-pipe-rent-not-provider-cost",
+      "rule": "The receipt signs pipe rent, not provider cost. pipe_usd is what the pipe billed for the crossings and never claims to be the provider invoice amount. Provider-cost assertions must come from provider-side columns, never from this payload."
+    },
+    {
+      "id": "L2-counterfactual-not-in-aggregate",
+      "rule": "estimated_provider_avoided_usd is NOT a receipt field at aggregate grain either: it lives in the usage ledger, is hit-only by design, and is unsigned, estimate-only, always labelled as such. The signed aggregate carries only what was actually billed."
+    },
+    {
+      "id": "L3-aggregate-is-lossy-by-design",
+      "rule": "The aggregate cannot express per-crossing shape: which crossing was which model, and the provider prompt-cache discounted-crossing shape (provider called, cache_read on the invoice, discounted-but-nonzero — -002's L3), are invisible at this grain. Per-kind money splits and request-3 shapes must be modeled on the meter side from the per-crossing receipts, not recovered from this payload."
+    },
+    {
+      "id": "L4-iat-and-window-are-claims",
+      "rule": "iat, first_ts and last_ts are claims, not proofs of time. The signature proves this key signed these bytes; the timestamps are more fields in them. When-proofs are handled separately (Merkle clock over signature hashes — every minted receipt, this kind included, is recorded as a leaf)."
+    },
+    {
+      "id": "L5-cover-not-collapse",
+      "rule": "N crossings produce one signed cover; the per-crossing receipts remain the money identities. Repeat hits on the byte-identical request are distinct metered crossings, one per HTTP request — summed here, never merged."
+    },
+    {
+      "id": "L6-session-id-never-raw",
+      "rule": "session_sha256 is the only session identifier in the payload; the raw id is never embedded. Membership of a crossing in the session is established by the producer's ledger; the receipt asserts the aggregate over it, verifiable only against the digest."
+    }
+  ],
+  "observer_grade_mapping": {
+    "signed_aggregate_fields": "settlement-grade (signature proves key signed bytes; L1/L3/L5 bound the claim scope)",
+    "estimated_provider_avoided_usd": "estimate-only, unsigned — not present in this payload at all (L2)",
+    "iat / first_ts / last_ts": "declared timestamps, not when-proofs (L4)"
+  }
+}

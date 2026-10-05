@@ -77,6 +77,15 @@ python3 conformance/runners/run_delegation.py        # 多 Agent 委托（DELEGA
   expected.json、#9 篡改声明必须显式 `reconciliation: failed`。
   **Claim boundary 原样保留**：synthetic evidence，非 endorsement、非外部复现。
 
+- **iwasinnam-001 / 002 / 003** — @iwasinnam2 (Ivan, Metrecept) 的生产签名路径
+  制品（Ed25519 JWS，demo key，decoded payload 为 fixture 级）：hop-replay
+  ledger、per-request receipt、session-kind 聚合 cover（1 MISS + 2 HIT，
+  per-crossing `meter_event_id` 不塌缩，estimate 面永远 unsigned）。来自
+  BerriAI/litellm#39057 交付序列；映射与 L1-L6 claim boundary 见各目录
+  MAPPING 文档。**外部独立验证路径**（stranger verification）：
+  `scripts/verify_receipt.py --base <gateway>` 对 Metrecept 公网 JWKS。
+  署名归 Metrecept；本仓只作投影与守卫，非 endorsement。
+
 提交新 fixture：PR 附 events + expected + mapping（或 sidecar）三件套，
 runner 按上面四类守卫生成；claim boundary 由提交方声明、AgentMeasure 复核。
 
