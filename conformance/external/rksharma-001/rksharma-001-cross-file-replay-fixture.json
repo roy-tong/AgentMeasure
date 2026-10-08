@@ -1,0 +1,37 @@
+{
+  "card": "rksharma-001",
+  "source_vector": "conformance/vectors/metric-execution-grain.json#cross-file-fork-replay-mixed-identity",
+  "enforced_by": "conformance/runners/run_metrics.py (file-shaped dispatch, merged in PR #27, commit 739d35a8f63f6e73569d724c2018d257e5a0a3ad)",
+  "description": "Fork scenario: a child file verbatim-replays the parent's N turns (records carry different file/session IDs; some records have no stable cross-file identity) and adds M genuinely new turns. Expected: the replayed prefix counts once, each child-new turn counts once, attempts/cost are retained for genuinely new work, operation_id prevents logical inflation but must not prevent attempt/cost auditability.",
+  "input": {
+    "project": "p1",
+    "files": [
+      {
+        "file": "parent.jsonl",
+        "invocations": [
+          { "tool_call_id": "pc-1", "operation_id": "op-p", "outcome": "success" },
+          { "tool_call_id": "pc-2", "operation_id": "op-p", "outcome": "success" }
+        ]
+      },
+      {
+        "file": "child.jsonl",
+        "invocations": [
+          { "tool_call_id": "pc-1", "operation_id": "op-p", "outcome": "success",
+            "note": "verbatim replay of parent turn 1, new file/session-scoped id" },
+          { "tool_call_id": "pc-2", "operation_id": "op-p", "outcome": "success",
+            "note": "verbatim replay of parent turn 2, new file/session-scoped id" },
+          { "tool_call_id": "cc-1", "operation_id": "op-c", "outcome": "success",
+            "note": "child genuinely new turn" }
+        ]
+      }
+    ]
+  },
+  "expected": {
+    "unique_turns": 3,
+    "replayed_prefix_counted": 1,
+    "child_new_counted": 1,
+    "attempts_retained": 5,
+    "cost_for_new_work_only": "replayed prefix contributes no fresh cost",
+    "unstable_identity_mode": "no stable cross-file id: structural prefix detection required; ID-dedup insufficient (UNPROVABLE for identity, never a confident single)"
+  }
+}
