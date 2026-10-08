@@ -3,6 +3,15 @@
 All notable changes to AgentMeasure (standard, SDK, and reference product) are
 documented here. Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [Unreleased]
+
+### Added
+
+- **Distribution assets (requirements pool r3 §1.5, absorbing the M8ven case)**: public **vendor rule cards** (`scripts/gen_rule_cards.py` → `website/rules/`, one card per vendor: price, trigger, reopen handling, silence behaviour, closure timers, source link, registry version — with a CI `--check` so the page can never drift from the registry) and the **AMS-1 badge set** (`website/badges.html` + four stage SVGs under `assets/badges/`, embeddable markdown snippets, an adopters snapshot listing external conformance-vector authors with links, and an explicit no-composite-score statement — the anti-M8ven). status-sync now mirrors the whole `website/` to gh-pages instead of status.json only, so every new page ships on green CI.
+- **`agentmeasure drilldown`** (BP r32 p09 promise ②, "ask the customer to re-check one finding"): replays ONE conversation on screen — the exported row, every rule step that fired in plain language, the verdict with its three-state, the amount at issue, and the exact command to reproduce it. `explain_one` walks the same branches as the recount in the same order; a test replays every fixture row through both and asserts the verdicts agree. Tier 1 only by design — the buyer's own standard is leverage, not part of the billing replay.
+- **`agentmeasure decisions`** (the third value book from BP r32 p06): an append-only local journal recording how the buyer used the verification in a business decision (payment approved/held, discount requested, renewal signed, vendor review…) — enum-validated, linked to the finding it rests on, outcome stated, amounts context-only and never summed with recovered cash. Cash (recovery), hours (delivery), decisions (this) now each have their own book.
+- **Release smoke job in CI**: builds the wheel and runs `--version` / `demo` / `selftest` / `recount --list-vendors` from a fresh venv — the packaged artifact must actually run (source-tree green ≠ installable; the 0.4.0 NameError lesson, now mechanical).
+
 ## [v0.5.0] - 2026-10-03
 
 ### Added

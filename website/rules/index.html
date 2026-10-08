@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Vendor billing rules — AgentMeasure</title>
+<meta name="description" content="What AI support vendors charge per and what their own published rules say — versioned, sourced, re-runnable.">
+<link rel="stylesheet" href="../styles.css">
+<style>
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:18px}
+.card{border:1px solid #e3e8ef;border-radius:12px;padding:20px 22px;background:#fff}
+.card h2{margin:0 0 2px;font-size:18px}
+.muted{color:#5c6575;font-size:13px}
+.kv{display:grid;grid-template-columns:130px 1fr;gap:4px 12px;margin:12px 0;font-size:14px}
+.kv dt{color:#5c6575}
+.kv dd{margin:0}
+.badge{display:inline-block;font-size:11px;font-weight:700;padding:2px 9px;border-radius:10px;vertical-align:2px;margin-left:8px}
+.P{background:#e5f4ec;color:#0c7a48}.S{background:#fbf1de;color:#8a5a0d}.U{background:#f0f2f5;color:#5c6575}
+.notes{font-size:13px;color:#5c6575;margin:10px 0 0;padding-left:12px;border-left:3px solid #e3e8ef}
+a{color:#3050c8}
+body{font:15px/1.65 -apple-system,'Segoe UI','PingFang SC',sans-serif;color:#181f2c;background:#f6f7f9;margin:0}
+.wrap{max-width:900px;margin:0 auto;padding:40px 24px 70px}
+h1{font-size:24px;letter-spacing:-.3px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>Vendor billing rules, in public</h1>
+<p class="muted">One card per vendor: what the vendor charges per, what its own published
+rules say, and where every fact came from. This is the same
+<a href="https://github.com/roy-tong/AgentMeasure/blob/main/registry/vendor-rules.json">registry
+file</a> the CLI and the browser recount read — a parity test in CI keeps the three from
+drifting. Registry version <strong>v0.5.0</strong>.</p>
+<p class="muted">Confidence: <span class="badge P">P</span> primary/official source ·
+<span class="badge S">S</span> secondary source ·
+<span class="badge U">U</span> unverified. A missing fact is never guessed — it shows as
+"not published".</p>
+<div class="cards">
+<div class="card" id="ada">
+<h2>Ada<span class="badge S">S</span></h2>
+<div class="muted">rule card · registry v0.5.0</div>
+<dl class="kv">
+<dt>Price</dt><dd>not published</dd>
+<dt>Billing trigger</dt><dd>an internal algorithm classifies the conversation as resolved</dd>
+<dt>Reopen handling</dt><dd>no documented reopen deduction</dd>
+<dt>Silence bills</dt><dd>yes — window 24h</dd>
+<dt>Closure timers</dt><dd>email: 72h · social: 24h · web: 24h</dd>
+<dt>Source</dt><dd><a href="ada.cx pricing/terms returned 403; rule reported from public docs" rel="noopener">ada.cx pricing/terms returned 403; rule reported from public docs</a></dd>
+</dl>
+
+<p class="notes">operator feedback does not override the automatic classification</p>
+<p class="muted">Re-run the recount yourself: <a href="../recount.html">in the browser</a> or <code>agentmeasure recount --vendor ada</code>. Rules change; this card records the version it was read from.</p>
+</div>
+<div class="card" id="generic">
+<h2>Generic per-resolution vendor<span class="badge U">U</span></h2>
+<div class="muted">rule card · registry v0.5.0</div>
+<dl class="kv">
+<dt>Price</dt><dd>not published</dd>
+<dt>Billing trigger</dt><dd>no published rule — only the AgentMeasure standard applies</dd>
+<dt>Reopen handling</dt><dd>no documented reopen deduction</dd>
+<dt>Silence bills</dt><dd>unknown</dd>
+<dt>Closure timers</dt><dd>not published</dd>
+<dt>Source</dt><dd><a href="no vendor rules; only the AgentMeasure standard is applied" rel="noopener">no vendor rules; only the AgentMeasure standard is applied</a></dd>
+</dl>
+
+
+<p class="muted">Re-run the recount yourself: <a href="../recount.html">in the browser</a> or <code>agentmeasure recount --vendor generic</code>. Rules change; this card records the version it was read from.</p>
+</div>
+<div class="card" id="hubspot">
+<h2>HubSpot Breeze<span class="badge S">S</span></h2>
+<div class="muted">rule card · registry v0.5.0</div>
+<dl class="kv">
+<dt>Price</dt><dd>USD 0.5 per resolution</dd>
+<dt>Billing trigger</dt><dd>assumes resolution after a lock window; a reopen after the lock starts a fresh billable window</dd>
+<dt>Reopen handling</dt><dd>none after the lock window</dd>
+<dt>Silence bills</dt><dd>yes — window 72h</dd>
+<dt>Closure timers</dt><dd>email: 72h · messaging: 72h</dd>
+<dt>Source</dt><dd><a href="secondary; knowledge.hubspot.com is JS-only and could not be read" rel="noopener">secondary; knowledge.hubspot.com is JS-only and could not be read</a></dd>
+</dl>
+
+<p class="notes">a reopen after the 72-hour lock starts a FRESH billable window instead of deducting the original, which is a double-billing risk rather than a protection</p>
+<p class="muted">Re-run the recount yourself: <a href="../recount.html">in the browser</a> or <code>agentmeasure recount --vendor hubspot</code>. Rules change; this card records the version it was read from.</p>
+</div>
+<div class="card" id="intercom">
+<h2>Intercom Fin<span class="badge P">P</span></h2>
+<div class="muted">rule card · registry v0.5.0</div>
+<dl class="kv">
+<dt>Price</dt><dd>USD 0.99 per resolution</dd>
+<dt>Billing trigger</dt><dd>bills on confirmed <em>or assumed</em> resolutions (silence can bill)</dd>
+<dt>Reopen handling</dt><dd>documented reopen deduction, including across billing periods</dd>
+<dt>Silence bills</dt><dd>yes — window 24h</dd>
+<dt>Closure timers</dt><dd>email: 72h · messaging: 24h</dd>
+<dt>Source</dt><dd><a href="fin.ai pricing & outcomes; Intercom help centre (Fin AI Agent outcomes)" rel="noopener">fin.ai pricing & outcomes; Intercom help centre (Fin AI Agent outcomes)</a></dd>
+</dl>
+<ul class="notes"><li>confirmed resolution rate and assumed resolution rate are separate published metrics, so a buyer can at least see the split</li><li>resolution state is filterable and exposed via API v2.11+</li></ul>
+
+<p class="muted">Re-run the recount yourself: <a href="../recount.html">in the browser</a> or <code>agentmeasure recount --vendor intercom</code>. Rules change; this card records the version it was read from.</p>
+</div>
+<div class="card" id="salesforce">
+<h2>Salesforce Agentforce Help Agent<span class="badge U">U</span></h2>
+<div class="muted">rule card · registry v0.5.0</div>
+<dl class="kv">
+<dt>Price</dt><dd>not published</dd>
+<dt>Billing trigger</dt><dd>bills on autonomous completion (no published timer or reopen rule)</dd>
+<dt>Reopen handling</dt><dd>no documented reopen deduction</dd>
+<dt>Silence bills</dt><dd>unknown</dd>
+<dt>Closure timers</dt><dd>not published</dd>
+<dt>Source</dt><dd><a href="press release only; no official metering document is published" rel="noopener">press release only; no official metering document is published</a></dd>
+</dl>
+<ul class="notes"><li>no timer, no reopen rule, and no clawback are published</li><li>the broader Agentforce product is billed whether or not the issue was resolved</li></ul>
+
+<p class="muted">Re-run the recount yourself: <a href="../recount.html">in the browser</a> or <code>agentmeasure recount --vendor salesforce</code>. Rules change; this card records the version it was read from.</p>
+</div>
+<div class="card" id="zendesk">
+<h2>Zendesk AI Agents<span class="badge P">P</span></h2>
+<div class="muted">rule card · registry v0.5.0</div>
+<dl class="kv">
+<dt>Price</dt><dd>USD 2.0 per resolution</dd>
+<dt>Billing trigger</dt><dd>only an affirmative model adjudication counts — silence alone is free</dd>
+<dt>Reopen handling</dt><dd>no documented reopen deduction</dd>
+<dt>Silence bills</dt><dd>no</dd>
+<dt>Closure timers</dt><dd>email: 72h · messaging: 2h · voice: 0h</dd>
+<dt>Source</dt><dd><a href="Zendesk help centre: About the automated resolutions platform; About automated resolution tiers (edited 2026-08-25)" rel="noopener">Zendesk help centre: About the automated resolutions platform; About automated resolution tiers (edited 2026-08-25)</a></dd>
+</dl>
+<ul class="notes"><li>criteria, thresholds and error rate behind the LLM adjudication are not published</li><li>unused allowance does not roll over to the next billing period</li></ul>
+<p class="notes">deleting a ticket with Resolution type Automated does not undo the consumption of an automated resolution</p>
+<p class="muted">Re-run the recount yourself: <a href="../recount.html">in the browser</a> or <code>agentmeasure recount --vendor zendesk</code>. Rules change; this card records the version it was read from.</p>
+</div>
+</div>
+<p class="muted" style="margin-top:28px">Find a rule that changed, or one we read wrong?
+<a href="https://github.com/roy-tong/AgentMeasure/edit/main/registry/vendor-rules.json">Edit the registry</a> —
+pull requests welcome, every field carries its source.</p>
+</div>
+</body>
+</html>

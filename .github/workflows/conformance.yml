@@ -26,6 +26,7 @@ on:
       - 'CONTRIBUTING.md'
       - 'LEGACY-MIGRATION.md'
       - 'verify_vectors.py'
+      - 'website/**'
   workflow_dispatch:
   pull_request:
 
@@ -84,6 +85,9 @@ jobs:
       - name: "Browser-local recount: rules file in sync with the registry"
         run: |
           python3 scripts/gen_web_rules.py --check
+      - name: "Rule cards: website/rules/ in sync with the registry"
+        run: |
+          python3 scripts/gen_rule_cards.py --check
       - name: "Browser-local recount: JS and Python parity on the same fixture"
         run: |
           python3 -m unittest discover -s tests -p "test_parity.py" -v
@@ -233,9 +237,33 @@ jobs:
   # Only on main pushes: regenerate website/status.json from repo state; when it
   # changes, commit to main and mirror to gh-pages. website/** is not in the
   # push path filter above, so this cannot re-trigger the workflow.
+  # ─── Release smoke: the packaged artifact must actually run ───
+  # Source-tree tests passing is not "installable" (the 0.4.0 NameError
+  # lesson). Build the wheel, install it into a fresh venv, run the basic
+  # paths a first-time user would.
+  release-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Build the wheel (the artifact PyPI will serve)
+        run: |
+          python -m pip install --user build
+          python -m build --wheel --outdir dist/ healthcheck/
+      - name: Fresh-venv install + first-run paths
+        run: |
+          python -m venv /tmp/smoke
+          /tmp/smoke/bin/pip install dist/*.whl
+          /tmp/smoke/bin/agentmeasure --version
+          cd /tmp && /tmp/smoke/bin/agentmeasure demo --no-history
+          /tmp/smoke/bin/agentmeasure selftest
+          /tmp/smoke/bin/agentmeasure recount --list-vendors
+
   status-sync:
     runs-on: ubuntu-latest
-    needs: [healthcheck, spec-conformance, reference-implementation, lab-suite, sdk-gate, documentation-consistency]
+    needs: [healthcheck, spec-conformance, reference-implementation, lab-suite, sdk-gate, documentation-consistency, release-smoke]
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     permissions:
       contents: write
@@ -256,18 +284,20 @@ jobs:
           git config user.name "agentmeasure-ci"
           git config user.email "actions@users.noreply.github.com"
           git add website/status.json
-          if git diff --cached --quiet; then
-            echo "status.json unchanged — nothing to do"
-          else
+          if ! git diff --cached --quiet; then
             git commit -m "chore: sync website/status.json (verified @ ${GITHUB_SHA:0:7}) [skip ci]"
             git pull --rebase origin main
             git push origin main
-            # mirror to gh-pages so the live site serves fresh numbers
-            git fetch origin gh-pages
-            git checkout gh-pages
-            git checkout main -- website/status.json
-            cp website/status.json ./status.json
-            git add status.json
-            git commit -m "deploy: status.json sync (CI)" || echo "gh-pages unchanged"
-            git push origin gh-pages
           fi
+      - name: Mirror website/ to gh-pages (the live site)
+        run: |
+          git fetch origin gh-pages
+          git checkout gh-pages
+          git checkout main -- website/
+          # the site serves from the repo root of gh-pages
+          cp -r website/. ./
+          # drop the staging dir and any legacy duplicate so add -A is clean
+          rm -rf website
+          git add -A
+          git commit -m "deploy: website sync (CI)" || echo "gh-pages unchanged"
+          git push origin gh-pages

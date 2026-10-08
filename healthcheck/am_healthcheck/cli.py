@@ -53,6 +53,8 @@ from . import taxonomy as tax_mod
 from . import policy as policy_mod
 from . import benchmark as bench_mod
 from . import console as console_mod
+from . import drilldown as drilldown_mod
+from . import decisions as decisions_mod
 # Conformance pack loaded lazily in cmd_conformance
 
 DEFAULT_DAYS = 7
@@ -1555,6 +1557,55 @@ def cmd_console(args) -> int:
     return 0
 
 
+def cmd_drilldown(args) -> int:
+    """Replay ONE finding on screen: the row, the rule steps, the verdict."""
+    try:
+        export = vendors_mod.load_export(args.export)
+        result = drilldown_mod.drilldown(export, args.vendor,
+                                         conversation=args.conversation,
+                                         line=args.line)
+    except (ValueError, OSError) as exc:
+        print("error: %s" % exc, file=sys.stderr)
+        return 2
+    print(drilldown_mod.drilldown_text(result, args.export))
+    if args.md:
+        try:
+            with open(args.md, "w", encoding="utf-8") as fh:
+                fh.write(drilldown_mod.drilldown_markdown(result,
+                                                          args.export) + "\n")
+        except OSError as exc:
+            print("error: could not write drill-down: %s" % exc,
+                  file=sys.stderr)
+            return 2
+        print("\nDrill-down (markdown) \u2192 %s" % os.path.abspath(args.md))
+    return 0
+
+
+def cmd_decisions(args) -> int:
+    """Record or review how verification changed business decisions."""
+    if args.log_event:
+        try:
+            entry = decisions_mod.log_entry(
+                args.log, engagement=args.engagement, vendor=args.vendor,
+                decision_type=args.decision_type, linked=args.linked or "",
+                outcome=args.outcome, amount=args.amount,
+                note=args.note or "")
+        except (ValueError, OSError) as exc:
+            print("error: %s" % exc, file=sys.stderr)
+            return 2
+        print("recorded: %s %s %s (%s)"
+              % (entry["date"], entry["engagement"], entry["vendor"],
+                 entry["decision_type"]))
+        return 0
+    try:
+        entries = decisions_mod.load_entries(args.log)
+    except (ValueError, OSError) as exc:
+        print("error: %s" % exc, file=sys.stderr)
+        return 2
+    print(decisions_mod.report_text(decisions_mod.report(entries)))
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="agentmeasure",
@@ -2038,6 +2089,45 @@ def build_parser() -> argparse.ArgumentParser:
     p_con.add_argument("--out", metavar="PATH", required=True,
                        help="console HTML path")
     p_con.set_defaults(func=cmd_console)
+
+    p_drill = sub.add_parser(
+        "drilldown",
+        help="replay ONE finding on screen: the exported row, every rule "
+             "step that fired, the verdict, and the command to re-run it "
+             "(the 're-check one judgement' promise)")
+    p_drill.add_argument("--export", metavar="PATH", required=True,
+                         help="canonical counts-only CSV export")
+    p_drill.add_argument("--vendor", required=True)
+    p_drill.add_argument("--conversation", default=None,
+                         help="the conversation id to replay")
+    p_drill.add_argument("--line", type=int, default=None,
+                         help="alternatively, the export line number")
+    p_drill.add_argument("--md", metavar="PATH", default=None,
+                         help="also write a markdown replay here")
+    p_drill.set_defaults(func=cmd_drilldown)
+
+    p_dec = sub.add_parser(
+        "decisions",
+        help="record or review how the buyer used the verification in a "
+             "business decision (third value book, kept separate from cash "
+             "and hours)")
+    p_dec.add_argument("--log", metavar="JSONL", required=True,
+                       help="local decision journal (append-only)")
+    p_dec.add_argument("--log-event", action="store_true", dest="log_event",
+                       help="append one decision record")
+    p_dec.add_argument("--engagement", default=None)
+    p_dec.add_argument("--vendor", default=None)
+    p_dec.add_argument("--type", default=None, dest="decision_type",
+                       choices=list(decisions_mod.DECISION_TYPES))
+    p_dec.add_argument("--linked", default=None,
+                       help="finding it rests on (conversation id), or omit "
+                            "for the review as a whole")
+    p_dec.add_argument("--outcome", default="pending",
+                       choices=list(decisions_mod.OUTCOMES))
+    p_dec.add_argument("--amount", type=float, default=None,
+                       help="context amount (never summed with recovery)")
+    p_dec.add_argument("--note", default=None)
+    p_dec.set_defaults(func=cmd_decisions)
 
     p_hist = sub.add_parser("history", help="show local run history")
     p_hist.add_argument("--last", type=int, default=10)
