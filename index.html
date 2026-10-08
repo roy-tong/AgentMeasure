@@ -3,23 +3,23 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AgentMeasure | The open yardstick for agent usage and AI outcomes</title>
-  <meta name="description" content="Open measurement layer for the agent economy: usage and outcomes with auditable evidence. A retry is one operation; an outcome is only billable when proven.">
+  <title>AgentMeasure | AI support billing verification</title>
+  <meta name="description" content="Review AI support bills against applicable terms and business evidence. Local tools, reproducible findings, and a scoped first-look service.">
   <link rel="icon" type="image/svg+xml" href="./assets/favicon.svg">
   <link rel="canonical" href="https://roy-tong.github.io/AgentMeasure/">
   <meta name="theme-color" content="#090C10">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="AgentMeasure">
-  <meta property="og:title" content="AgentMeasure | The open yardstick for agent usage and AI outcomes">
-  <meta property="og:description" content="Open measurement layer for the agent economy: usage and outcomes with auditable evidence. A retry is one operation; an outcome is only billable when proven.">
+  <meta property="og:title" content="AgentMeasure | AI support billing verification">
+  <meta property="og:description" content="Review AI support bills against applicable terms and business evidence. Local tools, reproducible findings, and a scoped first-look service.">
   <meta property="og:url" content="https://roy-tong.github.io/AgentMeasure/">
   <meta property="og:image" content="https://roy-tong.github.io/AgentMeasure/assets/social-preview.png">
   <meta property="og:image:width" content="1280">
   <meta property="og:image:height" content="640">
   <meta property="og:image:alt" content="AgentMeasure: know what your agent usage metrics actually count">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="AgentMeasure | The open yardstick for agent usage and AI outcomes">
-  <meta name="twitter:description" content="Open measurement layer for the agent economy: usage and outcomes with auditable evidence. A retry is one operation; an outcome is only billable when proven.">
+  <meta name="twitter:title" content="AgentMeasure | AI support billing verification">
+  <meta name="twitter:description" content="Review AI support bills against applicable terms and business evidence. Local tools, reproducible findings, and a scoped first-look service.">
   <meta name="twitter:image" content="https://roy-tong.github.io/AgentMeasure/assets/social-preview.png">
   <meta name="twitter:image:alt" content="AgentMeasure: know what your agent usage metrics actually count">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -33,7 +33,7 @@
     "@context": "https://schema.org",
     "@type": "SoftwareSourceCode",
     "name": "AgentMeasure",
-    "description": "Open measurement layer for the agent economy: usage and outcomes with auditable evidence.",
+    "description": "Independent AI support billing verification with applicable terms and business evidence.",
     "url": "https://roy-tong.github.io/AgentMeasure/",
     "codeRepository": "https://github.com/roy-tong/AgentMeasure",
     "license": "https://opensource.org/license/mit",
@@ -66,6 +66,8 @@
         <a href="#lab">Lab</a>
         <a href="#pricing">Pricing</a>
         <a href="recount.html">Recount in your browser</a>
+        <a href="rules/index.html">Vendor rule cards</a>
+        <a href="badges.html">Badges</a>
         <a class="ext" href="https://github.com/roy-tong/AgentMeasure" target="_blank" rel="noopener">GitHub&nbsp;↗</a>
       </nav>
       <div class="nav-cta">
@@ -83,21 +85,21 @@
   <section class="hero" aria-label="Introduction">
     <div class="hero-grid">
       <div class="hero-copy">
-        <p class="eyebrow reveal">The open yardstick for agent &amp; outcome metrics</p>
-        <h1 class="reveal d1">Test your agent <em>metrics.</em></h1>
-        <p class="lede reveal d2">Does your agent metric actually mean what its label says? Turn measurement assumptions into CI checks — PASS, FAIL, or UNPROVABLE.</p>
+        <p class="eyebrow reveal">For CX, finance and procurement</p>
+        <h1 class="reveal d1">Review your AI <em>support bill.</em></h1>
+        <p class="lede reveal d2">Put the effective terms, invoice and business records together. Get reviewable billing differences, a finance one-pager and a clear account of what the evidence cannot prove.</p>
         <div class="hero-actions reveal d4">
-          <a class="btn btn-primary" href="#conformance">Add AgentMeasure to CI</a>
-          <a class="btn btn-ghost" href="#try">Run conformance locally</a>
+          <a class="btn btn-primary" href="./first-look.html">Review one billing period</a>
+          <a class="btn btn-ghost" href="#conformance">Open-source conformance</a>
         </div>
-        <p class="note reveal d5" style="margin-top:14px">New (09-18): CLI v0.4.0 on PyPI — Codex <em>and</em> Claude Code logs, one offline command: <span class="mono-xs">pipx run agentmeasure check</span></p>
+        <p class="note reveal d5" style="margin-top:14px">GitHub <strong>v0.5.0</strong> · 450 Healthcheck tests verified on 2026-10-03. Use the <a href="https://github.com/roy-tong/AgentMeasure/blob/main/healthcheck/README.md#install">pinned Git install</a> while PyPI publishing is pending. Customer payment and repeat use remain unverified.</p>
       </div>
 
       <!-- Conformance report console -->
       <div class="console reveal d2" id="console" aria-label="Example conformance report: PASS, FAIL and UNPROVABLE invariants">
         <div class="console-bar">
           <span class="dot" aria-hidden="true"></span><span class="dot" aria-hidden="true"></span><span class="dot" aria-hidden="true"></span>
-          <span class="console-title">agentmeasure conformance --fixture retry-chain.jsonl</span>
+          <span class="console-title">Developer sample · conformance --fixture retry-chain.jsonl</span>
           <button class="console-replay" id="console-replay" type="button" title="Replay report">replay</button>
         </div>
         <div class="console-body" id="console-body">
@@ -127,10 +129,10 @@
     <div class="status-strip reveal d5" role="list" aria-label="Project status">
       <div class="status" role="listitem"><span class="status-k">Open source</span><span class="status-v ok">MIT</span></div>
       <div class="status" role="listitem"><span class="status-k">Spec</span><span class="status-v spec" data-status="spec">Draft 0.4.5</span></div>
-      <div class="status" role="listitem"><span class="status-k">CLI</span><span class="status-v ok">v0.4.0 on PyPI</span></div>
+      <div class="status" role="listitem"><span class="status-k">CLI</span><span class="status-v">v0.5.0 · Git release</span></div>
       <div class="status" role="listitem"><span class="status-k">SDK</span><span class="status-v" data-status="sdk">v0.1.1</span></div>
       <div class="status" role="listitem"><span class="status-k">Ecosystem audit</span><span class="status-v ok">110+ tools · 45+ verified bugs</span></div>
-      <div class="status" role="listitem"><span class="status-k">Upstream fixes</span><span class="status-v ok">21 merged</span></div>
+      <div class="status" role="listitem"><span class="status-k">Upstream fixes</span><span class="status-v ok">23 merged or accepted</span></div>
     </div>
   </section>
 
@@ -139,15 +141,16 @@
     <div class="wrap">
       <div class="audit-band">
         <div class="audit-numbers">
-          <div class="an"><span class="an-v">124</span><span class="an-k">repositories deep-read</span></div>
+          <div class="an"><span class="an-v">110+</span><span class="an-k">repositories deep-read</span></div>
           <div class="an"><span class="an-v">45+</span><span class="an-k">verified accounting bugs</span></div>
-          <div class="an"><span class="an-v">21</span><span class="an-k">fixes merged upstream</span></div>
-          <div class="an"><span class="an-v">10 min</span><span class="an-k">to audit your own tool</span></div>
+          <div class="an"><span class="an-v">23</span><span class="an-k">fixes merged or accepted upstream</span></div>
+          <div class="an"><span class="an-v">136K</span><span class="an-k">events in a third-party re-review</span></div>
         </div>
         <div class="audit-copy">
           <h2 class="reveal d1">We audited the AI usage-tool ecosystem.<br>The same five bugs kept appearing.</h2>
-          <p class="reveal d2">One assistant message billed per content block (2–5×). Re-emitted Codex events counted twice. Cache writes priced at 1.25× instead of 2×. Price tables 5× off — including in the industry's pricing source of record. Sessions wiped on resume. Every finding: pinned commit, runnable repro, public filing — <strong>21 merged with maintainer credit</strong>.</p>
+          <p class="reveal d2">One assistant message billed per content block (2–5×). Re-emitted Codex events counted twice. Cache writes priced at 1.25× instead of 2×. Price tables 5× off — including in the industry's pricing source of record. Sessions wiped on resume. Every finding: pinned commit, runnable repro, public filing — <strong>23 merged or accepted upstream</strong>, an external maintainer's 136k-event corpus review challenged an initial finding and led to a correction.</p>
           <p class="note reveal d3"><a href="https://github.com/roy-tong/AgentMeasure/blob/main/campaigns/audit-report-2026-09.md">Read the Token-Accounting Bug Report&nbsp;→</a></p>
+          <p class="note reveal d4"><a href="https://github.com/roy-tong/AgentMeasure/blob/main/conformance/evidence/rulestack-cache-prefix-overhead/README.md">External methodology correction: the author revised 436k to 54,154 tokens; not a dollar invoice&nbsp;→</a></p>
           <p class="note reveal d4"><a href="https://github.com/roy-tong/AgentMeasure/blob/main/campaigns/tool-authors.md">Maintain a usage tool? Audit it in 10 minutes with our fixtures&nbsp;→</a></p>
         </div>
       </div>
@@ -168,7 +171,7 @@
         </div>
         <div class="who-card reveal d2">
           <span class="who-k">$1.50–2.00 per resolution</span>
-          <p>Zendesk launched outcome-based pricing in Aug 2024; Salesforce at $2 per conversation, Intercom, Sierra, Ada, and Decagon followed. Per-outcome billing is now the industry default.</p>
+          <p>AI support vendors charge for outcomes under different conditions. Intercom currently includes several outcome types; the effective terms and billing period determine which rules apply.</p>
           <span class="who-v">Per-outcome billing is live</span>
         </div>
         <div class="who-card reveal d3">
@@ -203,7 +206,7 @@
   <!-- ══════════════════ 01 · THE PROBLEM ══════════════════ -->
   <section class="section" id="why" aria-label="The problem">
     <div class="wrap">
-      <h2 class="reveal d1">The software consumer changed.<br>The measurement stack didn’t.</h2>
+      <h2 class="reveal d1">A billing outcome needs<br>the applicable rules and evidence.</h2>
 
       <div class="inequalities" role="list">
         <div class="ineq reveal" role="listitem"><span class="state">Available</span><span class="neq">≠</span><span class="state">Presented</span></div>
@@ -222,19 +225,19 @@
 
       <div class="who-grid">
         <div class="who-card reveal">
-          <span class="who-k">Tool providers</span>
-          <p>Agents hammer your endpoint; retries inflate every count.</p>
-          <span class="who-v">Price by operation, not by noise</span>
+          <span class="who-k">CX and support operations</span>
+          <p>Your team knows which cases reopened, needed handover or remained unresolved.</p>
+          <span class="who-v">Bring the business records</span>
         </div>
         <div class="who-card reveal d1">
-          <span class="who-k">Platforms &amp; metering</span>
-          <p>Billing rides on usage numbers that may include CI and synthetic traffic.</p>
-          <span class="who-v">Meters that survive an audit</span>
+          <span class="who-k">Finance and procurement</span>
+          <p>Review the actual outcome charges and effective terms before a renewal or payment decision.</p>
+          <span class="who-v">Bring the invoice and decision</span>
         </div>
         <div class="who-card reveal d2">
-          <span class="who-k">Runtime evaluators</span>
-          <p>Every runtime counts differently, so comparisons are folklore.</p>
-          <span class="who-v">Same semantics across five runtimes</span>
+          <span class="who-k">Implementation partners</span>
+          <p>Help identify the authorized exports and the person already doing a billing review.</p>
+          <span class="who-v">Start with one qualified account</span>
         </div>
       </div>
     </div>
@@ -460,47 +463,27 @@
   <!-- ══════════════════ 05b · PRICING ══════════════════ -->
   <section class="section section-panel" id="pricing" aria-label="Pricing">
     <div class="wrap">
-      <h2 class="reveal d1">Pricing that survives its own audit.</h2>
-      <p class="body-secondary reveal d2">The standard and the local tooling are open source and free, permanently. What we sell is reconciliation work on top: your export, recomputed under named rules, into a one-page settlement statement your finance team can read. Every fee below maps to a countable unit — the way we think all AI billing should work.</p>
-
+      <h2 class="reveal d1">Start with one scoped review.</h2>
+      <p class="body-secondary reveal d2">Check the effective terms, export fields and upcoming decision before agreeing the review. The open-source tools and AMS-1 standard remain free.</p>
       <div class="pricing-grid">
         <div class="pricing-card reveal d3">
-          <div class="pricing-name">Open source</div>
-          <div class="pricing-price">$0 <span class="pricing-unit">forever</span></div>
-          <ul class="pricing-list">
-            <li>Local checker, conformance pack, CI action</li>
-            <li>AMS-1 settlement statements you generate yourself</li>
-            <li>Public rule library, vendor export mappings</li>
-            <li>Data never leaves your machine</li>
-          </ul>
+          <div class="pricing-name">Open source</div><div class="pricing-price">$0 <span class="pricing-unit">forever</span></div>
+          <ul class="pricing-list"><li>Local tools, conformance pack and CI action</li><li>AMS-1 statements and public rule library</li><li>Reproducible checks with missing evidence visible</li><li>Run in your environment</li></ul>
           <a class="btn btn-ghost" href="#try">Run it yourself</a>
         </div>
         <div class="pricing-card pricing-card-hi reveal d4">
-          <div class="pricing-name">First-Look reconciliation</div>
-          <div class="pricing-price">$990 <span class="pricing-unit">one-time, per vendor export</span></div>
-          <ul class="pricing-list">
-            <li>You send the export (Intercom Fin · Zendesk · Decagon)</li>
-            <li>AMS-1 one-pager: confirmed vs assumed resolutions, the dollar delta, a named rule behind every figure</li>
-            <li>Flagged dispute lines + dispute bundle</li>
-            <li>30-minute walkthrough · processed locally</li>
-          </ul>
-          <a class="btn btn-primary" href="mailto:tongroy18@gmail.com?subject=First-Look%20reconciliation">Send an export</a>
-          <p class="pricing-note">Design partners: first five free, in exchange for a public testimonial.</p>
+          <div class="pricing-name">First-look review</div><div class="pricing-price">$990 <span class="pricing-unit">one-time pilot quote</span></div>
+          <ul class="pricing-list"><li>One vendor and one complete billing period</li><li>Data and rule feasibility checked first</li><li>Finance one-pager, findings and evidence bundle</li><li>30-minute walkthrough; processing scope agreed with you</li></ul>
+          <a class="btn btn-primary" href="./first-look.html">Check the review scope</a>
+          <p class="pricing-note">Design partners are selected by data feasibility and feedback. Public testimonials require separate consent.</p>
         </div>
         <div class="pricing-card reveal d5">
-          <div class="pricing-name">Monthly reconciliation</div>
-          <div class="pricing-price">from $490<span class="pricing-unit">/month</span></div>
-          <ul class="pricing-list">
-            <li>The same statement, every month</li>
-            <li>Rule updates when a vendor changes how it counts</li>
-            <li>Dispute-line watch + quarterly review</li>
-            <li>Tiered by what you bill: ≤10k resolutions/mo $490 · 10k–50k $990 · larger or multi-vendor stacks quoted as enterprise</li>
-          </ul>
-          <a class="btn btn-ghost" href="mailto:tongroy18@gmail.com?subject=Monthly%20reconciliation">Ask about monthly</a>
+          <div class="pricing-name">Recurring or renewal review</div><div class="pricing-price">By scope</div>
+          <ul class="pricing-list"><li>Monthly, quarterly or before a renewal</li><li>Effective rule versions and period comparison</li><li>Vendor count, record volume and manual review agreed in advance</li><li>Repeat need established after the first review</li></ul>
+          <a class="btn btn-ghost" href="mailto:tongroy18@gmail.com?subject=Recurring%20AI%20support%20bill%20review">Discuss the next review</a>
         </div>
       </div>
-
-      <p class="note reveal d5">No accuracy SLAs — every deliverable ships a coverage block instead (what entered the computation, what stayed UNPROVABLE). No recovery commissions — we produce the evidence; the negotiation stays yours.</p>
+      <p class="note reveal d5">Billing-rule differences, stricter buyer standards and actual credits stay separate. Every delivery includes coverage and unresolved evidence. Findings do not establish a vendor-confirmed refund; negotiation stays with the parties. <strong>The verification rules stay public and free; paying does not change what the evidence says.</strong></p>
     </div>
   </section>
 
@@ -626,6 +609,11 @@
       <aside class="evidence-card reveal d5" aria-label="Recent published evidence">
         <div class="evidence-k">Recent evidence / published 2026-08-25</div>
         <p class="evidence-line">Three real Langfuse demo traces, run through the canonical pipeline: <strong>12 attempts; grouping evidence 0%; safe operation coverage 0%</strong>. All attempts succeeded, so the retry-chain rule never fires and logical usage is genuinely undecidable. A report that prints a number here would be inventing it; this one says <a href="https://github.com/roy-tong/AgentMeasure/blob/main/conformance/evidence/langfuse-demo-traces/README.md" target="_blank" rel="noopener">not computable</a>.</p>
+      </aside>
+
+      <aside class="evidence-card reveal d5" aria-label="External real-world case" style="margin-top:.8rem">
+        <div class="evidence-k">External real-world case / surfaced 2026-09-20</div>
+        <p class="evidence-line">A public AI-usage write-up claimed one subagent spawn costs ~436k tokens; the author's own re-measurement corrected it to <strong>54,154</strong> — a replayed cache prefix had been read as fresh per-spawn overhead. Surfaced by an external contributor and mapped to our <a href="https://github.com/roy-tong/AgentMeasure/blob/main/conformance/evidence/rulestack-cache-prefix-overhead/README.md" target="_blank" rel="noopener">cache-distinction invariant</a>: cached replay counts once toward served volume, never as fresh per-spawn input.</p>
       </aside>
     </div>
   </section>
@@ -800,6 +788,8 @@
           <a href="https://github.com/roy-tong/AgentMeasure/blob/main/standard/ENTITY.md" target="_blank" rel="noopener">Entity</a>
           <a href="https://github.com/roy-tong/AgentMeasure/blob/main/standard/QUALITY.md" target="_blank" rel="noopener">Quality</a>
           <a href="https://github.com/roy-tong/AgentMeasure/blob/main/standard/SETTLEMENT.md" target="_blank" rel="noopener">Settlement (AMS-1)</a>
+          <a href="badges.html">AMS-1 badges</a>
+          <a href="rules/index.html">Vendor rule cards</a>
         </nav>
         <nav class="footer-col" aria-label="Research">
           <span class="footer-k">Research</span>

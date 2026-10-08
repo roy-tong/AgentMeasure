@@ -1,4 +1,0 @@
-User-agent: *
-Allow: /
-
-Sitemap: https://roy-tong.github.io/AgentMeasure/sitemap.xml
