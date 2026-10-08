@@ -1,0 +1,300 @@
+{
+  "description": "Raw certification inputs for availability-cert-chenhz01-001: the four tool results and the next model request each faced. The runner recomputes certification from these, independent of the x_availability fields in the events.",
+  "canonicalization": "json.dumps(sort_keys=True, separators=(',',':'), ensure_ascii=False); sha256 over UTF-8",
+  "results": {
+    "1": {
+      "tool": "weather.get",
+      "content": {
+        "city": "Lisbon",
+        "cond": "clear",
+        "temp_c": 21
+      }
+    },
+    "2": {
+      "tool": "db.query",
+      "content": {
+        "rows": [
+          {
+            "cat": "electronics",
+            "id": 1
+          },
+          {
+            "cat": "home",
+            "id": 2
+          },
+          {
+            "cat": "electronics",
+            "id": 3
+          },
+          {
+            "cat": "home",
+            "id": 4
+          },
+          {
+            "cat": "electronics",
+            "id": 5
+          },
+          {
+            "cat": "home",
+            "id": 6
+          },
+          {
+            "cat": "electronics",
+            "id": 7
+          },
+          {
+            "cat": "home",
+            "id": 8
+          },
+          {
+            "cat": "electronics",
+            "id": 9
+          },
+          {
+            "cat": "home",
+            "id": 10
+          },
+          {
+            "cat": "electronics",
+            "id": 11
+          },
+          {
+            "cat": "home",
+            "id": 12
+          },
+          {
+            "cat": "electronics",
+            "id": 13
+          },
+          {
+            "cat": "home",
+            "id": 14
+          },
+          {
+            "cat": "electronics",
+            "id": 15
+          },
+          {
+            "cat": "home",
+            "id": 16
+          },
+          {
+            "cat": "electronics",
+            "id": 17
+          },
+          {
+            "cat": "home",
+            "id": 18
+          },
+          {
+            "cat": "electronics",
+            "id": 19
+          },
+          {
+            "cat": "home",
+            "id": 20
+          },
+          {
+            "cat": "electronics",
+            "id": 21
+          },
+          {
+            "cat": "home",
+            "id": 22
+          },
+          {
+            "cat": "electronics",
+            "id": 23
+          },
+          {
+            "cat": "home",
+            "id": 24
+          },
+          {
+            "cat": "electronics",
+            "id": 25
+          },
+          {
+            "cat": "home",
+            "id": 26
+          },
+          {
+            "cat": "electronics",
+            "id": 27
+          },
+          {
+            "cat": "home",
+            "id": 28
+          },
+          {
+            "cat": "electronics",
+            "id": 29
+          },
+          {
+            "cat": "home",
+            "id": 30
+          },
+          {
+            "cat": "electronics",
+            "id": 31
+          },
+          {
+            "cat": "home",
+            "id": 32
+          },
+          {
+            "cat": "electronics",
+            "id": 33
+          },
+          {
+            "cat": "home",
+            "id": 34
+          },
+          {
+            "cat": "electronics",
+            "id": 35
+          },
+          {
+            "cat": "home",
+            "id": 36
+          },
+          {
+            "cat": "electronics",
+            "id": 37
+          },
+          {
+            "cat": "home",
+            "id": 38
+          },
+          {
+            "cat": "electronics",
+            "id": 39
+          },
+          {
+            "cat": "home",
+            "id": 40
+          },
+          {
+            "cat": "electronics",
+            "id": 41
+          },
+          {
+            "cat": "home",
+            "id": 42
+          },
+          {
+            "cat": "electronics",
+            "id": 43
+          },
+          {
+            "cat": "home",
+            "id": 44
+          },
+          {
+            "cat": "electronics",
+            "id": 45
+          },
+          {
+            "cat": "home",
+            "id": 46
+          },
+          {
+            "cat": "electronics",
+            "id": 47
+          },
+          {
+            "cat": "home",
+            "id": 48
+          },
+          {
+            "cat": "electronics",
+            "id": 49
+          },
+          {
+            "cat": "home",
+            "id": 50
+          }
+        ],
+        "total": 50
+      }
+    },
+    "3": {
+      "tool": "files.read",
+      "content": {
+        "bytes": 4096,
+        "path": "/notes.txt",
+        "text": "meeting at 3pm"
+      }
+    },
+    "4": {
+      "tool": "http.fetch",
+      "content": {
+        "body": "ok-α",
+        "status": 200,
+        "url": "https://x.test/a"
+      }
+    }
+  },
+  "next_request": {
+    "1": {
+      "emitted": true,
+      "messages": [
+        {
+          "role": "user",
+          "content": "weather?"
+        },
+        {
+          "role": "tool",
+          "content": "{\"city\":\"Lisbon\",\"cond\":\"clear\",\"temp_c\":21}"
+        },
+        {
+          "role": "assistant",
+          "content": "21C and clear in Lisbon."
+        }
+      ]
+    },
+    "2": {
+      "emitted": true,
+      "messages": [
+        {
+          "role": "user",
+          "content": "top category?"
+        },
+        {
+          "role": "assistant",
+          "content": "The query returned 50 rows; most common category = electronics."
+        }
+      ]
+    },
+    "3": {
+      "emitted": true,
+      "messages": [
+        {
+          "role": "user",
+          "content": "what's in notes?"
+        },
+        {
+          "role": "assistant",
+          "content": "I couldn't complete the read step; stopping."
+        }
+      ]
+    },
+    "4": {
+      "emitted": false,
+      "messages": null
+    }
+  },
+  "embedded_at": {
+    "1": "messages[1].content",
+    "2": "messages[1].content",
+    "3": null,
+    "4": null
+  },
+  "embed_form": {
+    "1": "verbatim",
+    "2": "summary",
+    "3": null,
+    "4": null
+  },
+  "claim_boundary": "Synthetic; authored for AgentMeasure #11. Not a real runtime trace."
+}

@@ -73,6 +73,9 @@ jobs:
       - name: "External fixture conformance (Urusilla-002: issue 10 / AM-U-007 grain guard)"
         run: |
           python3 conformance/runners/run_external_fixture_002.py
+      - name: "External fixture conformance (chenhz01-001: issue 11 / availability certification axis)"
+        run: |
+          python3 conformance/runners/run_external_fixture_003.py
       - name: "Outcome-family conformance (OUT-001..004: definability / traceability / reopen dedup / claim-evidence)"
         run: |
           python3 conformance/runners/run_outcome_audit.py
