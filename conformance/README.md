@@ -81,7 +81,7 @@ python3 conformance/runners/run_delegation.py        # 多 Agent 委托（DELEGA
   制品（Ed25519 JWS，demo key，decoded payload 为 fixture 级）：hop-replay
   ledger、per-request receipt、session-kind 聚合 cover（1 MISS + 2 HIT，
   per-crossing `meter_event_id` 不塌缩，estimate 面永远 unsigned）。来自
-  BerriAI/litellm#39057 交付序列；映射与 L1-L6 claim boundary 见各目录
+  BerriAI/litellm#39057 交付序列；映射与六层 claim boundary（Stage 1-6） 见各目录
   MAPPING 文档。**外部独立验证路径**（stranger verification）：
   `scripts/verify_receipt.py --base <gateway>` 对 Metrecept 公网 JWKS。
   署名归 Metrecept；本仓只作投影与守卫，非 endorsement。
