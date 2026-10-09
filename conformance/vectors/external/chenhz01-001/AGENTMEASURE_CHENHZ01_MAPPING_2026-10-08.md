@@ -82,6 +82,24 @@ UNOBSERVABLE→FALSE collapse the standard forbids. Guard 6 in the runner shows
 that mislabeling it as `absent` moves the denominator from 3 to 4, so the
 collapse is detectable rather than silent.
 
+## Boundaries this vector does not cross
+
+Two limits, flagged in review (chenhz01, #32), that a real-trace certifier has
+to close and this synthetic fixture deliberately does not:
+
+- **`summary-embed` is declared, not inferred.** Here the summary bucket is
+  read from the sidecar's `embed_form`, which is ground truth for a synthetic
+  fixture. On a real trace the summary has to be established by a content-level
+  criterion the runtime cannot silently fail to compute — a hash prefix,
+  sub-sequence coverage, or an edit-distance threshold — or the classifier
+  reintroduces the "looks wired, silently isn't" failure this vector exists to
+  catch.
+- **The field-walk is single-layer exact match.** It checks whether a
+  `messages[i].content` value parses and hashes equal to the result content.
+  Nested embeddings (content parts, tool-call arguments) and partial embeddings
+  are out of scope. This is a pinned exact-match certifier, not a general
+  substring or deep search.
+
 ## Files
 
 - `agentmeasure_chenhz01_fixture_001.events.jsonl` — 14 FMT-002 events (reach,

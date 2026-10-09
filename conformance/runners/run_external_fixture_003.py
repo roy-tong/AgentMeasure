@@ -114,12 +114,15 @@ def main() -> int:
     schema = json.loads(SCHEMA_FILE.read_text())
 
     print("chenhz01-001 guard 1: schema validation (FMT-002)")
+    # Fail loudly on an empty events file, so the per-event loop below can't
+    # pass vacuously (chenhz01, #32 review).
+    check("events file is non-empty", len(events) > 0, f"{len(events)} events")
     for i, ev in enumerate(events, 1):
         try:
             validate(ev, schema)
         except SchemaError as e:
             check(f"event {i} valid", False, str(e))
-    check(f"{len(events)} events valid under FMT-002", True)
+    check(f"{len(events)} events valid under FMT-002", len(events) > 0)
 
     print("chenhz01-001 guard 2: core boolean consumption_rate (the collapse)")
     cell = aggregate(events)[("availability-cert",)]
