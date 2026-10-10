@@ -1,0 +1,70 @@
+{
+  "agentmeasure_commit": "67c276b7d17d5a00dc2fa89681eae97f29eeda06",
+  "aggregator_path": "lab/agentmeasure_lab/analysis.py",
+  "fixture_scope": "synthetic-availability-certification-only",
+  "variant_id": "availability-cert",
+  "events": 14,
+  "schema_valid_under_fmt_002": true,
+  "core_expected_metrics": {
+    "operations": 4,
+    "operation_success_rate": {
+      "numerator": 4,
+      "denominator": 4,
+      "value": 1.0
+    },
+    "consumption_rate": {
+      "numerator": 1,
+      "denominator": 4,
+      "value": 0.25,
+      "note": "core M4.1 boolean: counts only State-A (verbatim) as consumed; it puts the unreachable (UNOBSERVABLE) result in the denominator and gives the summary-embed no bucket. This is the collapse the four-value axis corrects."
+    }
+  },
+  "availability_certification": {
+    "axis": [
+      "verbatim",
+      "summary-embed",
+      "absent",
+      "unreachable"
+    ],
+    "breakdown": {
+      "verbatim": 1,
+      "summary_embed": 1,
+      "absent": 1,
+      "unreachable": 1
+    },
+    "state_a_rate": {
+      "numerator": 1,
+      "denominator": 3,
+      "value": 0.333,
+      "excluded_unobservable": 1,
+      "basis": "State A (verbatim) / judgeable results; unreachable is UNOBSERVABLE and excluded, never counted FALSE (invariant 17)"
+    },
+    "field_paths": {
+      "op1": "messages[1].content",
+      "op2": "messages[1].content",
+      "op3": null,
+      "op4": null
+    },
+    "reserialization_guard": {
+      "op": 1,
+      "raw_substring": "absent",
+      "canonical_fieldwalk": "verbatim",
+      "note": "A raw byte/substring certifier misses op1 because the result is embedded as a re-serialized JSON string; canonicalizing the field value certifies it. (roy-tong, #11)"
+    }
+  },
+  "boundary_assertions": {
+    "forbid": [
+      "Do not certify summary-embed as State A (availability) — it is lossy influence evidence, not verbatim availability.",
+      "Do not fold summary-embed into absent — it is its own bucket; collapsing it under-reports on compaction-heavy traces.",
+      "Do not count unreachable (UNOBSERVABLE) as not-consumed/absent — exclude it from the denominator (invariant 17).",
+      "Do not certify op1 from a raw byte/substring check — re-serialization makes that a false negative."
+    ]
+  },
+  "attribution": {
+    "ontology_two_state_and_compaction_boundary": "Gunjan Jaswal (@gunjanjaswal)",
+    "operational_hash_certification": "@chenhz01",
+    "canonicalization_fieldpath_and_four_value_axis": "@roy-tong",
+    "fixture_author": "Gunjan Jaswal (@gunjanjaswal)"
+  },
+  "claim_boundary": "Synthetic conformance fixture authored for AgentMeasure issue #11. It is not an endorsement, an external reproduction, or a real provider/agent-runtime observation."
+}
