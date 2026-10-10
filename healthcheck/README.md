@@ -77,6 +77,10 @@ Input filters for `check` and `compare`:
 
 ## Outcome-billing verification: prepare → recount → dispute → recovery
 
+For a hands-on first run, I walk through two reproducible synthetic examples in
+[Check an Intercom Fin bill locally in 10 minutes](../docs/intercom-bill-walkthrough.md):
+a CSV recount and a separate confirmed-versus-assumed settlement statement.
+
 The buyer-side bill check for per-resolution vendors (Intercom Fin, Zendesk AI
 Agents, …). Rules live in the [vendor-rules registry](../registry/vendor-rules.json)
 (single source of truth, each rule cited and confidence-graded). Four commands,
