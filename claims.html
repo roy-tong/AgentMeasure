@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Metering claims index — AgentMeasure</title>
+<meta name="description" content="A public, linkable index of metering-accounting findings across AI usage tools: verified mismatches, fixes re-verified, passes, and what stays unprovable. No composite scores.">
+<link rel="stylesheet" href="styles.css">
+<style>
+.legend{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 6px}
+.chip{display:inline-block;border-radius:999px;padding:2px 10px;font-size:12px;font-weight:600;border:1px solid}
+.vm{background:#fdecec;color:#8a1f1f;border-color:#f3c1c1}
+.fx{background:#e9f6ec;color:#1d6b33;border-color:#bfe3c8}
+.cp{background:#eaf1fb;color:#1f4f8a;border-color:#c3d5ef}
+.up{background:#f1f2f4;color:#4d5560;border-color:#d6dae0}
+.na{background:#faf7ef;color:#7a5d1a;border-color:#e8dcbf}
+table.claims{border-collapse:collapse;width:100%;margin:10px 0 26px;font-size:13.5px}
+table.claims th{text-align:left;border-bottom:2px solid #ccd4de;padding:6px 8px;font-size:12.5px;color:#3b4351}
+table.claims td{border-bottom:1px solid #e6eaf0;padding:7px 8px;vertical-align:top}
+table.claims td.s{white-space:nowrap}
+.klass{border:1px solid #e3e8ef;border-radius:12px;padding:18px 22px;background:#fff;margin:14px 0}
+.klass h3{margin:0 0 4px;font-size:16.5px}
+.klass p.how{color:#5c6575;font-size:13.5px;margin:4px 0 10px;max-width:78ch}
+.stats{display:flex;flex-wrap:wrap;gap:12px;margin:16px 0}
+.stat{border:1px solid #e3e8ef;border-radius:12px;padding:14px 20px;background:#fff;min-width:130px}
+.stat b{display:block;font-size:24px}
+.stat span{font-size:12.5px;color:#5c6575}
+.note{border-left:3px solid #ccd4de;margin:14px 0;padding:6px 16px;color:#4d5560;font-size:13.5px;max-width:82ch}
+code{background:#f0f2f5;padding:1px 5px;border-radius:4px;font-size:12.5px}
+.snippet{background:#f6f7f9;border:1px solid #e3e8ef;border-radius:8px;padding:10px 14px;font-size:12.5px;overflow-x:auto;font-family:ui-monospace,Menlo,monospace}
+</style>
+</head>
+<body>
+<div class="wrap">
+<section>
+<h1>Metering claims index</h1>
+<p class="lead">Trust-score products answer whether a tool is safe to use.
+This index answers a narrower question: <strong>is this metering number
+supported by evidence?</strong> Every entry binds a finding to a status, a
+date and a public link. There is no composite score, no ranking, and no
+paying for placement — the states below are the whole vocabulary.</p>
+</section>
+
+<section>
+<h2>Five states, and only five</h2>
+<div class="legend">
+<span class="chip vm">Verified Mismatch</span>
+<span class="chip fx">Fixed · Re-verified</span>
+<span class="chip cp">Conformance Pass</span>
+<span class="chip up">UNPROVABLE</span>
+<span class="chip na">Not a bug / semantics</span>
+</div>
+<p class="lead">A <strong>Verified Mismatch</strong> was reproduced with the
+tool's own parser on a synthetic fixture, filed upstream with a pinned
+commit. <strong>Fixed · Re-verified</strong> means the upstream fix landed
+(the link is the fix). <strong>Conformance Pass</strong> names tools that
+audited clean — that matters as much as the bugs. <strong>UNPROVABLE</strong>
+is a result, not an error. Emission shapes that are intended contracts are
+filed as <strong>semantics questions</strong>, not bugs.</p>
+</section>
+
+<section>
+<h2>Scope</h2>
+<div class="stats">
+<div class="stat"><b>~110</b><span>repositories audited<br>2026-09-06 → 09-09</span></div>
+<div class="stat"><b>65+</b><span>evidence-backed filings<br>(report, 2026-09-19)</span></div>
+<div class="stat"><b>45+</b><span>verified accounting bugs<br>(README, 2026-10-11)</span></div>
+<div class="stat"><b>23</b><span>fixes merged or accepted<br>(README, 2026-10-11)</span></div>
+</div>
+<p class="lead">Method: read the code, build a synthetic fixture, run the
+tool's own parser against it. Full method and case list:
+<a href="https://github.com/roy-tong/AgentMeasure/blob/main/campaigns/audit-report-2026-09.md">the audit report</a>
+and <a href="https://github.com/roy-tong/AgentMeasure/blob/main/campaigns/measurement-casebook.md">measurement casebook</a>.
+Below are the named entries; the casebook carries the rest.</p>
+</section>
+
+<div class="klass">
+<h3>Class 1 · One assistant message ≠ one line <span class="chip vm">10 tools</span></h3>
+<p class="how">Claude Code writes one JSONL line per content block, each carrying the same message id and usage. Sum per line and a message with text + two tool calls is billed 3×. Measured real overcounts: 2×–5×.</p>
+<table class="claims">
+<tr><th>Tool</th><th>Finding</th><th class="s">Status</th><th>Evidence</th></tr>
+<tr><td>tokendash</td><td>3-block message → 3× tokens and cost</td><td class="s"><span class="chip fx">Fixed · Re-verified</span></td><td><a href="https://github.com/zhangferry/tokendash/pull/37">PR #37</a>, merged 2026-09-09</td></tr>
+<tr><td>ccem</td><td>same shape, first-wins variant undercounts</td><td class="s"><span class="chip vm">Verified Mismatch</span></td><td><a href="https://github.com/Genuifx/ccem/issues/12">issue #12</a>, 2026-09</td></tr>
+<tr><td>samewrite</td><td>a research project's headline numbers rested on it</td><td class="s"><span class="chip vm">Verified Mismatch</span></td><td><a href="https://github.com/ipeterpetrus/samewrite/issues/1">issue #1</a>, 2026-09</td></tr>
+</table>
+</div>
+
+<div class="klass">
+<h3>Class 2 · Re-emitted events <span class="chip vm">5 tools</span></h3>
+<p class="how">Codex re-emits token_count events with identical totals after compaction, settings changes and rate-limit refreshes. Naive accumulation double-counts. Measured on real corpora: +0.5% to +15% per session file.</p>
+<table class="claims">
+<tr><th>Tool</th><th>Finding</th><th class="s">Status</th><th>Evidence</th></tr>
+<tr><td>token-vision</td><td>one real rollout, +14.97%</td><td class="s"><span class="chip vm">Verified Mismatch</span></td><td><a href="https://github.com/extrei/token-vision/issues/1">issue #1</a>, 2026-09</td></tr>
+<tr><td>tokenscope</td><td>identical-total re-emissions summed</td><td class="s"><span class="chip fx">Fixed · Re-verified</span></td><td><a href="https://github.com/stealthsrc/tokenscope/pull/6">PR #6</a>, merged</td></tr>
+<tr><td>coding-agent-usage-tracker</td><td>same class</td><td class="s"><span class="chip fx">Fixed · Re-verified</span></td><td><a href="https://github.com/avihut/coding-agent-usage-tracker/pull/1">PR #1</a>, merged</td></tr>
+</table>
+</div>
+
+<div class="klass">
+<h3>Class 3 · Cache-pricing semantics <span class="chip vm">9 tools</span></h3>
+<p class="how">Anthropic's input_tokens excludes cache tokens; OpenAI's includes them; 5-minute cache writes cost 1.25× input, 1-hour 2×, reads 0.1×. One convention applied to both providers clamps input to $0, double-charges cache, or prices 1h writes at 1.25×.</p>
+<table class="claims">
+<tr><th>Tool</th><th>Finding</th><th class="s">Status</th><th>Evidence</th></tr>
+<tr><td>claude-hud</td><td>1h writes priced 1.25× — 37.5% understated on that component</td><td class="s"><span class="chip fx">Fixed · Re-verified</span></td><td><a href="https://github.com/jarrodwatts/claude-hud/pull/758">PR #758</a>, merged (27.9k★)</td></tr>
+<tr><td>one-api-pro</td><td>streaming += double-counts input (+50.7% no-cache) and re-subtracts cache in billing</td><td class="s"><span class="chip fx">Fixed · Re-verified</span></td><td><a href="https://github.com/modelbus/one-api-pro/issues/13">issue #13</a>, closed completed</td></tr>
+<tr><td>langfuse</td><td>OTel cache_write alias missing from the extractor's cache-creation list — the flagship cache-accounting finding</td><td class="s"><span class="chip fx">Fixed · Re-verified</span></td><td><a href="https://github.com/langfuse/langfuse/issues/17117">issue #17117</a>, fixed on main (34k★)</td></tr>
+</table>
+</div>
+
+<div class="klass">
+<h3>Class 4 · Price-table drift <span class="chip vm">7 tools, including the source</span></h3>
+<p class="how">Embedded price snapshots diverge from published rates by 1.2×–5× — including vendored copies of LiteLLM's price file, the industry's source of record.</p>
+<table class="claims">
+<tr><th>Tool</th><th>Finding</th><th class="s">Status</th><th>Evidence</th></tr>
+<tr><td>litellm</td><td>Bedrock CRIS Claude-3-Haiku cache rates ratio-generated instead of Anthropic's non-round published values</td><td class="s"><span class="chip vm">Verified Mismatch</span></td><td><a href="https://github.com/BerriAI/litellm/issues/40360">issue #40360</a>, 2026-09</td></tr>
+<tr><td>llmcost</td><td>inherited the same values in a vendored snapshot</td><td class="s"><span class="chip vm">Verified Mismatch</span></td><td><a href="https://github.com/prassoai/llmcost/issues/25">issue #25</a>, 2026-09</td></tr>
+<tr><td>snip</td><td>two contradictory hardcoded price tables</td><td class="s"><span class="chip fx">Fixed · Re-verified</span></td><td><a href="https://github.com/edouard-claude/snip/issues/186">issue #186</a> → fixed via #189</td></tr>
+</table>
+</div>
+
+<div class="klass">
+<h3>Class 5 · Resume/fork history loss <span class="chip vm">4 tools</span></h3>
+<p class="how">Codex resume writes a new rollout file with the original session id; stores that replace-per-session wipe everything before the resume, and fork replay double-counts the parent prefix.</p>
+<table class="claims">
+<tr><th>Tool</th><th>Finding</th><th class="s">Status</th><th>Evidence</th></tr>
+<tr><td>ai-usage-inspector</td><td>86% of a session's tokens vanish (real pair measured)</td><td class="s"><span class="chip vm">Verified Mismatch</span></td><td><a href="https://github.com/Kud0o/ai-usage-inspector/issues/1">issue #1</a>, 2026-09</td></tr>
+<tr><td>swarm</td><td>fork replay double-counts the parent prefix</td><td class="s"><span class="chip fx">Fixed · Re-verified</span></td><td><a href="https://github.com/ra3orblade/swarm/pull/146">PR #146</a> with maintainer credit, 2026-09</td></tr>
+</table>
+</div>
+
+<div class="klass">
+<h3>Fixes landed after publication <span class="chip fx">2026-09-11 →</span></h3>
+<p class="how">Each fix is the upstream link; the dated subsection of the audit report records when it landed.</p>
+<table class="claims">
+<tr><th>Tool</th><th class="s">Status</th><th>Evidence</th></tr>
+<tr><td>candor</td><td class="s"><span class="chip fx">Fixed</span></td><td><a href="https://github.com/auswm85/candor/pull/8">PR #8</a> — gpt-4o cached input 0.3125 → 1.25 with a pinned-table regression guard (merged 09-14)</td></tr>
+<tr><td>openlit</td><td class="s"><span class="chip fx">Fixed</span></td><td><a href="https://github.com/openlit/openlit/pull/1543">PR #1543</a> — measured-zero no longer conflated with unknown (merged 09-15)</td></tr>
+<tr><td>codeburn</td><td class="s"><span class="chip fx">Fixed</span></td><td><a href="https://github.com/getagentseal/codeburn/pull/1264">PR #1264</a> — three-layer token_count dedup after three review rounds (merged 09-16)</td></tr>
+<tr><td>tokscale</td><td class="s"><span class="chip fx">Fixed</span></td><td><a href="https://github.com/junhoyeo/tokscale/issues/1306">issue #1306</a> — forked sessions no longer double-count</td></tr>
+<tr><td>claude-usage-widget</td><td class="s"><span class="chip fx">Fixed</span></td><td><a href="https://github.com/everssauro/claude-usage-widget/issues/1">issue #1</a> — first-wins no longer drops 25% of output (maintainer reproduced independently)</td></tr>
+<tr><td>token-monitor</td><td class="s"><span class="chip fx">Fixed</span></td><td><a href="https://github.com/Javis603/token-monitor/issues/627">issue #627</a> — fork dedup anchored on stable response identity</td></tr>
+<tr><td>openusage</td><td class="s"><span class="chip fx">Fixed</span></td><td><a href="https://github.com/janekbaraniewski/openusage/issues/360">issue #360</a> — Codex cached tokens no longer billed twice</td></tr>
+<tr><td>tokenfuse</td><td class="s"><span class="chip fx">Fixed</span></td><td><a href="https://github.com/TAIPANBOX/tokenfuse/issues/267">issue #267</a> — cached tokens no longer priced on both sides</td></tr>
+<tr><td>trulens</td><td class="s"><span class="chip fx">Fixed</span></td><td><a href="https://github.com/truera/trulens/pull/2766">PR #2766</a> — mixed-currency aggregation, fixed by a third-party contributor from this report</td></tr>
+</table>
+</div>
+
+<div class="klass">
+<h3>Audited clean <span class="chip cp">Conformance Pass</span> · and one correct rejection</h3>
+<p class="how">Most audited repos passed. We name the clean ones because that matters. And one filing we got wrong the first time — an emission shape with no unguarded consumer is an intended contract, not a bug; the maintainer was right to close it not-actionable, and it is now a methodology rule.</p>
+<table class="claims">
+<tr><th>Tool</th><th class="s">Status</th><th>Evidence</th></tr>
+<tr><td>promptfoo · Portkey model data · TokenTracker</td><td class="s"><span class="chip cp">Conformance Pass</span></td><td>named clean in the <a href="https://github.com/roy-tong/AgentMeasure/blob/main/campaigns/audit-report-2026-09.md">audit report</a>, 2026-09</td></tr>
+<tr><td>pydantic-ai</td><td class="s"><span class="chip na">Not a bug · semantics</span></td><td><a href="https://github.com/pydantic-ai/pydantic-ai/issues/7975">issue #7975</a> closed not-actionable — correctly</td></tr>
+</table>
+</div>
+
+<section>
+<h2>Audit your own tool in 10 minutes</h2>
+<p class="lead">The fixture corpus is open data — plain JSONL plus expected
+totals, no runtime. Point your parser at it like at real logs:</p>
+<div class="snippet">git clone --depth 1 https://github.com/roy-tong/AgentMeasure
+python3 conformance/pack/agentmeasure selftest   # the expected-totals style
+agentmeasure conformance --new-vector my-check   # pin your own shape as a vector</div>
+<p class="lead" style="margin-top:10px">Found a metering claim this index
+should carry? <a href="https://github.com/roy-tong/AgentMeasure/issues">File it</a> —
+a finding needs a reproduction and a date, that is the whole bar.</p>
+</section>
+
+<div class="note">
+<strong>Honesty notes.</strong> Counts are of filings with pinned evidence;
+merge dates are the upstream links' own. All reproductions are synthetic —
+no private logs anywhere. Most audited repos passed. This audit was performed
+with the methods and fixtures of this repository — that is the demo; no
+audited project endorses AgentMeasure. The report's live merge counter:
+<a href="https://github.com/search?q=author%3Aroy-tong+type%3Apr+is%3Amerged">author:roy-tong is:merged</a>.
+</div>
+
+</div>
+</body>
+</html>
