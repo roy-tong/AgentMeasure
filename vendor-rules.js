@@ -29,7 +29,9 @@
       "solved_at",
       "resolved_at",
       "solved at",
-      "closed at"
+      "closed at",
+      "closed time",
+      "resolved time"
     ],
     "conversation_id": [
       "conversation_id",
@@ -71,7 +73,8 @@
       "created_at",
       "created",
       "created at",
-      "conversation created at"
+      "conversation created at",
+      "created time"
     ],
     "vendor_billed": [
       "vendor_billed",
