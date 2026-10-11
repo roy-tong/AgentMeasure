@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Release notes — AgentMeasure</title>
+<meta name="description" content="What each AgentMeasure release ships, who it is for, and what you can do with it — written for the people using it, not the changelog for the people building it.">
+<link rel="stylesheet" href="styles.css">
+<style>
+.rel{border:1px solid #e3e8ef;border-radius:14px;padding:26px 30px;background:#fff;margin:22px 0}
+.rel h2{margin:0 0 2px;font-size:22px;letter-spacing:-.3px}
+.rel .tag{display:inline-block;font-size:12px;font-weight:700;padding:3px 11px;border-radius:12px;vertical-align:3px;margin-left:10px;background:#e5f4ec;color:#0c7a48}
+.rel .date{color:#5c6575;font-size:13px;margin:4px 0 14px}
+.rel h3{font-size:14px;margin:22px 0 8px;color:#5c6575;text-transform:uppercase;letter-spacing:.5px}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.use{border:1px solid #eef1f5;border-radius:10px;padding:14px 16px;background:#f8fafc}
+.use b{display:block;font-size:14px;margin-bottom:4px}
+.use span{font-size:13px;color:#5c6575}
+ul.feat{margin:8px 0 0;padding-left:20px;font-size:14.5px;line-height:1.85}
+ul.feat code{background:#f0f2f5;padding:1px 5px;border-radius:4px;font-size:12.5px}
+.install{background:#101828;color:#e7ecf3;border-radius:10px;padding:14px 18px;font-size:13px;font-family:ui-monospace,Menlo,monospace;overflow-x:auto;margin-top:16px;line-height:1.8}
+.install .c{color:#8b96ab}
+.note{font-size:13px;color:#5c6575;margin-top:14px;border-left:3px solid #e3e8ef;padding-left:12px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<section>
+<h1>Release notes</h1>
+<p class="lead">What each release ships, who it is for, and what you can do
+with it. Full engineering history lives in the
+<a href="https://github.com/roy-tong/AgentMeasure/blob/main/CHANGELOG.md">changelog</a>;
+this page is written for the people using the tool.</p>
+</section>
+
+<div class="rel">
+<h2>v0.6.0 <span class="tag">current</span></h2>
+<div class="date">2026-10-11 · <a href="https://github.com/roy-tong/AgentMeasure/releases/tag/v0.6.0">GitHub Release</a> · PyPI · npm</div>
+
+<h3>Who it is for</h3>
+<div class="cols">
+<div class="use"><b>CX &amp; support operations</b><span>reviewing per-resolution AI support bills (Intercom Fin, Zendesk AI Agents…) — before paying, disputing or renewing</span></div>
+<div class="use"><b>Finance &amp; procurement</b><span>who need the evidence behind a number, one finding at a time, in a form they can hand to the vendor</span></div>
+<div class="use"><b>Brands running agent channels</b><span>measuring agent-driven orders, margin and guardrails from the merchant side</span></div>
+<div class="use"><b>Tool builders &amp; maintainers</b><span>shipping conformance vectors, fixtures and corrections into the open standard</span></div>
+</div>
+
+<h3>What you can do now</h3>
+<ul class="feat">
+<li><strong>Re-check any single finding.</strong> <code>agentmeasure drilldown</code> replays one conversation end to end: the row exactly as exported, every vendor-rule step in plain language, the verdict, and the command to reproduce it. The explanation walks the same branches as the engine — a test pins them together, so they cannot drift.</li>
+<li><strong>Track what the review was worth, in three books.</strong> Recovered cash (<code>recovery</code>), hours saved (<code>delivery</code>) and — new in this release — decisions made differently (<code>decisions</code>): payments approved or held, discounts requested, renewals signed, each linked to the finding it rests on. Three kinds of value, three separate records, never blended.</li>
+<li><strong>Send someone a rule, not a PDF.</strong> Every vendor now has a public <a href="rules/index.html">rule card</a> — price, billing trigger, reopen handling, silence behaviour, closure timers, each fact with its source and the registry version it was read from. Linkable in an email or a ticket.</li>
+<li><strong>Wear your evidence stage.</strong> <a href="badges.html">AMS-1 badges</a> state one thing only: how far a verification artifact has traveled — self-attested, recomputable, independently reproduced, counterparty accepted. No composite score, no A–F grade, by explicit design.</li>
+<li><strong>Install from anywhere.</strong> PyPI, npm and GitHub all serve the current release, and CI now smoke-tests the packaged wheel in a fresh environment on every push — “tests pass but the install crashes” is the bug this makes impossible to ship.</li>
+<li>Three new external conformance vectors, including the first <strong>availability-certification vector, contributed via pull request</strong> — the external route is growing from fixtures toward formal vectors.</li>
+</ul>
+
+<div class="install"><span class="c"># Python 3.9+, zero dependencies, runs offline</span>
+pip install agentmeasure
+agentmeasure demo
+agentmeasure drilldown --export your-export.csv --vendor intercom --conversation C-123
+<span class="c"># no install at all: drop an export into the browser recount — website link above</span></div>
+
+<p class="note">Everything runs locally. No message text, customer content or
+credentials are read; missing evidence is UNPROVABLE, never guessed; paying
+for a first look does not change what the evidence says.</p>
+</div>
+
+<div class="rel">
+<h2>v0.5.0</h2>
+<div class="date">2026-10-03 · <a href="https://github.com/roy-tong/AgentMeasure/releases/tag/v0.5.0">GitHub Release</a></div>
+
+<p class="lead" style="margin-top:10px">The buyer-side verification system,
+complete: the full review pipeline (<code>prepare</code> → <code>recount
+--contract</code> → <code>dispute</code> → <code>recovery</code>, plus
+<code>crosscheck</code> for your billing ledger, <code>crm-join</code> for
+your business records, <code>verify</code> for the one-artifact ledger), the
+agent-commerce measurement family (receipts with evidence grades, P&amp;L
+trees, contribution margin, channel audits, guardrails, anonymous
+benchmarks), and the offline console that walks both journeys. 248 → 450
+tests across the release.</p>
+</div>
+
+</div>
+</body>
+</html>
