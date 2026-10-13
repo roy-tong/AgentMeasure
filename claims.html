@@ -72,6 +72,21 @@ tool's own parser against it. Full method and case list:
 <a href="https://github.com/roy-tong/AgentMeasure/blob/main/campaigns/audit-report-2026-09.md">the audit report</a>
 and <a href="https://github.com/roy-tong/AgentMeasure/blob/main/campaigns/measurement-casebook.md">measurement casebook</a>.
 Below are the named entries; the casebook carries the rest.</p>
+
+<h3 id="distribution">Where the bugs sit — the recount distribution</h3>
+<p class="how">Confirmed-tool counts per class, from the audit report (2026-09).
+In tooling, the wrong-rule kind wins — duplicates and stale price tables are
+mechanical and findable. On invoices, the did-nothing kind hides better,
+because it is policy, not a bug; that is why a recount starts by getting the
+vendor's rules in writing.</p>
+<table class="claims" style="max-width:640px">
+<tr><th>Class</th><th style="width:46%">Confirmed tools</th><th>Share of the 35 class hits</th></tr>
+<tr><td>1 · One message ≠ one line</td><td><span style="display:inline-block;height:10px;background:#b3541e;width:86%"></span> 10</td><td>29%</td></tr>
+<tr><td>3 · Cache-pricing semantics</td><td><span style="display:inline-block;height:10px;background:#b3541e;width:77%"></span> 9</td><td>26%</td></tr>
+<tr><td>4 · Price-table drift</td><td><span style="display:inline-block;height:10px;background:#b3541e;width:60%"></span> 7</td><td>20%</td></tr>
+<tr><td>2 · Re-emitted events</td><td><span style="display:inline-block;height:10px;background:#b3541e;width:43%"></span> 5</td><td>14%</td></tr>
+<tr><td>5 · Resume/fork history loss</td><td><span style="display:inline-block;height:10px;background:#b3541e;width:34%"></span> 4</td><td>11%</td></tr>
+</table>
 </section>
 
 <div class="klass">
