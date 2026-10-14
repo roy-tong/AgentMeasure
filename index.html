@@ -3,23 +3,23 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AgentMeasure | AI support billing verification</title>
-  <meta name="description" content="Review AI support bills against applicable terms and business evidence. Local tools, reproducible findings, and a scoped first-look service.">
+  <title>AgentMeasure | Check agent logs and metering</title>
+  <meta name="description" content="Check Codex and Claude Code logs locally. Get a $10 anomaly diagnosis or a $20 metering QA check, with clear evidence limits.">
   <link rel="icon" type="image/svg+xml" href="./assets/favicon.svg">
   <link rel="canonical" href="https://roy-tong.github.io/AgentMeasure/">
   <meta name="theme-color" content="#090C10">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="AgentMeasure">
-  <meta property="og:title" content="AgentMeasure | AI support billing verification">
-  <meta property="og:description" content="Review AI support bills against applicable terms and business evidence. Local tools, reproducible findings, and a scoped first-look service.">
+  <meta property="og:title" content="AgentMeasure | Check agent logs and metering">
+  <meta property="og:description" content="Check Codex and Claude Code logs locally. Get a $10 anomaly diagnosis or a $20 metering QA check, with clear evidence limits.">
   <meta property="og:url" content="https://roy-tong.github.io/AgentMeasure/">
   <meta property="og:image" content="https://roy-tong.github.io/AgentMeasure/assets/social-preview.png">
   <meta property="og:image:width" content="1280">
   <meta property="og:image:height" content="640">
   <meta property="og:image:alt" content="AgentMeasure: know what your agent usage metrics actually count">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="AgentMeasure | AI support billing verification">
-  <meta name="twitter:description" content="Review AI support bills against applicable terms and business evidence. Local tools, reproducible findings, and a scoped first-look service.">
+  <meta name="twitter:title" content="AgentMeasure | Check agent logs and metering">
+  <meta name="twitter:description" content="Check Codex and Claude Code logs locally. Get a $10 anomaly diagnosis or a $20 metering QA check, with clear evidence limits.">
   <meta name="twitter:image" content="https://roy-tong.github.io/AgentMeasure/assets/social-preview.png">
   <meta name="twitter:image:alt" content="AgentMeasure: know what your agent usage metrics actually count">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -33,7 +33,7 @@
     "@context": "https://schema.org",
     "@type": "SoftwareSourceCode",
     "name": "AgentMeasure",
-    "description": "Independent AI support billing verification with applicable terms and business evidence.",
+    "description": "Local agent log checks and reproducible metering verification for developers and tool providers.",
     "url": "https://roy-tong.github.io/AgentMeasure/",
     "codeRepository": "https://github.com/roy-tong/AgentMeasure",
     "license": "https://opensource.org/license/mit",
@@ -58,9 +58,9 @@
       </a>
       <nav class="nav-links" id="nav-links" aria-label="Sections">
         <a href="#whynow">Why now</a>
-        <a href="#how">How a review works</a>
+        <a href="#how">Start locally</a>
         <a href="#evidence">Evidence</a>
-        <a href="recount.html">Free recount</a>
+        <a href="#developers">Developer tools</a>
         <a href="#pricing">Pricing</a>
         <a class="ext" href="https://github.com/roy-tong/AgentMeasure" target="_blank" rel="noopener">GitHub&nbsp;↗</a>
       </nav>
@@ -79,14 +79,14 @@
   <section class="hero" aria-label="Introduction">
     <div class="hero-grid">
       <div class="hero-copy">
-        <p class="eyebrow reveal">For CX, finance and procurement</p>
-        <h1 class="reveal d1">Review your AI <em>support bill.</em></h1>
-        <p class="lede reveal d2">Put the effective terms, invoice and business records together. Get reviewable billing differences, a finance one-pager and a clear account of what the evidence cannot prove.</p>
+        <p class="eyebrow reveal">For agent developers and tool providers</p>
+        <h1 class="reveal d1">Understand your <em>agent usage.</em></h1>
+        <p class="lede reveal d2">Find duplicate records, retries and token anomalies in Codex or Claude Code logs. Start with a free local check; get help interpreting one anomaly or verifying one metering sample.</p>
         <div class="hero-actions reveal d4">
-          <a class="btn btn-primary" href="./first-look.html">Review one billing period</a>
-          <a class="btn btn-ghost" href="./recount.html">Recount a bill in your browser — free</a>
+          <a class="btn btn-primary" href="#how">Run the free check</a>
+          <a class="btn btn-ghost" href="./services.html">Get a $10 / $20 diagnosis</a>
         </div>
-        <p class="note reveal d5" style="margin-top:14px"><strong>v0.6.0</strong> on <a href="https://pypi.org/project/agentmeasure/" target="_blank" rel="noopener">PyPI</a>, <a href="https://www.npmjs.com/package/@agentmeasure/mcp" target="_blank" rel="noopener">npm</a> and GitHub — 466 Healthcheck tests verified on 2026-10-11. Customer payment and repeat use remain unverified.</p>
+        <p class="note reveal d5" style="margin-top:14px"><strong>CLI v0.7.0</strong> on <a href="https://pypi.org/project/agentmeasure/" target="_blank" rel="noopener">PyPI</a> and GitHub; <a href="https://www.npmjs.com/package/@agentmeasure/mcp" target="_blank" rel="noopener">SDK v0.2.0 on npm</a>. 477 Healthcheck tests verified on 2026-10-14. Customer payment and repeat use remain unverified.</p>
       </div>
 
       <!-- Conformance report console -->
@@ -123,10 +123,10 @@
     <div class="status-strip reveal d5" role="list" aria-label="Project status">
       <div class="status" role="listitem"><span class="status-k">Open source</span><span class="status-v ok">MIT</span></div>
       <div class="status" role="listitem"><span class="status-k">Spec</span><span class="status-v spec" data-status="spec">Draft 0.4.5</span></div>
-      <div class="status" role="listitem"><span class="status-k">CLI</span><span class="status-v ok">v0.6.0 · PyPI / npm / GitHub</span></div>
+      <div class="status" role="listitem"><span class="status-k">CLI</span><span class="status-v ok">v0.7.0 · PyPI / GitHub</span></div>
       <div class="status" role="listitem"><span class="status-k">SDK</span><span class="status-v" data-status="sdk">v0.2.0</span></div>
-      <div class="status" role="listitem"><span class="status-k">Ecosystem audit</span><span class="status-v ok">110+ tools · 45+ verified bugs</span></div>
-      <div class="status" role="listitem"><span class="status-k">Upstream fixes</span><span class="status-v ok">23 merged or accepted</span></div>
+      <div class="status" role="listitem"><span class="status-k">Ecosystem audit</span><span class="status-v ok">110 tools · September report</span></div>
+      <div class="status" role="listitem"><span class="status-k">Upstream fixes</span><span class="status-v ok">See dated claims index</span></div>
     </div>
   </section>
 
@@ -142,8 +142,8 @@
         </div>
         <div class="audit-copy">
           <h2 class="reveal d1">We audited the AI usage-tool ecosystem.<br>The same five bugs kept appearing.</h2>
-          <p class="reveal d2">One assistant message billed per content block (2–5×). Re-emitted Codex events counted twice. Cache writes priced at 1.25× instead of 2×. Price tables 5× off — including in the industry's pricing source of record. Sessions wiped on resume. Every finding: pinned commit, runnable repro, public filing — <strong>23 merged or accepted upstream</strong>, an external maintainer's 136k-event corpus review challenged an initial finding and led to a correction.</p>
-          <p class="note reveal d3"><a href="https://github.com/roy-tong/AgentMeasure/blob/main/campaigns/audit-report-2026-09.md">Read the Token-Accounting Bug Report&nbsp;→</a></p>
+          <p class="reveal d2">One assistant message billed per content block (2–5×). Re-emitted Codex events counted twice. Cache writes priced at 1.25× instead of 2×. Price tables 5× off — including in the industry's pricing source of record. Sessions wiped on resume. Every finding: pinned commit, runnable repro, public filing — <strong>upstream responses linked in the report</strong>, an external maintainer's 136k-event corpus review challenged an initial finding and led to a correction.</p>
+          <p class="note">Audit counts are from the September 2026 report; they describe technical findings, not paid adoption.</p><p class="note reveal d3"><a href="https://github.com/roy-tong/AgentMeasure/blob/main/campaigns/audit-report-2026-09.md">Read the Token-Accounting Bug Report&nbsp;→</a></p>
           <p class="note reveal d4"><a href="https://github.com/roy-tong/AgentMeasure/blob/main/conformance/evidence/rulestack-cache-prefix-overhead/README.md">External methodology correction: the author revised 436k to 54,154 tokens; not a dollar invoice&nbsp;→</a></p>
           <p class="note reveal d4"><a href="https://github.com/roy-tong/AgentMeasure/blob/main/campaigns/tool-authors.md">Maintain a usage tool? Audit it in 10 minutes with our fixtures&nbsp;→</a></p>
         </div>
@@ -158,103 +158,30 @@
   </section>
 
   <!-- ══════════════════ 02 · WHY NOW ══════════════════ -->
-  <section class="section" id="whynow" aria-label="Why now">
-    <div class="wrap">
-      <h2 class="reveal d1">AI is starting to charge by the outcome.<br>Nobody defined the outcome.</h2>
-      <p class="body-secondary reveal d2">When money rides on a measured unit, someone has to define the unit. That is what a measurement standard is for.</p>
-
-      <div class="who-grid">
-        <div class="who-card reveal d1">
-          <span class="who-k">The question</span>
-          <p>What counts as one resolution, one operation, one outcome? Retries, reopens, and silent “assumed resolutions” all change the number — and the bill.</p>
-          <span class="who-v">A yardstick, or an argument</span>
-        </div>
-        <div class="who-card reveal d2">
-          <span class="who-k">$1.50–2.00 per resolution</span>
-          <p>AI support vendors charge for outcomes under different conditions. Intercom currently includes several outcome types; the effective terms and billing period determine which rules apply.</p>
-          <span class="who-v">Per-outcome billing is live</span>
-        </div>
-        <div class="who-card reveal d3">
-          <span class="who-k">$0.99 per resolution</span>
-          <p>Intercom Fin bills per resolution with a money-back guarantee. Buyers dispute what was counted; sellers refund what cannot be proven.</p>
-          <span class="who-v">Both sides need a referee</span>
-        </div>
-      </div>
-      <div class="who-grid" style="margin-top:16px">
-        <div class="who-card reveal d1">
-          <span class="who-k">The buyer’s side of the bill</span>
-          <p>Billed per resolution, per task, or per usage — re-run the bill on your own machine and get an AMS-1 settlement statement: what was charged, what the vendor’s own rules would charge, and what the evidence cannot prove. Data never leaves your machine.</p>
-          <span class="who-v">One semantics, three billing units</span>
-        </div>
-        <div class="who-card reveal d2">
-          <span class="who-k">2026-05 · “Verified” only</span>
-          <p>Zendesk now bills only “Verified Resolutions.” When vendors compete to define what “solved” means, the buyer needs an independent count.</p>
-          <span class="who-v">The unit itself is contested</span>
-        </div>
-        <div class="who-card reveal d3">
-          <span class="who-k">20 vendors checked</span>
-          <p>Not one publishes a dispute or refund process for miscounts. Intercom’s own docs: “We cannot guarantee the limit will be 100% accurate.”</p>
-          <span class="who-v">No appeals process, anywhere</span>
-        </div>
-      </div>
-
-      <p class="lede-sm reveal d4">AgentMeasure is the open yardstick for both sides of that bill —<br><strong>usage and outcomes, one semantics, evidence you can audit.</strong></p>
-      <p class="note reveal d5"><a href="blog/outcome-yardstick.html">Read the note: the yardstick for outcome-based AI&nbsp;→</a></p>
-    </div>
-  </section>
+  <section class="section" id="whynow" aria-label="Who this helps"><div class="wrap">
+<h2 class="reveal">One suspicious number. A check you can repeat.</h2>
+<div class="who-grid"><div class="who-card reveal"><span class="who-k">Agent developers</span><p>Your session has repeated records, failed tools or unexpected token totals. Check what the logs actually show before changing your setup.</p></div>
+<div class="who-card reveal"><span class="who-k">Tool and API providers</span><p>A retry or instrumentation change may alter reported usage. Compare attempts, logical operations and the metrics your sample supports.</p></div>
+<div class="who-card reveal"><span class="who-k">Framework maintainers</span><p>Turn a reproducible discrepancy into a fixture and regression check. Keep missing evidence visible instead of filling it with a guess.</p></div></div>
+<p class="note">A finding is evidence for investigation. It does not by itself prove a root cause, an overcharge or customer savings.</p></div></section>
 
   <!-- ══════════════════ 03 · HOW A REVIEW WORKS ══════════════════ -->
-  <section class="section section-panel" id="how" aria-label="How a review works">
-    <div class="wrap">
-      <h2 class="reveal d1">How a review works.</h2>
-      <p class="body-secondary reveal d2">The free tools come first — this is what a full review adds. One vendor, one complete billing period; feasibility is checked before any data moves.</p>
-
-      <div class="trial-points">
-        <div class="trial-point reveal d2">
-          <span class="trial-k">1 · Feasibility first</span>
-          <p>A 20-minute discussion. We confirm the vendor, the billing period, the effective terms and the decision this should support — before any data is shared. Bring the free recount's statement if you have one; the review starts from what it found.</p>
-        </div>
-        <div class="trial-point reveal d3">
-          <span class="trial-k">2 · The recount runs on evidence</span>
-          <p>Invoice, effective terms and an authorized export are reconciled under the vendor’s own published rules. The calculation can run locally — nothing is uploaded.</p>
-        </div>
-        <div class="trial-point reveal d4">
-          <span class="trial-k">3 · Findings you can hand over</span>
-          <p>A finance one-pager, findings linked to named rules, and an explicit list of what the evidence cannot prove. A 30-minute walkthrough is included.</p>
-        </div>
-      </div>
-
-      <div class="who-grid" style="margin-top:34px">
-        <div class="who-card reveal">
-          <span class="who-k">CX and support operations</span>
-          <p>Your team knows which cases reopened, needed handover or remained unresolved.</p>
-          <span class="who-v">Bring the business records</span>
-        </div>
-        <div class="who-card reveal d1">
-          <span class="who-k">Finance and procurement</span>
-          <p>Review the actual outcome charges and effective terms before a renewal or payment decision.</p>
-          <span class="who-v">Bring the invoice and decision</span>
-        </div>
-        <div class="who-card reveal d2">
-          <span class="who-k">Implementation partners</span>
-          <p>Help identify the authorized exports and the person already doing a billing review.</p>
-          <span class="who-v">Start with one qualified account</span>
-        </div>
-      </div>
-
-      <p class="lede-sm reveal d5"><strong>Measured usage is not billable usage.</strong><br>Three attempts of one operation are not three billable operations, unless the metering policy says so.</p>
-      <div class="trial-actions reveal d5">
-        <a class="btn btn-primary" href="./first-look.html">Check the review scope</a>
-        <a class="btn btn-ghost" href="./recount.html">Run the free recount first</a>
-      </div>
-    </div>
-  </section>
+  <section class="section section-panel" id="how" aria-label="Start locally"><div class="wrap">
+<h2 class="reveal">Start with your own logs.</h2>
+<div class="terminal"><div class="terminal-body"><pre style="white-space:pre-wrap">pip install agentmeasure
+agentmeasure demo
+agentmeasure check --json report.json
+agentmeasure share report.json --out summary.json
+agentmeasure validate summary.json</pre></div></div>
+<p class="body-secondary">The demo is synthetic. The check reads local Codex / Claude Code sessions. The share command immediately writes an aggregate summary locally; inspect it before choosing to send it. No account or automatic upload.</p>
+<div class="trial-points"><div class="trial-point"><span class="trial-k">1 · Run free</span><p>Review coverage and findings. The CLI and public checks stay free.</p></div><div class="trial-point"><span class="trial-k">2 · Confirm scope</span><p>For human help, send a summary ($10) or schema and sample rows ($20). We confirm fit, price and input limits before payment.</p></div><div class="trial-point"><span class="trial-k">3 · Get a report</span><p>Within 24 hours after payment, fit approval and complete input. Confirmation alone reserves a place. First response within 24 hours.</p></div></div>
+<a class="btn btn-primary" href="services.html">Read the scope and apply</a></div></section>
 
   <!-- ══════════════════ 04 · WHAT A REVIEW CHECKS ══════════════════ -->
   <section class="section" id="checks" aria-label="What a review checks">
     <div class="wrap">
       <h2 class="reveal d1">Similar events. Different facts.</h2>
-      <p class="body-secondary reveal d2">The distinctions a bill review turns on — kept separate, each with its own evidence bar.</p>
+      <p class="body-secondary reveal d2">The distinctions reliable agent metrics depend on — kept separate, each with its own evidence bar.</p>
 
       <div class="claims">
         <div class="claim reveal">
@@ -308,36 +235,13 @@
   </section>
 
   <!-- ══════════════════ 05 · PRICING LADDER ══════════════════ -->
-  <section class="section section-panel" id="pricing" aria-label="Pricing">
-    <div class="wrap">
-      <h2 class="reveal d1">Start free. Pay when it's worth it.</h2>
-      <p class="body-secondary reveal d2">One engine and one public ruleset behind every step. Move up only when the step below cannot answer your question.</p>
-      <div class="pricing-grid">
-        <div class="pricing-card reveal d3">
-          <div class="pricing-name">01 · Run it yourself</div><div class="pricing-price">$0 <span class="pricing-unit">forever</span></div>
-          <ul class="pricing-list"><li>Browser recount — nothing uploaded</li><li>CLI runs locally: <code>pip install agentmeasure</code></li><li>Rule cards, claims index and AMS-1 public</li><li>Missing evidence stays visible, not guessed</li></ul>
-          <a class="btn btn-ghost" href="./recount.html">Open the free recount</a>
-        </div>
-        <div class="pricing-card pricing-card-hi reveal d4">
-          <div class="pricing-name">02 · One question, answered</div><div class="pricing-price">$10 / $20 <span class="pricing-unit">fixed · per question</span></div>
-          <ul class="pricing-list"><li><strong>$10</strong> Healthcheck Diagnosis — one anomaly on your own data</li><li><strong>$20</strong> Metering QA — one sample, one metering question</li><li>Human-delivered within 24h</li><li>Fit confirmed before anything is charged</li></ul>
-          <a class="btn btn-primary" href="./services.html">See the two diagnostics</a>
-          <p class="pricing-note">No subscription, no sales call. Refund terms are on the page, before you pay.</p>
-        </div>
-        <div class="pricing-card reveal d5">
-          <div class="pricing-name">03 · Deep dives</div><div class="pricing-price">$500+ <span class="pricing-unit">on request</span></div>
-          <ul class="pricing-list"><li>Multi-system and custom field mappings</li><li>Deep manual investigation</li><li>Quoted by scope before work starts</li><li>Only when you ask — never a checkout requirement</li></ul>
-          <a class="btn btn-ghost" href="mailto:tongroy18@gmail.com?subject=Deep%20dive%20request">Ask about a deep dive</a>
-        </div>
-        <div class="pricing-card reveal d5">
-          <div class="pricing-name">04 · Full-period review</div><div class="pricing-price">Free <span class="pricing-unit">first look — decide after</span></div>
-          <ul class="pricing-list"><li>One vendor, one complete billing period</li><li>Terms, invoice and records reconciled</li><li>Finance one-pager, findings and evidence bundle</li><li>Continuing reviews scoped and priced only after you've seen the findings</li></ul>
-          <a class="btn btn-ghost" href="./first-look.html">Check the review scope</a>
-        </div>
-      </div>
-      <p class="note reveal d5">Billing-rule differences, stricter buyer standards and actual credits stay separate. Every delivery includes coverage and unresolved evidence. Findings do not establish a vendor-confirmed refund; negotiation stays with the parties. <strong>The verification rules stay public and free; paying does not change what the evidence says.</strong></p>
-    </div>
-  </section>
+  <section class="section section-panel" id="pricing" aria-label="Pricing"><div class="wrap">
+<h2 class="reveal">Free tools. Two fixed-price diagnostics.</h2>
+<div class="pricing-grid"><div class="pricing-card"><div class="pricing-name">Run it yourself</div><div class="pricing-price">$0</div><ul class="pricing-list"><li>Local Healthcheck and conformance</li><li>Open-source SDK and public rules</li><li>No account or upload</li></ul><a class="btn btn-ghost" href="#how">Run the free check</a></div>
+<div class="pricing-card pricing-card-hi"><div class="pricing-name">Healthcheck Diagnosis</div><div class="pricing-price">$10</div><ul class="pricing-list"><li>One anomaly, one machine</li><li>Summary interpretation and next checks</li><li>Specific troubleshooting needs a redacted error excerpt</li></ul><a class="btn btn-primary" href="services.html">See the $10 scope</a></div>
+<div class="pricing-card"><div class="pricing-name">Metering QA</div><div class="pricing-price">$20</div><ul class="pricing-list"><li>One sample, one ruleset, one question</li><li>Fit check before payment</li><li>Supported invariants and rerun commands</li><li>Core checks exclude token/cache semantics and invoice or pricing verification</li></ul><a class="btn btn-primary" href="services.html">See the $20 scope</a></div></div>
+<p class="note">Human-delivered, no subscription. Card checkout is being set up; apply by email. Work starts after payment and complete, supported input. Refund terms and queue availability are agreed before payment. Custom investigations are quoted separately only on request.</p>
+</div></section>
 
   <!-- ══════════════════ 06 · PRINCIPLES ══════════════════ -->
   <section class="section" id="principles" aria-label="Principles">
@@ -353,7 +257,7 @@
         </div>
         <div class="who-card reveal d2">
           <span class="who-k">Local-first, opt-in</span>
-          <p>Raw data never leaves your machine by default. Only aggregated, anonymized evidence returns to the network — only if you opt in.</p>
+          <p>Raw data never leaves your machine by default. You choose whether to send an aggregate summary or a manually redacted sample for a diagnosis.</p>
           <span class="who-v">Your traces stay yours</span>
         </div>
         <div class="who-card reveal d3">
@@ -368,8 +272,8 @@
   <!-- ══════════════════ 07 · OPEN-SOURCE TOOLKIT ══════════════════ -->
   <section class="section section-panel" id="developers" aria-label="Open-source toolkit">
     <div class="wrap">
-      <h2 class="reveal d1">The toolkit behind the review<br>is open source.</h2>
-      <p class="body-secondary reveal d2">Everything a review uses — the semantics, the rules, the conformance vectors — is public on GitHub. Maintainers and tool builders: this is your entrance.</p>
+      <h2 class="reveal d1">The measurement toolkit<br>is open source.</h2>
+      <p class="body-secondary reveal d2">The semantics, rules and conformance vectors are public on GitHub. Maintainers and tool builders: this is your entrance.</p>
 
       <div class="try-grid">
         <div class="terminal reveal d1" aria-label="Terminal: clone the repository and run the end-to-end demo">
@@ -403,7 +307,7 @@
           </ul>
           <div class="spec-chips reveal d4" style="margin-top:14px">
             <span class="chip"><span data-status="sdkTests">21</span>&nbsp;SDK tests</span>
-            <span class="chip">466 Healthcheck tests (v0.6.0)</span>
+            <span class="chip">477 Healthcheck tests · 2026-10-14</span>
             <span class="chip">Conformance vectors · <span data-status="conformance">Passing</span></span>
             <span class="chip">No cloud required</span>
           </div>
@@ -437,7 +341,7 @@
             </div>
             <div class="arch-branch">
               <div class="arch-arrow"><span class="arch-line"></span><span class="arch-head">▼</span></div>
-              <div class="arch-node arch-hosted"><span class="arch-k">Hosted analytics</span><span class="arch-sub">opt-in · planned</span></div>
+              <div class="arch-node arch-hosted"><span class="arch-k">Hosted analytics</span><span class="arch-sub">not currently offered</span></div>
             </div>
           </div>
         </div>
@@ -446,7 +350,7 @@
           <div class="fact-item reveal d2"><span class="fact-no">01</span><div><h3>No agent-side install</h3><p>Third-party agents never need AgentMeasure. Measurement happens where the capability is delivered.</p></div></div>
           <div class="fact-item reveal d3"><span class="fact-no">02</span><div><h3>Provider-side measurement</h3><p>The SDK wraps your tool handlers and emits canonical observations using one schema and six payload classes.</p></div></div>
           <div class="fact-item reveal d4"><span class="fact-no">03</span><div><h3>Not on the critical path</h3><p>Non-blocking, durable spool with loss accounting. If the SDK fails, your server doesn’t.</p></div></div>
-          <div class="fact-item reveal d5"><span class="fact-no">04</span><div><h3>Your data can stay local</h3><p>JSONL on your machine, analytics generated locally. Hosted ingestion is explicit opt-in, later.</p></div></div>
+          <div class="fact-item reveal d5"><span class="fact-no">04</span><div><h3>Your data can stay local</h3><p>JSONL on your machine, analytics generated locally. Hosted ingestion is not part of the current offer.</p></div></div>
           <p class="note reveal d5">MCP is the first reference surface, not a requirement. Closed-source software is fine.</p>
         </div>
       </div>
@@ -462,11 +366,8 @@
         <a href="services.html">$10 / $20 paid diagnosis&nbsp;→</a>
       </div>
 
-      <p class="lede-sm reveal d5" style="margin-top:44px"><strong>Find out what your agent traffic actually is.</strong><br>Send 20–100 anonymized trace rows; we map them locally and send back a short check — what counts as attempts vs operations, where retries may inflate usage, and what the telemetry cannot prove. No SDK, no integration.</p>
-      <div class="trial-actions reveal d5">
-        <a class="btn btn-primary" href="mailto:tongroy18@gmail.com?subject=AgentMeasure%20measurement%20check%20-%20%5Byour%20capability%5D&amp;body=Hi%2C%0A%0AI%27d%20like%20a%20zero-install%20measurement%20check.%0A%0A1.%20Data%3A%2020-100%20anonymized%20trace%2Flog%20rows%2C%20or%20a%20link%20to%20a%20public%20export%20%28production%20or%20synthetic%20-%20please%20say%20which%29%3A%0A%0A2.%20Source%20and%20time%20window%3A%0A%0A3.%20The%20decision%20this%20should%20inform%3A%0A%0ANote%3A%20raw%20data%20stays%20local%20by%20default.%20If%20I%20share%20a%20sanitized%20sample%2C%20I%27ll%20state%20what%20may%20be%20done%20with%20it.">Send a sample</a>
-        <a class="btn btn-ghost" href="https://github.com/roy-tong/AgentMeasure/issues/2" target="_blank" rel="noopener">See how the program works&nbsp;↗</a>
-      </div>
+      <p class="note">Current service experiments focus on Healthcheck and Metering QA. Lab remains experimental tooling. <a href="first-look.html">Buyer reconciliation</a> is an existing research reference, outside the two fixed-price services.</p>
+      <div class="trial-actions"><a class="btn btn-primary" href="services.html">Check sample requirements</a><a class="btn btn-ghost" href="https://github.com/roy-tong/AgentMeasure/blob/main/CONTRIBUTING.md">Contribute a reproducible finding</a></div>
 
       <aside class="evidence-card reveal d5" aria-label="Recent published evidence" style="margin-top:36px">
         <div class="evidence-k">Recent evidence / published 2026-08-25</div>
@@ -519,7 +420,7 @@
         </div>
         <nav class="footer-col" aria-label="Review">
           <span class="footer-k">Review</span>
-          <a href="first-look.html">Full-period bill review</a>
+          <a href="first-look.html">Buyer reconciliation reference</a>
           <a href="recount.html">Recount in your browser</a>
           <a href="rules/index.html">Vendor rule cards</a>
           <a href="claims.html">Metering claims index</a>

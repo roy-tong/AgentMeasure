@@ -1,86 +1,28 @@
 # AgentMeasure website
 
-Temporary official site, published at **<https://roy-tong.github.io/AgentMeasure/>**
-via GitHub Pages from the classic `gh-pages` branch. Moving deployment to a
-GitHub Actions Pages workflow remains a follow-up.
+Live: https://roy-tong.github.io/AgentMeasure/
 
-One long page, static HTML + CSS + a thin interaction layer. No framework,
-no build step — loads fast, easy for any agent (or human) to edit.
+Static HTML, CSS and JavaScript. The current entry path is local Healthcheck → optional $10 diagnosis or $20 Metering QA. Standards, SDK, claims and research tools remain linked as supporting resources.
 
-```text
-website/
-├── index.html    # all sections + copy
-├── styles.css    # Precision Instrument design system (colors = data states)
-├── script.js     # console playback, scroll reveals, nav state
-├── robots.txt    # crawler policy + sitemap pointer
-├── sitemap.xml   # public page inventory
-└── assets/       # favicon.svg, social-preview.html source, social-preview.png
-```
+## Pages
 
-## Page structure (IA: comprehension → proof → depth)
+- `index.html`: overview, local commands, two service scopes, technical evidence.
+- `services.html`: canonical service terms, input requirements, application links and refunds.
+- `claims.html`: dated technical evidence; no paid-adoption claims.
+- `releases.html`: CLI and SDK release information; package versions are independent.
+- `first-look.html`: buyer reconciliation reference, not an active review offer.
+- `recount.html`, `rules/`, `blog/`, `badges.html`: existing tools and research; preserve their evidence boundaries.
+- `llms.txt`, `sitemap.xml`, `robots.txt`: public discovery. Repository documents in llms.txt use absolute GitHub URLs.
 
-Layer 1 — understand (5 minutes):
-
-1. Hero — trace console: 1 intent · 2 attempts · 1 operation
-2. `#why` — the problem (state inequalities)
-3. `#facts` — claim discipline (large ≠ statements: Attempt ≠ Operation,
-   Returned ≠ Consumed, Observed ≠ Inferred)
-4. `#measure` — measurement chain (Reach → Choice → Use → Utility → Value)
-   with spec-status chips and the signature line:
-   *defined does not mean observable in every runtime*
-5. `#how` — provider-side architecture
-
-Layer 2 — prove / convert:
-
-6. `#available` — what works today (spec sheet: shipped vs in development)
-7. `#try` — 2-minute demo terminal
-8. `#trial` — external provider trial CTA
-
-Layer 3 — go deeper:
-
-9. `#standard` — runtime observability matrix (mirrors `profiles/*.md`)
-10. `#lab` — AgentMeasure vs AgentMeasure Lab
-11. `#economy` — long-term thesis (Capability Economy)
-
-## Design principles
-
-1. **Instrument, not SaaS** — measurement console language, mono for facts,
-   sans for prose, graph-paper surface.
-2. **Colors are data states** — green `#6EF2A3` evidence/confirmed, blue
-   `#76A5FF` specification/structure, yellow `#F6C85F` unknown/partial,
-   red `#FF6B6B` failure. Never decoration.
-3. **Do not make claims stronger than the evidence.** Every status on the page
-   (`Spec · Defined / Partial / Draft`, `● / ◐ / ○`) mirrors the repo's specs
-   and harness profiles. When the spec moves, this page moves with it.
-4. **Graceful degradation** — content is visible without JS (`.js` class gates
-   hidden states); animations respect `prefers-reduced-motion`.
-
-## Editing
-
-Copy changes → `index.html`. Visual changes → `styles.css`. To preview locally:
+## Preview and publish
 
 ```bash
-cd website && python3 -m http.server 4173
-# → http://localhost:4173
+cd website
+python3 -m http.server 4173
 ```
 
-`assets/social-preview.html` is the editable 1280×640 source for the Open
-Graph image. Keep its spec and SDK status aligned with `status.json`, then
-regenerate `assets/social-preview.png` in a browser at the same dimensions.
+Edit on `main`. Run AGENTS.md checks and inspect local links before pushing. `.github/workflows/conformance.yml` verifies the repository, updates `status.json`, then mirrors `website/` to the root of `gh-pages`. GitHub Pages publishes that branch. Do not manually overwrite the deployment branch. Verify the conformance run, Pages deployment and live content after pushing.
 
-Deploy: commit to `website/` on `main`, then refresh the `gh-pages` snapshot
-(until the Actions deploy is enabled):
+## Keep current
 
-```bash
-git checkout gh-pages
-git checkout main -- website/
-# move website/* to repo root of that branch, keep .nojekyll, commit, push
-```
-
-## Status conventions (keep honest)
-
-- Status strip reflects the current release (`standard/` version, SDK version).
-- The `#available` spec sheet mirrors `sdk/`, CI, and `product/` — update the
-  numbers (21 tests, 5 profiles) when they change.
-- The runtime matrix mirrors `profiles/*.md` — update both together.
-- External-trial numbers (“3 MCP/API providers”) mirror `product/AUDIT.md`.
+Use the service page as the public source for pricing and delivery conditions. Do not replace it with an older workspace copy. Date audit statistics and link evidence; do not use engineering counts as proof of customer value. CLI and SDK versions must be checked independently. Preserve historical release notes as historical, rather than rewriting past releases.

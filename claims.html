@@ -28,7 +28,9 @@ table.claims td.s{white-space:nowrap}
 .note{border-left:3px solid #ccd4de;margin:14px 0;padding:6px 16px;color:#4d5560;font-size:13.5px;max-width:82ch}
 code{background:#f0f2f5;padding:1px 5px;border-radius:4px;font-size:12.5px}
 .snippet{background:#f6f7f9;border:1px solid #e3e8ef;border-radius:8px;padding:10px 14px;font-size:12.5px;overflow-x:auto;font-family:ui-monospace,Menlo,monospace}
+.claims-scroll{max-width:100%;overflow-x:auto;margin-bottom:26px}.claims-scroll:focus-visible{outline:2px solid #1f4f8a;outline-offset:3px}.claims-scroll table.claims{margin-bottom:0}
 </style>
+<link rel="canonical" href="https://roy-tong.github.io/AgentMeasure/claims.html">
 </head>
 <body>
 <header class="snav">
@@ -37,7 +39,7 @@ code{background:#f0f2f5;padding:1px 5px;border-radius:4px;font-size:12.5px}
     <nav class="snav-links" aria-label="Sections">
       <a href="index.html#evidence">Evidence</a>
       <a href="index.html#pricing">Pricing</a>
-      <a href="recount.html">Free recount</a>
+      <a href="services.html">$10 / $20 services</a>
       <a class="ext" href="https://github.com/roy-tong/AgentMeasure" target="_blank" rel="noopener">GitHub&nbsp;↗</a>
     </nav>
     <a class="snav-cta" href="services.html">Get a diagnosis&nbsp;→</a>
@@ -91,74 +93,74 @@ In tooling, the wrong-rule kind wins — duplicates and stale price tables are
 mechanical and findable. On invoices, the did-nothing kind hides better,
 because it is policy, not a bug; that is why a recount starts by getting the
 vendor's rules in writing.</p>
-<table class="claims" style="max-width:640px">
+<div class="claims-scroll" role="region" aria-label="Metering findings table; scroll horizontally on small screens" tabindex="0"><table class="claims" style="max-width:640px">
 <tr><th>Class</th><th style="width:46%">Confirmed tools</th><th>Share of the 35 class hits</th></tr>
 <tr><td>1 · One message ≠ one line</td><td><span style="display:inline-block;height:10px;background:#b3541e;width:86%"></span> 10</td><td>29%</td></tr>
 <tr><td>3 · Cache-pricing semantics</td><td><span style="display:inline-block;height:10px;background:#b3541e;width:77%"></span> 9</td><td>26%</td></tr>
 <tr><td>4 · Price-table drift</td><td><span style="display:inline-block;height:10px;background:#b3541e;width:60%"></span> 7</td><td>20%</td></tr>
 <tr><td>2 · Re-emitted events</td><td><span style="display:inline-block;height:10px;background:#b3541e;width:43%"></span> 5</td><td>14%</td></tr>
 <tr><td>5 · Resume/fork history loss</td><td><span style="display:inline-block;height:10px;background:#b3541e;width:34%"></span> 4</td><td>11%</td></tr>
-</table>
+</table></div>
 </section>
 
 <div class="klass">
 <h3>Class 1 · One assistant message ≠ one line <span class="chip vm">10 tools</span></h3>
 <p class="how">Claude Code writes one JSONL line per content block, each carrying the same message id and usage. Sum per line and a message with text + two tool calls is billed 3×. Measured real overcounts: 2×–5×.</p>
-<table class="claims">
+<div class="claims-scroll" role="region" aria-label="Metering findings table; scroll horizontally on small screens" tabindex="0"><table class="claims">
 <tr><th>Tool</th><th>Finding</th><th class="s">Status</th><th>Evidence</th></tr>
 <tr><td>tokendash</td><td>3-block message → 3× tokens and cost</td><td class="s"><span class="chip fx">Fixed · Re-verified</span></td><td><a href="https://github.com/zhangferry/tokendash/pull/37">PR #37</a>, merged 2026-09-09</td></tr>
 <tr><td>ccem</td><td>same shape, first-wins variant undercounts</td><td class="s"><span class="chip vm">Verified Mismatch</span></td><td><a href="https://github.com/Genuifx/ccem/issues/12">issue #12</a>, 2026-09</td></tr>
 <tr><td>samewrite</td><td>a research project's headline numbers rested on it</td><td class="s"><span class="chip vm">Verified Mismatch</span></td><td><a href="https://github.com/ipeterpetrus/samewrite/issues/1">issue #1</a>, 2026-09</td></tr>
-</table>
+</table></div>
 </div>
 
 <div class="klass">
 <h3>Class 2 · Re-emitted events <span class="chip vm">5 tools</span></h3>
 <p class="how">Codex re-emits token_count events with identical totals after compaction, settings changes and rate-limit refreshes. Naive accumulation double-counts. Measured on real corpora: +0.5% to +15% per session file.</p>
-<table class="claims">
+<div class="claims-scroll" role="region" aria-label="Metering findings table; scroll horizontally on small screens" tabindex="0"><table class="claims">
 <tr><th>Tool</th><th>Finding</th><th class="s">Status</th><th>Evidence</th></tr>
 <tr><td>token-vision</td><td>one real rollout, +14.97%</td><td class="s"><span class="chip vm">Verified Mismatch</span></td><td><a href="https://github.com/extrei/token-vision/issues/1">issue #1</a>, 2026-09</td></tr>
 <tr><td>tokenscope</td><td>identical-total re-emissions summed</td><td class="s"><span class="chip fx">Fixed · Re-verified</span></td><td><a href="https://github.com/stealthsrc/tokenscope/pull/6">PR #6</a>, merged</td></tr>
 <tr><td>coding-agent-usage-tracker</td><td>same class</td><td class="s"><span class="chip fx">Fixed · Re-verified</span></td><td><a href="https://github.com/avihut/coding-agent-usage-tracker/pull/1">PR #1</a>, merged</td></tr>
-</table>
+</table></div>
 </div>
 
 <div class="klass">
 <h3>Class 3 · Cache-pricing semantics <span class="chip vm">9 tools</span></h3>
 <p class="how">Anthropic's input_tokens excludes cache tokens; OpenAI's includes them; 5-minute cache writes cost 1.25× input, 1-hour 2×, reads 0.1×. One convention applied to both providers clamps input to $0, double-charges cache, or prices 1h writes at 1.25×.</p>
-<table class="claims">
+<div class="claims-scroll" role="region" aria-label="Metering findings table; scroll horizontally on small screens" tabindex="0"><table class="claims">
 <tr><th>Tool</th><th>Finding</th><th class="s">Status</th><th>Evidence</th></tr>
 <tr><td>claude-hud</td><td>1h writes priced 1.25× — 37.5% understated on that component</td><td class="s"><span class="chip fx">Fixed · Re-verified</span></td><td><a href="https://github.com/jarrodwatts/claude-hud/pull/758">PR #758</a>, merged (27.9k★)</td></tr>
 <tr><td>one-api-pro</td><td>streaming += double-counts input (+50.7% no-cache) and re-subtracts cache in billing</td><td class="s"><span class="chip fx">Fixed · Re-verified</span></td><td><a href="https://github.com/modelbus/one-api-pro/issues/13">issue #13</a>, closed completed</td></tr>
 <tr><td>langfuse</td><td>OTel cache_write alias missing from the extractor's cache-creation list — the flagship cache-accounting finding</td><td class="s"><span class="chip fx">Fixed · Re-verified</span></td><td><a href="https://github.com/langfuse/langfuse/issues/17117">issue #17117</a>, fixed on main (34k★)</td></tr>
-</table>
+</table></div>
 </div>
 
 <div class="klass">
 <h3>Class 4 · Price-table drift <span class="chip vm">7 tools, including the source</span></h3>
 <p class="how">Embedded price snapshots diverge from published rates by 1.2×–5× — including vendored copies of LiteLLM's price file, the industry's source of record.</p>
-<table class="claims">
+<div class="claims-scroll" role="region" aria-label="Metering findings table; scroll horizontally on small screens" tabindex="0"><table class="claims">
 <tr><th>Tool</th><th>Finding</th><th class="s">Status</th><th>Evidence</th></tr>
 <tr><td>litellm</td><td>Bedrock CRIS Claude-3-Haiku cache rates ratio-generated instead of Anthropic's non-round published values</td><td class="s"><span class="chip vm">Verified Mismatch</span></td><td><a href="https://github.com/BerriAI/litellm/issues/40360">issue #40360</a>, 2026-09</td></tr>
 <tr><td>llmcost</td><td>inherited the same values in a vendored snapshot</td><td class="s"><span class="chip vm">Verified Mismatch</span></td><td><a href="https://github.com/prassoai/llmcost/issues/25">issue #25</a>, 2026-09</td></tr>
 <tr><td>snip</td><td>two contradictory hardcoded price tables</td><td class="s"><span class="chip fx">Fixed · Re-verified</span></td><td><a href="https://github.com/edouard-claude/snip/issues/186">issue #186</a> → fixed via #189</td></tr>
-</table>
+</table></div>
 </div>
 
 <div class="klass">
 <h3>Class 5 · Resume/fork history loss <span class="chip vm">4 tools</span></h3>
 <p class="how">Codex resume writes a new rollout file with the original session id; stores that replace-per-session wipe everything before the resume, and fork replay double-counts the parent prefix.</p>
-<table class="claims">
+<div class="claims-scroll" role="region" aria-label="Metering findings table; scroll horizontally on small screens" tabindex="0"><table class="claims">
 <tr><th>Tool</th><th>Finding</th><th class="s">Status</th><th>Evidence</th></tr>
 <tr><td>ai-usage-inspector</td><td>86% of a session's tokens vanish (real pair measured)</td><td class="s"><span class="chip vm">Verified Mismatch</span></td><td><a href="https://github.com/Kud0o/ai-usage-inspector/issues/1">issue #1</a>, 2026-09</td></tr>
 <tr><td>swarm</td><td>fork replay double-counts the parent prefix</td><td class="s"><span class="chip fx">Fixed · Re-verified</span></td><td><a href="https://github.com/ra3orblade/swarm/pull/146">PR #146</a> with maintainer credit, 2026-09</td></tr>
-</table>
+</table></div>
 </div>
 
 <div class="klass">
 <h3>Fixes landed after publication <span class="chip fx">2026-09-11 →</span></h3>
 <p class="how">Each fix is the upstream link; the dated subsection of the audit report records when it landed.</p>
-<table class="claims">
+<div class="claims-scroll" role="region" aria-label="Metering findings table; scroll horizontally on small screens" tabindex="0"><table class="claims">
 <tr><th>Tool</th><th class="s">Status</th><th>Evidence</th></tr>
 <tr><td>candor</td><td class="s"><span class="chip fx">Fixed</span></td><td><a href="https://github.com/auswm85/candor/pull/8">PR #8</a> — gpt-4o cached input 0.3125 → 1.25 with a pinned-table regression guard (merged 09-14)</td></tr>
 <tr><td>openlit</td><td class="s"><span class="chip fx">Fixed</span></td><td><a href="https://github.com/openlit/openlit/pull/1543">PR #1543</a> — measured-zero no longer conflated with unknown (merged 09-15)</td></tr>
@@ -169,17 +171,17 @@ vendor's rules in writing.</p>
 <tr><td>openusage</td><td class="s"><span class="chip fx">Fixed</span></td><td><a href="https://github.com/janekbaraniewski/openusage/issues/360">issue #360</a> — Codex cached tokens no longer billed twice</td></tr>
 <tr><td>tokenfuse</td><td class="s"><span class="chip fx">Fixed</span></td><td><a href="https://github.com/TAIPANBOX/tokenfuse/issues/267">issue #267</a> — cached tokens no longer priced on both sides</td></tr>
 <tr><td>trulens</td><td class="s"><span class="chip fx">Fixed</span></td><td><a href="https://github.com/truera/trulens/pull/2766">PR #2766</a> — mixed-currency aggregation, fixed by a third-party contributor from this report</td></tr>
-</table>
+</table></div>
 </div>
 
 <div class="klass">
 <h3>Audited clean <span class="chip cp">Conformance Pass</span> · and one correct rejection</h3>
 <p class="how">Most audited repos passed. We name the clean ones because that matters. And one filing we got wrong the first time — an emission shape with no unguarded consumer is an intended contract, not a bug; the maintainer was right to close it not-actionable, and it is now a methodology rule.</p>
-<table class="claims">
+<div class="claims-scroll" role="region" aria-label="Metering findings table; scroll horizontally on small screens" tabindex="0"><table class="claims">
 <tr><th>Tool</th><th class="s">Status</th><th>Evidence</th></tr>
 <tr><td>promptfoo · Portkey model data · TokenTracker</td><td class="s"><span class="chip cp">Conformance Pass</span></td><td>named clean in the <a href="https://github.com/roy-tong/AgentMeasure/blob/main/campaigns/audit-report-2026-09.md">audit report</a>, 2026-09</td></tr>
 <tr><td>pydantic-ai</td><td class="s"><span class="chip na">Not a bug · semantics</span></td><td><a href="https://github.com/pydantic-ai/pydantic-ai/issues/7975">issue #7975</a> closed not-actionable — correctly</td></tr>
-</table>
+</table></div>
 </div>
 
 <section>
