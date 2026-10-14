@@ -86,12 +86,13 @@ free commands below first (~1 minute, nothing leaves your machine), then hit
 Apply and attach <code>summary.json</code>. That single message carries your
 task and your data — no account, no forms, no follow-up forms.</li>
 <li><strong>You get:</strong> one reply confirming scope and price ($10 fixed)
-with the payment step — then, within 24 hours of payment, a written diagnosis
+with the payment step — then, within 24 hours after payment, fit approval and complete input, a written diagnosis
 on your own data: what the anomaly is, what the evidence does and does not
 support, fix and triage steps, and how to re-check after fixing. One round of
 async clarification included.</li>
-<li><strong>Turnaround:</strong> within 24 hours of payment; if we're queued,
+<li><strong>Turnaround:</strong> within 24 hours after payment, fit approval and complete input; if we're queued,
 we say so in the confirmation reply — before you pay.</li>
+<li><strong>Summary-only scope:</strong> aggregate interpretation and general triage. Specific troubleshooting needs an optional manually redacted error excerpt. Counts alone cannot establish a root cause.</li>
 <li><strong>Honesty clause:</strong> "no finding" or "not enough evidence" is a
 valid result and will be delivered as such — we don't manufacture a bug to
 justify the fee.</li>
@@ -99,7 +100,7 @@ justify the fee.</li>
 <p class="price" style="font-size:12.5px;color:#5c6575">Run these first (free) — then click Apply and attach the file:</p>
 <div class="snippet">pip install agentmeasure<br>
 agentmeasure check --json report.json<br>
-agentmeasure share report.json --out summary.json &nbsp;# previews first; export only after you look</div>
+agentmeasure share report.json --out summary.json &nbsp;# writes locally now; inspect before sending</div>
 <a class="buy" href="mailto:tongroy18@gmail.com?subject=Apply%3A%20%2410%20Healthcheck%20Diagnosis&body=Hi%2C%0A%0AI%27d%20like%20the%20%2410%20Healthcheck%20Diagnosis.%0A%0AThe%20anomaly%20I%20want%20diagnosed%3A%20%28one%20sentence%29%0AAttached%3A%20summary.json%20from%20%60agentmeasure%20share%20report.json%20--out%20summary.json%60%0A">Apply by email — $10</a>
 <p class="card-later">Card checkout link on request while our payment page is
 being set up.</p>
@@ -124,8 +125,8 @@ verdict is bound to the invariant that produced it (PASS / FAIL / UNPROVABLE —
 same vocabulary as the public claims index), a check you can re-run yourself,
 and a concrete reproduction when there is a real error.</li>
 <li><strong>Scope:</strong> one sample, one ruleset, one metering question.
-Bigger or multi-system questions are quoted separately.</li>
-<li><strong>Turnaround:</strong> within 24 hours of receiving complete input.</li>
+We confirm the supported invariants and required fields before payment. Real session and operation identities are required for retry checks. Core FMT-002 does not verify token/cache semantics, provider invoices or pricing accuracy. Bigger questions are quoted separately.</li>
+<li><strong>Turnaround:</strong> within 24 hours after payment, fit approval and complete input.</li>
 </ul>
 <a class="buy" href="mailto:tongroy18@gmail.com?subject=Apply%3A%20%2420%20Metering%20QA%20check&body=Hi%2C%0A%0AI%27d%20like%20the%20%2420%20Metering%20QA%20check.%0A%0AMy%20metering%20question%3A%20%28one%20sentence%29%0AAttached%3A%20schema%20%2B%20first%20~20%20lines%20%28fit%20check%20first%29%0A">Apply by email — $20</a>
 <p class="card-later">Card checkout link on request while our payment page is
@@ -137,10 +138,10 @@ being set up.</p>
 <h2>How it works</h2>
 <div class="steps">
 <div class="step"><b>1 · Run + Apply</b><span>Run the free commands, click Apply, attach summary.json — one email carries task and data. ($20: send schema + first ~20 lines in that same email; unfit samples are refused free of charge.)</span></div>
-<div class="step"><b>2 · Confirm &amp; pay</b><span>One reply confirms scope, price and turnaround; card link when available, otherwise agreed in the same thread. We start on payment — never before.</span></div>
+<div class="step"><b>2 · Confirm &amp; pay</b><span>One reply confirms scope, price and turnaround; card link when available, otherwise agreed in the same thread. We start after payment, fit approval and complete input. A confirmation only reserves your queue spot.</span></div>
 <div class="step"><b>3 · Report in 24h</b><span>Findings, evidence boundary, fix steps, and how to re-check — one thread, one clarification round included.</span></div>
 </div>
-<div class="note">Small operation, deliberately: we cap daily orders so
+<div class="note">First response within 24 hours; applications are checked at 07:15 and 19:30 China time. Small operation, deliberately: we cap daily orders so
 turnaround stays honest. If today's cap is reached, we say so and you can
 come back tomorrow — we won't take money we can't deliver on time.</div>
 </section>
