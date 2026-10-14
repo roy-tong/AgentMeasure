@@ -943,7 +943,7 @@ html:not(.js) .reveal { opacity: 1; transform: none; }
 @media (max-width: 860px) { .audit-band { grid-template-columns: 1fr; } }
 
 /* ══════════════════ PRICING ══════════════════ */
-.pricing-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin: 28px 0 8px; }
+.pricing-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; margin: 28px 0 8px; }
 .pricing-card { display: flex; flex-direction: column; gap: 12px; border: 1px solid var(--border); border-radius: 14px; padding: 22px 20px; background: var(--panel); }
 .pricing-card-hi { border-color: var(--ok); box-shadow: 0 0 0 1px rgba(110,242,163,.18); }
 .pricing-name { font-family: var(--mono); font-size: .78rem; letter-spacing: .08em; text-transform: uppercase; color: var(--secondary); }
@@ -953,4 +953,5 @@ html:not(.js) .reveal { opacity: 1; transform: none; }
 .pricing-list li::marker { color: var(--ok); }
 .pricing-card .btn { margin-top: auto; }
 .pricing-note { font-size: .78rem; color: var(--secondary); margin: 0; }
-@media (max-width: 900px) { .pricing-grid { grid-template-columns: 1fr; } }
+@media (max-width: 1020px) { .pricing-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 640px) { .pricing-grid { grid-template-columns: 1fr; } }
