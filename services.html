@@ -81,19 +81,22 @@ what the $10 buys. You never need the paid part to use the free part.</p>
 <li><strong>Who it's for:</strong> Codex / Claude Code developers who see duplicate
 records, retry amplification, failed runs or a token number that looks wrong,
 and don't know the cause or the next step.</li>
-<li><strong>You send:</strong> the sanitized summary from your local report
-(guide below — your raw logs stay on your machine), plus optionally a
-hand-redacted excerpt if you want tool-specific fix steps.</li>
-<li><strong>You get:</strong> a written diagnosis on your own data — what the
-anomaly is, what the evidence does and does not support, fix and triage steps,
-and how to re-check after fixing. One round of async clarification included.</li>
-<li><strong>Turnaround:</strong> within 24 hours of receiving complete input;
-if we're queued, we say so before you send anything.</li>
+<li><strong>You send — one email is the whole application:</strong> run the three
+free commands below first (~1 minute, nothing leaves your machine), then hit
+Apply and attach <code>summary.json</code>. That single message carries your
+task and your data — no account, no forms, no follow-up forms.</li>
+<li><strong>You get:</strong> one reply confirming scope and price ($10 fixed)
+with the payment step — then, within 24 hours of payment, a written diagnosis
+on your own data: what the anomaly is, what the evidence does and does not
+support, fix and triage steps, and how to re-check after fixing. One round of
+async clarification included.</li>
+<li><strong>Turnaround:</strong> within 24 hours of payment; if we're queued,
+we say so in the confirmation reply — before you pay.</li>
 <li><strong>Honesty clause:</strong> "no finding" or "not enough evidence" is a
 valid result and will be delivered as such — we don't manufacture a bug to
 justify the fee.</li>
 </ul>
-<p class="price" style="font-size:12.5px;color:#5c6575">Three commands, ~1 minute:</p>
+<p class="price" style="font-size:12.5px;color:#5c6575">Run these first (free) — then click Apply and attach the file:</p>
 <div class="snippet">pip install agentmeasure<br>
 agentmeasure check --json report.json<br>
 agentmeasure share report.json --out summary.json &nbsp;# previews first; export only after you look</div>
@@ -133,10 +136,9 @@ being set up.</p>
 <section>
 <h2>How it works</h2>
 <div class="steps">
-<div class="step"><b>1 · Apply</b><span>One email. We confirm scope and fit — and for the $20 check, unfit samples are refused free of charge.</span></div>
-<div class="step"><b>2 · Settle payment</b><span>Card checkout link when available; otherwise agreed by email before we start. Terms below apply either way.</span></div>
-<div class="step"><b>3 · Send input</b><span>You choose what to send; redaction guide included. Raw logs never need to leave your machine.</span></div>
-<div class="step"><b>4 · Report</b><span>Within 24h of complete input: findings, evidence boundary, actions, re-check steps.</span></div>
+<div class="step"><b>1 · Run + Apply</b><span>Run the free commands, click Apply, attach summary.json — one email carries task and data. ($20: send schema + first ~20 lines in that same email; unfit samples are refused free of charge.)</span></div>
+<div class="step"><b>2 · Confirm &amp; pay</b><span>One reply confirms scope, price and turnaround; card link when available, otherwise agreed in the same thread. We start on payment — never before.</span></div>
+<div class="step"><b>3 · Report in 24h</b><span>Findings, evidence boundary, fix steps, and how to re-check — one thread, one clarification round included.</span></div>
 </div>
 <div class="note">Small operation, deliberately: we cap daily orders so
 turnaround stays honest. If today's cap is reached, we say so and you can
