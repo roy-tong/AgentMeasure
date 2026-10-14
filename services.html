@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Paid diagnosis — AgentMeasure</title>
+<meta name="description" content="Two paid, human-delivered diagnostics on top of the free open-source tools: a $10 healthcheck anomaly diagnosis and a $20 metering QA check. Apply by email; fixed scope, stated evidence boundary, refund terms before you pay.">
+<link rel="stylesheet" href="styles.css">
+<!--
+  ============================================================================
+  部署占位符（全文件搜索替换）：
+    INTAKE_EMAIL      → 收单邮箱（必填，邮件申请通道的唯一依赖）
+    PAYMENT_LINK_10   → $10 Stripe Payment Link（可选；就绪后取消对应注释）
+    PAYMENT_LINK_20   → $20 Stripe Payment Link（可选）
+  当前模式：邮件申请优先（Stripe 就绪前 Roy 已批准的主通道）。
+  Stripe link 到手后：把对应 SKU 卡里的「card link on request」句换成
+  <a class="buy" href="PAYMENT_LINK_xx">Pay $xx — …</a> 即恢复双通道。
+  after-payment redirect 建议填：
+    https://roy-tong.github.io/AgentMeasure/services.html#after-apply
+  部署：cp 本文件 → 代码仓库/website/services.html；website/sitemap.xml 与
+  website/llms.txt 各加一条；commit + push（gh-pages 自动上线）。
+  ============================================================================
+-->
+<style>
+.sku{border:1px solid #e3e8ef;border-radius:14px;padding:22px 24px;background:#fff;margin:16px 0}
+.sku h3{margin:0 0 2px;font-size:18px}
+.sku .price{font-size:15px;color:#1f4f8a;font-weight:700;margin:0 0 10px}
+.sku ul{margin:10px 0;padding-left:20px}
+.sku li{margin:5px 0;font-size:14px}
+.buy{display:inline-block;margin-top:12px;padding:10px 22px;border-radius:8px;background:#1f4f8a;color:#fff;font-weight:700;font-size:15px;text-decoration:none}
+.buy:hover{background:#17406f}
+.card-later{font-size:13px;color:#5c6575;margin-top:8px}
+.steps{display:flex;flex-wrap:wrap;gap:12px;margin:16px 0}
+.step{border:1px solid #e3e8ef;border-radius:12px;padding:12px 18px;background:#fff;min-width:180px;flex:1}
+.step b{display:block;font-size:13px;color:#3b4351}
+.step span{font-size:13px;color:#5c6575}
+.note{border-left:3px solid #ccd4de;margin:14px 0;padding:6px 16px;color:#4d5560;font-size:13.5px;max-width:82ch}
+.terms{border:1px solid #e8dcbf;background:#faf7ef;border-radius:12px;padding:16px 20px;font-size:13.5px;max-width:82ch}
+.terms ul{padding-left:18px;margin:8px 0}
+.terms li{margin:4px 0}
+.snippet{background:#f6f7f9;border:1px solid #e3e8ef;border-radius:8px;padding:10px 14px;font-size:12.5px;overflow-x:auto;font-family:ui-monospace,Menlo,monospace;max-width:64ch}
+h2{margin-top:34px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<section>
+<h1>Paid diagnosis</h1>
+<p class="lead">Everything on this site runs <strong>free and local</strong> — the
+check-up, the conformance pack, the ledger tools upload nothing. These two
+services are for the moment you want a <strong>human answer about your own
+data</strong>: fixed scope, fixed price, and a stated evidence boundary.
+No subscription, no sales call.</p>
+</section>
+
+<section>
+<h2>Healthcheck Diagnosis — $10, one anomaly</h2>
+<div class="sku">
+<h3>You ran the free check, it flagged something, and you want to know what it is</h3>
+<p class="price">$10 · one anomaly, one machine · human-delivered</p>
+<ul>
+<li><strong>Who it's for:</strong> Codex / Claude Code developers who see duplicate
+records, retry amplification, failed runs or a token number that looks wrong,
+and don't know the cause or the next step.</li>
+<li><strong>You send:</strong> the sanitized summary from your local report
+(guide below — your raw logs stay on your machine), plus optionally a
+hand-redacted excerpt if you want tool-specific fix steps.</li>
+<li><strong>You get:</strong> a written diagnosis on your own data — what the
+anomaly is, what the evidence does and does not support, fix and triage steps,
+and how to re-check after fixing. One round of async clarification included.</li>
+<li><strong>Turnaround:</strong> within 24 hours of receiving complete input;
+if we're queued, we say so before you send anything.</li>
+<li><strong>Honesty clause:</strong> "no finding" or "not enough evidence" is a
+valid result and will be delivered as such — we don't manufacture a bug to
+justify the fee.</li>
+</ul>
+<p class="price" style="font-size:12.5px;color:#5c6575">Three commands, ~1 minute:</p>
+<div class="snippet">pip install agentmeasure<br>
+agentmeasure check --json report.json<br>
+agentmeasure share report.json --out summary.json &nbsp;# previews first; export only after you look</div>
+<a class="buy" href="mailto:tongroy18@gmail.com?subject=Apply%3A%20%2410%20Healthcheck%20Diagnosis&body=Hi%2C%0A%0AI%27d%20like%20the%20%2410%20Healthcheck%20Diagnosis.%0A%0AThe%20anomaly%20I%20want%20diagnosed%3A%20%28one%20sentence%29%0AAttached%3A%20summary.json%20from%20%60agentmeasure%20share%20report.json%20--out%20summary.json%60%0A">Apply by email — $10</a>
+<p class="card-later">Card checkout link on request while our payment page is
+being set up.</p>
+</div>
+</section>
+
+<section>
+<h2>Metering QA check — $20, one sample</h2>
+<div class="sku">
+<h3>You meter usage yourself, and the numbers have to be right</h3>
+<p class="price">$20 · one sample, one ruleset, one metering question · human-delivered</p>
+<ul>
+<li><strong>Who it's for:</strong> authors of MCP servers, APIs and agents that
+bill or report by usage — especially around a release, a price change, or new
+retry logic.</li>
+<li><strong>You send:</strong> one event sample in JSONL (up to 10k events)
+plus the number you currently report. Not sure it fits? Send the schema and
+first ~20 lines first — <strong>fit is confirmed before anything is charged</strong>;
+if we can't adapt it, we tell you and you owe nothing.</li>
+<li><strong>You get:</strong> a discrepancy or no-finding report where every
+verdict is bound to the invariant that produced it (PASS / FAIL / UNPROVABLE —
+same vocabulary as the public claims index), a check you can re-run yourself,
+and a concrete reproduction when there is a real error.</li>
+<li><strong>Scope:</strong> one sample, one ruleset, one metering question.
+Bigger or multi-system questions are quoted separately.</li>
+<li><strong>Turnaround:</strong> within 24 hours of receiving complete input.</li>
+</ul>
+<a class="buy" href="mailto:tongroy18@gmail.com?subject=Apply%3A%20%2420%20Metering%20QA%20check&body=Hi%2C%0A%0AI%27d%20like%20the%20%2420%20Metering%20QA%20check.%0A%0AMy%20metering%20question%3A%20%28one%20sentence%29%0AAttached%3A%20schema%20%2B%20first%20~20%20lines%20%28fit%20check%20first%29%0A">Apply by email — $20</a>
+<p class="card-later">Card checkout link on request while our payment page is
+being set up.</p>
+</div>
+</section>
+
+<section>
+<h2>How it works</h2>
+<div class="steps">
+<div class="step"><b>1 · Apply</b><span>One email. We confirm scope and fit — and for the $20 check, unfit samples are refused free of charge.</span></div>
+<div class="step"><b>2 · Settle payment</b><span>Card checkout link when available; otherwise agreed by email before we start. Terms below apply either way.</span></div>
+<div class="step"><b>3 · Send input</b><span>You choose what to send; redaction guide included. Raw logs never need to leave your machine.</span></div>
+<div class="step"><b>4 · Report</b><span>Within 24h of complete input: findings, evidence boundary, actions, re-check steps.</span></div>
+</div>
+<div class="note">Small operation, deliberately: we cap daily orders so
+turnaround stays honest. If today's cap is reached, we say so and you can
+come back tomorrow — we won't take money we can't deliver on time.</div>
+</section>
+
+<section id="after-apply">
+<h2>After you apply</h2>
+<p class="lead">Everything runs over email — <strong>tongroy18@gmail.com</strong>.
+No accounts, no forms, no portal. Your application, your sample and your
+report live in one thread you can keep.</p>
+</section>
+
+<section>
+<h2>Data boundary</h2>
+<p class="lead">The free tools run locally and upload nothing — that stays
+true forever. For a paid diagnosis <strong>you choose what leaves your
+machine</strong>: a sanitized export of your own picking, and nothing else.
+We look at what you attached, we don't re-collect it, and input is used for
+your delivery only.</p>
+</section>
+
+<section>
+<h2>Terms, before you pay</h2>
+<div class="terms">
+<ul>
+<li>Full refund any time before delivery starts (we haven't opened your input).</li>
+<li>Unadaptable sample: refused before payment if you checked fit first;
+refunded in full if it turned out unadaptable after payment.</li>
+<li>If we can't deliver within 72 hours of complete input, full refund — yours
+to keep the report anyway if it arrives.</li>
+<li>"No bug found" or "not enough evidence" is a delivered result, not grounds
+for refund by itself — that possibility is priced in, and it's why the evidence
+boundary is stated in every report.</li>
+<li>$500+ deep dives (multi-system, custom field mappings) exist on request —
+they are never required for the two services above.</li>
+</ul>
+</div>
+</section>
+
+<section>
+<h2>Free stays free</h2>
+<p class="lead">The <a href="index.html">local check-up</a>, the
+<a href="claims.html">claims index</a> and the conformance pack remain free
+and open source. Paid here buys a human-delivered diagnosis on your data —
+not a paywall around anything that was free yesterday.</p>
+</section>
+
+</div>
+</body>
+</html>

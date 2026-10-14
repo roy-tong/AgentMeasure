@@ -59,6 +59,12 @@ Three integrity layers are orthogonal and composable:
 - Not a quality scorer — it does not judge whether an answer was good
 - Not a payment rail — measurement never sits in the payment critical path
 
+## Paid services
+
+- [services.html](services.html): two fixed-price human-delivered diagnostics — $10 healthcheck
+  anomaly diagnosis, $20 metering QA single-sample check. Email application,
+  24h turnaround, refund terms on the page. Free CLI stays free.
+
 ## Optional
 
 - [proposals/](proposals/): standards-change proposals (AUP)
