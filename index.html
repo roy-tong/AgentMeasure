@@ -86,7 +86,7 @@
           <a class="btn btn-primary" href="#how">Run the free check</a>
           <a class="btn btn-ghost" href="./services.html">Get a $10 / $20 diagnosis</a>
         </div>
-        <p class="note reveal d5" style="margin-top:14px"><strong>CLI v0.7.0</strong> on <a href="https://pypi.org/project/agentmeasure/" target="_blank" rel="noopener">PyPI</a> and GitHub; <a href="https://www.npmjs.com/package/@agentmeasure/mcp" target="_blank" rel="noopener">SDK v0.2.0 on npm</a>. 477 Healthcheck tests verified on 2026-10-14. Customer payment and repeat use remain unverified.</p>
+        <p class="note reveal d5" style="margin-top:14px"><strong>CLI v0.7.1</strong> on <a href="https://pypi.org/project/agentmeasure/" target="_blank" rel="noopener">PyPI</a> and GitHub; <a href="https://www.npmjs.com/package/@agentmeasure/mcp" target="_blank" rel="noopener">SDK v0.2.0 on npm</a>. 479 Healthcheck tests verified on 2026-10-15. Customer payment and repeat use remain unverified.</p>
       </div>
 
       <!-- Conformance report console -->
@@ -123,7 +123,7 @@
     <div class="status-strip reveal d5" role="list" aria-label="Project status">
       <div class="status" role="listitem"><span class="status-k">Open source</span><span class="status-v ok">MIT</span></div>
       <div class="status" role="listitem"><span class="status-k">Spec</span><span class="status-v spec" data-status="spec">Draft 0.4.5</span></div>
-      <div class="status" role="listitem"><span class="status-k">CLI</span><span class="status-v ok">v0.7.0 · PyPI / GitHub</span></div>
+      <div class="status" role="listitem"><span class="status-k">CLI</span><span class="status-v ok">v0.7.1 · PyPI / GitHub</span></div>
       <div class="status" role="listitem"><span class="status-k">SDK</span><span class="status-v" data-status="sdk">v0.2.0</span></div>
       <div class="status" role="listitem"><span class="status-k">Ecosystem audit</span><span class="status-v ok">110 tools · September report</span></div>
       <div class="status" role="listitem"><span class="status-k">Upstream fixes</span><span class="status-v ok">See dated claims index</span></div>
@@ -168,12 +168,21 @@
   <!-- ══════════════════ 03 · HOW A REVIEW WORKS ══════════════════ -->
   <section class="section section-panel" id="how" aria-label="Start locally"><div class="wrap">
 <h2 class="reveal">Start with your own logs.</h2>
-<div class="terminal"><div class="terminal-body"><pre style="white-space:pre-wrap">pip install agentmeasure
-agentmeasure demo
-agentmeasure check --json report.json
+<p class="body-secondary">New to the project? First try a synthetic example. You need Python 3.9+ and a terminal on a computer. No logs or account required.</p>
+<div class="terminal"><div class="terminal-body"><pre style="white-space:pre-wrap">python -m pip install --upgrade agentmeasure
+agentmeasure demo</pre></div></div>
+<p class="note">Open <code>agentmeasure-demo-report.html</code> in the folder where you ran the command. The terminal prints the exact path. The example contains a retry chain and failed executions; these are demonstration findings, not installation failures.</p>
+<details><summary>Just browsing? See what an explanation looks like</summary><p>The synthetic demo shows 1 retry chain containing 3 executions, and 7 failed executions. That does not prove seven bugs or seven charges. A useful next check is to inspect the first error in the longest failure run.</p><p><a href="examples/healthcheck-report.html">Read an illustrative diagnosis</a>. To inspect your own sessions, run the CLI on the computer holding your logs.</p></details>
+<details id="install-help"><summary>Installation help: macOS, Linux, Windows</summary><p>Use Python 3.9+. On Windows, use <code>py</code> instead of <code>python</code> if needed. On macOS/Linux, use <code>python3</code> if <code>python</code> is unavailable.</p><p>If pip says “externally managed” or lacks permission, use a local virtual environment:</p><pre style="white-space:pre-wrap">python3 -m venv .venv
+.venv/bin/python -m pip install --upgrade agentmeasure
+.venv/bin/agentmeasure demo</pre><p>Windows PowerShell:</p><pre style="white-space:pre-wrap">py -m venv .venv
+.\.venv\Scripts\python.exe -m pip install --upgrade agentmeasure
+.\.venv\Scripts\agentmeasure.exe demo</pre><p>No activation required. Use the same executable path for later commands. If <code>agentmeasure</code> is not found, check the install environment rather than reinstalling globally with administrator privileges.</p></details>
+<details><summary>Next: inspect your own logs and prepare a shareable summary</summary><pre style="white-space:pre-wrap">agentmeasure check --json report.json
 agentmeasure share report.json --out summary.json
-agentmeasure validate summary.json</pre></div></div>
-<p class="body-secondary">The demo is synthetic. The check reads local Codex / Claude Code sessions. The share command immediately writes an aggregate summary locally; inspect it before choosing to send it. No account or automatic upload.</p>
+agentmeasure validate summary.json</pre><p>Auto-discovery prefers Codex when both runtimes have logs. For Claude Code use <code>agentmeasure check --runtime claude --json report.json</code>. Open the HTML report at the path printed in the terminal; keep the full JSON and HTML local. Inspect summary.json before choosing to send it. Exporting is not uploading.</p></details>
+<details><summary>No logs, an error, or an unexpected result?</summary><p>No logs in the last seven days? Try <code>agentmeasure check --all</code>, or point to the real directory with <code>--dir "/path/to/logs" --runtime codex</code> (use <code>claude</code> for Claude Code). An empty directory produces an input error, not a clean bill of health. If a command fails, stop before running the export commands.</p><p>Healthcheck exit 0 means the report ran, even if it contains findings. Exit 2 means an input/output problem. UNPROVABLE means missing evidence, not failure or a clean result. For conformance, exit 1 means a failed or required-but-unproven invariant.</p><p><a href="https://github.com/roy-tong/AgentMeasure/issues/new">Report a reproducible tool bug</a> with the version, command, expected behavior and a redacted error. Do not attach raw logs, report.json or credentials to public issues. Paid diagnosis is optional, not required to report a bug.</p></details>
+<p><a href="https://github.com/roy-tong/AgentMeasure/blob/main/README.zh-CN.md">中文使用说明</a> · <a href="https://github.com/roy-tong/AgentMeasure/blob/main/conformance/pack/README.md">Maintainer / metering quickstart</a></p>
 <div class="trial-points"><div class="trial-point"><span class="trial-k">1 · Run free</span><p>Review coverage and findings. The CLI and public checks stay free.</p></div><div class="trial-point"><span class="trial-k">2 · Confirm scope</span><p>For human help, send a summary ($10) or schema and sample rows ($20). We confirm fit, price and input limits before payment.</p></div><div class="trial-point"><span class="trial-k">3 · Get a report</span><p>Within 24 hours after payment, fit approval and complete input. Confirmation alone reserves a place. First response within 24 hours.</p></div></div>
 <a class="btn btn-primary" href="services.html">Read the scope and apply</a></div></section>
 
@@ -238,8 +247,8 @@ agentmeasure validate summary.json</pre></div></div>
   <section class="section section-panel" id="pricing" aria-label="Pricing"><div class="wrap">
 <h2 class="reveal">Free tools. Two fixed-price diagnostics.</h2>
 <div class="pricing-grid"><div class="pricing-card"><div class="pricing-name">Run it yourself</div><div class="pricing-price">$0</div><ul class="pricing-list"><li>Local Healthcheck and conformance</li><li>Open-source SDK and public rules</li><li>No account or upload</li></ul><a class="btn btn-ghost" href="#how">Run the free check</a></div>
-<div class="pricing-card pricing-card-hi"><div class="pricing-name">Healthcheck Diagnosis</div><div class="pricing-price">$10</div><ul class="pricing-list"><li>One anomaly, one machine</li><li>Summary interpretation and next checks</li><li>Specific troubleshooting needs a redacted error excerpt</li></ul><a class="btn btn-primary" href="services.html">See the $10 scope</a></div>
-<div class="pricing-card"><div class="pricing-name">Metering QA</div><div class="pricing-price">$20</div><ul class="pricing-list"><li>One sample, one ruleset, one question</li><li>Fit check before payment</li><li>Supported invariants and rerun commands</li><li>Core checks exclude token/cache semantics and invoice or pricing verification</li></ul><a class="btn btn-primary" href="services.html">See the $20 scope</a></div></div>
+<div class="pricing-card pricing-card-hi"><div class="pricing-name">Healthcheck Diagnosis</div><div class="pricing-price">$10</div><ul class="pricing-list"><li>One anomaly, one machine</li><li>Summary interpretation and next checks</li><li>Specific troubleshooting needs a redacted error excerpt</li></ul><a class="btn btn-primary" href="services.html#hc10">See the $10 scope</a></div>
+<div class="pricing-card"><div class="pricing-name">Metering QA</div><div class="pricing-price">$20</div><ul class="pricing-list"><li>One sample, one ruleset, one question</li><li>Fit check before payment</li><li>Supported invariants and rerun commands</li><li>Core checks exclude token/cache semantics and invoice or pricing verification</li></ul><a class="btn btn-primary" href="services.html#qa20">See the $20 scope</a></div></div>
 <p class="note">Human-delivered, no subscription. Card checkout is being set up; apply by email. Work starts after payment and complete, supported input. Refund terms and queue availability are agreed before payment. Custom investigations are quoted separately only on request.</p>
 </div></section>
 
@@ -307,7 +316,7 @@ agentmeasure validate summary.json</pre></div></div>
           </ul>
           <div class="spec-chips reveal d4" style="margin-top:14px">
             <span class="chip"><span data-status="sdkTests">21</span>&nbsp;SDK tests</span>
-            <span class="chip">477 Healthcheck tests · 2026-10-14</span>
+            <span class="chip">479 Healthcheck tests · 2026-10-15</span>
             <span class="chip">Conformance vectors · <span data-status="conformance">Passing</span></span>
             <span class="chip">No cloud required</span>
           </div>

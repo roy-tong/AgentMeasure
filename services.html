@@ -6,21 +6,7 @@
 <title>Paid diagnosis — AgentMeasure</title>
 <meta name="description" content="Two paid, human-delivered diagnostics on top of the free open-source tools: a $10 healthcheck anomaly diagnosis and a $20 metering QA check. Apply by email; fixed scope, stated evidence boundary, refund terms before you pay.">
 <link rel="stylesheet" href="light.css">
-<!--
-  ============================================================================
-  部署占位符（全文件搜索替换）：
-    INTAKE_EMAIL      → 收单邮箱（必填，邮件申请通道的唯一依赖）
-    PAYMENT_LINK_10   → $10 Stripe Payment Link（可选；就绪后取消对应注释）
-    PAYMENT_LINK_20   → $20 Stripe Payment Link（可选）
-  当前模式：邮件申请优先（Stripe 就绪前 Roy 已批准的主通道）。
-  Stripe link 到手后：把对应 SKU 卡里的「card link on request」句换成
-  <a class="buy" href="PAYMENT_LINK_xx">Pay $xx — …</a> 即恢复双通道。
-  after-payment redirect 建议填：
-    https://roy-tong.github.io/AgentMeasure/services.html#after-apply
-  部署：cp 本文件 → 代码仓库/website/services.html；website/sitemap.xml 与
-  website/llms.txt 各加一条；commit + push（gh-pages 自动上线）。
-  ============================================================================
--->
+
 <style>
 .sku{border:1px solid #e3e8ef;border-radius:14px;padding:22px 24px;background:#fff;margin:16px 0}
 .sku h3{margin:0 0 2px;font-size:18px}
@@ -42,6 +28,7 @@
 h2{margin-top:34px}
 </style>
 <link rel="canonical" href="https://roy-tong.github.io/AgentMeasure/services.html">
+<script defer src="service-intake.js"></script>
 </head>
 <body>
 <header class="snav">
@@ -56,25 +43,22 @@ h2{margin-top:34px}
     <a class="snav-cta" href="index.html#how">Run the free check&nbsp;→</a>
   </div>
 </header>
-<div class="wrap">
+<a class="skip-link" href="#main">Skip to content</a>
+<main class="wrap" id="main">
 <section>
-<h1>Paid diagnosis</h1>
+<h1>Get help with one agent usage question</h1>
+<p><a href="#hc10">$10: explain a log anomaly</a> · <a href="#qa20">$20: check a metering sample</a> · <a href="#terms">Terms</a> · <a href="https://github.com/roy-tong/AgentMeasure/blob/main/README.zh-CN.md">中文说明</a></p>
+<p class="note"><strong>Applications are open; online checkout is not ready.</strong> You can request a free fit check or reserve a place. We will confirm an available payment method by email. No charge and no paid analysis start from clicking Apply or replying confirmed.</p>
 <p class="lead">Everything on this site runs <strong>free and local</strong> — the
 check-up, the conformance pack, the ledger tools upload nothing. These two
 services are for the moment you want a <strong>human answer about your own
 data</strong>: fixed scope, fixed price, and a stated evidence boundary.
 No subscription, no sales call.</p>
-<p class="lead"><strong>Where the line is:</strong> the free check answers
-<em>is something off in my logs?</em> — locally, no account, no email, and it
-stays free forever. It cannot tell you <em>what the finding means in your
-setup, whether it's a bug or intended semantics, and what to do next</em> —
-that is a human reading your sanitized summary with the public
-<a href="claims.html">110-tool audit corpus</a> as reference, and that is
-what the $10 buys. You never need the paid part to use the free part.</p>
+<p class="lead">The free report already includes findings and general next checks. The paid service adds a human interpretation of your specific question, a clear account of missing evidence and a reproducible follow-up. <a href="examples/healthcheck-report.html">Read an illustrative $10 report</a> before deciding whether that is useful to you.</p>
 </section>
 
 <section>
-<h2>Healthcheck Diagnosis — $10, one anomaly</h2>
+<h2 id="hc10">Healthcheck Diagnosis — $10, one anomaly</h2>
 <div class="sku">
 <h3>You ran the free check, it flagged something, and you want to know what it is</h3>
 <p class="price">$10 · one anomaly, one machine · human-delivered</p>
@@ -82,14 +66,12 @@ what the $10 buys. You never need the paid part to use the free part.</p>
 <li><strong>Who it's for:</strong> Codex / Claude Code developers who see duplicate
 records, retry amplification, failed runs or a token number that looks wrong,
 and don't know the cause or the next step.</li>
-<li><strong>You send — one email is the whole application:</strong> run the three
-free commands below first (~1 minute, nothing leaves your machine), then hit
+<li><strong>You send — one email is the whole application:</strong> run the free commands below, then hit
 Apply and attach <code>summary.json</code>. That single message carries your
-task and your data — no account, no forms, no follow-up forms.</li>
+task and your data. You attach the file yourself; the button cannot attach it. We may ask for clarification if the evidence is incomplete.</li>
 <li><strong>You get:</strong> one reply confirming scope and price ($10 fixed)
 with the payment step — then, within 24 hours after payment, fit approval and complete input, a written diagnosis
-on your own data: what the anomaly is, what the evidence does and does not
-support, fix and triage steps, and how to re-check after fixing. One round of
+on your supplied evidence: what it supports, what remains unknown, and the next checks. Specific fix steps are included only when the evidence supports them. One round of
 async clarification included.</li>
 <li><strong>Turnaround:</strong> within 24 hours after payment, fit approval and complete input; if we're queued,
 we say so in the confirmation reply — before you pay.</li>
@@ -98,30 +80,30 @@ we say so in the confirmation reply — before you pay.</li>
 valid result and will be delivered as such — we don't manufacture a bug to
 justify the fee.</li>
 </ul>
+<p><a href="index.html#install-help">Installation help: macOS, Linux and Windows</a>. Already have a summary? Skip the commands.</p>
 <p class="price" style="font-size:12.5px;color:#5c6575">Run these first (free) — then click Apply and attach the file:</p>
-<div class="snippet">pip install agentmeasure<br>
+<div class="snippet">python -m pip install --upgrade agentmeasure<br>
 agentmeasure check --json report.json<br>
-agentmeasure share report.json --out summary.json &nbsp;# writes locally now; inspect before sending</div>
-<a class="buy" href="mailto:tongroy18@gmail.com?subject=Apply%3A%20%2410%20Healthcheck%20Diagnosis&body=Hi%2C%0A%0AI%27d%20like%20the%20%2410%20Healthcheck%20Diagnosis.%0A%0AThe%20anomaly%20I%20want%20diagnosed%3A%20%28one%20sentence%29%0AAttached%3A%20summary.json%20from%20%60agentmeasure%20share%20report.json%20--out%20summary.json%60%0A">Apply by email — $10</a>
-<p class="card-later">Card checkout link on request while our payment page is
-being set up.</p>
+agentmeasure share report.json --out summary.json<br>agentmeasure validate summary.json</div>
+<p class="card-later">Use logs from your own task, not the synthetic demo. Keep report.json and the HTML report local: they may contain paths or commands. Inspect summary.json before sending. For Claude Code, use <code>check --runtime claude --json report.json</code>.</p>
+<a class="buy" href="mailto:tongroy18@gmail.com?subject=Apply%3A%20%2410%20Healthcheck%20Diagnosis&body=Hi%2C%0A%0AI%27d%20like%20the%20%2410%20Healthcheck%20Diagnosis.%0A%0AThe%20anomaly%20I%20want%20diagnosed%3A%20%28one%20sentence%29%0AAttached%3A%20summary.json%20from%20%60agentmeasure%20share%20report.json%20--out%20summary.json%60%0A">Apply by email — $10</a> <a href="#after-apply">Use webmail instead</a>
+<p class="card-later">Application only. Payment instructions follow only when a method is available and the scope is agreed.</p>
 </div>
 </section>
 
 <section>
-<h2>Metering QA check — $20, one sample</h2>
+<h2 id="qa20">Metering QA check — $20, one sample</h2>
 <div class="sku">
-<h3>You meter usage yourself, and the numbers have to be right</h3>
+<h3>Check whether attempts, operations and reported metrics agree</h3>
 <p class="price">$20 · one sample, one ruleset, one metering question · human-delivered</p>
 <ul>
 <li><strong>Who it's for:</strong> authors of MCP servers, APIs and agents that
-bill or report by usage — especially around a release, a price change, or new
-retry logic.</li>
+report usage — especially after changing retry logic or instrumentation.</li>
 <li><strong>You send:</strong> one event sample in JSONL (up to 10k events)
-plus the number you currently report. Not sure it fits? Send the schema and
+plus the number you currently report, if available. Without that number we check sample consistency only. Send the schema and
 first ~20 lines first — <strong>fit is confirmed before anything is charged</strong>;
 if we can't adapt it, we tell you and you owe nothing.</li>
-<li><strong>You get:</strong> a discrepancy or no-finding report where every
+<li><strong>You get:</strong> <a href="examples/metering-report.html">a report with reproduction steps (illustrative example)</a>, including a discrepancy or no-finding report where every
 verdict is bound to the invariant that produced it (PASS / FAIL / UNPROVABLE —
 same vocabulary as the public claims index), a check you can re-run yourself,
 and a concrete reproduction when there is a real error.</li>
@@ -129,9 +111,9 @@ and a concrete reproduction when there is a real error.</li>
 We confirm the supported invariants and required fields before payment. Real session and operation identities are required for retry checks. Core FMT-002 does not verify token/cache semantics, provider invoices or pricing accuracy. Bigger questions are quoted separately.</li>
 <li><strong>Turnaround:</strong> within 24 hours after payment, fit approval and complete input.</li>
 </ul>
-<a class="buy" href="mailto:tongroy18@gmail.com?subject=Apply%3A%20%2420%20Metering%20QA%20check&body=Hi%2C%0A%0AI%27d%20like%20the%20%2420%20Metering%20QA%20check.%0A%0AMy%20metering%20question%3A%20%28one%20sentence%29%0AAttached%3A%20schema%20%2B%20first%20~20%20lines%20%28fit%20check%20first%29%0A">Apply by email — $20</a>
-<p class="card-later">Card checkout link on request while our payment page is
-being set up.</p>
+<details><summary>What makes a sample suitable?</summary><p>Use JSONL: one JSON object per line. For operation and retry checks we need real session/task identity, operation identity, attempt sequence and result. Costs and step counts are needed for those respective checks. Do not invent IDs or fill missing values with zero. Missing identity may mean we cannot take the job.</p><p><a href="examples/metering-sample.jsonl" download>Download a synthetic format example</a> · <a href="https://github.com/roy-tong/AgentMeasure/blob/main/conformance/pack/README.md">Full input contract</a>. You may send your native schema for fit review; you do not need to convert it first. Remove secrets, customer content and identifiers you cannot share.</p></details>
+<a class="buy" href="mailto:tongroy18@gmail.com?subject=Apply%3A%20%2420%20Metering%20QA%20check&body=Hi%2C%0A%0AI%27d%20like%20the%20%2420%20Metering%20QA%20check.%0A%0AMy%20metering%20question%3A%20%28one%20sentence%29%0AAttached%3A%20schema%20%2B%20first%20~20%20lines%20%28fit%20check%20first%29%0A">Apply by email — $20</a> <a href="#after-apply">Use webmail instead</a>
+<p class="card-later">Application only. Payment instructions follow only when a method is available and the scope is agreed.</p>
 </div>
 </section>
 
@@ -152,6 +134,32 @@ come back tomorrow — we won't take money we can't deliver on time.</div>
 <p class="lead">Everything runs over email — <strong>tongroy18@gmail.com</strong>.
 No accounts, no forms, no portal. Your application, your sample and your
 report live in one thread you can keep.</p>
+<p>Save your sent email. An email draft is not a submitted application. Expect a personal reply within 24 hours; check spam, then follow up in the same thread if none arrives. After payment, we confirm receipt, supported scope, start time and delivery due time. Delivery includes the report, evidence limits and any rerun steps.</p>
+<details open><summary>No mail app, or the button did nothing?</summary><p>Open your usual webmail and write to <strong id="intake-email">tongroy18@gmail.com</strong>. Copy or download the template below, attach your files manually, then send. These controls do not send an email or upload data.</p>
+<button type="button" hidden data-copy="intake-email">Copy email address</button>
+<p><a href="examples/hc10-application.txt" download>Download $10 email template</a> · <a href="examples/qa20-application.txt" download>Download $20 email template</a></p>
+<label for="hc10-email">$10 email template</label><textarea id="hc10-email" rows="6" readonly>To: tongroy18@gmail.com
+Subject: Apply: $10 Healthcheck Diagnosis
+
+The anomaly I want explained:
+Runtime and CLI version:
+Attached manually: summary.json (inspect before sending).
+I understand aggregate counts do not establish a root cause.
+
+Please confirm scope, input fit and payment availability before any paid work.
+</textarea><button type="button" hidden data-copy="hc10-email">Copy $10 template</button>
+<label for="qa20-email">$20 email template</label><textarea id="qa20-email" rows="7" readonly>To: tongroy18@gmail.com
+Subject: Apply: $20 Metering QA check
+
+The metering question:
+The metric I currently report (or: no claim, consistency only):
+Source and time window:
+Attached manually: schema and up to 20 redacted sample rows for free fit review.
+Can session, operation and attempt identities be traced?
+
+Please confirm scope, input fit and payment availability before any paid work.
+</textarea><button type="button" hidden data-copy="qa20-email">Copy $20 template</button>
+<p id="copy-status" role="status" aria-live="polite"></p></details>
 </section>
 
 <section>
@@ -160,23 +168,19 @@ report live in one thread you can keep.</p>
 true forever. For a paid diagnosis <strong>you choose what leaves your
 machine</strong>: a sanitized export of your own picking, and nothing else.
 We look at what you attached, we don't re-collect it, and input is used for
-your delivery only.</p>
+your delivery only. Do not send credentials, prompts or personal/customer content you cannot share. For company data, confirm permission first. If you need retention limits, deletion or a confidentiality agreement, ask before sending; no automatic deletion or enterprise agreement is promised.</p>
 </section>
 
 <section>
-<h2>Terms, before you pay</h2>
+<h2 id="terms">Terms, before you pay</h2>
 <div class="terms">
 <ul>
-<li>Full refund any time before delivery starts (we haven't opened your input).</li>
+<li>Full refund before paid analysis starts. Free format review happens first and does not remove this right. We confirm the paid-work start and due time by email after payment and complete, supported input.</li>
 <li>Unadaptable sample: refused before payment if you checked fit first;
 refunded in full if it turned out unadaptable after payment.</li>
-<li>If we can't deliver within 72 hours of complete input, full refund — yours
-to keep the report anyway if it arrives.</li>
-<li>"No bug found" or "not enough evidence" is a delivered result, not grounds
-for refund by itself — that possibility is priced in, and it's why the evidence
-boundary is stated in every report.</li>
-<li>$500+ deep dives (multi-system, custom field mappings) exist on request —
-they are never required for the two services above.</li>
+<li>Delivery is due within 24 hours of the confirmed start unless another time was agreed before payment. If late, reply to request an update or cancel for a full refund. If still undelivered after 72 hours from the confirmed start, a full refund is due; you may keep a later report.</li>
+<li>"No bug found" or "not enough evidence" is a delivered result, not grounds for refund by itself when the agreed checks were performed. This does not remove the cancellation, unsupported-input or late-delivery refund terms above.</li>
+<li>One clarification round is included. Reply in the same thread for a correction, scope question or refund request, quoting the order or payment reference. Extra work requires a separate quote; no automatic upgrade or recurring charge.</li>
 </ul>
 </div>
 </section>
@@ -190,7 +194,7 @@ and open source. Paid here buys a human-delivered diagnosis on your data —
 not a paywall around anything that was free yesterday.</p>
 </section>
 
-</div>
+</main>
 <footer class="sfoot">
   <div class="sfoot-in">
     <span class="sfoot-brand">AgentMeasure<span>_</span></span>

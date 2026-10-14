@@ -88,3 +88,20 @@ code { background: #f0f2f5; padding: 1px 5px; border-radius: 4px; font-size: 12.
 .sfoot a:hover { color: var(--ink); }
 .sfoot-note { font-size: 12.5px; color: var(--soft); margin-left: auto; }
 @media (max-width: 700px) { .sfoot-note { margin-left: 0; } }
+
+/* Intake and keyboard access: usable without JavaScript or a mail client. */
+:focus-visible { outline: 3px solid var(--link); outline-offset: 3px; }
+[id] { scroll-margin-top: 76px; }
+.skip-link { position: fixed; top: -100px; left: 16px; z-index: 200; padding: 10px 14px; background: var(--card); }
+.skip-link:focus { top: 8px; }
+details { margin: 16px 0; padding: 14px 0; border-top: 1px solid var(--line); }
+summary { cursor: pointer; font-weight: 600; }
+details p { margin: 12px 0; }
+label { display: block; margin-top: 16px; font-weight: 600; }
+textarea { width: 100%; max-width: 74ch; padding: 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--card); color: var(--ink); font: 14px/1.5 var(--mono); resize: vertical; }
+button[data-copy] { min-height: 44px; padding: 8px 14px; margin: 8px 0; border: 1px solid var(--link); border-radius: 8px; background: var(--card); color: var(--link); font: inherit; cursor: pointer; }
+button[data-copy]:hover { background: #eaf1fb; }
+@media (max-width: 400px) {
+  .snav-in { gap: 8px; }
+  .snav-cta { font-size: 12px; padding: 8px 10px; }
+}

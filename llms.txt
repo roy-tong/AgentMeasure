@@ -1,12 +1,12 @@
 # AgentMeasure
 
-> Free local checks for Codex / Claude Code logs and reproducible agent metering verification. Human-delivered diagnostics: $10 Healthcheck and $20 Metering QA. Last reviewed: 2026-10-14.
+> Free local checks for Codex / Claude Code logs and reproducible agent metering verification. Human-delivered diagnostics: $10 Healthcheck and $20 Metering QA. Last reviewed: 2026-10-15.
 
 ## Start here
 
 - [Website](https://roy-tong.github.io/AgentMeasure/): overview and local quickstart
 - [Services](https://roy-tong.github.io/AgentMeasure/services.html): input requirements, prices, turnaround and refunds
-- [Healthcheck](https://github.com/roy-tong/AgentMeasure/blob/main/healthcheck/README.md): CLI 0.7.0, local session checks, sharing and supported commands
+- [Healthcheck](https://github.com/roy-tong/AgentMeasure/blob/main/healthcheck/README.md): CLI 0.7.1, local session checks, sharing and supported commands
 - [SDK](https://github.com/roy-tong/AgentMeasure/blob/main/sdk/README.md): Provider SDK 0.2.0 on npm
 - [Release notes](https://roy-tong.github.io/AgentMeasure/releases.html): independent package versions and dated releases
 

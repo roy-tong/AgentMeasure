@@ -1,0 +1,12 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Example $10 report — synthetic, not customer evidence — AgentMeasure</title><link rel="stylesheet" href="../light.css"><link rel="canonical" href="https://roy-tong.github.io/AgentMeasure/examples/healthcheck-report.html"></head><body><header class="snav"><div class="snav-in"><a class="snav-brand" href="../index.html">AgentMeasure</a><a href="../services.html">Back to services</a></div></header><main class="wrap" style="padding-top:32px;padding-bottom:48px"><h1>Example $10 report — synthetic, not customer evidence</h1><p class="lead">Scope: explain the retry finding in the bundled AgentMeasure demo summary. Input: synthetic-demo; 1 session; 10 command executions; 7 failed executions; 1 retry chain containing 3 executions. These counts come from the bundled demo.</p><h2>Finding
+The summary reports repeated attempts under a retry chain. It does not identify
+the command, error, environment or root cause. Seven failed executions do not
+prove seven separate bugs or seven billable operations.</h2><h2>Next check
+Open the local HTML report and inspect the first error in the longest failure
+run. Check the command&#x27;s path, dependency and authentication only as hypotheses.
+If a specific diagnosis is needed, optionally send a manually redacted excerpt
+of that error and the relevant tool/version; do not send credentials or prompts.</h2><h2>Re-check
+After a justified change, run another local check with the same runtime and
+comparable task/window. A lower failure count alone does not establish causality.</h2><h2>Limits
+No invoice, root cause or savings claim. The aggregate summary supports triage,
+not a confirmed fix. One clarification round is included in the service scope.</h2><p><a href="healthcheck-report.md" download>Download this illustrative report</a> · <a href="../services.html">Scope and application</a></p></main></body></html>

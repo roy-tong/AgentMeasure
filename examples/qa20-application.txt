@@ -1,0 +1,10 @@
+To: tongroy18@gmail.com
+Subject: Apply: $20 Metering QA check
+
+The metering question:
+The metric I currently report (or: no claim, consistency only):
+Source and time window:
+Attached manually: schema and up to 20 redacted sample rows for free fit review.
+Can session, operation and attempt identities be traced?
+
+Please confirm scope, input fit and payment availability before any paid work.
