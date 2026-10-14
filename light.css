@@ -1,0 +1,90 @@
+/* ════════════════════════════════════════════════════════════════
+   AgentMeasure — light base for evidence & service pages.
+   The dark landing (styles.css) is the instrument; these sheets are
+   the paper the findings are printed on. Same vocabulary, light surface.
+   ════════════════════════════════════════════════════════════════ */
+
+:root {
+  --paper: #f6f7f9;
+  --card: #ffffff;
+  --ink: #181f2c;
+  --soft: #5c6575;
+  --line: #e3e8ef;
+  --line-soft: #eef1f5;
+  --green: #0c7a48;
+  --link: #3050c8;
+  --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", sans-serif;
+  --wrap: 960px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font: 15px/1.65 var(--sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: var(--link); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+.wrap { max-width: var(--wrap); margin: 0 auto; padding: 0 24px; }
+body > .wrap { padding-top: 46px; }
+
+h1 { font-size: 27px; letter-spacing: -0.3px; line-height: 1.25; margin: 0 0 10px; }
+h2 { font-size: 19px; letter-spacing: -0.2px; margin: 30px 0 10px; }
+h3 { font-size: 16px; margin: 18px 0 6px; }
+
+p.lead { color: var(--soft); font-size: 15.5px; max-width: 74ch; margin: 0 0 14px; }
+code { background: #f0f2f5; padding: 1px 5px; border-radius: 4px; font-size: 12.5px; font-family: var(--mono); }
+
+/* ── shared site nav ─────────────────────────────────────────────── */
+.snav {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(246,247,249,0.92);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--line);
+}
+.snav-in {
+  max-width: var(--wrap); margin: 0 auto; padding: 0 24px;
+  height: 52px; display: flex; align-items: center; gap: 22px;
+}
+.snav-brand {
+  font-family: var(--mono); font-weight: 600; font-size: 14.5px;
+  color: var(--ink); white-space: nowrap;
+}
+.snav-brand span { color: var(--green); }
+.snav-brand:hover { text-decoration: none; }
+.snav-links { display: flex; align-items: center; gap: 20px; margin-right: auto; }
+.snav-links a {
+  font-size: 13.5px; font-weight: 500; color: var(--soft);
+}
+.snav-links a:hover { color: var(--ink); text-decoration: none; }
+.snav-links a.ext { font-family: var(--mono); font-size: 12.5px; }
+.snav-cta {
+  font-size: 13px; font-weight: 600; color: #fff;
+  background: var(--ink); border-radius: 7px; padding: 8px 15px;
+  white-space: nowrap;
+}
+.snav-cta:hover { background: #2a3345; text-decoration: none; }
+
+@media (max-width: 700px) {
+  .snav-links { display: none; }
+  .snav-in { justify-content: space-between; }
+}
+
+/* ── shared minimal footer ───────────────────────────────────────── */
+.sfoot { border-top: 1px solid var(--line); margin-top: 64px; }
+.sfoot-in {
+  max-width: var(--wrap); margin: 0 auto; padding: 22px 24px 34px;
+  display: flex; flex-wrap: wrap; gap: 8px 26px; align-items: baseline;
+}
+.sfoot-brand { font-family: var(--mono); font-weight: 600; font-size: 13px; color: var(--ink); }
+.sfoot-brand span { color: var(--green); }
+.sfoot a { font-size: 13px; color: var(--soft); }
+.sfoot a:hover { color: var(--ink); }
+.sfoot-note { font-size: 12.5px; color: var(--soft); margin-left: auto; }
+@media (max-width: 700px) { .sfoot-note { margin-left: 0; } }

@@ -915,6 +915,27 @@ html:not(.js) .reveal { opacity: 1; transform: none; }
 
 /* ── Audit band ─────────────────────────────── */
 .audit-band { display: grid; grid-template-columns: minmax(0,5fr) minmax(0,7fr); gap: 2.5rem; align-items: center; }
+.evidence-links {
+  display: flex; flex-wrap: wrap; gap: 10px 28px;
+  margin-top: 2.6rem; padding-top: 1.4rem;
+  border-top: 1px solid var(--border-soft);
+}
+.evidence-links a {
+  font-family: var(--mono); font-size: 12.5px; font-weight: 500;
+  color: var(--secondary); transition: color 0.15s ease;
+}
+.evidence-links a:hover { color: var(--ok); }
+.dev-links {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 10px; margin-top: 40px;
+}
+.dev-links a {
+  display: block; padding: 12px 16px;
+  border: 1px solid var(--border); border-radius: var(--radius);
+  font-size: 13.5px; font-weight: 500; color: var(--secondary);
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+.dev-links a:hover { color: var(--text); border-color: var(--ok); }
 .audit-numbers { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
 .an { border: 1px solid rgba(255,255,255,.08); border-radius: 12px; padding: 1.1rem 1rem; background: rgba(255,255,255,.02); }
 .an-v { display: block; font-size: 1.9rem; font-weight: 700; letter-spacing: -.02em; color: #E8FFD7; }
