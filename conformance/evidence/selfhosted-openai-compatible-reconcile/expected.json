@@ -1,0 +1,65 @@
+{
+  "case": "selfhosted-openai-compatible-reconcile",
+  "schema": "agentmeasure.evidence/selfhosted-openai-compatible-reconcile/0.1",
+  "fixture_class": "live-capture",
+  "standard_ref": "standard/known-limits-unprovable-by-surface.md section 6",
+  "expected": {
+    "client": {
+      "calls": 3,
+      "usage_present": 2,
+      "usage_absent": 1,
+      "prompt_tokens_reported": 70,
+      "output_tokens_reported": 32,
+      "cache_split": "UNREPORTED",
+      "cached_prompt_tokens": null
+    },
+    "server": {
+      "requests": 3,
+      "prompt_tokens": 105,
+      "output_tokens": 48,
+      "cached_prompt_tokens": 64
+    },
+    "reconciliation": {
+      "requests_gap": 0,
+      "prompt_tokens_gap": 35,
+      "output_tokens_gap": 16,
+      "period_total": "PROVABLE",
+      "absent_call_usage": "PROVABLE_BY_ELIMINATION",
+      "cache_split_per_call": "UNPROVABLE"
+    }
+  },
+  "two_absent_variant": {
+    "description": "same fixture with call A's usage also removed",
+    "absent_call_usage": "UNPROVABLE"
+  },
+  "forbidden": [
+    "absent usage read as zero tokens",
+    "client-reported total presented as the period total",
+    "absent prompt_tokens_details read as zero cached tokens",
+    "per-call attribution of the gap when two or more calls are absent"
+  ],
+  "provenance": {
+    "run": "Colab Tesla T4 (driver 580.82.07), vLLM 0.27.1, torch 2.13.0+cu130, Qwen/Qwen2.5-0.5B-Instruct --dtype half, server flags otherwise default; 2026-10-14T17:40Z",
+    "raw_files_commit": "qaisermehdi3-coder/qvunex@1094fd5",
+    "raw_files": {
+      "before.txt": {
+        "sha256": "4cbdb62b20a8a685a561f6b5483d9b1e14cc7c42591b9ac6b8ec393c89ebe99f",
+        "url": "https://github.com/qaisermehdi3-coder/qvunex/blob/1094fd5/benchmarks/data/selfhosted-t4-2026-10-14/before.txt"
+      },
+      "after.txt": {
+        "sha256": "fd8bd2f56681713ebaba7f7a4ff2a781d25aa6ae2dc8c5c04237c955c3dcfd61",
+        "url": "https://github.com/qaisermehdi3-coder/qvunex/blob/1094fd5/benchmarks/data/selfhosted-t4-2026-10-14/after.txt"
+      },
+      "conditions.json": {
+        "sha256": "1fc8c99eb19e9a92ee858d5128c89b10806d02d5955eddae85bf3d8a119627ae",
+        "url": "https://github.com/qaisermehdi3-coder/qvunex/blob/1094fd5/benchmarks/data/selfhosted-t4-2026-10-14/conditions.json"
+      },
+      "server.log": {
+        "sha256": "9cf9174bdbed7b205fcf910013febca4008466c71fccd1284c8c7d05e128ff2b",
+        "url": "https://github.com/qaisermehdi3-coder/qvunex/blob/1094fd5/benchmarks/data/selfhosted-t4-2026-10-14/server.log"
+      }
+    },
+    "discussion": "https://github.com/roy-tong/AgentMeasure/discussions/26"
+  },
+  "claim_boundary": "One live run of three identical requests on one small model and one card. It pins what each surface reported; it says nothing about speed, cost or any other server's defaults."
+}

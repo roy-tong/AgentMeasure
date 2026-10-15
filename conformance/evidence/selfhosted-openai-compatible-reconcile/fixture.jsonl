@@ -1,0 +1,7 @@
+{"surface":"client","call_id":"A","request":"plain","usage":{"prompt_tokens":35,"completion_tokens":16,"total_tokens":51,"completion_tokens_details":null,"prompt_tokens_details":null}}
+{"surface":"client","call_id":"B","request":"stream, no stream_options","usage":null}
+{"surface":"client","call_id":"C","request":"stream, stream_options.include_usage=true","usage":{"prompt_tokens":35,"completion_tokens":16,"total_tokens":51,"completion_tokens_details":null,"prompt_tokens_details":null}}
+{"surface":"server","metric":"vllm:request_success_total","before":0.0,"after":3.0}
+{"surface":"server","metric":"vllm:request_prompt_tokens_sum","before":0.0,"after":105.0}
+{"surface":"server","metric":"vllm:request_generation_tokens_sum","before":0.0,"after":48.0}
+{"surface":"server","metric":"vllm:prompt_tokens_cached_total","before":0.0,"after":64.0}
