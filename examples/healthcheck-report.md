@@ -1,4 +1,4 @@
-# Example $10 report — synthetic, not customer evidence
+# Free triage baseline — synthetic, not a paid-value demonstration
 
 Scope: explain the retry finding in the bundled AgentMeasure demo summary.
 Input: synthetic-demo; 1 session; 10 command executions; 7 failed executions;
@@ -21,4 +21,7 @@ comparable task/window. A lower failure count alone does not establish causality
 
 ## Limits
 No invoice, root cause or savings claim. The aggregate summary supports triage,
-not a confirmed fix. One clarification round is included in the service scope.
+not a confirmed fix. This generic explanation belongs in free triage; it does not by itself justify a $10 charge.
+
+## When a paid review could add something
+Only after agreeing on a specific remaining decision and additional evidence review. The scope reply must name what the free baseline cannot answer, what will be checked, and what result would help your decision. No root cause or savings are promised. If only this generic guidance is possible, no paid review is proposed.

@@ -6,4 +6,7 @@ Runtime and CLI version:
 Attached manually: summary.json (inspect before sending).
 I understand aggregate counts do not establish a root cause.
 
-Please confirm scope, input fit and payment availability before any paid work.
+The decision this should support:
+What I have already tried or learned from free tools (if any):
+
+Please first state the free baseline, remaining question and proposed extra work, then confirm scope, input fit and payment availability.

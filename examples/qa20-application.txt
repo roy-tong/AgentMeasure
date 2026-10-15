@@ -7,4 +7,7 @@ Source and time window:
 Attached manually: schema and up to 20 redacted sample rows for free fit review.
 Can session, operation and attempt identities be traced?
 
-Please confirm scope, input fit and payment availability before any paid work.
+The decision this should support:
+What I have already tried or learned from free tools (if any):
+
+Please first state the free baseline, remaining question and proposed extra work, then confirm scope, input fit and payment availability.
