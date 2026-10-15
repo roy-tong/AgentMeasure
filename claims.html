@@ -74,6 +74,34 @@ filed as <strong>semantics questions</strong>, not bugs.</p>
 </section>
 
 <section>
+<h2>Vendor billing-rule scorecard</h2>
+<p class="lead">The bill-recount side of the index: what each AI-support
+vendor says it charges, where that rule is published, and how far a
+counts-only export can be re-counted under the vendor's <em>own</em> rules.
+Confidence grades: <strong>[P]</strong> primary source read directly,
+<strong>[S]</strong> secondary, <strong>[U]</strong> unpublished. Every row is
+re-printed by the CLI itself (<code>agentmeasure recount --list-vendors</code>)
+and pinned in the repository's vendor-rules registry — this table never
+disagrees with the shipped tool.</p>
+<div class="claims-scroll" role="region" aria-label="Vendor billing-rule scorecard; scroll horizontally on small screens" tabindex="0"><table class="claims">
+<tr><th>Vendor</th><th>Published price</th><th>Billing trigger (as published)</th><th>Rule source (dated)</th><th>Re-countable from counts-only?</th></tr>
+<tr><td>Intercom Fin</td><td>USD 0.99 / resolution <strong>[P]</strong></td><td>Silence can complete a resolution; documented reopen deduction</td><td>fin.ai pricing &amp; outcomes; Intercom help centre</td><td>Yes — most rows settle from the five required columns</td></tr>
+<tr><td>Zendesk AI Agents</td><td>USD 2.0 / resolution <strong>[P]</strong></td><td>LLM-verified resolution only; silence alone does not bill</td><td>Zendesk help centre: automated resolutions platform + tiers (edited 2026-08-25)</td><td>Partially — the LLM verdict is not in a counts export, those rows are <em>cannot settle</em>, never guessed</td></tr>
+<tr><td>HubSpot Breeze</td><td>USD 0.5 / resolution <strong>[S]</strong></td><td>Per-resolution</td><td>Secondary — knowledge.hubspot.com is JS-only and could not be read directly</td><td>Runs at [S] confidence; findings carry the weaker grade</td></tr>
+<tr><td>Salesforce Agentforce</td><td>Not published <strong>[U]</strong></td><td>Press release only; no official metering document</td><td>Press release</td><td>Counts only, no dollar claim possible</td></tr>
+<tr><td>Ada</td><td>Not published <strong>[S]</strong></td><td>Rule reported from public docs</td><td>ada.cx pricing/terms (403 to automated reads)</td><td>Counts only, no dollar claim possible</td></tr>
+<tr><td>Generic baseline</td><td>— <strong>[U]</strong></td><td>Per-resolution standard (AgentMeasure standard only)</td><td>—</td><td>The no-vendor-rules baseline a claim never rides on</td></tr>
+</table></div>
+<p class="lead">Why this column matters: a vendor changing what counts as a
+billable resolution changes your bill without changing the price — Zendesk's
+2026-08-25 edit to its resolution-tier documentation is the most recent
+example. When a rule changes, the registry entry changes with a new date, and
+recounts before and after stay comparable because both pin their rule version.
+Read the current registry:
+<a href="https://github.com/roy-tong/AgentMeasure/blob/main/healthcheck/am_healthcheck/vendor-rules.json">vendor-rules.json</a>.</p>
+</section>
+
+<section>
 <h2>Scope</h2>
 <div class="stats">
 <div class="stat"><b>~110</b><span>repositories audited<br>2026-09-06 → 09-09</span></div>
