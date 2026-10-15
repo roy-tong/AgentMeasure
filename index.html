@@ -3,25 +3,25 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AgentMeasure | Check agent logs and metering</title>
-  <meta name="description" content="Check Codex and Claude Code logs locally. Get a $10 anomaly diagnosis or a $20 metering QA check, with clear evidence limits.">
+  <title>AgentMeasure | Re-count your AI vendor bill</title>
+  <meta name="description" content="Re-count an Intercom, Zendesk or HubSpot AI support bill against the vendor's own published pricing rules. One command, runs locally, prints the dollar variance and builds the dispute pack. Free tools; $10 / $20 paid help.">
   <link rel="icon" type="image/svg+xml" href="./assets/favicon.svg">
   <link rel="canonical" href="https://roy-tong.github.io/AgentMeasure/">
   <meta name="theme-color" content="#090C10">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="AgentMeasure">
-  <meta property="og:title" content="AgentMeasure | Check agent logs and metering">
-  <meta property="og:description" content="Check Codex and Claude Code logs locally. Get a $10 anomaly diagnosis or a $20 metering QA check, with clear evidence limits.">
+  <meta property="og:title" content="AgentMeasure | Re-count your AI vendor bill">
+  <meta property="og:description" content="Re-count an Intercom, Zendesk or HubSpot AI support bill against the vendor's own published pricing rules. One command, runs locally, prints the dollar variance and builds the dispute pack. Free tools; $10 / $20 paid help.">
   <meta property="og:url" content="https://roy-tong.github.io/AgentMeasure/">
   <meta property="og:image" content="https://roy-tong.github.io/AgentMeasure/assets/social-preview.png">
   <meta property="og:image:width" content="1280">
   <meta property="og:image:height" content="640">
-  <meta property="og:image:alt" content="AgentMeasure: know what your agent usage metrics actually count">
+  <meta property="og:image:alt" content="AgentMeasure: re-count your AI vendor bill against the vendor's own rules">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="AgentMeasure | Check agent logs and metering">
-  <meta name="twitter:description" content="Check Codex and Claude Code logs locally. Get a $10 anomaly diagnosis or a $20 metering QA check, with clear evidence limits.">
+  <meta name="twitter:title" content="AgentMeasure | Re-count your AI vendor bill">
+  <meta name="twitter:description" content="Re-count an Intercom, Zendesk or HubSpot AI support bill against the vendor's own published pricing rules. One command, runs locally, prints the dollar variance and builds the dispute pack. Free tools; $10 / $20 paid help.">
   <meta name="twitter:image" content="https://roy-tong.github.io/AgentMeasure/assets/social-preview.png">
-  <meta name="twitter:image:alt" content="AgentMeasure: know what your agent usage metrics actually count">
+  <meta name="twitter:image:alt" content="AgentMeasure: re-count your AI vendor bill against the vendor's own rules">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -33,7 +33,7 @@
     "@context": "https://schema.org",
     "@type": "SoftwareSourceCode",
     "name": "AgentMeasure",
-    "description": "Local agent log checks and reproducible metering verification for developers and tool providers.",
+    "description": "Re-count usage- and outcome-billed AI invoices against the vendor's own published rules; local, free, with dollar variance and dispute packs.",
     "url": "https://roy-tong.github.io/AgentMeasure/",
     "codeRepository": "https://github.com/roy-tong/AgentMeasure",
     "license": "https://opensource.org/license/mit",
@@ -79,42 +79,40 @@
   <section class="hero" aria-label="Introduction">
     <div class="hero-grid">
       <div class="hero-copy">
-        <p class="eyebrow reveal">For agent developers and tool providers</p>
-        <h1 class="reveal d1">Understand your <em>agent usage.</em></h1>
-        <p class="lede reveal d2">Find duplicate records, retries and token anomalies in Codex or Claude Code logs. Start with a free local check; get help interpreting one anomaly or verifying one metering sample.</p>
+        <p class="eyebrow reveal">For teams that pay AI vendor bills</p>
+        <h1 class="reveal d1">Re-count your <em>AI bill.</em></h1>
+        <p class="lede reveal d2">AI vendors bill by usage and outcomes. Recount that invoice against the vendor's own published pricing rules — one command, runs locally, prints the dollar variance and builds the evidence pack you can put in front of the vendor.</p>
         <div class="hero-actions reveal d4">
-          <a class="btn btn-primary" href="#how">Run the free check</a>
+          <a class="btn btn-primary" href="./recount.html">Re-count a bill now</a>
           <a class="btn btn-ghost" href="./services.html">Get a $10 / $20 diagnosis</a>
         </div>
         <p class="note reveal d5" style="margin-top:14px"><strong>CLI v0.7.2</strong> on <a href="https://pypi.org/project/agentmeasure/" target="_blank" rel="noopener">PyPI</a> and GitHub; <a href="https://www.npmjs.com/package/@agentmeasure/mcp" target="_blank" rel="noopener">SDK v0.2.0 on npm</a>. 487 Healthcheck tests verified on 2026-10-15. Customer payment and repeat use remain unverified.</p>
       </div>
 
-      <!-- Conformance report console -->
-      <div class="console reveal d2" id="console" aria-label="Example conformance report: PASS, FAIL and UNPROVABLE invariants">
+      <!-- Recount console: real output of `agentmeasure recount` on a 5-row synthetic sample -->
+      <div class="console reveal d2" id="console" aria-label="Example bill recount: vendor rule, both-direction findings, dollar variance">
         <div class="console-bar">
           <span class="dot" aria-hidden="true"></span><span class="dot" aria-hidden="true"></span><span class="dot" aria-hidden="true"></span>
-          <span class="console-title">Developer sample · conformance --fixture retry-chain.jsonl</span>
+          <span class="console-title">agentmeasure recount --export export.csv --vendor zendesk</span>
           <button class="console-replay" id="console-replay" type="button" title="Replay report">replay</button>
         </div>
         <div class="console-body" id="console-body">
-          <div class="cline"><span class="tag-ok">✓ PASS</span><span class="path"> execution-grain</span><span class="num right">1 op · 3 attempts</span></div>
-          <div class="cline"><span class="tag-ok">✓ PASS</span><span class="path"> retry-reconciliation</span><span class="num right">declared 3 = rows 3</span></div>
-          <div class="cline"><span class="tag-ok">✓ PASS</span><span class="path"> cost-preservation</span><span class="num right">13 units conserved</span></div>
+          <div class="cline"><span class="tag-ok">✓ RULE</span><span class="path"> Zendesk AI Agents</span><span class="num right">USD 2.0 / resolution</span></div>
+          <div class="cline"><span class="k">source: Zendesk help centre (edited 2026-08-25) · confidence P</span></div>
           <div class="cline rule"></div>
-          <div class="cline"><span class="tag-failed">✗ FAIL</span><span class="path"> operation-grain</span><span class="num right">grain drift</span></div>
-          <div class="cline"><span class="k">declared grain</span><span class="num right">operation</span></div>
-          <div class="cline"><span class="k">actual grain</span><span class="num right">assignment</span></div>
-          <div class="cline"><span class="k">expected</span><span class="num-ok right">2.5 over 2</span></div>
-          <div class="cline"><span class="k">observed</span><span class="num-warn right">5.0 over 1</span></div>
+          <div class="cline"><span class="tag-failed">✗ FAIL</span><span class="path"> billed but not billable</span><span class="num right">1</span></div>
+          <div class="cline"><span class="tag-ok">✓ PASS</span><span class="path"> agrees with the vendor</span><span class="num right">0</span></div>
+          <div class="cline"><span class="tag-unknown">? UNPROVABLE</span><span class="path"> cannot settle</span><span class="num right">4 (80.0%)</span></div>
           <div class="cline rule"></div>
-          <div class="cline"><span class="tag-unknown">? UNPROVABLE</span><span class="path"> cache-distinction</span></div>
-          <div class="cline"><span class="k">no cache-hit signal in evidence —</span></div>
-          <div class="cline"><span class="k">unsafe inference refused</span></div>
+          <div class="cline"><span class="k">billed</span><span class="num right">$10.00</span></div>
+          <div class="cline"><span class="k">recount billable</span><span class="num right">$8.00</span></div>
+          <div class="cline"><span class="k">overcharge identified</span><span class="num-warn right">$2.00</span></div>
+          <div class="cline"><span class="k">cannot-settle removed, not zeroed —</span><span class="num right">$8.00</span></div>
           <div class="cline cursor-line"><span class="cursor" aria-hidden="true">▌</span></div>
         </div>
         <div class="console-foot">
-          <span class="mono-xs">found by an external contributor · fixed with their fixture as the regression guard</span>
-          <span class="mono-xs dim">UNPROVABLE is a finding, not a zero</span>
+          <span class="mono-xs">5-row synthetic sample · 6 vendor rule sets ship today (Intercom, Zendesk, HubSpot…)</span>
+          <span class="mono-xs dim">a recount is arithmetic, not a verdict</span>
         </div>
       </div>
     </div>
