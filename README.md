@@ -2,15 +2,15 @@
 
 Live: https://roy-tong.github.io/AgentMeasure/
 
-Static HTML, CSS and JavaScript. The current entry path is local Healthcheck → optional $10 diagnosis or $20 Metering QA. Standards, SDK, claims and research tools remain linked as supporting resources.
+Static HTML, CSS and JavaScript. The main entry is an AI support buyer with a specific billing, acceptance or renewal task. Buyer services and fee mechanisms are under validation. Local developer tools and the existing $10/$20 services retain their separate scope. Standards, SDK, claims and research remain supporting resources.
 
 ## Pages
 
-- `index.html`: overview, local commands, two service scopes, technical evidence.
+- `index.html`: buyer decisions, task-fit entry, local tools, distinct developer services and technical evidence.
 - `services.html`: canonical service terms, input requirements, application links and refunds.
 - `claims.html`: dated technical evidence; no paid-adoption claims.
 - `releases.html`: CLI and SDK release information; package versions are independent.
-- `first-look.html`: buyer reconciliation reference, not an active review offer.
+- `first-look.html`: buyer task-fit discussion, evidence requirements and exploratory fee mechanisms; no standard package or recovery promise.
 - `recount.html`, `rules/`, `blog/`, `badges.html`: existing tools and research; preserve their evidence boundaries.
 - `llms.txt`, `sitemap.xml`, `robots.txt`: public discovery. Repository documents in llms.txt use absolute GitHub URLs.
 
