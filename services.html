@@ -3,32 +3,25 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Paid diagnosis — AgentMeasure</title>
-<meta name="description" content="Two paid, human-delivered diagnostics on top of the free open-source tools: a $10 healthcheck anomaly diagnosis and a $20 metering QA check. Apply by email; fixed scope, stated evidence boundary, refund terms before you pay.">
+<title>Free measurement runs — AgentMeasure</title>
+<meta name="description" content="Free, human-run measurement checks: bring 20-100 sanitized rows, get a checkable report within 48 hours. Open-source project; fixtures published under your handle only if you allow.">
 <link rel="stylesheet" href="light.css">
 
 <style>
 .sku{border:1px solid #e3e8ef;border-radius:14px;padding:22px 24px;background:#fff;margin:16px 0}
 .sku h3{margin:0 0 2px;font-size:18px}
-.sku .price{font-size:15px;color:#1f4f8a;font-weight:700;margin:0 0 10px}
 .sku ul{margin:10px 0;padding-left:20px}
 .sku li{margin:5px 0;font-size:14px}
-.buy{display:inline-block;margin-top:12px;padding:10px 22px;border-radius:8px;background:#1f4f8a;color:#fff;font-weight:700;font-size:15px;text-decoration:none}
-.buy:hover{background:#17406f}
-.card-later{font-size:13px;color:#5c6575;margin-top:8px}
 .steps{display:flex;flex-wrap:wrap;gap:12px;margin:16px 0}
 .step{border:1px solid #e3e8ef;border-radius:12px;padding:12px 18px;background:#fff;min-width:180px;flex:1}
 .step b{display:block;font-size:13px;color:#3b4351}
 .step span{font-size:13px;color:#5c6575}
 .note{border-left:3px solid #ccd4de;margin:14px 0;padding:6px 16px;color:#4d5560;font-size:13.5px;max-width:82ch}
-.terms{border:1px solid #e8dcbf;background:#faf7ef;border-radius:12px;padding:16px 20px;font-size:13.5px;max-width:82ch}
-.terms ul{padding-left:18px;margin:8px 0}
-.terms li{margin:4px 0}
+.star{border:1px solid #d9e4d2;background:#f5faf3;border-radius:12px;padding:14px 18px;font-size:13.5px;max-width:82ch}
 .snippet{background:#f6f7f9;border:1px solid #e3e8ef;border-radius:8px;padding:10px 14px;font-size:12.5px;overflow-x:auto;font-family:ui-monospace,Menlo,monospace;max-width:64ch}
 h2{margin-top:34px}
 </style>
 <link rel="canonical" href="https://roy-tong.github.io/AgentMeasure/services.html">
-<script defer src="service-intake.js"></script>
 </head>
 <body>
 <header class="snav">
@@ -37,178 +30,62 @@ h2{margin-top:34px}
     <nav class="snav-links" aria-label="Sections">
       <a href="first-look.html">Buyer review scope</a>
       <a href="index.html#evidence">Evidence</a>
-      <a href="index.html#pricing">Pricing</a>
-      <a href="services.html">$10 / $20 services</a>
+      <a href="index.html#pricing">Free runs</a>
+      <a href="services.html">Free measurement runs</a>
       <a class="ext" href="https://github.com/roy-tong/AgentMeasure" target="_blank" rel="noopener">GitHub&nbsp;↗</a>
     </nav>
-    <a class="snav-cta" href="index.html#how">Run the free check&nbsp;→</a>
+    <a class="snav-cta" href="https://github.com/roy-tong/AgentMeasure/issues/6">Start a free run&nbsp;→</a>
   </div>
 </header>
 <a class="skip-link" href="#main">Skip to content</a>
 <main class="wrap" id="main">
 <section>
-<h1>Get help with one agent usage question</h1>
-<p><a href="#hc10">$10: explain a log anomaly</a> · <a href="#qa20">$20: check a metering sample</a> · <a href="#terms">Terms</a> · <a href="https://github.com/roy-tong/AgentMeasure/blob/main/README.zh-CN.md">中文说明</a></p>
-<p class="note"><strong>Applications are open; online checkout is not ready.</strong> You can request a free fit check or reserve a place. We will confirm an available payment method by email. No charge and no paid analysis start from clicking Apply or replying confirmed.</p>
-<p class="lead">The core CLI tools run <strong>free and local</strong>. Optional GitHub Actions hosting uploads data to GitHub; paid help uses only the material you choose to send. These two
-services are for the moment you want a <strong>human answer about your own
-data</strong>: fixed scope, fixed price, and a stated evidence boundary.
-No subscription, no sales call.</p>
-<p class="lead">The free report already includes findings and general next checks. A generic explanation alone is not a reason to pay. The paid service adds a human interpretation of your specific question, a clear account of missing evidence and a reproducible follow-up. <a href="examples/healthcheck-report.html">Read the free triage baseline</a> before deciding whether that is useful to you.</p>
+<h1>Free measurement runs — you bring the sample, we run the check</h1>
+<p class="lead">The CLI tools are <strong>free and local</strong>. If you want a human-run measurement check on your own sanitized data, that is free too. Bring <strong>20–100 anonymized rows</strong> (or a public export) and we return a measurement check, usually within <strong>48 hours</strong> of a clean sample. You keep the report either way.</p>
+<p class="note"><strong>Everything on this page is free.</strong> The $10 / $20 paid diagnostics previously listed here were removed on 2026-10-21 — the project is now entirely free and open source. We do not quote prices, take payments, or condition anything on one. <a href="https://github.com/roy-tong/AgentMeasure/blob/main/README.zh-CN.md">中文说明</a></p>
 </section>
 
-<p class="note">Need to review a vendor invoice or stop a running agent before it overspends? Those are separate tasks, not included in these two services. For a concrete bill, acceptance or renewal decision, <a href="first-look.html#contact">describe a buyer task</a>. Buyer scope and fees are under validation, without a standard package or recovery guarantee. Runtime budget enforcement is not currently provided. <a href="https://github.com/roy-tong/AgentMeasure/blob/main/docs/product-scope.md">Compare task scope and limits</a>.</p>
-<section id="why-pay">
-<h2>Why pay if the tools are open source?</h2>
-<p class="lead">You may not need to. The code, public cases, explanations and reproduction steps stay free. If they answer your question, use them. An optional paid review buys a small, agreed piece of human work on your remaining question.</p>
+<section id="what">
+<h2>What you get, what we ask</h2>
 <div class="steps">
-<div class="step"><b>Free baseline</b><span>Run the tools, inspect public cases and follow the next checks. Installation problems, tool bugs and unsupported formats start with free help.</span></div>
-<div class="step"><b>$10: one unresolved decision</b><span>We review the evidence you choose to supply, compare plausible explanations and prioritize a next check. If we can only repeat the counts or general advice, we recommend the free path.</span></div>
-<div class="step"><b>$20: one bounded review</b><span>We review field mapping and rule applicability, compare your declared metric when supplied, and deliver a result you can rerun. Paying just to execute the existing free command is unnecessary.</span></div>
+<div class="step"><b>You get — the check</b><span>A measurement check on your sample: what safely counts as attempts vs operations, where retries may inflate usage against your billable unit, and what your telemetry cannot prove. Findings are stated as checkable claims; where your surface is blind, the report says UNPROVABLE instead of guessing.</span></div>
+<div class="step"><b>You get — the result</b><span>A rerunnable result and, if you allow publication, your fixture committed under your handle with the claim boundary you state (synthetic or production — your call, carried verbatim).</span></div>
+<div class="step"><b>We ask — never required</b><span>Permission to publish the anonymized fixture (nothing customer-identifying; hash or drop identifiers). And if the check was useful, a star on the repo helps others find it — never required, never a condition.</span></div>
 </div>
-<p>Before payment we agree on <strong>your decision, the free baseline, the remaining question, the extra work and required evidence</strong>. A known lack of support is disclosed free. A useful no-finding or unprovable result must follow the agreed checks; it is not a substitute for doing the work.</p>
-<p class="note">Both services are human-delivered. We do not sell exclusive access to the public casebook, certification or guaranteed vendor acceptance. You or another reviewer may be able to do the same work. <a href="https://github.com/roy-tong/AgentMeasure/blob/main/docs/paid-review-scope.md">Read the delivery checklist and limits</a>.</p>
+<p class="star">If the check was useful, a star on the repo helps others find it — never required, never a condition.</p>
 </section>
 
-<section>
-<h2 id="hc10">Healthcheck Diagnosis — $10, one anomaly</h2>
+<section id="start">
+<h2>How to start</h2>
 <div class="sku">
-<h3>You ran the free check, it flagged something, and you want to know what it is</h3>
-<p class="price">$10 · one anomaly, one machine · human-delivered</p>
-<ul>
-<li><strong>Who it's for:</strong> Codex / Claude Code developers who see duplicate
-records, retry amplification, failed runs or a token number that looks wrong,
-and don't know the cause or the next step.</li>
-<li><strong>You send — one email is the whole application:</strong> run the free commands below, then hit
-Apply and attach <code>summary.json</code>. That single message carries your
-task and your data. You attach the file yourself; the button cannot attach it. We may ask for clarification if the evidence is incomplete.</li>
-<li><strong>You get:</strong> one reply confirming scope and price ($10 fixed)
-with the payment step — then, within 24 hours after payment, fit approval and complete input, a written diagnosis
-on your supplied evidence: what it supports, what remains unknown, and the next checks. Specific fix steps are included only when the evidence supports them. One round of
-async clarification included.</li>
-<li><strong>Turnaround:</strong> within 24 hours after payment, fit approval and complete input; if we're queued,
-we say so in the confirmation reply — before you pay.</li>
-<li><strong>Summary-only scope:</strong> counts cannot establish a root cause. We first explain the free baseline; a paid review needs a specific unresolved question and agreed extra work. Specific troubleshooting may need an optional manually redacted excerpt.</li>
-<li><strong>Honesty clause:</strong> "no finding" or "not enough evidence" is a
-valid result and will be delivered as such — we don't manufacture a bug to
-justify the fee.</li>
-</ul>
-<p><a href="index.html#install-help">Installation help: macOS, Linux and Windows</a>. Already have a summary? Skip the commands.</p>
-<p class="price" style="font-size:12.5px;color:#5c6575">Run these first (free) — then click Apply and attach the file:</p>
-<div class="snippet">python -m pip install --upgrade agentmeasure<br>
-agentmeasure check --json report.json<br>
-agentmeasure share report.json --out summary.json<br>agentmeasure validate summary.json</div>
-<p class="card-later">Use logs from your own task, not the synthetic demo. Keep report.json and the HTML report local: they may contain paths or commands. Inspect summary.json before sending. For Claude Code, use <code>check --runtime claude --json report.json</code>.</p>
-<a class="buy" href="mailto:tongroy18@gmail.com?subject=Apply%3A%20%2410%20Healthcheck%20Diagnosis&amp;body=Hi%2C%0A%0AI%27d%20like%20the%20%2410%20Healthcheck%20Diagnosis.%0A%0AThe%20anomaly%20I%20want%20diagnosed%3A%20%28one%20sentence%29%0AAttached%3A%20summary.json%20from%20%60agentmeasure%20share%20report.json%20--out%20summary.json%60%0A%0ADecision%20this%20should%20support%3A%0AWhat%20I%20have%20already%20tried%20%28if%20any%29%3A%0APlease%20identify%20the%20free%20baseline%20and%20proposed%20extra%20work%20before%20payment.%0A">Apply by email — $10</a> <a href="#after-apply">Use webmail instead</a>
-<p class="card-later">Application only. Payment instructions follow only when a method is available and the scope is agreed.</p>
+<h3>Option 1 — GitHub issue #6 (preferred)</h3>
+<p>Comment on <a href="https://github.com/roy-tong/AgentMeasure/issues/6">issue #6 — external measurement runs</a> with your project/repo, protocol (MCP / API / other), and one agent-facing capability you want measured. The thread is public on purpose: the next provider reads your run's answer. First response within 24 hours.</p>
 </div>
-</section>
-
-<section>
-<h2 id="qa20">Metering QA check — $20, one sample</h2>
 <div class="sku">
-<h3>Check whether attempts, operations and reported metrics agree</h3>
-<p class="price">$20 · one sample, one ruleset, one metering question · human-delivered</p>
-<ul>
-<li><strong>Who it's for:</strong> authors of MCP servers, APIs and agents that
-report usage — especially after changing retry logic or instrumentation.</li>
-<li><strong>You send:</strong> one event sample in JSONL (up to 10k events)
-plus the number you currently report, if available. Without that number we check sample consistency only. Send the schema and
-first ~20 lines first — <strong>fit is confirmed before anything is charged</strong>;
-if we can't adapt it, we tell you and you owe nothing.</li>
-<li><strong>You get:</strong> a review of the agreed field mapping and rule applicability, plus a discrepancy or no-finding report where every
-verdict is bound to the invariant that produced it (PASS / FAIL / UNPROVABLE —
-same vocabulary as the public claims index), a check you can re-run yourself,
-and a concrete reproduction when there is a real error. Compare the <a href="examples/metering-report.html">free conformance baseline (synthetic example)</a> to decide whether you need extra review.</li>
-<li><strong>Scope:</strong> one sample, one ruleset, one metering question.
-We confirm the supported invariants and required fields before payment. Real session and operation identities are required for retry checks. Core FMT-002 does not verify token/cache semantics, provider invoices or pricing accuracy. Bigger questions are quoted separately.</li>
-<li><strong>Turnaround:</strong> within 24 hours after payment, fit approval and complete input.</li>
-</ul>
-<details><summary>What makes a sample suitable?</summary><p>Use JSONL: one JSON object per line. For operation and retry checks we need real session/task identity, operation identity, attempt sequence and result. Costs and step counts are needed for those respective checks. Do not invent IDs or fill missing values with zero. Missing identity may mean we cannot take the job.</p><p><a href="examples/metering-sample.jsonl" download>Download a synthetic format example</a> · <a href="https://github.com/roy-tong/AgentMeasure/blob/main/conformance/pack/README.md">Full input contract</a>. You may send your native schema for fit review; you do not need to convert it first. Remove secrets, customer content and identifiers you cannot share.</p></details>
-<a class="buy" href="mailto:tongroy18@gmail.com?subject=Apply%3A%20%2420%20Metering%20QA%20check&amp;body=Hi%2C%0A%0AI%27d%20like%20the%20%2420%20Metering%20QA%20check.%0A%0AMy%20metering%20question%3A%20%28one%20sentence%29%0AAttached%3A%20schema%20%2B%20first%20~20%20lines%20%28fit%20check%20first%29%0A%0ADecision%20this%20should%20support%3A%0AWhat%20I%20have%20already%20tried%20%28if%20any%29%3A%0APlease%20identify%20the%20free%20baseline%20and%20proposed%20extra%20work%20before%20payment.%0A">Apply by email — $20</a> <a href="#after-apply">Use webmail instead</a>
-<p class="card-later">Application only. Payment instructions follow only when a method is available and the scope is agreed.</p>
+<h3>Option 2 — email</h3>
+<p>Write to <strong>tongroy18@gmail.com</strong> with the same three lines and your sample attached or linked. Same terms: free, 24h first response, 48h check after a clean sample.</p>
 </div>
+<p>The full guide is <a href="https://github.com/roy-tong/AgentMeasure/blob/main/docs/provider-onboarding.md">docs/provider-onboarding.md</a> — three entry paths, five steps, validate-before-sending, and the four criteria that define a successful run (the same yardstick for both sides).</p>
+<p class="note">Sample format: canonical JSONL per the <a href="https://github.com/roy-tong/AgentMeasure/blob/main/reference/collector-input.md">collector input contract</a>. <code>python3 schemas/validate_jsonl.py your.jsonl</code> must exit 0 before sending — that is the only format gate. Mapping method and the honest-absence discipline are in <a href="https://github.com/roy-tong/AgentMeasure/blob/main/registry/provider-mapping.md">registry/provider-mapping.md</a>.</p>
+</section>
+
+<section id="runs">
+<h2>Who has run one</h2>
+<p class="lead">External runs so far: a local agent runtime (availability certification vector), a metering provider (production receipt vectors with independent recomputation), and an x402 payment-surface provider (mapping of record agreed, fixture in progress). Fixtures live under <code>conformance/</code> with their authors credited. More slots are open — the trial is expanding.</p>
 </section>
 
 <section>
-<h2>How it works</h2>
-<div class="steps">
-<div class="step"><b>1 · Run + Apply</b><span>Run the free commands, click Apply, attach summary.json — one email carries task and data. ($20: send schema + first ~20 lines in that same email; unfit samples are refused free of charge.)</span></div>
-<div class="step"><b>2 · Confirm &amp; pay</b><span>One reply names the free baseline, remaining question, extra work, evidence needed, price and turnaround; card link when available, otherwise agreed in the same thread. We start after payment, fit approval and complete input. A confirmation only reserves your queue spot.</span></div>
-<div class="step"><b>3 · Report in 24h</b><span>Findings, evidence boundary, fix steps, and how to re-check — one thread, one clarification round included.</span></div>
-</div>
-<div class="note">First response within 24 hours; applications are checked at 07:15 and 19:30 China time. Small operation, deliberately: we cap daily orders so
-turnaround stays honest. If today's cap is reached, we say so and you can
-come back tomorrow — we won't take money we can't deliver on time.</div>
-</section>
-
-<section id="after-apply">
-<h2>After you apply</h2>
-<p class="lead">Everything runs over email — <strong>tongroy18@gmail.com</strong>.
-No accounts, no forms, no portal. Your application, your sample and your
-report live in one thread you can keep.</p>
-<p>Save your sent email. An email draft is not a submitted application. Expect a personal reply within 24 hours; check spam, then follow up in the same thread if none arrives. After payment, we confirm receipt, supported scope, start time and delivery due time. Delivery includes the report, evidence limits and any rerun steps.</p>
-<details open><summary>No mail app, or the button did nothing?</summary><p>Open your usual webmail and write to <strong id="intake-email">tongroy18@gmail.com</strong>. Copy or download the template below, attach your files manually, then send. These controls do not send an email or upload data.</p>
-<button type="button" hidden data-copy="intake-email">Copy email address</button>
-<p><a href="examples/hc10-application.txt" download>Download $10 email template</a> · <a href="examples/qa20-application.txt" download>Download $20 email template</a></p>
-<label for="hc10-email">$10 email template</label><textarea id="hc10-email" rows="6" readonly>To: tongroy18@gmail.com
-Subject: Apply: $10 Healthcheck Diagnosis
-
-The anomaly I want explained:
-The decision I need to make:
-What I have already tried or learned from free tools (if any):
-Runtime and CLI version:
-Attached manually: summary.json (inspect before sending).
-I understand aggregate counts do not establish a root cause.
-
-Please first state the free baseline, remaining question and proposed extra work, then confirm scope, input fit and payment availability.
-</textarea><button type="button" hidden data-copy="hc10-email">Copy $10 template</button>
-<label for="qa20-email">$20 email template</label><textarea id="qa20-email" rows="7" readonly>To: tongroy18@gmail.com
-Subject: Apply: $20 Metering QA check
-
-The metering question:
-The decision or release this should support:
-What free tools already answer / what remains unclear:
-The metric I currently report (or: no claim, consistency only):
-Source and time window:
-Attached manually: schema and up to 20 redacted sample rows for free fit review.
-Can session, operation and attempt identities be traced?
-
-Please first state the free baseline, remaining question and proposed extra work, then confirm scope, input fit and payment availability.
-</textarea><button type="button" hidden data-copy="qa20-email">Copy $20 template</button>
-<p id="copy-status" role="status" aria-live="polite"></p></details>
+<h2>Prepare a summary locally first (optional)</h2>
+<div class="snippet">agentmeasure check --json report.json
+agentmeasure share report.json --out summary.json
+agentmeasure validate summary.json</div>
+<p class="note"><code>--out</code> writes immediately on your machine. Inspect the file before you choose to send it. Nothing is automatically uploaded. "No finding" and "not enough evidence" are valid outcomes.</p>
 </section>
 
 <section>
-<h2>Data boundary</h2>
-<p class="lead">The free tools run locally and upload nothing — that stays
-true forever. For a paid diagnosis <strong>you choose what leaves your
-machine</strong>: a sanitized export of your own picking, and nothing else.
-We look at what you attached, we don't re-collect it, and input is used for
-your delivery only. Do not send credentials, prompts or personal/customer content you cannot share. For company data, confirm permission first. If you need retention limits, deletion or a confidentiality agreement, ask before sending; no automatic deletion or enterprise agreement is promised.</p>
-</section>
-
-<section>
-<h2 id="terms">Terms, before you pay</h2>
-<div class="terms">
-<ul>
-<li>Full refund before paid analysis starts. Free format review happens first and does not remove this right. We confirm the paid-work start and due time by email after payment and complete, supported input.</li>
-<li>Unadaptable sample: refused before payment if you checked fit first;
-refunded in full if it turned out unadaptable after payment.</li>
-<li>Delivery is due within 24 hours of the confirmed start unless another time was agreed before payment. If late, reply to request an update or cancel for a full refund. If still undelivered after 72 hours from the confirmed start, a full refund is due; you may keep a later report.</li>
-<li>"No bug found" or "not enough evidence" is a delivered result, not grounds for refund by itself when the agreed checks were performed. This does not remove the cancellation, unsupported-input or late-delivery refund terms above.</li>
-<li>One clarification round is included. Reply in the same thread for a correction, scope question or refund request, quoting the order or payment reference. Extra work requires a separate quote; no automatic upgrade or recurring charge.</li>
-</ul>
-</div>
-</section>
-
-<section>
-<h2>Free stays free</h2>
-<p class="lead">The <a href="index.html">local check-up</a>, the
-<a href="recount.html">browser recount</a>, the
-<a href="claims.html">claims index</a> and the conformance pack remain free
-and open source. Paid here buys a human-delivered diagnosis on your data —
-not a paywall around anything that was free yesterday.</p>
+<h2>What this is not</h2>
+<p class="lead">A free run is not an enterprise invoice review, a vendor acceptance, a refund, or runtime budget enforcement — those are separate tasks outside this scope. Tool bugs go to <a href="https://github.com/roy-tong/AgentMeasure/issues/new">Issues</a> free, with a redacted reproduction. Buyer-scope questions start at <a href="first-look.html">first-look.html</a>.</p>
+<p class="lead">The <a href="index.html">local check-up</a>, the <a href="recount.html">browser recount</a>, the <a href="claims.html">claims index</a> and the conformance pack remain free and open source.</p>
 </section>
 
 </main>
