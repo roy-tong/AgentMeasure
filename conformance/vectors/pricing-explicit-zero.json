@@ -1,63 +1,85 @@
 {
-  "spec_version": "agentmeasure-0.4",
-  "family": "pricing-explicit-zero",
-  "description": "An explicit 0.0 price is a legitimate value, not a missing one. Fallback may apply only when the field is absent, never when it is explicitly zero. Source: litellm model_prices tencent/* rows (13 of 13 carry cache_creation_input_token_cost=0.0 with nonzero cache_read; verified 2026-10-26); consumer-side shape fixed earlier in openlit#1543. Frozen after razzlo's 2026-10-23 recount flagged the repricing trap.",
-  "taxonomy": ["pricing", "explicit-zero", "fallback-guard"],
-  "vectors": [{
-    "id": "PRICING-ZERO-001",
-    "name": "Explicit 0.0 cache-write price vs or-fallback consumer",
-    "description": "A price row carrying cache_creation_input_token_cost=0.0 (free cache write) read by two consumer idioms; the or-fallback silently reprices it.",
-    "principle": "One stream of truth per field: absent means unknown (fallback allowed, marked inferred); explicit 0.0 means free (no fallback ever).",
-    "source_evidence": [
-      "BerriAI/litellm model_prices_and_context_window.json tencent/* 13 rows (cache_creation=0.0, cache_read nonzero), verified 2026-10-26",
-      "openlit#1543 — same shape fixed on the usage side",
-      "BerriAI/litellm#48390 — the source-of-record issue"
-    ],
-    "vectors": [
-      {
-        "id": "pz-001a-or-fallback-reprice",
-        "description": "or-fallback consumer reads explicit 0.0 as missing and bills the cache write -> FAIL",
-        "input": {
-          "row": {"input_cost": 2.8e-09, "cache_creation_input_token_cost": 0.0, "cache_read_input_token_cost": 2.8e-09},
-          "consumer": "or_fallback",
-          "fallback_rule": "1.25x_input_when_missing"
-        },
-        "expect": {
-          "effective_cache_creation_price": 3.5e-09,
-          "repriced_from_explicit_zero": true,
-          "verdict": "FAIL",
-          "failure_reason": "the row said free; the or-idiom read falsy-as-missing and priced the write at 1.25x input"
-        }
+ "spec_version": "agentmeasure-0.4",
+ "family": "pricing-explicit-zero",
+ "description": "An explicit 0.0 price is a legitimate value, not a missing one. Fallback may apply only when the field is absent, never when it is explicitly zero. Source: litellm model_prices tencent/* rows (13 of 13 carry cache_creation_input_token_cost=0.0 with nonzero cache_read; verified 2026-10-26); consumer-side shape fixed earlier in openlit#1543. Frozen after razzlo's 2026-10-23 recount flagged the repricing trap. Class note (contributor recount, 2026-10-27): 44 of 4307 rows share the shape, and the 13 tencent/* rows all point at tencent-cloud doc URLs — the class is the finding; tencent is its local-provider instance.",
+ "taxonomy": [
+  "pricing",
+  "explicit-zero",
+  "fallback-guard"
+ ],
+ "vectors": [
+  {
+   "id": "PRICING-ZERO-001",
+   "name": "Explicit 0.0 cache-write price vs or-fallback consumer",
+   "description": "A price row carrying cache_creation_input_token_cost=0.0 (free cache write) read by two consumer idioms; the or-fallback silently reprices it.",
+   "principle": "One stream of truth per field: absent means unknown (fallback allowed, marked inferred); explicit 0.0 means free (no fallback ever).",
+   "source_evidence": [
+    "BerriAI/litellm model_prices_and_context_window.json tencent/* 13 rows (cache_creation=0.0, cache_read nonzero), verified 2026-10-26",
+    "openlit#1543 — same shape fixed on the usage side",
+    "BerriAI/litellm#48390 — the source-of-record issue"
+   ],
+   "vectors": [
+    {
+     "id": "pz-001a-or-fallback-reprice",
+     "description": "or-fallback consumer reads explicit 0.0 as missing and bills the cache write -> FAIL",
+     "input": {
+      "row": {
+       "input_cost": 2.8e-09,
+       "cache_creation_input_token_cost": 0.0,
+       "cache_read_input_token_cost": 2.8e-09
       },
-      {
-        "id": "pz-001b-in-check-guard",
-        "description": "guard consumer (in-check) keeps explicit 0.0 as free -> PASS",
-        "input": {
-          "row": {"input_cost": 2.8e-09, "cache_creation_input_token_cost": 0.0, "cache_read_input_token_cost": 2.8e-09},
-          "consumer": "in_check_guard",
-          "fallback_rule": "1.25x_input_when_missing"
-        },
-        "expect": {
-          "effective_cache_creation_price": 0.0,
-          "repriced_from_explicit_zero": false,
-          "verdict": "PASS"
-        }
+      "consumer": "or_fallback",
+      "fallback_rule": "1.25x_input_when_missing"
+     },
+     "expect": {
+      "effective_cache_creation_price": 3.5e-09,
+      "repriced_from_explicit_zero": true,
+      "verdict": "FAIL",
+      "failure_reason": "the row said free; the or-idiom read falsy-as-missing and priced the write at 1.25x input"
+     }
+    },
+    {
+     "id": "pz-001b-in-check-guard",
+     "description": "guard consumer (in-check) keeps explicit 0.0 as free -> PASS",
+     "input": {
+      "row": {
+       "input_cost": 2.8e-09,
+       "cache_creation_input_token_cost": 0.0,
+       "cache_read_input_token_cost": 2.8e-09
       },
-      {
-        "id": "pz-001c-absent-fallback-marked",
-        "description": "field absent -> fallback applies and must be marked inferred -> PASS",
-        "input": {
-          "row": {"input_cost": 2.8e-09, "cache_read_input_token_cost": 2.8e-09},
-          "consumer": "in_check_guard",
-          "fallback_rule": "1.25x_input_when_missing"
-        },
-        "expect": {
-          "effective_cache_creation_price": 3.5e-09,
-          "repriced_from_explicit_zero": false,
-          "inferred_fallback": true,
-          "verdict": "PASS"
-        }
-      }
-    ]
-  }]
+      "consumer": "in_check_guard",
+      "fallback_rule": "1.25x_input_when_missing"
+     },
+     "expect": {
+      "effective_cache_creation_price": 0.0,
+      "repriced_from_explicit_zero": false,
+      "verdict": "PASS"
+     }
+    },
+    {
+     "id": "pz-001c-absent-fallback-marked",
+     "description": "field absent -> fallback applies and must be marked inferred -> PASS",
+     "input": {
+      "row": {
+       "input_cost": 2.8e-09,
+       "cache_read_input_token_cost": 2.8e-09
+      },
+      "consumer": "in_check_guard",
+      "fallback_rule": "1.25x_input_when_missing"
+     },
+     "expect": {
+      "effective_cache_creation_price": 3.5e-09,
+      "repriced_from_explicit_zero": false,
+      "inferred_fallback": true,
+      "verdict": "PASS"
+     }
+    }
+   ]
+  }
+ ],
+ "attribution": {
+  "contributor": "Razzlo (iLands broker)",
+  "credit_line": "Vectors and row counts provided by direct reply, 2026-10-26. Archived by AgentMeasure.",
+  "note": "Contributor-specified credit line (2026-10-27 email), wording not verbatim-required, source named. Contributor also observed: 44 of 4307 rows share the format, of which all 13 tencent/* rows point at tencent-cloud doc URLs — the class is what makes the format noteworthy, not the single vendor."
+ }
 }
