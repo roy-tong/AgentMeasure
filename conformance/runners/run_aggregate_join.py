@@ -6,12 +6,12 @@ Origin: Metrecept (iwasinnam2 / Ivan Karpusheff) — the 2026-10-09 incident
 said cache_hits=0) and the six-questions answer of 2026-10-12 proposing the
 join vector: N crossing receipts and the one aggregate they belong to;
 conformance is event_count == N and amount == sum. The framing "a signature
-made the absence look like proof" is AgentMeasure's sentence; his words are
+made the absence look like proof" is Verovo's sentence; his words are
 the confirmation that it is the right one (attribution kept separate per his
-conditions). Fixture and wording: AgentMeasure (synthetic). His production
+conditions). Fixture and wording: Verovo (synthetic). His production
 cut is reserved as external/iwasinnam-004.
 
-This pins AMS-1 clause S-9 (aggregate reconciliation): an aggregate is
+This pins VSS-1 clause S-9 (aggregate reconciliation): an aggregate is
 evidence only if it reconciles to its members by count and by sum.
 
 Guards:

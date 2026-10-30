@@ -1,4 +1,4 @@
-# AgentMeasure Security — Sybil、Collusion、Replay、Forgery、Malicious Aggregator（Draft 0.4）
+# Verovo Security — Sybil、Collusion、Replay、Forgery、Malicious Aggregator（Draft 0.4）
 
 ## 1. 攻击与缓解
 
@@ -8,7 +8,7 @@
 | TH2 | 双侧合谋（作者控制 agent + server） | 无法完全防御；跨 trust domain 判定 + 样本审计；平台 attestation（T1）是唯一强对抗 |
 | TH3 | Sybil observer（字符串不同实则一人） | trust_domain + identity claims 认证；principal 注册制 |
 | TH4 | 重放旧观察 | observation_id 唯一性 + 时间窗 |
-| TH5 | 篡改未签名语义字段 | SIGNED_FIELDS 全覆盖（AgentMeasure Data §5）；篡改即验签失败 |
+| TH5 | 篡改未签名语义字段 | SIGNED_FIELDS 全覆盖（Verovo Data §5）；篡改即验签失败 |
 | TH6 | 伪 commitment 关联 | commitment 输入字段全部被签名；同侧永不佐证 |
 | TH7 | 恶意聚合器（误报/漏报） | 聚合规则公开 + test vectors + 独立实现交叉验证；未来：signed aggregate + Merkle commitment + transparency log |
 | TH8 | 隐私反推 | 只发布聚合与比率；最小样本量门槛；伪匿名轮换；本地 cohort 聚合 |
@@ -23,7 +23,7 @@
 - 平台 attestation 未验证 → UNSUPPORTED
 - 无 observation_id → 拒绝入库
 
-## 3. 标准不变量（安全相关，AgentMeasure Core §9 摘录）
+## 3. 标准不变量（安全相关，Verovo Core §9 摘录）
 
 - Unsigned fields MUST NOT affect authenticated claims
 - Ambiguous observations MUST NOT be promoted to corroborated

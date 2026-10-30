@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""AgentMeasure test vectors runner（参考实现侧验证；fixtures 本身语言无关）。
+"""Verovo test vectors runner（参考实现侧验证；fixtures 本身语言无关）。
 
 用法: python3 verify_vectors.py
-任何 AgentMeasure 实现（Go/Rust/TS...）应对同一 fixtures 产生同一结果。
+任何 Verovo 实现（Go/Rust/TS...）应对同一 fixtures 产生同一结果。
 """
 from __future__ import annotations
 
@@ -37,7 +37,7 @@ def run_receipt_vectors() -> int:
                               observer_side=v["input"]["observer_side"],
                               provenance=v["input"]["provenance"],
                               project_id=v["input"]["project_id"])
-            ok = r["spec_version"] == "agentmeasure-0.1"
+            ok = r["spec_version"] == "verovo-0.1"
         elif vid == "receipt-forbidden-fields":
             # 输入故意含内容字段；检查构建出的收据不含任何内容
             obs = empty_observation()

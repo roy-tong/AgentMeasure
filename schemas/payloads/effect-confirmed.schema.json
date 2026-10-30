@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "payload: effect_confirmed",
-  "description": "AgentMeasure Effect Confirmation: a determination that an Effect has occurred and is attested, with evidence grade, stability window, and reversal chain. Draft 0.4.4.",
+  "description": "Verovo Effect Confirmation: a determination that an Effect has occurred and is attested, with evidence grade, stability window, and reversal chain. Draft 0.4.4.",
   "type": "object",
   "required": [
     "effect_id",

@@ -14,11 +14,11 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(ROOT / "healthcheck"))
 
-from am_healthcheck import commerce as commerce_mod  # noqa: E402
+from verovo_healthcheck import commerce as commerce_mod  # noqa: E402
 
 
 def main() -> int:
-    fixtures = ROOT / "healthcheck" / "am_healthcheck" / "fixtures" / "commerce"
+    fixtures = ROOT / "healthcheck" / "verovo_healthcheck" / "fixtures" / "commerce"
     schema = json.loads(
         (ROOT / "schemas" / "commerce-profile.schema.json").read_text(encoding="utf-8"))
     expected = json.loads(

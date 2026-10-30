@@ -5,4 +5,4 @@ Fixes the PyPI 0.4.0 first-command crash reported by a real user (morpheus): `_r
 - `fix(cli)`: 717c2d3 — release 0.4.1 (regression shipped in 0.4.0)
 - `docs`: e4d287d — README warns PyPI served crashing 0.4.0; git install as the working door
 
-Install: `pip install agentmeasure==0.4.1` (or `pipx upgrade agentmeasure`).
+Install: `pip install verovo==0.4.1` (or `pipx upgrade verovo`).

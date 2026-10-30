@@ -2,14 +2,14 @@
 import json
 import unittest
 
-from am_healthcheck.export import to_json_export, to_otel, to_prometheus
+from verovo_healthcheck.export import to_json_export, to_otel, to_prometheus
 
 
 def sample_report():
-    """A minimal report shaped like `agentmeasure check --json` output."""
+    """A minimal report shaped like `verovo check --json` output."""
     return {
         "schema": 1,
-        "tool": "agentmeasure-healthcheck",
+        "tool": "verovo-healthcheck",
         "version": "0.4.0",
         "mode": "own-data",
         "window": "last 7 day(s) of local sessions",
@@ -105,7 +105,7 @@ class TestJsonExport(unittest.TestCase):
 
     def test_json_export_preserves_original_fields(self):
         enriched = to_json_export(sample_report())
-        self.assertEqual(enriched["tool"], "agentmeasure-healthcheck")
+        self.assertEqual(enriched["tool"], "verovo-healthcheck")
         self.assertEqual(enriched["overview"]["exec_total"], 20)
 
     def test_json_export_does_not_mutate_input(self):

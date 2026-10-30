@@ -5,7 +5,7 @@
 > replay of the same request, from two planes, with equal request and
 > response digests, and a changed payload alongside with its own digests —
 > *cost-preservation stated as bytes: a replay is the same answer, and the
-> record proves it rather than asserts it.* Fixture and wording: AgentMeasure
+> record proves it rather than asserts it.* Fixture and wording: Verovo
 > (synthetic). His production cut is reserved as `external/iwasinnam-005`,
 > in flight.
 >
@@ -46,4 +46,4 @@ its own digests.
    guard in chenhz01-001);
 5. **no merge** — the replay is its own metered crossing: distinct
    `meter_event_id` from the fill, both present in the ledger (no N-to-one
-   collapse; AMS-1 L5 discipline).
+   collapse; VSS-1 L5 discipline).

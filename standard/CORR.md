@@ -1,4 +1,4 @@
-# AgentMeasure Correlation — Observation → Attempt → Operation 确定性规则（Draft 0.4）
+# Verovo Correlation — Observation → Attempt → Operation 确定性规则（Draft 0.4）
 
 ## 1. 匹配优先级（Observation → Attempt）
 
@@ -21,7 +21,7 @@ attempt；其余观察各自独立（不提升证据）。
 - **时间解析 fail-closed**：无法解析的时间戳不参与关联（绝不假设 now）
 - **确定性**：同一输入 + 同一 policy → 同一 attempt 划分（可复现）
 
-## 3. Attempt → Operation 归并（Draft 0.4.4，AgentMeasure Core §2.4）
+## 3. Attempt → Operation 归并（Draft 0.4.4，Verovo Core §2.4）
 
 Operation = 逻辑使用（"为任务 T 使用能力 C"），是**由 Attempt 事实解析出的语义对象**
 （不是与 Attempt 同层的行为对象）。Attempt Ledger 保持不可变；Operation 是它上面的视图。
@@ -110,7 +110,7 @@ result/effect → outcome`
 }
 ```
 
-## 6. 不变量映射（AgentMeasure Core §9）
+## 6. 不变量映射（Verovo Core §9）
 
 - 一个 invocation 最多计数一次（不变量 2）
 - 重复观察不增计数（不变量 3）

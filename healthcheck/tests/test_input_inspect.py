@@ -8,7 +8,7 @@ from contextlib import redirect_stdout, redirect_stderr
 from pathlib import Path
 
 from _support import HEALTHCHECK_DIR
-from am_healthcheck import cli, input_inspect
+from verovo_healthcheck import cli, input_inspect
 
 
 class InputRoutingTests(unittest.TestCase):
@@ -27,7 +27,7 @@ class InputRoutingTests(unittest.TestCase):
         return code, out.getvalue(), err.getvalue()
 
     def test_provider_shape_routes_without_claiming_validation(self):
-        self.write([{"spec_version": "agentmeasure-0.4", "observation_type": "attempt_started"}])
+        self.write([{"spec_version": "verovo-0.4", "observation_type": "attempt_started"}])
         result = input_inspect.inspect(self.path)
         self.assertEqual(result["format"], "canonical-observations")
         self.assertEqual(result["schema_validation"], "NOT-RUN")
@@ -37,7 +37,7 @@ class InputRoutingTests(unittest.TestCase):
         self.assertNotIn("missing required property 'candidate_ids'", err)
 
     def test_mixed_input_never_silently_drops_other_rows(self):
-        self.write([{"schema": "agentmeasure.lab/funnel-event"}, {"spec_version": "agentmeasure-0.4", "observation_type": "selection"}])
+        self.write([{"schema": "verovo.lab/funnel-event"}, {"spec_version": "verovo-0.4", "observation_type": "selection"}])
         r = input_inspect.inspect(self.path)
         self.assertEqual(r["format"], "mixed")
         self.assertEqual(r["nonempty_rows"], 2)
@@ -50,7 +50,7 @@ class InputRoutingTests(unittest.TestCase):
         self.assertNotIn("SECRET", json.dumps(r))
 
     def test_shape_recognition_does_not_bypass_fmt_validation(self):
-        self.write([{"schema": "agentmeasure.lab/funnel-event"}])
+        self.write([{"schema": "verovo.lab/funnel-event"}])
         self.assertEqual(self.run_cli(["inspect-input", str(self.path)])[0], 0)
         self.assertEqual(self.run_cli(["conformance", "--fixture", str(self.path)])[0], 2)
 
@@ -65,7 +65,7 @@ class InputRoutingTests(unittest.TestCase):
         self.assertEqual(before, self.path.read_bytes())
 
     def test_empty_unknown_and_ambiguous_are_not_success(self):
-        for rows in ([], [{}], [42], [{"schema": "agentmeasure.lab/funnel-event", "spec_version": "agentmeasure-0.4", "observation_type": "selection"}]):
+        for rows in ([], [{}], [42], [{"schema": "verovo.lab/funnel-event", "spec_version": "verovo-0.4", "observation_type": "selection"}]):
             self.write(rows)
             self.assertEqual(self.run_cli(["inspect-input", str(self.path)])[0], 2)
 

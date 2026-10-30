@@ -1,11 +1,11 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { AgentMeasure } from "../dist/index.js";
+import { Verovo } from "../dist/index.js";
 import { makeEventsDir, readEvents } from "./helpers.mjs";
 
 test("concurrency: 2000 parallel calls → 4000 observations, zero loss, queue drained", async () => {
   const dir = makeEventsDir();
-  const am = new AgentMeasure({ eventsDir: dir, projectId: "t/conc", flushIntervalMs: 10 });
+  const am = new Verovo({ eventsDir: dir, projectId: "t/conc", flushIntervalMs: 10 });
   const wrapped = am.wrapTool("t", async () => ({}));
   await Promise.all(
     Array.from({ length: 2000 }, (_, i) => wrapped(i)),
@@ -24,7 +24,7 @@ test("concurrency: 2000 parallel calls → 4000 observations, zero loss, queue d
 
 test("concurrency: sequence numbers are monotonic across flushes", async () => {
   const dir = makeEventsDir();
-  const am = new AgentMeasure({ eventsDir: dir, projectId: "t/seq", flushIntervalMs: 1 });
+  const am = new Verovo({ eventsDir: dir, projectId: "t/seq", flushIntervalMs: 1 });
   const wrapped = am.wrapTool("t", async () => ({}));
   await Promise.all(Array.from({ length: 500 }, (_, i) => wrapped(i)));
   await am.shutdown();

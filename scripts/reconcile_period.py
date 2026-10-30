@@ -21,7 +21,7 @@ def validate_config(config, root, scheduled=False, today=None):
         expected = (today.replace(day=1) - datetime.timedelta(days=1)).strftime('%Y-%m')
         if period != expected:
             raise ValueError('Stale export configuration: scheduled run requires ' + expected)
-    relative = config.get('export', '.agentmeasure/recount-export.csv')
+    relative = config.get('export', '.verovo/recount-export.csv')
     if not isinstance(relative, str) or '\n' in relative or '\r' in relative:
         raise ValueError('export must be a repository-relative path')
     root = Path(root).resolve()
@@ -42,12 +42,12 @@ def needs_review(result):
 
 
 def main():
-    config_path = Path('.agentmeasure/reconcile.json')
+    config_path = Path('.verovo/reconcile.json')
     if not config_path.is_file():
         raise ValueError('No config; follow RECONCILE.md before running')
     config = json.loads(config_path.read_text())
     vendor, period, export = validate_config(config, Path.cwd(), os.getenv('GITHUB_EVENT_NAME') == 'schedule')
-    completed = subprocess.run(['agentmeasure', 'recount', '--export', str(export),
+    completed = subprocess.run(['verovo', 'recount', '--export', str(export),
                                 '--vendor', vendor, '--json', 'recount-result.json'],
                                check=True, capture_output=True, text=True)
     report = 'Billing period: ' + period + '\n' + completed.stdout

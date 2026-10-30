@@ -2,7 +2,7 @@
 
 # What an optional paid review adds
 
-You can run, inspect and modify AgentMeasure yourself. The public cases,
+You can run, inspect and modify Verovo yourself. The public cases,
 explanations, fixtures and reproduction steps stay free. If they answer your
 question, there is no reason to buy the same output from us.
 
@@ -31,7 +31,7 @@ sufficient or the remaining work is unsupported, we say so without charging.
 A summary can support limited interpretation; it cannot identify a cause that
 is absent from the input. We do not sell known missing evidence back to you.
 Checkout availability and existing refund terms are on the
-[service page](https://roy-tong.github.io/AgentMeasure/services.html#terms).
+[service page](https://roy-tong.github.io/verovo/services.html#terms).
 
 ## Deliverables
 

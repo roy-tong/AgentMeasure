@@ -2,7 +2,7 @@
 
 Updated 2026-10-21.
 
-AgentMeasure helps enterprise buyers verify AI service charges and delivery
+Verovo helps enterprise buyers verify AI service charges and delivery
 with evidence they can check. The first validation focus is a specific
 outcome-billed AI support task, not four separate product launches.
 
@@ -28,7 +28,7 @@ Neither mechanism is a standard package, published rate or recovery promise.
 Scope, available capabilities, required input and any fee must be agreed before
 paid work. A fit discussion is not a free full-period audit or an accepted order.
 The existing $10 Healthcheck and $20 Metering QA services have separate,
-[published terms](https://roy-tong.github.io/AgentMeasure/services.html).
+[published terms](https://roy-tong.github.io/verovo/services.html).
 
 ## A finding must lead somewhere
 

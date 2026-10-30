@@ -10,12 +10,12 @@ from contextlib import redirect_stderr, redirect_stdout
 
 from _support import fixture, HEALTHCHECK_DIR, FIXTURES_DIR
 
-from am_healthcheck import cli
-from am_healthcheck import schema as schema_mod
-from am_healthcheck import share as share_mod
-from am_healthcheck import snapshot as snapshot_mod
-from am_healthcheck.checks import run_checks, session_summaries
-from am_healthcheck.codex import parse_session
+from verovo_healthcheck import cli
+from verovo_healthcheck import schema as schema_mod
+from verovo_healthcheck import share as share_mod
+from verovo_healthcheck import snapshot as snapshot_mod
+from verovo_healthcheck.checks import run_checks, session_summaries
+from verovo_healthcheck.codex import parse_session
 
 
 def _build_snapshot(path=None):
@@ -99,7 +99,7 @@ class TestValidateCommand(unittest.TestCase):
         with open(path, "w") as fh:
             json.dump({"hello": 1}, fh)
         out = self._run(["validate", path], expect=2)
-        self.assertIn("not an AgentMeasure export", out)
+        self.assertIn("not an Verovo export", out)
 
 
 class TestExternalExample(unittest.TestCase):
@@ -192,7 +192,7 @@ class TestShareCommand(unittest.TestCase):
         self._run(["share", report, "--out", dest])
         with open(dest) as fh:
             payload = json.load(fh)
-        self.assertEqual(payload["tool"], "AgentMeasure Healthcheck")
+        self.assertEqual(payload["tool"], "Verovo Healthcheck")
 
     def test_snapshot_file_rejected(self):
         snap = os.path.join(self.tmp.name, "s.json")

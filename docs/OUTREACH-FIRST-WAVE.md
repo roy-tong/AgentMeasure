@@ -5,7 +5,7 @@
 > → 跑 3–7 天 → 输出 Measurement Report #001 → 产生 1 个 Action**。
 >
 > 成功定义（不是 star、不是 PR）：
-> **External Provider #001 接入后，AgentMeasure 告诉了他一件他原来不知道的
+> **External Provider #001 接入后，Verovo 告诉了他一件他原来不知道的
 > 事实，并且他因此改了产品。**
 >
 > 纪律：前 10 个 Outreach 全部投 **Pool A**。不追大 logo。
@@ -30,12 +30,12 @@ Validation #001 自己证明了这一点。
 > remains unknown, and how much of the execution stream can actually be resolved
 > into logical operations."
 
-AgentMeasure 的卖点不是"我们什么都知道"，而是
+Verovo 的卖点不是"我们什么都知道"，而是
 **"我们不会把不知道的事情伪装成知道"**。
 
-**另外**：`@agentmeasure/mcp` 尚未发布到 npm（registry 404），但 **v0.1.1 GitHub
-Release 已附带 `agentmeasure-mcp-0.1.1.tgz` 资产**——外部 Provider 现在就能装：
-`npm install https://github.com/roy-tong/AgentMeasure/releases/download/v0.1.1/agentmeasure-mcp-0.1.1.tgz`
+**另外**：`@verovo/mcp` 尚未发布到 npm（registry 404），但 **v0.1.1 GitHub
+Release 已附带 `verovo-mcp-0.1.1.tgz` 资产**——外部 Provider 现在就能装：
+`npm install https://github.com/roy-tong/verovo/releases/download/v0.1.1/verovo-mcp-0.1.1.tgz`
 或 clone 后 `cd sdk && npm install`。npm 正式发布由 release workflow 自动执行
 （仓库添加 `NPM_TOKEN` secret 后即生效），发布后把邮件里的安装行换成
 一行 npm install。
@@ -87,7 +87,7 @@ GitHub MCP Server / MCP 官方 servers / Vercel skills。大 logo 的接入需�
 > identity — and how much of the execution stream can actually be resolved into
 > logical operations (vs retries of the same task)?**
 >
-> We're building AgentMeasure, an open measurement standard for exactly this
+> We're building Verovo, an open measurement standard for exactly this
 > question. Our provider SDK wraps an MCP handler at registration time and emits
 > canonical observations — no content captured, nothing on the request critical
 > path, caller identity resolved per request (v2 `_meta.clientInfo` / v1 session
@@ -104,11 +104,11 @@ GitHub MCP Server / MCP 官方 servers / Vercel skills。大 logo 的接入需�
 >    today's lineage. If the numbers come out wrong or the definitions feel broken,
 >    that's the most useful feedback we can get.
 >
-> Everything is open: [github.com/roy-tong/AgentMeasure](https://github.com/roy-tong/AgentMeasure)
+> Everything is open: [github.com/roy-tong/verovo](https://github.com/roy-tong/verovo)
 > (standard draft 0.4.3, reference implementation, deterministic pipeline validation,
 > evidence-profile benchmark of ecosystem claims). The SDK installs straight from the
 > v0.1.1 release tarball — no npm wait:
-> `npm install https://github.com/roy-tong/AgentMeasure/releases/download/v0.1.1/agentmeasure-mcp-0.1.1.tgz`
+> `npm install https://github.com/roy-tong/verovo/releases/download/v0.1.1/verovo-mcp-0.1.1.tgz`
 > or clone and `cd sdk && npm install`.
 >
 > Want to try it? Happy to walk you through the 10 minutes.

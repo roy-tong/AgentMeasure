@@ -1,8 +1,9 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "agentmeasure.lab/funnel-event@1.0.0",
-  "title": "AgentMeasure Lab — Funnel Event",
-  "description": "FMT-002. Reach -> Choice -> Success -> Consumption events emitted by experiment runners (or any producer). Events are evidence units; events from a non-AgentMeasure producer are valid if they satisfy this schema and can be consumed by the report layer. No timestamps: determinism is part of the contract.",
+  "$id": "verovo.lab/funnel-event@1.0.0",
+  "$comment": "The agentmeasure.lab/funnel-event namespace is a permanent legacy alias for evidence recorded before the 2026-10-30 Verovo rename.",
+  "title": "Verovo Lab — Funnel Event",
+  "description": "FMT-002. Reach -> Choice -> Success -> Consumption events emitted by experiment runners (or any producer). Events are evidence units; events from a non-Verovo producer are valid if they satisfy this schema and can be consumed by the report layer. No timestamps: determinism is part of the contract.",
   "type": "object",
   "required": [
     "schema",
@@ -18,7 +19,7 @@
     "rules_version"
   ],
   "properties": {
-    "schema": { "const": "agentmeasure.lab/funnel-event" },
+    "schema": { "enum": ["verovo.lab/funnel-event", "agentmeasure.lab/funnel-event"] },
     "schema_version": { "const": "1.0.0" },
     "event": {
       "enum": ["reach", "choice", "attempt", "operation_result", "consumption"]

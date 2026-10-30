@@ -1,11 +1,11 @@
-# AgentMeasure Interoperability Profile — Pydantic AI
+# Verovo Interoperability Profile — Pydantic AI
 
 > Draft 0.4.4 / 0.5 方向。Pydantic AI / Logfire 已覆盖大部分 agent 生命周期 observation；
-> 本 profile 定义其执行层对象 → AgentMeasure 语义对象。
+> 本 profile 定义其执行层对象 → Verovo 语义对象。
 
 ## 映射表
 
-| Pydantic AI | AgentMeasure | 说明 |
+| Pydantic AI | Verovo | 说明 |
 |---|---|---|
 | `AgentRun` | Task / Operation 候选 | 一次 run 是一个 operation 候选；内嵌多次 model/tool 执行 |
 | `ModelRequest` | Attempt（model 层）| 一次 provider 请求 = 一个 attempt |

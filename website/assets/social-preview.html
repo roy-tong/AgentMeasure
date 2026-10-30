@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=1280, initial-scale=1">
-  <title>AgentMeasure social preview</title>
+  <title>Verovo social preview</title>
   <style>
     * { box-sizing: border-box; }
     html, body { margin: 0; width: 1280px; height: 640px; overflow: hidden; }
@@ -55,18 +55,15 @@
       letter-spacing: -0.04em;
     }
     .brand b { color: #6ef2a3; font-weight: 700; }
-    .mark {
-      width: 46px;
-      height: 46px;
-      border: 1px solid rgb(110 242 163 / 0.55);
+    .plate {
+      display: inline-flex;
+      align-items: center;
+      padding: 11px 16px;
       border-radius: 12px;
-      display: grid;
-      place-items: center;
-      color: #6ef2a3;
-      background: rgb(110 242 163 / 0.07);
-      font: 700 17px/1 ui-monospace, "SFMono-Regular", Menlo, monospace;
-      letter-spacing: -0.06em;
+      background: #f2f5f7;
+      box-shadow: 0 0 0 1px rgb(255 255 255 / 0.06);
     }
+    .plate img { display: block; height: 30px; width: auto; }
     .status {
       border: 1px solid #252d36;
       border-radius: 8px;
@@ -129,13 +126,13 @@
 <body>
   <div class="canvas">
     <header class="top">
-      <div class="brand"><span class="mark">AM</span><span>AgentMeasure<b>_</b></span></div>
-      <div class="status">Open source&nbsp;&nbsp; Spec 0.4.4&nbsp;&nbsp; SDK 0.1.1</div>
+      <div class="brand"><span class="plate"><img src="verovo-logo.png" alt="Verovo"></span></div>
+      <div class="status">Open source&nbsp;&nbsp; Spec 0.4.5&nbsp;&nbsp; SDK 0.2.0</div>
     </header>
 
     <main>
-      <h1>Know what your agent usage metrics <em>actually</em> count.</h1>
-      <p class="sub">Separate operations from attempts. Preserve evidence. Report unknowns honestly.</p>
+      <h1>Verify AI charges and delivery, with evidence your team can <em>check</em>.</h1>
+      <p class="sub">Recount supported billing exports. Preserve evidence. Report unknowns honestly.</p>
     </main>
 
     <footer class="bottom">
@@ -146,7 +143,7 @@
         <span class="trace-arrow">→</span>
         <div class="trace-step">1 operation<small>Logical usage</small></div>
       </div>
-      <div class="url">roy-tong.github.io/<strong>AgentMeasure</strong></div>
+      <div class="url">roy-tong.github.io/<strong>verovo</strong></div>
     </footer>
   </div>
 </body>

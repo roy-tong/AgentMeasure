@@ -1,4 +1,4 @@
-# AgentMeasure Conformance
+# Verovo Conformance
 
 ## Conformance Levels（Draft 0.4）
 
@@ -6,20 +6,20 @@
 
 | Level | 覆盖 | 当前 vectors 状态 |
 | --- | --- | --- |
-| **AgentMeasure Core Conformant** | 收据格式、签名、隐私、不变量 1-24 | receipt/correlation fixtures 已发布（`verify_vectors.py`） |
-| **AgentMeasure Choice Conformant** | M2.1-M2.5 | M2.2 / M2.5 vectors 已发布（含三轴 scope：authority/constraint）；M2.1 / M2.3 / M2.4 待发布 |
-| **AgentMeasure Execution Conformant** | M3.1-M3.3 | M3.1/M3.3 grain vectors 已发布（retry chain 归并 / 无证据 fail-closed / 双 grain 披露，DR-006）；M3.2 待发布 |
-| **AgentMeasure Utility Conformant** | M4.1 | consumption vectors 已发布 |
-| **AgentMeasure Reporting Conformant** | Measurement Label + 口径披露 | 待发布 |
+| **Verovo Core Conformant** | 收据格式、签名、隐私、不变量 1-24 | receipt/correlation fixtures 已发布（`verify_vectors.py`） |
+| **Verovo Choice Conformant** | M2.1-M2.5 | M2.2 / M2.5 vectors 已发布（含三轴 scope：authority/constraint）；M2.1 / M2.3 / M2.4 待发布 |
+| **Verovo Execution Conformant** | M3.1-M3.3 | M3.1/M3.3 grain vectors 已发布（retry chain 归并 / 无证据 fail-closed / 双 grain 披露，DR-006）；M3.2 待发布 |
+| **Verovo Utility Conformant** | M4.1 | consumption vectors 已发布 |
+| **Verovo Reporting Conformant** | Measurement Label + 口径披露 | 待发布 |
 | **Verified Measurement Profile** | 签名、证据、Receipt（Core §10 高级符合性） | 参考实现支持；非采用前置 |
 
 > **声称纪律**：通过某一 Level 只代表该 Level **已发布**的 vectors 全过；
 > 未发布 vectors 的部分不得宣称覆盖。例：Choice Conformant 目前 = M2.2 + M2.5
 > vectors 全过 + presented 可观察声明，不等于 M2.1-M2.5 全部验证。
 
-认证声明示例：`<your implementation> — AgentMeasure Choice Conformant (Draft 0.4)`
+认证声明示例：`<your implementation> — Verovo Choice Conformant (Draft 0.4)`
 
-### 结算场景渐进阶梯（AMS-1 · Stage 0…3）
+### 结算场景渐进阶梯（VSS-1 · Stage 0…3）
 
 面向只需结算声明能力的实现方（PEAC 式渐进采用，与上表指标族正交）：
 
@@ -28,7 +28,7 @@
 | **Stage 0 — Discovery** | 读懂 [standard/SETTLEMENT.md](../standard/SETTLEMENT.md) 与 [settlement.manifest.json](../standard/settlement.manifest.json) | — |
 | **Stage 1 — Transport** | effect-confirmed JSONL 收发（schema 校验族） | settle 校验测试 |
 | **Stage 2 — Policy** | OUT 审计（UNPROVABLE fail-closed + OUT-005 对称披露） | `run_outcome_audit.py` |
-| **Stage 3 — Commerce** | 生成 ADB + AMS-1 一页纸声明 | `settle --format md`（`test_settle.py`） |
+| **Stage 3 — Commerce** | 生成 ADB + VSS-1 一页纸声明 | `settle --format md`（`test_settle.py`） |
 
 ## 运行
 
@@ -39,8 +39,8 @@ python3 conformance/runners/run_external_fixture.py  # 外部 fixture（Urusilla
 python3 conformance/runners/run_outcome_audit.py     # 效果审计（OUT-001..005）
 python3 conformance/runners/run_delegation.py        # 多 Agent 委托（DELEGATION-001..007）
 python3 conformance/runners/run_sse_usage.py         # Anthropic SSE usage（SSE-001，#24）
-python3 conformance/runners/run_aggregate_join.py    # 聚合对账（AMS-1 S-9：join 守卫族）
-python3 conformance/runners/run_replay_digest.py     # replay 字节级成本保全（AMS-1 S-9）
+python3 conformance/runners/run_aggregate_join.py    # 聚合对账（VSS-1 S-9：join 守卫族）
+python3 conformance/runners/run_replay_digest.py     # replay 字节级成本保全（VSS-1 S-9）
 ```
 
 ### 检查家族与对应不变量
@@ -105,12 +105,12 @@ python3 conformance/runners/run_replay_digest.py     # replay 字节级成本保
 - **rajudandigam-003（传输层身份反例）** — 维护者侧反例（maxAttempts=2：源 JSONL
   重复 attempt 身份判失败而 OTLP 导出通过）；贡献者修正生成器后交完整包（2026-10-11
   回复）。原则（missing identity 保持 unknown、去重不得抹掉真实执行的 attempts）已写入
-  `registry/provider-mapping.md` 与 AMS-1 S-9。
+  `registry/provider-mapping.md` 与 VSS-1 S-9。
 
 **外部规范钉定**：外部 spec 相关向量在向量目录带 `SPEC-VERSION`（首行=钉定版本）；漂移检查=`python3 conformance/runners/check_external_spec_versions.py`（手动/周跑，非 CI——测试保持密闭）。现行钉定：chenhz01-001 → result-consumption-semantics 0.2.0-draft（2026-10-13）。
 
 提交新 fixture：PR 附 events + expected + mapping（或 sidecar）三件套，
-runner 按上面四类守卫生成；claim boundary 由提交方声明、AgentMeasure 复核。
+runner 按上面四类守卫生成；claim boundary 由提交方声明、Verovo 复核。
 
 ## 语言无关性
 

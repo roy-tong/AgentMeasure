@@ -1,7 +1,7 @@
 # Langfuse cache-write alias normalization (fixture family)
 
 > Origin: langfuse/langfuse#17117 and #17118 (extractor alias gap raised by
-> AgentMeasure; fixture shapes posted in-thread 2026-09-09). Canonical home:
+> Verovo; fixture shapes posted in-thread 2026-09-09). Canonical home:
 > the thread, pending upstream landing of the test set.
 
 ## The three cases

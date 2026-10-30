@@ -11,7 +11,7 @@
 ```
 
 Mock MCP server → canonical observations → 本地指标，全程本机运行、无云依赖。
-Demo 可复现：每次运行使用隔离 workspace（不触碰 `~/.agentmeasure`）——相同
+Demo 可复现：每次运行使用隔离 workspace（不触碰 `~/.verovo`）——相同
 fixture + 相同 policy = 相同结果（42 calls → 84 observations）。
 
 再看看我们如何审计生态的 usage 声称：[Benchmark Run #001](../reports/benchmark-run-001.md)——
@@ -21,13 +21,13 @@ fixture + 相同 policy = 相同结果（42 calls → 84 observations）。
 
 ---
 
-## 跑一个预注册实验 — AgentMeasure Lab
+## 跑一个预注册实验 — Verovo Lab
 
 ```bash
-python3 lab/am lab selftest                                   # 植入提升被检出 + 诚实 null
-python3 lab/am lab init                                       # 工作区 + 示例实验
-python3 lab/am lab preregister am-lab/experiments/example-manifest.json
-python3 lab/am lab run am-lab/experiments/example-manifest.prereg.json
+python3 lab/verovo lab selftest                                   # 植入提升被检出 + 诚实 null
+python3 lab/verovo lab init                                       # 工作区 + 示例实验
+python3 lab/verovo lab preregister verovo-lab/experiments/example-manifest.json
+python3 lab/verovo lab run verovo-lab/experiments/example-manifest.prereg.json
 ```
 
 开放实验引擎（[lab/](../lab/README.md)）：任务集 × Harness 矩阵 × 因子变体 →
@@ -80,7 +80,7 @@ Agent → Capability → 执行 → 结果
               使用 / 价值 / 交易
 ```
 
-如果 Capability 要成为 Agent 可以自动发现、比较、最终自动采购的经济单元，它必须先能被**统一地识别、度量和比较**。这正是 AgentMeasure 提供的。
+如果 Capability 要成为 Agent 可以自动发现、比较、最终自动采购的经济单元，它必须先能被**统一地识别、度量和比较**。这正是 Verovo 提供的。
 
 传统使用指标支撑不了这个经济体——旧链路每一环都在断裂，而最后一环是新的：
 
@@ -102,7 +102,7 @@ Attempt ≠ 3 次可计费操作——除非计量策略如此规定。
 
 ## Measurement View：Reach → Choice → Use → Utility → Value
 
-AgentMeasure 定义 **Metric Families**，不定义全局北极星。搜索能力、预订 API、计算任务的价值结构各不相同。
+Verovo 定义 **Metric Families**，不定义全局北极星。搜索能力、预订 API、计算任务的价值结构各不相同。
 
 | 层 | 回答 | 代表指标 |
 | --- | --- | --- |
@@ -114,7 +114,7 @@ AgentMeasure 定义 **Metric Families**，不定义全局北极星。搜索能�
 
 五层是**测量视角**。同一批事实也映射到经济视角：
 
-| CaaS 域 | AgentMeasure |
+| CaaS 域 | Verovo |
 | --- | --- |
 | Demand（需求） | Reach + Choice |
 | Delivery（交付） | Use + Utility |
@@ -127,7 +127,7 @@ AgentMeasure 定义 **Metric Families**，不定义全局北极星。搜索能�
 意味着声明相同的候选集、类别、Choice Mode 与决策轴（Decision Authority /
 Selection Constraint）。
 
-## AgentMeasure 在生产中如何工作
+## Verovo 在生产中如何工作
 
 ```text
 Agent Runtime                     Capability Provider
@@ -139,7 +139,7 @@ Claude / Codex
                          ┌──────────────────────┐
                          │ 客户自有 Capability  │
                          │                      │
-                         │ AgentMeasure SDK     │
+                         │ Verovo SDK     │
                          │ Business Handler     │
                          └──────────┬───────────┘
                                     │
@@ -149,7 +149,7 @@ Claude / Codex
                               Collector
                                     │
                                     ▼
-                            AgentMeasure Cloud
+                            Verovo Cloud
 ```
 
 真实开发者最关心的四句话：
@@ -158,9 +158,9 @@ Claude / Codex
 >
 > MCP **不是必须的**——它只是第一个参考 surface。
 >
-> 第三方 Agent **不需要**安装 AgentMeasure 也能在 Provider 侧度量使用。
+> 第三方 Agent **不需要**安装 Verovo 也能在 Provider 侧度量使用。
 >
-> AgentMeasure **不在请求关键路径上**。
+> Verovo **不在请求关键路径上**。
 
 产品架构（Provider SDK → 本地缓冲 → 托管 ingestion → 面板）：
 [product/ARCHITECTURE.md](../product/ARCHITECTURE.md)。
@@ -180,18 +180,18 @@ Claude / Codex
 
 ## 从 Measurement 到 CaaS
 
-AgentMeasure 正在**渐进标准化**从发现与选择、经执行到效用与价值的测量链：核心使用
+Verovo 正在**渐进标准化**从发现与选择、经执行到效用与价值的测量链：核心使用
 语义今天已定义；效用/价值与商业计量仍是活跃草案。计量与商业归因是未来扩展；支付
 轨道可以由现有支付基础设施提供。
 
-> **AgentMeasure 标准化经济事实，不移动金钱。**
+> **Verovo 标准化经济事实，不移动金钱。**
 >
 > 完整论点：[docs/CAPABILITY-ECONOMY.md](../docs/CAPABILITY-ECONOMY.md) ·
 > 经济语义：[extensions/COMMERCIAL.md](../extensions/COMMERCIAL.md)（Experimental）
 
-## AgentMeasure 是 / 不是
+## Verovo 是 / 不是
 
-| AgentMeasure 是 | AgentMeasure 不是 |
+| Verovo 是 | Verovo 不是 |
 | --- | --- |
 | 测量标准 | 支付协议 |
 | 使用分析的基础设施 | 市场 / Marketplace |
@@ -202,7 +202,7 @@ AgentMeasure 正在**渐进标准化**从发现与选择、经执行到效用与
 ## Harness Profiles——每个运行时能（与不能）观察到什么
 
 可移植的测量语义，需要对观察盲区的公开记录。每份 profile 把运行时原生对象
-映射到 AgentMeasure 语义对象：
+映射到 Verovo 语义对象：
 
 | Harness | Profile | 要点 |
 | --- | --- | --- |
@@ -221,7 +221,7 @@ AgentMeasure 正在**渐进标准化**从发现与选择、经执行到效用与
 
 | 受众 | 为什么 |
 | --- | --- |
-| **按产出付费的团队**（AI 客服：Intercom Fin、Zendesk、Salesforce Agentforce） | 本地重算账单；续约与争议用 AMS-1 结算声明 |
+| **按产出付费的团队**（AI 客服：Intercom Fin、Zendesk、Salesforce Agentforce） | 本地重算账单；续约与争议用 VSS-1 结算声明 |
 | **按任务/算力付费的团队**（Copilot premium requests、Cursor、Devin ACU） | 重试和循环还在扣钱时，"什么算一次任务"需要一套语义 |
 | **按用量付费的团队**（API 与网关、多厂商） | 把口径对不齐的各家计量汇成一份可审计的声明 |
 | **Capability Provider** | 度量并最终计量 Agent 对你能力的使用 |
@@ -234,7 +234,7 @@ AgentMeasure 正在**渐进标准化**从发现与选择、经执行到效用与
 ## 试用标准
 
 ```bash
-git clone https://github.com/roy-tong/AgentMeasure && cd AgentMeasure
+git clone https://github.com/roy-tong/verovo && cd Verovo
 python3 conformance/runners/run_metrics.py   # 指标 vectors（M2.2 / M2.5 / M4.1）
 python3 verify_vectors.py                     # verification / correlation / operation vectors
 python3 registry/validate_entities.py         # 校验机器可读 registry
@@ -242,16 +242,16 @@ python3 registry/validate_entities.py         # 校验机器可读 registry
 
 ## 产品 MVP —— 第一次真实测量（开发中）
 
-第一条产品路径是 **Remote MCP / API Capability Measurement**：[AgentMeasure Provider
-SDK](../sdk/)（`@agentmeasure/mcp`）在 Provider 侧产出 observations（无需 Agent 侧
+第一条产品路径是 **Remote MCP / API Capability Measurement**：[Verovo Provider
+SDK](../sdk/)（`@verovo/mcp`）在 Provider 侧产出 observations（无需 Agent 侧
 安装），接入本地 collector。本地分析无需任何云：
 
 ```bash
-npm install @agentmeasure/mcp
+npm install @verovo/mcp
 # SDK 0.2.0 已在 npm 发布，2026-10-14 核验
 # 包装你的 MCP server 的 tool handler：server.tool = (name, schema, mw.wrapTool(name, handler))
 node examples/mcp-integration.js          # 合成流量 → 本地 JSONL
-python3 product/local-analytics.py ~/.agentmeasure/events/agentmeasure-events.jsonl
+python3 product/local-analytics.py ~/.verovo/events/verovo-events.jsonl
 ```
 
 状态：SDK v0.2.0 — External-Ready（canonical 输出、非阻塞 spool + 丢失记账、
@@ -266,7 +266,7 @@ per-request caller、MCP v1/v2、21 测试、确定性 fixture）+ 本地分析�
 ## 仓库结构
 
 ```text
-AgentMeasure/
+Verovo/
 ├── standard/          # 规范性标准本体（CORE / METRICS / QUALITY / DATA / ...）
 ├── extensions/        # 实验性、非规范性 profile（COMMERCIAL.md）
 ├── product/           # 产品架构（SDK / 托管分析，in development）
@@ -308,11 +308,11 @@ metrics.yaml 单一事实源；四维正交（Evidence/Caller/Use Profile/Billin
 
 ## 参与
 
-- **加入社区**：[Discussions](https://github.com/roy-tong/AgentMeasure/discussions) —— 分类：Metric Semantics · Runtime Observation · Experiments · Capability Economy · Implementers；讨论守则见 [docs/DISCUSSIONS.md](../docs/DISCUSSIONS.md)
+- **加入社区**：[Discussions](https://github.com/roy-tong/verovo/discussions) —— 分类：Metric Semantics · Runtime Observation · Experiments · Capability Economy · Implementers；讨论守则见 [docs/DISCUSSIONS.md](../docs/DISCUSSIONS.md)
 - **提标准变更**：`proposals/`（AUP：Draft → Discussion → Accepted → Experimental → Stable）
 - **报告测量偏差**：`reports/`（Discrepancy Report 模板）
 - **修参考实现**：PR 必须通过 `conformance/` 全部 vectors
 
 ---
 
-*AgentMeasure 不定义谁是真相来源，而定义什么证据、按照什么规则，可以支持什么结论。*
+*Verovo 不定义谁是真相来源，而定义什么证据、按照什么规则，可以支持什么结论。*

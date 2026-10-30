@@ -1,5 +1,5 @@
 {
-  "spec_version": "agentmeasure-0.4",
+  "spec_version": "verovo-0.4",
   "metric": "M2.2 Observed Selection Rate",
   "grain": "decision-opportunity",
   "strict_qualified": {

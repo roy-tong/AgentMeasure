@@ -61,11 +61,11 @@ When you want your run preserved as a reusable conformance fixture:
 conformance/vectors/external/<your-handle>-<seq>/
   ├── <name>.events.jsonl      # the canonical rows
   ├── <name>.expected.json     # expected verdicts/counts (we help write this)
-  └── AGENTMEASURE_<NAME>_MAPPING_<date>.md   # the five answers + claim boundary
+  └── VEROVO_<NAME>_MAPPING_<date>.md   # the five answers + claim boundary
 ```
 
 Claim boundary is yours to state (synthetic vs production-derived, anonymized
-how), AgentMeasure reviews it. Precedents: `external/urusilla-001`
+how), Verovo reviews it. Precedents: `external/urusilla-001`
 (project-authored synthetic), `external/iwasinnam-001..003` (production
 signing path, decoded-payload level).
 

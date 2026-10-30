@@ -18,7 +18,7 @@ FIXTURE = VEC / "agentmeasure_urusilla_fixture_002.events.jsonl"
 
 def run_pack(args):
     return subprocess.run(
-        [sys.executable, str(PACK / "agentmeasure")] + args,
+        [sys.executable, str(PACK / "verovo")] + args,
         capture_output=True, text=True, timeout=120)
 
 

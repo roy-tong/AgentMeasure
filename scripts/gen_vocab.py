@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""AgentMeasure vocabulary generator & drift checker（单一事实源，Draft 0.4.3）。
+"""Verovo vocabulary generator & drift checker（单一事实源，Draft 0.4.3）。
 
 `registry/vocabularies.yaml` 是受管枚举的单一事实源。
 
@@ -113,7 +113,7 @@ def build(vocab: dict) -> None:
                       encoding="utf-8")
 
     lines = [
-        "# AgentMeasure — Vocabulary Registry（由 scripts/gen_vocab.py 生成，勿手改）",
+        "# Verovo — Vocabulary Registry（由 scripts/gen_vocab.py 生成，勿手改）",
         "",
         f"> 单一事实源：`registry/vocabularies.yaml`（vocab revision 0.4.3-2）。",
         "> 消费者：`schemas/observation.schema.json`（生成）· `sdk/src/index.ts`（CI 校验）·",

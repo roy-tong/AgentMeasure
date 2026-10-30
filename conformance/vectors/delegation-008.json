@@ -1,5 +1,5 @@
 {
-  "spec_version": "agentmeasure-0.4",
+  "spec_version": "verovo-0.4",
   "family": "delegation",
   "description": "Roll-up: N children billed under one parent budget must be summed against that budget for enforcement; a per-child check alone passes a set that is over budget in aggregate. Added 2026-10-26 after atharnouman's cross-walk found the gap (007b tests one child_spend).",
   "taxonomy": [

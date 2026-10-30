@@ -1,5 +1,5 @@
 /* ════════════════════════════════════════════════════════════════
-   AgentMeasure - Precision Instrument design system
+   Verovo - Precision Instrument design system
    Colors are data states, not decoration:
      green  = evidence / confirmed
      blue   = specification / structure
@@ -148,10 +148,16 @@ h3 { font-size: 1.02rem; font-weight: 600; margin-bottom: 8px; letter-spacing: -
   height: 60px; padding: 0 24px; gap: 20px;
 }
 .brand {
+  display: inline-flex; align-items: center; gap: 9px;
   font-family: var(--mono);
   font-weight: 600; font-size: 15.5px; letter-spacing: -0.01em;
   white-space: nowrap;
 }
+.brand-plate {
+  display: inline-flex; align-items: center; justify-content: center;
+  padding: 4px 7px; border-radius: 6px; background: var(--text);
+}
+.brand-mark { display: block; width: 28px; height: 15px; }
 .brand-cursor { color: var(--ok); animation: blink 1.15s steps(1) infinite; }
 @keyframes blink { 50% { opacity: 0; } }
 

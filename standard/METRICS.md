@@ -1,6 +1,6 @@
-# AgentMeasure Metrics — Metric Registry（Document revision 0.4.3）
+# Verovo Metrics — Metric Registry（Document revision 0.4.3）
 
-> **本文件是 AgentMeasure 变更最频繁的文档。** 每个正式指标必须携带完整合同（Metric
+> **本文件是 Verovo 变更最频繁的文档。** 每个正式指标必须携带完整合同（Metric
 > Contract），使任何独立实现输入相同数据算出相同数字。
 > 指标变更走 AUP（`proposals/`）。
 >
@@ -11,7 +11,7 @@
 ## 0. Metric Contract 模板
 
 ```text
-Metric ID            AgentMeasure-M<family>.<n>
+Metric ID            Verovo-M<family>.<n>
 Name
 Purpose
 Measurement Object

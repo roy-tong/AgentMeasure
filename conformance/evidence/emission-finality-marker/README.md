@@ -55,7 +55,7 @@ not constants and must not be quoted as such. The mechanism is the claim:
 must mark which copy is the response** (or carry an explicit partial/share
 marker on the others).
 
-## Verdict format (AgentMeasure)
+## Verdict format (Verovo)
 
 - designated-record rule on this fixture: **PASS** (fixed assertion on one
   record).

@@ -1,6 +1,6 @@
 # GTM · 官网枢纽方案（Website-Led GTM v2）
 
-> 状态：官网已上线（`https://roy-tong.github.io/AgentMeasure/`），漏斗末端已打通
+> 状态：官网已上线（`https://roy-tong.github.io/verovo/`），漏斗末端已打通
 > 一键申请（`5-provider-trial.yml` 模板）。本文档把官网接进**全部**获客与承接动作。
 >
 > 前置文档，仍然有效：
@@ -29,7 +29,7 @@ Available → Try → Trial → Standard/Lab/Thesis），每个入口都只需�
 | What's in it for me? | 07 Trial（Retry inflation / Execution economics / Traffic quality） | 打开申请表 | 测不到——接受不测 |
 | Can I start with one click? | 07 CTA → issue 模板 | **提交申请 issue** | issues（可数，硬信号） |
 
-\* 04 的品类句："Telemetry records events. AgentMeasure defines what those
+\* 04 的品类句："Telemetry records events. Verovo defines what those
 events mean." —— 这是回答"你跟 Langfuse / OTel 什么区别"的标准答案，
 外联邮件 B 型（已有 telemetry 的 Provider）直接引用它。
 
@@ -41,7 +41,7 @@ unmeasured——**我们卖的就是"不把不知道伪装成知道"，量自己
 ## 2. 上线前清单（Launch Checklist，半天内完成）
 
 - [ ] GitHub 仓库建 label：`provider-trial`（模板引用了它；不建不报错，但不打标）
-- [ ] Repo **About**：Website 改为 `https://roy-tong.github.io/AgentMeasure/`；
+- [ ] Repo **About**：Website 改为 `https://roy-tong.github.io/verovo/`；
       Description 换成与官网统一的
       `Open measurement infrastructure for agent-facing software. Separate operations from attempts, evidence from inference, and usage from value.`
       （粘贴块已更新进 [GITHUB_LAUNCH.md](../GITHUB_LAUNCH.md)）
@@ -65,7 +65,7 @@ concierge 代做 PR）。唯一变化：邮件里 GitHub 链接前加官网链�
 
 | 渠道 | 钩子 | 注意 |
 |---|---|---|
-| **Show HN** | "Show HN: AgentMeasure – Open measurement semantics for agent-facing software" | 首评讲故事：codex 上第一次预注册实验 +25pp、p=0.285、**我们报了 null**。HN 惩罚营销腔，奖励"我做了个东西 + 这是它做不到的" |
+| **Show HN** | "Show HN: Verovo – Open measurement semantics for agent-facing software" | 首评讲故事：codex 上第一次预注册实验 +25pp、p=0.285、**我们报了 null**。HN 惩罚营销腔，奖励"我做了个东西 + 这是它做不到的" |
 | **X 线程** | C1："3 tool calls ≠ 3 agent uses"（1 intent / 2 attempts / 1 operation） | 结尾 GitHub + 官网双链接；CTA 用"告诉我们哪里定义不成立" |
 | **r/mcp · r/LocalLLaMA** | 提问式："你的 MCP 显示 10k calls，多少是重试？" | 以评论参与为主，链接放 profile / 相关回复；先读各版 self-promo 规则 |
 | **V2EX / Linux.do**（可选，中文） | 求锤贴："我们连自己的 +25pp 都判了 null，来挑战我们的定义" | 社区吃"诚实到自残"这一套；准备好被挑刺并逐条回应 |

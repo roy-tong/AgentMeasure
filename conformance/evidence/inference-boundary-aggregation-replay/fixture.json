@@ -4,7 +4,7 @@
   "attribution": {
     "contributor": "David Turner",
     "github": "@atomicdjt",
-    "intended_use": "AgentMeasure evidence directory"
+    "intended_use": "Verovo evidence directory"
   },
   "scenario": {
     "description": "A provider reports an aggregate tool-call count, but its source pointer resolves to two equally plausible records: a measured counter and a replayed cache.",

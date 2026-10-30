@@ -16,7 +16,7 @@ the gates are mechanical, not tribal.
 Close with the console for the person reading it:
 
 ```bash
-agentmeasure console --ledger monthly-review/verified-ledger.json --out console.html
+verovo console --ledger monthly-review/verified-ledger.json --out console.html
 ```
 
 ## Real usage

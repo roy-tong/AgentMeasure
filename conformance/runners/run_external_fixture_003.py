@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """External fixture conformance: chenhz01-001 — availability certification (#11).
 
-Source: AgentMeasure issue #11 (Clarify Result Consumption). The two-state
+Source: Verovo issue #11 (Clarify Result Consumption). The two-state
 ontology (availability vs influence) and the compaction boundary are
 @gunjanjaswal's; the trace-side hash certification is @chenhz01's; the
 canonicalized-content + field-path + four-value axis is @roy-tong's. This
@@ -46,8 +46,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "lab"))
-from agentmeasure_lab.analysis import aggregate  # noqa: E402
-from agentmeasure_lab.schemas import SchemaError, validate  # noqa: E402
+from verovo_lab.analysis import aggregate  # noqa: E402
+from verovo_lab.schemas import SchemaError, validate  # noqa: E402
 
 VEC = ROOT / "conformance" / "vectors" / "external" / "chenhz01-001"
 EVENTS_FILE = VEC / "agentmeasure_chenhz01_fixture_001.events.jsonl"

@@ -3,7 +3,7 @@ import os
 import tempfile
 import unittest
 
-from am_healthcheck.history import (history_path, load_history, record_run,
+from verovo_healthcheck.history import (history_path, load_history, record_run,
                                     render_trend, run_number, trend)
 
 
@@ -41,7 +41,7 @@ class TestHistoryRecordAndLoad(unittest.TestCase):
 
     def test_record_run_creates_history_dir(self):
         # history_path() only computes the path; record_run() is what creates
-        # the ~/.agentmeasure directory tree.
+        # the ~/.verovo directory tree.
         path = history_path(home=self.home)
         self.assertFalse(os.path.exists(os.path.dirname(path)))
         record_run({"mode": "own-data", "ts": "2026-01-15T10:00:00Z"},

@@ -80,9 +80,9 @@ these shapes (single-line messages, monotonically growing counters).
 The fixture corpus is open data — plain JSONL + expected totals, no runtime:
 
 ```bash
-git clone --depth 1 https://github.com/roy-tong/AgentMeasure
+git clone --depth 1 https://github.com/roy-tong/verovo
 # point your parser at conformance/pack fixtures like at real logs
-python3 conformance/pack/agentmeasure selftest   # see the expected-totals style
+python3 conformance/pack/verovo selftest   # see the expected-totals style
 ```
 
 Full method and per-class pointers: [tool-authors.md](tool-authors.md).
@@ -142,4 +142,4 @@ every future finding:
 - Most audited repos passed. We name the clean ones because that matters.
 - All reproductions are synthetic; no private logs anywhere.
 - This audit was performed with the methods and fixtures of this repository —
-  that is the demo. No audited project endorses AgentMeasure.
+  that is the demo. No audited project endorses Verovo.

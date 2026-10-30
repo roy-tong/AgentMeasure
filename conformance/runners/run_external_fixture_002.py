@@ -19,7 +19,7 @@ Guards:
                 contributes nothing to the median.
 
 Claim boundary (from the source project, stated verbatim in intent): this
-fixture is project-authored synthetic offline evidence only — no AgentMeasure
+fixture is project-authored synthetic offline evidence only — no Verovo
 endorsement, upstream acceptance, external reproduction, Urusilla adoption,
 live model run, or real provider-cost observation is implied.
 
@@ -33,8 +33,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "lab"))
-from agentmeasure_lab.analysis import aggregate  # noqa: E402
-from agentmeasure_lab.schemas import SchemaError, validate  # noqa: E402
+from verovo_lab.analysis import aggregate  # noqa: E402
+from verovo_lab.schemas import SchemaError, validate  # noqa: E402
 
 VEC = ROOT / "conformance" / "vectors" / "external" / "urusilla-002"
 EVENTS_FILE = VEC / "agentmeasure_urusilla_fixture_002.events.jsonl"
@@ -53,7 +53,11 @@ def check(name: str, cond: bool, detail: str = "") -> None:
 def main() -> int:
     events = [json.loads(l) for l in EVENTS_FILE.read_text().splitlines() if l.strip()]
     doc = json.loads(EXPECTED_FILE.read_text())
-    expected = doc["expected_current_agentmeasure_metrics"]
+    # The fixture is externally pinned evidence recorded before the 2026-10-30
+    # rename, so its key keeps the legacy prefix; new fixtures use the new one.
+    expected = doc.get("expected_current_verovo_metrics") or doc[
+        "expected_current_agentmeasure_metrics"
+    ]
     cross = doc["multi_operation_grain_cross_check"]
     schema = json.loads(SCHEMA_FILE.read_text())
 

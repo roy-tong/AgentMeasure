@@ -12,13 +12,13 @@ upstream pricing-data sources, and filed 33 evidence-backed findings — every
 one pinned to a commit SHA, verified by a runnable reproduction or a quoted
 static argument, and checked against the target's issue history for
 duplicates. The method is the product demo: the same hazard taxonomy and
-synthetic-fixture discipline that drive the AgentMeasure conformance pack
+synthetic-fixture discipline that drive the Verovo conformance pack
 were applied to other people's code.
 
 What this establishes: these specific defects exist at these commits, and the
 audit method finds real, quantified accounting errors that the projects' own
 test suites missed. What it does not establish: that any of these projects
-endorses or uses AgentMeasure, that the maintainers will accept the fixes, or
+endorses or uses Verovo, that the maintainers will accept the fixes, or
 that every tool in the space has these defects (the majority of audited
 repos — including promptfoo, Portkey's model data, and tokscale — passed
 clean).
@@ -69,7 +69,7 @@ The full audit log, per-finding evidence, and the honest no-gap list (most
 audited projects passed) are maintained internally; the public trail is the
 linked PRs and issues above. If you want the fixture shapes that expose these
 classes in your own tool, they are in the
-[conformance pack](../conformance/pack/README.md) — no AgentMeasure runtime
+[conformance pack](../conformance/pack/README.md) — no Verovo runtime
 required.
 
 ## Exposing reasoning tokens without adding them twice
@@ -81,21 +81,21 @@ categories. The subset invariant is explicit: with output 1,000 and reasoning
 700, output usage remains 1,000, not 1,700.
 
 That is a contribution to telemetry and regression protection. It does not
-show that OpenLIT adopted AgentMeasure Healthcheck, and does not establish that
+show that OpenLIT adopted Verovo Healthcheck, and does not establish that
 every previous OpenLIT path double-counted output.
 
 ## An external fixture found defects in our own checker
 
 Urusilla's project-authored synthetic fixtures uncovered our validator's
 `oneOf` sibling-constraint gap and declared-operation reconciliation gap:
-[issue #8](https://github.com/roy-tong/AgentMeasure/issues/8) and
-[issue #9](https://github.com/roy-tong/AgentMeasure/issues/9).
+[issue #8](https://github.com/roy-tong/verovo/issues/8) and
+[issue #9](https://github.com/roy-tong/verovo/issues/9).
 The [first vector](../conformance/vectors/external/urusilla-001/) became a
 regression fixture. A [second vector](../conformance/vectors/external/urusilla-002/)
 exercised a different operation-grain boundary, tracked in
-[issue #12](https://github.com/roy-tong/AgentMeasure/issues/12).
+[issue #12](https://github.com/roy-tong/verovo/issues/12).
 
-The lesson is useful even if you never install AgentMeasure: preserve attempt
+The lesson is useful even if you never install Verovo: preserve attempt
 costs while checking declared operation summaries against their underlying
 attempts. A successful synthetic fixture is not production usage or a live
 provider-cost observation.

@@ -14,13 +14,13 @@ import unittest
 
 from _support import REPO_ROOT, fixture
 
-from am_healthcheck import outcomes as om
-from am_healthcheck import crm as crm_mod
-from am_healthcheck import periods as periods_mod
-from am_healthcheck import certify as cert_mod
-from am_healthcheck import incrementality as inc_mod
-from am_healthcheck import templates as tpl_mod
-from am_healthcheck import ledger as ledger_mod
+from verovo_healthcheck import outcomes as om
+from verovo_healthcheck import crm as crm_mod
+from verovo_healthcheck import periods as periods_mod
+from verovo_healthcheck import certify as cert_mod
+from verovo_healthcheck import incrementality as inc_mod
+from verovo_healthcheck import templates as tpl_mod
+from verovo_healthcheck import ledger as ledger_mod
 
 SCHEMA = os.path.join(REPO_ROOT, "schemas", "outcome-unit.schema.json")
 EXPORT = fixture("vendor-export-intercom.csv")
@@ -36,7 +36,7 @@ def tmpfile(suffix, text, mode="w", encoding="utf-8"):
 
 def unit(**overrides):
     base = {
-        "schema_version": "agentmeasure-outcome-0.1",
+        "schema_version": "verovo-outcome-0.1",
         "unit_id": "u-1",
         "unit_type": "qualified_lead",
         "contract_ref": "MSA §5.1",
@@ -373,7 +373,7 @@ class TestTemplates(unittest.TestCase):
         self.assertEqual(listing[0]["boundary_cases"], 1)
 
         # replay through the real recount: the boundary must hold
-        from am_healthcheck.vendors import load_export, recount
+        from verovo_healthcheck.vendors import load_export, recount
         header = ("conversation_id,human_agent_participated,issue_addressed,"
                   "customer_recontacted_within_window,vendor_billed\n")
         def recount_fn(rows):
@@ -400,7 +400,7 @@ class TestTemplates(unittest.TestCase):
             "expected_3state": "PASS",  # deliberately wrong: replay must fail
         }]
         doc = tpl_mod.export_template("intercom", "fp", boundary_cases=cases)
-        from am_healthcheck.vendors import load_export, recount
+        from verovo_healthcheck.vendors import load_export, recount
         header = ("conversation_id,human_agent_participated,issue_addressed,"
                   "customer_recontacted_within_window,vendor_billed\n")
         text = header + "SYN-2,yes,yes,no,yes\n"

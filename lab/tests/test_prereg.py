@@ -5,7 +5,7 @@ import unittest
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from agentmeasure_lab.prereg import (
+from verovo_lab.prereg import (
     canonical_json,
     create_preregistration,
     load_manifest,
@@ -34,14 +34,14 @@ class TestPrereg(unittest.TestCase):
     def test_manifest_requires_single_baseline(self):
         m = base_manifest()
         m["variants"].append({"id": "b2", "baseline": True, "levels": {"description_clarity": "control", "version_label": "a"}})
-        from agentmeasure_lab.prereg import validate_manifest
+        from verovo_lab.prereg import validate_manifest
         with self.assertRaises(ValueError):
             validate_manifest(m)
 
     def test_unknown_factor_level_rejected(self):
         m = base_manifest()
         m["variants"][1]["levels"]["description_clarity"] = "nonexistent"
-        from agentmeasure_lab.prereg import validate_manifest
+        from verovo_lab.prereg import validate_manifest
         with self.assertRaises(ValueError):
             validate_manifest(m)
 
@@ -55,7 +55,7 @@ class TestPrereg(unittest.TestCase):
             json.dump(record, fh)
             path = fh.name
         try:
-            from agentmeasure_lab.prereg import load_preregistration
+            from verovo_lab.prereg import load_preregistration
             load_preregistration(path)  # untouched: fine
 
             record["manifest"]["analysis"]["alpha"] = 0.01  # post-hoc plan change

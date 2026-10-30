@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""AgentMeasure SDK pipeline gate（External-Ready，禁止绕过 canonical ingestion）。
+"""Verovo SDK pipeline gate（External-Ready，禁止绕过 canonical ingestion）。
 
 跑通并断言完整链路——所有输入都经过 Collector 唯一 canonical 入口：
 
@@ -13,7 +13,7 @@
 用法:
   python3 scripts/verify_sdk_pipeline.py [--events <file>] [--project demo/acme-weather]
 
---events 缺省时自行运行 v1 示例（独立临时目录，不触碰 ~/.agentmeasure）。
+--events 缺省时自行运行 v1 示例（独立临时目录，不触碰 ~/.verovo）。
 退出码：0 = gate 通过；1 = 断言失败；2 = 用法错误。
 """
 from __future__ import annotations
@@ -47,7 +47,7 @@ EXPECTED = {
 
 
 def run_example(events_dir: Path) -> int:
-    env = dict(os.environ, AGENTMEASURE_EVENTS_DIR=str(events_dir))
+    env = dict(os.environ, VEROVO_EVENTS_DIR=str(events_dir))
     return subprocess.run(
         ["node", "examples/mcp-integration.js"],
         cwd=str(ROOT / "sdk"), env=env, capture_output=True, text=True,
@@ -71,7 +71,7 @@ def main(argv) -> int:
             if r.returncode != 0:
                 print(f"example failed ({r.returncode}):\n{r.stdout}\n{r.stderr}")
                 return 1
-            events_file = events_dir / "agentmeasure-events.jsonl"
+            events_file = events_dir / "verovo-events.jsonl"
 
         # 1) canonical validation（与 ingestion 同一校验器）
         lines = [l for l in events_file.read_text(encoding="utf-8").splitlines() if l.strip()]

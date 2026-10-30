@@ -18,7 +18,7 @@ Open measurement infrastructure for agent-facing software. Separate operations f
 **Website（homepage）**（官网——漏斗枢纽，旗舰文章从官网 Story 入口可达）：
 
 ```text
-https://roy-tong.github.io/AgentMeasure/
+https://roy-tong.github.io/verovo/
 ```
 
 **Topics**（逐个添加，共 10 个）：

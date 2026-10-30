@@ -1,6 +1,6 @@
 # Repeat a review for each billing period
 
-For local-only data handling, run `agentmeasure recount --export FILE --vendor ID`
+For local-only data handling, run `verovo recount --export FILE --vendor ID`
 on your own machine. This does not fetch vendor data or prove the final invoice.
 
 The optional **Monthly bill reconcile** workflow runs on GitHub-hosted runners.
@@ -13,19 +13,19 @@ fork. [Public forks remain public](https://docs.github.com/en/pull-requests/refe
 1. Create a **separate private repository**, with a reviewed copy of this source
    tree. Do not use a public fork for billing data. The workflow skips public repos.
    Enable Actions in that private repository; enable Issues only if you want tracking.
-2. Copy `examples/reconcile.example.json` to `.agentmeasure/reconcile.json`.
+2. Copy `examples/reconcile.example.json` to `.verovo/reconcile.json`.
    Set the vendor and `billing_period` (`YYYY-MM`).
 3. Prepare and review that period's export. Required fields are
    `conversation_id,human_agent_participated,issue_addressed,customer_recontacted_within_window,vendor_billed`.
    Optional `customer_recontacted_at,closed_at` support the separate contract lane.
-   `agentmeasure prepare` can map supported native exports; it leaves judgement
+   `verovo prepare` can map supported native exports; it leaves judgement
    fields empty for review. Missing evidence remains unknown.
 4. Save the reviewed file at the configured path. Compute its SHA256 locally
-   with `python -c "import hashlib; print(hashlib.sha256(open('.agentmeasure/recount-export.csv','rb').read()).hexdigest())"`
+   with `python -c "import hashlib; print(hashlib.sha256(open('.verovo/recount-export.csv','rb').read()).hexdigest())"`
    and set `reviewed_export_sha256`. This records the reviewed file, not proof
    that its rows truly belong to that period; you must check that yourself.
 5. These runtime files are gitignored. Only in the independent private repository,
-   explicitly add the two reviewed files with `git add -f .agentmeasure/reconcile.json .agentmeasure/recount-export.csv`,
+   explicitly add the two reviewed files with `git add -f .verovo/reconcile.json .verovo/recount-export.csv`,
    commit, and push. This step uploads the data to GitHub.
 6. Run **Monthly bill reconcile** manually. It installs the checked-out source
    revision, writes a run summary, and retains artifacts for seven days.

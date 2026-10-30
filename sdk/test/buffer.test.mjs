@@ -2,12 +2,12 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { readdirSync } from "node:fs";
 import { join } from "node:path";
-import { AgentMeasure } from "../dist/index.js";
+import { Verovo } from "../dist/index.js";
 import { makeEventsDir, readEvents } from "./helpers.mjs";
 
 test("buffer: limit enforced with explicit drop accounting", async () => {
   const dir = makeEventsDir();
-  const am = new AgentMeasure({
+  const am = new Verovo({
     eventsDir: dir,
     projectId: "t/buf",
     flushIntervalMs: 60_000, // no background flush during the test
@@ -37,7 +37,7 @@ test("buffer: limit enforced with explicit drop accounting", async () => {
 
 test("buffer: rotating spool files stay bounded", async () => {
   const dir = makeEventsDir();
-  const am = new AgentMeasure({
+  const am = new Verovo({
     eventsDir: dir,
     projectId: "t/rot",
     flushIntervalMs: 60_000,
@@ -55,7 +55,7 @@ test("buffer: rotating spool files stay bounded", async () => {
   await am.shutdown();
   assert.equal(am.bufferHealth.rotatedFiles >= 1, true);
   const files = readdirSync(dir).filter(
-    (n) => n.startsWith("agentmeasure-events") && n.endsWith(".jsonl"),
+    (n) => n.startsWith("verovo-events") && n.endsWith(".jsonl"),
   );
   assert.equal(files.length <= 4, true, `files: ${files.join(", ")}`); // active + maxSpoolFiles
   const all = files.flatMap((f) => readEvents(dir, f));
@@ -64,7 +64,7 @@ test("buffer: rotating spool files stay bounded", async () => {
 
 test("buffer: doNotTrack disables recording entirely", async () => {
   const dir = makeEventsDir();
-  const am = new AgentMeasure({ eventsDir: dir, projectId: "t/notrack", doNotTrack: true });
+  const am = new Verovo({ eventsDir: dir, projectId: "t/notrack", doNotTrack: true });
   am.emit({ type: "attempt_started", payload: { tool_call_id: "x" } });
   await am.shutdown();
   assert.equal(am.bufferHealth.queueDepth, 0);

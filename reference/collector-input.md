@@ -19,7 +19,7 @@ validate_canonical`), so a file that passes here will not be rejected there.
 
 | Field | Required | Notes |
 |---|---|---|
-| `spec_version` | yes | `"agentmeasure-0.4"` |
+| `spec_version` | yes | `"verovo-0.4"` |
 | `observation_id` | yes | Unique within the file |
 | `observation_type` | yes | One of the payload types below |
 | `observer` | yes | `{principal, trust_domain, side}` — `side` is `client` or `provider` |

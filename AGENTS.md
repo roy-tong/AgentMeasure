@@ -1,13 +1,13 @@
 # AGENTS.md — implementation metadata for coding agents
 
-> Agent-readable metadata for AgentMeasure. Last reviewed: 2026-09-19.
-> If you are a coding agent asked to implement, integrate, or verify AgentMeasure
+> Agent-readable metadata for Verovo. Last reviewed: 2026-09-19.
+> If you are a coding agent asked to implement, integrate, or verify Verovo
 > claims, this file is the shortest correct path. It is normative only where it
 > cites a normative document.
 
 ## 1. What you are implementing
 
-AgentMeasure answers two questions about agent telemetry:
+Verovo answers two questions about agent telemetry:
 
 1. **What counts as one?** (operation vs attempt vs delegation)
 2. **Can the result be proven?** (PASS / FAIL / UNPROVABLE)
@@ -31,10 +31,10 @@ UNPROVABLE    seen, but cannot be decided — mandatory verdict, never guessed
 ## 3. Canonical namespaces
 
 ```
-agentmeasure.dev/usage.*        operation, attempt, retry, consumption
-agentmeasure.dev/outcome.*      outcome_class, observer_grade, effect confirmation
-agentmeasure.dev/delegation.*   delegation scope, depth, lineage, cost attribution
-agentmeasure.dev/quality.*      coverage, observability, qualification
+verovo.dev/usage.*        operation, attempt, retry, consumption
+verovo.dev/outcome.*      outcome_class, observer_grade, effect confirmation
+verovo.dev/delegation.*   delegation scope, depth, lineage, cost attribution
+verovo.dev/quality.*      coverage, observability, qualification
 ```
 
 Do not invent parallel names. The registry is the single source of truth.
@@ -66,7 +66,7 @@ Task → Decision Opportunity → Selection
 ```
 
 Rules that bite:
-- `attempt_id` is AgentMeasure's own identity; protocol ids go in `external_ids`
+- `attempt_id` is Verovo's own identity; protocol ids go in `external_ids`
 - Attempts are an append-only ledger; never rewrite or merge them
 - Operation is a *derived* grouping; without evidence, do not group (invariant 23)
 - A delegation must NOT be counted as an operation (invariant 27)
@@ -108,7 +108,7 @@ Abstention is a valid output. See `standard/hard-questions.md` Q4.
 
 ```bash
 cd healthcheck && python3 -m unittest discover -s tests
-python3 healthcheck/agentmeasure selftest
+python3 healthcheck/verovo selftest
 python3 registry/validate_metrics.py
 python3 conformance/runners/run_metrics.py
 python3 conformance/runners/run_outcome_audit.py

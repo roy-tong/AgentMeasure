@@ -1,5 +1,5 @@
 {
-  "schema": "agentmeasure.lab/experiment-manifest",
+  "schema": "verovo.lab/experiment-manifest",
   "schema_version": "1.0.0",
   "experiment_id": "example-desc-clarity-001",
   "created_by": "example",

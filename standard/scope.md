@@ -1,4 +1,4 @@
-# Scope — AgentMeasure 是什么，不替代什么
+# Scope — Verovo 是什么，不替代什么
 
 > 结构借鉴 PEAC Protocol 的 `Where PEAC fits (and where it does not)` 章节。
 > 作用：**一次性说清边界**，让任何人（包括潜在竞品）在三十秒内判断我们是补位还是竞争。
@@ -6,7 +6,7 @@
 
 ## 一句话
 
-**AgentMeasure 是语义层：它说明一个声称**意味着什么**，
+**Verovo 是语义层：它说明一个声称**意味着什么**，
 不判断记录是否真实，也不判断钱该不该付。**
 
 ## 我们提供
@@ -19,7 +19,7 @@
 | **指标合同** —— 任何实现算出同一个数 | `standard/METRICS.md` + `registry/metrics.yaml` |
 | **conformance 向量与 runner** —— 可对照、可重放 | `conformance/` |
 | **本地检查工具** —— 用户能跑 | `healthcheck/` |
-| **可谈判的结算声明** —— 两线对照、对称披露 | `agentmeasure settle --statement` |
+| **可谈判的结算声明** —— 两线对照、对称披露 | `verovo settle --statement` |
 
 ## 我们不替代
 
@@ -44,7 +44,7 @@ tally integrity     record integrity    classification integrity
       ▼                    ▼                    ▼
   金额对不对          记录真不真          结果该叫什么
       │                    │                    │
-   Vaudit               PEAC                 AgentMeasure
+   Vaudit               PEAC                 Verovo
    Inferock            Glacis
 ```
 
@@ -62,7 +62,7 @@ tally integrity     record integrity    classification integrity
 ## 典型的叠加用法
 
 ```text
-1. AgentMeasure  判定：这次交互的结果该叫 resolved 还是 assumed_resolved
+1. Verovo  判定：这次交互的结果该叫 resolved 还是 assumed_resolved
 2. PEAC          签名：把该判定封进可验证收据
 3. Vaudit        对账：把判定与账单逐行核对
 4. 买方           谈判：用 Settlement Statement 与厂商对账

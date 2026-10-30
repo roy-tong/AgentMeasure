@@ -1,14 +1,14 @@
 {
-  "claim": "AgentMeasure Pipeline Validation #001: 42 synthetic calls → 84 canonical observations, 0 rejected, 0 qualified",
+  "claim": "Verovo Pipeline Validation #001: 42 synthetic calls → 84 canonical observations, 0 rejected, 0 qualified",
   "metric_unit": "attempt (defined) / observation (defined)",
   "grain": "count",
   "source": {
-    "url": "https://github.com/roy-tong/AgentMeasure/blob/main/reports/pipeline-validation-001.md",
+    "url": "https://github.com/roy-tong/verovo/blob/main/reports/pipeline-validation-001.md",
     "type": "report"
   },
   "primary_source": {
-    "url": "https://github.com/roy-tong/AgentMeasure",
-    "name": "AgentMeasure",
+    "url": "https://github.com/roy-tong/verovo",
+    "name": "Verovo",
     "resolved": true
   },
   "retrieved_at": "2026-08-17T00:00:00Z",

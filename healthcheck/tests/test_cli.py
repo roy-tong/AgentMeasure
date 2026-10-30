@@ -9,8 +9,8 @@ from contextlib import redirect_stderr, redirect_stdout
 
 from _support import HEALTHCHECK_DIR, FIXTURES_DIR
 
-from am_healthcheck import cli
-from am_healthcheck import history as history_mod
+from verovo_healthcheck import cli
+from verovo_healthcheck import history as history_mod
 
 sys.path.insert(0, os.path.join(HEALTHCHECK_DIR))
 
@@ -50,7 +50,7 @@ class TestDemoRun(CliHarness):
         with open(html, encoding="utf-8") as fh:
             body = fh.read()
         self.assertIn("SYNTHETIC DEMO", body)
-        self.assertIn("AgentMeasure Healthcheck", body)
+        self.assertIn("Verovo Healthcheck", body)
         self.assertIn("demo --html", body)
         with open(share, encoding="utf-8") as fh:
             self.assertNotIn("secret-project", fh.read())
@@ -114,7 +114,7 @@ class TestExitCodes(unittest.TestCase):
             with self.assertRaises(SystemExit) as cm:
                 cli.main(["--version"])
         self.assertEqual(cm.exception.code, 0)
-        self.assertIn("agentmeasure-healthcheck", buf.getvalue())
+        self.assertIn("verovo-healthcheck", buf.getvalue())
 
 
 if __name__ == "__main__":
@@ -130,9 +130,9 @@ class TestConformanceFirstRun(CliHarness):
     def test_default_scaffold_is_in_callers_working_directory(self):
         from unittest.mock import patch
         with tempfile.TemporaryDirectory() as directory:
-            with patch("am_healthcheck.cli.os.getcwd", return_value=directory):
+            with patch("verovo_healthcheck.cli.os.getcwd", return_value=directory):
                 self.run_cli(["conformance", "--new-vector", "first-run"])
             fixture = os.path.join(directory, "conformance", "vectors", "external",
-                                   "first-run-001", "agentmeasure_first_run_fixture_001.events.jsonl")
+                                   "first-run-001", "verovo_first_run_fixture_001.events.jsonl")
             self.assertTrue(os.path.isfile(fixture))
             self.run_cli(["conformance", "--fixture", fixture])

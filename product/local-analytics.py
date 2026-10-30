@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""AgentMeasure Local Analytics（Draft 0.4.3，MVP 本地面板/CLI）。
+"""Verovo Local Analytics（Draft 0.4.3，MVP 本地面板/CLI）。
 
 读取 Canonical Observation JSONL → collector → 六类可信指标：
   Observed Attempts · Strict Qualified Usage · Success/Failure · Latency ·
@@ -25,9 +25,9 @@ from collector.ingest import ingest_canonical_jsonl  # noqa: E402
 
 
 def resolve_events(path: Path) -> list:
-    """接受单个文件 / 目录（glob agentmeasure-events*.jsonl）/ glob 模式。"""
+    """接受单个文件 / 目录（glob verovo-events*.jsonl）/ glob 模式。"""
     if path.is_dir():
-        return sorted(path.glob("agentmeasure-events*.jsonl"))
+        return sorted(path.glob("verovo-events*.jsonl"))
     if "*" in str(path):
         return sorted(Path().glob(str(path)))
     return [path]
@@ -59,7 +59,7 @@ def render(r: dict) -> str:
     n = s["attempts"]
     pct = lambda x: f"{x * 100:.1f}%" if x is not None else "—"
     lines = [
-        "AgentMeasure Provider Measurement Report",
+        "Verovo Provider Measurement Report",
         "=" * 58,
         f"window: last {s['days']} days · observed {n} attempts",
         "",

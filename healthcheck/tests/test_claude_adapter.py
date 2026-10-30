@@ -5,11 +5,11 @@ import unittest
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from am_healthcheck import claude as claude_adapter
-from am_healthcheck import checks as checks_mod
+from verovo_healthcheck import claude as claude_adapter
+from verovo_healthcheck import checks as checks_mod
 
 FIXTURES = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-                        "am_healthcheck", "fixtures")
+                        "verovo_healthcheck", "fixtures")
 
 
 def fixture(name):

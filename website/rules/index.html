@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Vendor billing rules — AgentMeasure</title>
+<title>Vendor billing rules — Verovo</title>
 <meta name="description" content="What AI support vendors charge per and what their own published rules say — versioned, sourced, re-runnable.">
 <link rel="stylesheet" href="../light.css">
 <style>
@@ -22,17 +22,17 @@ body{font:15px/1.65 -apple-system,'Segoe UI','PingFang SC',sans-serif;color:#181
 .wrap{max-width:900px;margin:0 auto;padding:40px 24px 70px}
 h1{font-size:24px;letter-spacing:-.3px}
 </style>
-<link rel="canonical" href="https://roy-tong.github.io/AgentMeasure/rules/index.html">
+<link rel="canonical" href="https://roy-tong.github.io/verovo/rules/index.html">
 </head>
 <body>
 <header class="snav">
   <div class="snav-in">
-    <a class="snav-brand" href="../index.html">AgentMeasure<span>_</span></a>
+    <a class="snav-brand" href="../index.html">Verovo<span>_</span></a>
     <nav class="snav-links" aria-label="Sections">
       <a href="../index.html#evidence">Evidence</a>
       <a href="../index.html#pricing">Pricing</a>
       <a href="../recount.html">Free recount</a>
-      <a class="ext" href="https://github.com/roy-tong/AgentMeasure" target="_blank" rel="noopener">GitHub&nbsp;↗</a>
+      <a class="ext" href="https://github.com/roy-tong/verovo" target="_blank" rel="noopener">GitHub&nbsp;↗</a>
     </nav>
     <a class="snav-cta" href="../services.html">Get a diagnosis&nbsp;→</a>
   </div>
@@ -41,7 +41,7 @@ h1{font-size:24px;letter-spacing:-.3px}
 <h1>Vendor billing rules, in public</h1>
 <p class="muted">One card per vendor: what the vendor charges per, what its own published
 rules say, and where every fact came from. This is the same
-<a href="https://github.com/roy-tong/AgentMeasure/blob/main/registry/vendor-rules.json">registry
+<a href="https://github.com/roy-tong/verovo/blob/main/registry/vendor-rules.json">registry
 file</a> the CLI and the browser recount read — a parity test in CI keeps the three from
 drifting. Registry version <strong>v0.5.0</strong>.</p>
 <p class="muted">Confidence: <span class="badge P">P</span> primary/official source ·
@@ -62,22 +62,22 @@ drifting. Registry version <strong>v0.5.0</strong>.</p>
 </dl>
 
 <p class="notes">operator feedback does not override the automatic classification</p>
-<p class="muted">Re-run the recount yourself: <a href="../recount.html">in the browser</a> or <code>agentmeasure recount --vendor ada</code>. Rules change; this card records the version it was read from.</p>
+<p class="muted">Re-run the recount yourself: <a href="../recount.html">in the browser</a> or <code>verovo recount --vendor ada</code>. Rules change; this card records the version it was read from.</p>
 </div>
 <div class="card" id="generic">
 <h2>Generic per-resolution vendor<span class="badge U">U</span></h2>
 <div class="muted">rule card · registry v0.5.0</div>
 <dl class="kv">
 <dt>Price</dt><dd>not published</dd>
-<dt>Billing trigger</dt><dd>no published rule — only the AgentMeasure standard applies</dd>
+<dt>Billing trigger</dt><dd>no published rule — only the Verovo standard applies</dd>
 <dt>Reopen handling</dt><dd>no documented reopen deduction</dd>
 <dt>Silence bills</dt><dd>unknown</dd>
 <dt>Closure timers</dt><dd>not published</dd>
-<dt>Source</dt><dd>no vendor rules; only the AgentMeasure standard is applied</dd>
+<dt>Source</dt><dd>no vendor rules; only the Verovo standard is applied</dd>
 </dl>
 
 
-<p class="muted">Re-run the recount yourself: <a href="../recount.html">in the browser</a> or <code>agentmeasure recount --vendor generic</code>. Rules change; this card records the version it was read from.</p>
+<p class="muted">Re-run the recount yourself: <a href="../recount.html">in the browser</a> or <code>verovo recount --vendor generic</code>. Rules change; this card records the version it was read from.</p>
 </div>
 <div class="card" id="hubspot">
 <h2>HubSpot Breeze<span class="badge S">S</span></h2>
@@ -92,7 +92,7 @@ drifting. Registry version <strong>v0.5.0</strong>.</p>
 </dl>
 
 <p class="notes">a reopen after the 72-hour lock starts a FRESH billable window instead of deducting the original, which is a double-billing risk rather than a protection</p>
-<p class="muted">Re-run the recount yourself: <a href="../recount.html">in the browser</a> or <code>agentmeasure recount --vendor hubspot</code>. Rules change; this card records the version it was read from.</p>
+<p class="muted">Re-run the recount yourself: <a href="../recount.html">in the browser</a> or <code>verovo recount --vendor hubspot</code>. Rules change; this card records the version it was read from.</p>
 </div>
 <div class="card" id="intercom">
 <h2>Intercom Fin<span class="badge P">P</span></h2>
@@ -107,7 +107,7 @@ drifting. Registry version <strong>v0.5.0</strong>.</p>
 </dl>
 <ul class="notes"><li>confirmed resolution rate and assumed resolution rate are separate published metrics, so a buyer can at least see the split</li><li>resolution state is filterable and exposed via API v2.11+</li></ul>
 
-<p class="muted">Re-run the recount yourself: <a href="../recount.html">in the browser</a> or <code>agentmeasure recount --vendor intercom</code>. Rules change; this card records the version it was read from.</p>
+<p class="muted">Re-run the recount yourself: <a href="../recount.html">in the browser</a> or <code>verovo recount --vendor intercom</code>. Rules change; this card records the version it was read from.</p>
 </div>
 <div class="card" id="salesforce">
 <h2>Salesforce Agentforce Help Agent<span class="badge U">U</span></h2>
@@ -122,7 +122,7 @@ drifting. Registry version <strong>v0.5.0</strong>.</p>
 </dl>
 <ul class="notes"><li>no timer, no reopen rule, and no clawback are published</li><li>the broader Agentforce product is billed whether or not the issue was resolved</li></ul>
 
-<p class="muted">Re-run the recount yourself: <a href="../recount.html">in the browser</a> or <code>agentmeasure recount --vendor salesforce</code>. Rules change; this card records the version it was read from.</p>
+<p class="muted">Re-run the recount yourself: <a href="../recount.html">in the browser</a> or <code>verovo recount --vendor salesforce</code>. Rules change; this card records the version it was read from.</p>
 </div>
 <div class="card" id="zendesk">
 <h2>Zendesk AI Agents<span class="badge P">P</span></h2>
@@ -137,20 +137,20 @@ drifting. Registry version <strong>v0.5.0</strong>.</p>
 </dl>
 <ul class="notes"><li>criteria, thresholds and error rate behind the LLM adjudication are not published</li><li>unused allowance does not roll over to the next billing period</li></ul>
 <p class="notes">deleting a ticket with Resolution type Automated does not undo the consumption of an automated resolution</p>
-<p class="muted">Re-run the recount yourself: <a href="../recount.html">in the browser</a> or <code>agentmeasure recount --vendor zendesk</code>. Rules change; this card records the version it was read from.</p>
+<p class="muted">Re-run the recount yourself: <a href="../recount.html">in the browser</a> or <code>verovo recount --vendor zendesk</code>. Rules change; this card records the version it was read from.</p>
 </div>
 </div>
 <p class="muted" style="margin-top:28px">Find a rule that changed, or one we read wrong?
-<a href="https://github.com/roy-tong/AgentMeasure/edit/main/registry/vendor-rules.json">Edit the registry</a> —
+<a href="https://github.com/roy-tong/verovo/edit/main/registry/vendor-rules.json">Edit the registry</a> —
 pull requests welcome, every field carries its source.</p>
 </div>
 <footer class="sfoot">
   <div class="sfoot-in">
-    <span class="sfoot-brand">AgentMeasure<span>_</span></span>
+    <span class="sfoot-brand">Verovo<span>_</span></span>
     <a href="../index.html">Home</a>
     <a href="../claims.html">Claims index</a>
     <a href="../releases.html">Release notes</a>
-    <a href="https://github.com/roy-tong/AgentMeasure" target="_blank" rel="noopener">GitHub</a>
+    <a href="https://github.com/roy-tong/verovo" target="_blank" rel="noopener">GitHub</a>
     <span class="sfoot-note">Open source under MIT. The verification rules stay public and free.</span>
   </div>
 </footer>

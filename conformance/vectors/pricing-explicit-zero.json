@@ -1,5 +1,5 @@
 {
- "spec_version": "agentmeasure-0.4",
+ "spec_version": "verovo-0.4",
  "family": "pricing-explicit-zero",
  "description": "An explicit 0.0 price is a legitimate value, not a missing one. Fallback may apply only when the field is absent, never when it is explicitly zero. Source: litellm model_prices tencent/* rows (13 of 13 carry cache_creation_input_token_cost=0.0 with nonzero cache_read; verified 2026-10-26); consumer-side shape fixed earlier in openlit#1543. Frozen after razzlo's 2026-10-23 recount flagged the repricing trap. Class note (contributor recount, 2026-10-27): 44 of 4307 rows share the shape, and the 13 tencent/* rows all point at tencent-cloud doc URLs — the class is the finding; tencent is its local-provider instance.",
  "taxonomy": [
@@ -79,7 +79,7 @@
  ],
  "attribution": {
   "contributor": "Razzlo (iLands broker)",
-  "credit_line": "Vectors and row counts provided by direct reply, 2026-10-26. Archived by AgentMeasure.",
+  "credit_line": "Vectors and row counts provided by direct reply, 2026-10-26. Archived by Verovo.",
   "note": "Contributor-specified credit line (2026-10-27 email), wording not verbatim-required, source named. Contributor also observed: 44 of 4307 rows share the format, of which all 13 tencent/* rows point at tencent-cloud doc URLs — the class is what makes the format noteworthy, not the single vendor."
  }
 }

@@ -2,7 +2,7 @@
 
 I use two small, synthetic examples below to show what I would check before
 challenging a per-resolution bill. No customer messages, account credentials,
-or AMS-1 background are needed. The first example checks a CSV against the
+or VSS-1 background are needed. The first example checks a CSV against the
 packaged Intercom rules; the second shows confirmed versus assumed outcomes
 in a one-page statement. They are **different datasets**, not two views of the
 same invoice, and their dollar figures must not be added together.
@@ -12,9 +12,9 @@ same invoice, and their dollar figures must not be added together.
 Python 3.9+ and Git are required. Run these commands in a terminal:
 
 ```bash
-git clone https://github.com/roy-tong/AgentMeasure.git
-cd AgentMeasure
-python3 healthcheck/agentmeasure --version
+git clone https://github.com/roy-tong/verovo.git
+cd Verovo
+python3 healthcheck/verovo --version
 mkdir -p walkthrough-output
 ```
 
@@ -25,19 +25,19 @@ control, especially when replacing the examples with private exports.
 
 ## 2. Inspect the CSV before trusting any number
 
-The bundled [Intercom CSV](../healthcheck/am_healthcheck/fixtures/vendor-export-intercom.csv)
+The bundled [Intercom CSV](../healthcheck/verovo_healthcheck/fixtures/vendor-export-intercom.csv)
 is a **synthetic, already reviewed canonical export**, not a native Intercom
 report. It contains ten conversations, eight marked billed, and deliberately
 leaves two evidence cells empty.
 
 ```bash
-python3 healthcheck/agentmeasure prepare \
-  --export healthcheck/am_healthcheck/fixtures/vendor-export-intercom.csv \
+python3 healthcheck/verovo prepare \
+  --export healthcheck/verovo_healthcheck/fixtures/vendor-export-intercom.csv \
   --vendor intercom --inspect
-python3 healthcheck/agentmeasure prepare \
-  --export healthcheck/am_healthcheck/fixtures/vendor-export-intercom.csv \
+python3 healthcheck/verovo prepare \
+  --export healthcheck/verovo_healthcheck/fixtures/vendor-export-intercom.csv \
   --vendor intercom --out walkthrough-output/prepared.csv
-python3 healthcheck/agentmeasure recount \
+python3 healthcheck/verovo recount \
   --export walkthrough-output/prepared.csv --vendor intercom --inspect
 ```
 
@@ -78,7 +78,7 @@ missing data into `no` to make a report look complete.
 ## 3. Recount under the vendor's rules
 
 ```bash
-python3 healthcheck/agentmeasure recount \
+python3 healthcheck/verovo recount \
   --export walkthrough-output/prepared.csv --vendor intercom \
   --json walkthrough-output/recount.json
 ```
@@ -125,7 +125,7 @@ two as escalated, and one as abandoned. A native CSV must not be renamed to
 JSONL or silently converted into customer-confirmed outcomes.
 
 ```bash
-python3 healthcheck/agentmeasure settle \
+python3 healthcheck/verovo settle \
   --effects conformance/evidence/assumed-resolution/fixture.jsonl \
   --output walkthrough-output/settlement.json \
   --provider intercom --offering fin \
@@ -171,6 +171,6 @@ The synthetic walkthrough is safe to reproduce, but real exports and output
 files can contain sensitive identifiers and are not automatically anonymized.
 
 For a browser-only vendor-rule check, use the
-[local recount page](https://roy-tong.github.io/AgentMeasure/recount.html).
+[local recount page](https://roy-tong.github.io/verovo/recount.html).
 For the broader pipeline, including billing-ledger crosschecks and realized
 credits, see the [buyer-side commands](../healthcheck/README.md#outcome-billing-verification-prepare--recount--dispute--recovery).

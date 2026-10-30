@@ -2,7 +2,7 @@
 
 Updated 2026-10-21.
 
-AgentMeasure's commercial focus is evidence for AI service buyers making billing,
+Verovo's commercial focus is evidence for AI service buyers making billing,
 acceptance and renewal decisions. Existing open-source capabilities and paid
 developer diagnostics remain available with their own boundaries.
 
@@ -42,11 +42,11 @@ rule-priced difference is not an invoice correction or realized recovery.
 For a buyer discussion, describe the vendor, billing period or decision date,
 the question, available record types and who can act. Do not send credentials
 or full raw customer data in the first email. See the
-[buyer task page](https://roy-tong.github.io/AgentMeasure/first-look.html#contact).
+[buyer task page](https://roy-tong.github.io/verovo/first-look.html#contact).
 
 For the two existing developer services, scope is agreed before payment and
 checkout availability is stated on the
-[service page](https://roy-tong.github.io/AgentMeasure/services.html).
+[service page](https://roy-tong.github.io/verovo/services.html).
 Installation problems and reproducible tool bugs remain free support.
 
 [Commercial and open-source boundaries](commercial-narrative.md) ·

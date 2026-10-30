@@ -1,4 +1,4 @@
-# AgentMeasure Metric Registry（机器可读；Draft 0.4.2）
+# Verovo Metric Registry（机器可读；Draft 0.4.2）
 # 单一事实源：METRICS.md 的 Metric Contract。本文件由
 # registry/validate_metrics.py 校验；任何实现（SQL/Go/TS）按此口径计算。
 # status: defined | draft | proposed | research

@@ -1,5 +1,5 @@
 /**
- * @agentmeasure/mcp — Provider SDK (v0.1.1, External-Ready).
+ * @verovo/mcp — Provider SDK (v0.1.1, External-Ready).
  *
  * Core promises:
  *  - observe first, qualify later: usage_context/validity default "unknown";
@@ -24,13 +24,13 @@ import { mkdirSync, renameSync, statSync, unlinkSync } from "node:fs";
 import { appendFile, readdir } from "node:fs/promises";
 import { join } from "node:path";
 import { homedir } from "node:os";
-export const SPEC_VERSION = "agentmeasure-0.4";
+export const SPEC_VERSION = "verovo-0.4";
 const DEFAULT_BUFFER_LIMIT = 10_000;
 const DEFAULT_FLUSH_INTERVAL_MS = 200;
 const DEFAULT_MAX_SPOOL_BYTES = 5 * 1024 * 1024;
 const DEFAULT_MAX_SPOOL_FILES = 7;
-const ACTIVE_FILE = "agentmeasure-events.jsonl";
-export class AgentMeasure {
+const ACTIVE_FILE = "verovo-events.jsonl";
+export class Verovo {
     projectId;
     observerPrincipal;
     trustDomain;
@@ -61,10 +61,10 @@ export class AgentMeasure {
     instanceId;
     constructor(config = {}) {
         const eventsDir = config.eventsDir ??
-            process.env.AGENTMEASURE_EVENTS_DIR ??
-            join(homedir(), ".agentmeasure", "events");
+            process.env.VEROVO_EVENTS_DIR ??
+            join(homedir(), ".verovo", "events");
         this.projectId = config.projectId ?? "local";
-        this.observerPrincipal = config.observerPrincipal ?? "am-sdk@local";
+        this.observerPrincipal = config.observerPrincipal ?? "verovo-sdk@local";
         this.trustDomain = config.trustDomain ?? "local";
         this.observerSide = config.observerSide ?? "server";
         this.eventsDir = eventsDir;
@@ -260,7 +260,7 @@ export class AgentMeasure {
             const batchBytes = batch.reduce((n, e) => n + JSON.stringify(e).length + 1, 0);
             if (st.size + batchBytes > this.maxSpoolBytes) {
                 const ts = new Date().toISOString().replace(/[:.]/g, "-");
-                renameSync(this.file, join(this.eventsDir, `agentmeasure-events-${ts}.jsonl`));
+                renameSync(this.file, join(this.eventsDir, `verovo-events-${ts}.jsonl`));
                 this.rotatedFiles += 1;
                 await this.pruneSpool();
             }
@@ -278,7 +278,7 @@ export class AgentMeasure {
             return;
         }
         const rotated = entries
-            .filter((n) => n.startsWith("agentmeasure-events-") && n.endsWith(".jsonl"))
+            .filter((n) => n.startsWith("verovo-events-") && n.endsWith(".jsonl"))
             .sort();
         const excess = rotated.length - this.maxSpoolFiles;
         for (let i = 0; i < excess; i++) {
@@ -353,12 +353,12 @@ export function fingerprint(raw) {
  * attempt_started/attempt_completed observations without touching arguments
  * or results.
  *
- *   import { agentmeasure } from "@agentmeasure/mcp";
- *   const mw = agentmeasure({ projectId: "github.com/acme/foo" });
+ *   import { verovo } from "@verovo/mcp";
+ *   const mw = verovo({ projectId: "github.com/acme/foo" });
  *   const wrapped = mw.wrapTool(name, handler, { getCaller: resolveCaller });
  */
-export function agentmeasure(config = {}) {
-    const am = new AgentMeasure(config);
+export function verovo(config = {}) {
+    const am = new Verovo(config);
     return {
         am,
         wrapTool: am.wrapTool.bind(am),

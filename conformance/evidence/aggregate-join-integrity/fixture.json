@@ -2,14 +2,14 @@
   "case": "aggregate-join-integrity",
   "schema_version": 1,
   "origin": {
-    "semantics": "Metrecept (iwasinnam2 / Ivan Karpusheff) — production incident report 2026-10-09 (edge cache HIT served without the caller's session tag; the signed session aggregate said cache_hits=0) and the six-questions answer of 2026-10-12 (the join vector: N crossing receipts and the one aggregate they belong to; conformance is event_count == N and amount == sum). He confirmed the framing 'the signature on the aggregate made the absence look like proof' — AgentMeasure's sentence — is the right one for the case. Wording and fixture: AgentMeasure.",
+    "semantics": "Metrecept (iwasinnam2 / Ivan Karpusheff) — production incident report 2026-10-09 (edge cache HIT served without the caller's session tag; the signed session aggregate said cache_hits=0) and the six-questions answer of 2026-10-12 (the join vector: N crossing receipts and the one aggregate they belong to; conformance is event_count == N and amount == sum). He confirmed the framing 'the signature on the aggregate made the absence look like proof' — Verovo's sentence — is the right one for the case. Wording and fixture: Verovo.",
     "companion_external_fixtures": [
       "conformance/vectors/external/iwasinnam-002-metrecept-receipt (per-request receipt shape)",
       "conformance/vectors/external/iwasinnam-003-session-receipt (aggregate cover shape, 1 MISS + 2 HIT)",
       "conformance/vectors/external/iwasinnam-004 (join, production cut — offered 2026-10-12, in flight)"
     ]
   },
-  "claim_boundary": "Synthetic fixture authored by AgentMeasure for conformance use. Not a Metrecept production artifact, not an endorsement, not an external reproduction. Money identities and digests below are fixture-level.",
+  "claim_boundary": "Synthetic fixture authored by Verovo for conformance use. Not a Metrecept production artifact, not an endorsement, not an external reproduction. Money identities and digests below are fixture-level.",
   "canonicalization_rule": "digests are sha256 over canonical JSON (sorted keys, no whitespace, UTF-8) of the labeled content; amounts are integer micro-USD to keep the sum exact",
   "session": {
     "session_sha256": "sha256 of the raw session id 'agg-join-demo'; the raw id never appears",

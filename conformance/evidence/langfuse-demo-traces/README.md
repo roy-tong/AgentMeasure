@@ -8,7 +8,7 @@ boundary.
 ## What this case is
 
 We ran three public, real framework-instrumented traces — published by
-Langfuse as demo-environment seed data — through the AgentMeasure canonical
+Langfuse as demo-environment seed data — through the Verovo canonical
 pipeline (ingest → match → derive → compute), using a one-off adapter
 documented below. No customer data, no synthetic data invented by us.
 

@@ -1,10 +1,10 @@
 {
-  "manifest": "agentmeasure-settlement-ams1",
+  "manifest": "verovo-settlement-ams1",
   "version": "0.1.0",
   "spec_document": "standard/SETTLEMENT.md",
   "license": "MIT (code) / open governance (GOVERNANCE.md)",
-  "statement_format": "markdown one-pager via `agentmeasure settle --format md`",
-  "container": "AgentMeasure Dispute Bundle (ADB)",
+  "statement_format": "markdown one-pager via `verovo settle --format md`",
+  "container": "Verovo Dispute Bundle (ADB)",
   "clauses": [
     {
       "id": "S-1",

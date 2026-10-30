@@ -43,7 +43,7 @@ jobs:
             echo "This is the output shape a hosted monthly reconcile produces. The data below is the bundled 5-row synthetic export (the same file the README shows); a real run reads your own committed export in a private repository."
             echo
             echo '```'
-            agentmeasure recount --sample
+            verovo recount --sample
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
 
@@ -55,13 +55,13 @@ jobs:
             echo "Undercharge is netted before any dollar is claimed — a recount that only ever finds against the vendor would not be a recount."
             echo
             echo '```'
-            agentmeasure recount --export examples/showcase/case-b-both-directions-intercom.csv --vendor intercom
+            verovo recount --export examples/showcase/case-b-both-directions-intercom.csv --vendor intercom
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Build the Dispute & Recovery Pack (synthetic)
         run: |
-          agentmeasure dispute \
+          verovo dispute \
             --export examples/showcase/case-b-both-directions-intercom.csv \
             --vendor intercom \
             --out "$RUNNER_TEMP/dispute-pack-demo"

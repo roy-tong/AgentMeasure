@@ -1,4 +1,4 @@
-# AgentMeasure LEGACY-MIGRATION（非规范性）
+# Verovo LEGACY-MIGRATION（非规范性）
 
 > 本文件定义旧数据模型值到 Draft 0.4.3 干净模型的迁移。**不污染规范性模型**：
 > 新世界只有一种 Canonical Observation（DATA.md）、一种标准对象（Attempt）。
@@ -64,6 +64,6 @@ observed 数据现在可进入 Class A / first-party analytics（QUALITY §4）�
 
 ## 7. 0.3 spec_version / CORE_POLICY_V1 / VACD
 
-- `agentmeasure-0.1`：仅 Verified Profile 收据工件的内部版本
+- `verovo-0.1`：仅 Verified Profile 收据工件的内部版本
 - `CORE_POLICY_V1`：由 MeasurementPolicy v2（metric-bound）取代
 - `VACD`：更名为 ACD（Active Client-Days）

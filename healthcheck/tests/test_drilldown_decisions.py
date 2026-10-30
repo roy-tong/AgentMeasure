@@ -13,9 +13,9 @@ import unittest
 
 from _support import fixture
 
-from am_healthcheck import drilldown as dd
-from am_healthcheck import decisions as dec
-from am_healthcheck.vendors import (AGREES, BILLABLE_BUT_NOT_BILLED,
+from verovo_healthcheck import drilldown as dd
+from verovo_healthcheck import decisions as dec
+from verovo_healthcheck.vendors import (AGREES, BILLABLE_BUT_NOT_BILLED,
                                     BILLED_BUT_NOT_BILLABLE, CANNOT_SETTLE,
                                     load_export, recount, get_vendor)
 
@@ -104,7 +104,7 @@ class TestDrilldownRender(unittest.TestCase):
         text = dd.drilldown_text(result, "filled.csv")
         md = dd.drilldown_markdown(result, "filled.csv")
         for doc in (text, md):
-            self.assertIn("agentmeasure recount --export filled.csv", doc)
+            self.assertIn("verovo recount --export filled.csv", doc)
             self.assertIn("C-1003", doc)
             self.assertIn("billed_but_not_billable", doc)
         self.assertIn("| field | value |", md)
@@ -124,7 +124,7 @@ class TestDrilldownCli(unittest.TestCase):
     def _run(self, *argv):
         import contextlib
         import io
-        from am_healthcheck.cli import main
+        from verovo_healthcheck.cli import main
         out = io.StringIO()
         with contextlib.redirect_stdout(out):
             rc = main(list(argv))
@@ -188,7 +188,7 @@ class TestDecisions(unittest.TestCase):
     def test_cli_log_and_read(self):
         import contextlib
         import io
-        from am_healthcheck.cli import main
+        from verovo_healthcheck.cli import main
         path = tmpfile(".jsonl", "")
         self.addCleanup(lambda: os.path.exists(path) and os.unlink(path))
         out = io.StringIO()
@@ -207,7 +207,7 @@ class TestDecisions(unittest.TestCase):
         # argparse rejects the non-enum choice with usage error (exit 2)
         import contextlib
         import io
-        from am_healthcheck.cli import main
+        from verovo_healthcheck.cli import main
         err = io.StringIO()
         with self.assertRaises(SystemExit) as ctx, \
                 contextlib.redirect_stderr(err):

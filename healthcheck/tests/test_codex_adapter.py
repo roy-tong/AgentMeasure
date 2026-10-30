@@ -4,7 +4,7 @@ import unittest
 
 from _support import fixture
 
-from am_healthcheck.codex import parse_session
+from verovo_healthcheck.codex import parse_session
 
 
 class TestOkSession(unittest.TestCase):

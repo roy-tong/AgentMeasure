@@ -13,8 +13,8 @@ import unittest
 
 from _support import fixture
 
-from am_healthcheck import vendors
-from am_healthcheck.vendors import (load_contract, load_export, outcome_lane,
+from verovo_healthcheck import vendors
+from verovo_healthcheck.vendors import (load_contract, load_export, outcome_lane,
                                     recount)
 
 

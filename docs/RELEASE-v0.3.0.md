@@ -2,13 +2,13 @@
 
 > Released automatically from `docs/RELEASE-v0.3.0.md` by
 > `.github/workflows/release.yml` (tag `v0.3.0`).
-> First PyPI release of the `agentmeasure` command.
+> First PyPI release of the `verovo` command.
 
 ---
 
 ## What's in this release
 
-**AgentMeasure Healthcheck** — a local check-up report for coding agent runs.
+**Verovo Healthcheck** — a local check-up report for coding agent runs.
 Reads the logs your agent runtime already writes (Codex rollout first), checks
 them for duplicate records, retry amplification, and tool-error runs, and
 writes a terminal summary plus a local HTML report. Same honesty rules as the
@@ -19,10 +19,10 @@ network code (tests enforce both).
 ### Install
 
 ```bash
-pipx install agentmeasure
-# or: python3 -m pip install --user agentmeasure
-agentmeasure demo    # synthetic session, no data needed
-agentmeasure check   # your Codex logs, last 7 days
+pipx install verovo
+# or: python3 -m pip install --user verovo
+verovo demo    # synthetic session, no data needed
+verovo check   # your Codex logs, last 7 days
 ```
 
 ### Headlines
@@ -40,10 +40,10 @@ agentmeasure check   # your Codex logs, last 7 days
 - **Project breakdown & filters.** cwd-basename project aggregates;
   `--project`, `--since/--until`, `--days`, `--all`.
 - **Versioned export schemas (report-v1 / snapshot-v1 / compare-v1).**
-  Fields are only added within a version; `agentmeasure validate` checks any
+  Fields are only added within a version; `verovo validate` checks any
   export; `examples/track-weekly.py` is a complete external consumer that
   imports no package internals.
-- **Share-safe by construction, preview-then-export.** `agentmeasure share
+- **Share-safe by construction, preview-then-export.** `verovo share
   run.json` previews the sanitized summary on the terminal and writes nothing
   until an explicit `--out`; the summary is whitelist-only (no prompts, paths,
   commands, repo names, session ids) and re-checked before either step —

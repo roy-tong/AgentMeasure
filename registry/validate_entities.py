@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""AgentMeasure registry validator（零依赖，JSON Schema 子集）。
+"""Verovo registry validator（零依赖，JSON Schema 子集）。
 
 用法: python3 registry/validate_entities.py
 校验：
@@ -8,7 +8,7 @@
 退出码：0 = 全部通过；1 = 任一失败。
 
 支持的 JSON Schema 子集：type / required / properties / additionalProperties /
-items / enum / pattern。用于 AgentMeasure 自有 schema，非通用校验器。
+items / enum / pattern。用于 Verovo 自有 schema，非通用校验器。
 """
 from __future__ import annotations
 

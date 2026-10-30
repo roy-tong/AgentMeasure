@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "payload: task_outcome v2",
-  "description": "AgentMeasure Task Outcome payload — v2 adds outcome_class, observer_grade, and stratified fields. v1 fields retained for backward compatibility. Draft 0.4.4.",
+  "description": "Verovo Task Outcome payload — v2 adds outcome_class, observer_grade, and stratified fields. v1 fields retained for backward compatibility. Draft 0.4.4.",
   "type": "object",
   "required": [
     "task_id",

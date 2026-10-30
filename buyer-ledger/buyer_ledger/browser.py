@@ -24,9 +24,9 @@ ALLOWED_ACTIONS = ("navigate", "click", "wait_for", "download", "read", "screens
 BOTWALL_TEXTS = ("checking your browser", "unusual traffic", "verify you are human",
                  "are you a robot", "请完成安全验证", "访问行为异常")
 
-DEFAULT_PROFILE_ROOT = os.path.join(os.path.expanduser("~"), ".agentmeasure", "profiles")
-DEFAULT_AUDIT_ROOT = os.path.join(os.path.expanduser("~"), ".agentmeasure", "audit")
-DEFAULT_CDP_ROOT = os.path.join(os.path.expanduser("~"), ".agentmeasure", "cdp")
+DEFAULT_PROFILE_ROOT = os.path.join(os.path.expanduser("~"), ".verovo", "profiles")
+DEFAULT_AUDIT_ROOT = os.path.join(os.path.expanduser("~"), ".verovo", "audit")
+DEFAULT_CDP_ROOT = os.path.join(os.path.expanduser("~"), ".verovo", "cdp")
 
 
 class RecipeError(ValueError):

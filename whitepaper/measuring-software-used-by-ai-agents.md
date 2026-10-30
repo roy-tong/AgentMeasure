@@ -2,11 +2,11 @@
 
 **A Measurement Foundation for Capability as a Service and the Agent Capability Economy**
 
-*Whitepaper v0.3 · AgentMeasure Standard Draft 0.4.4*
+*Whitepaper v0.3 · Verovo Standard Draft 0.4.4*
 
 > Roy Tong
 > The reference implementation and the open experiment engine
-> ([`lab/`](../lab/README.md)) live in the AgentMeasure repository.
+> ([`lab/`](../lab/README.md)) live in the Verovo repository.
 
 ## 0. Abstract
 
@@ -23,7 +23,7 @@ result, an outcome and a billable unit. And once money moves on those numbers, a
 second problem appears: **telling real growth from fake growth** — retry inflation,
 unconsumed results, circular transactions — before anyone budgets on them.
 
-AgentMeasure proposes an open measurement standard for this emerging capability
+Verovo proposes an open measurement standard for this emerging capability
 economy: a common data language — reach, choice, use, utility, value — the
 measurement semantics that metering, marketplaces and payment rails can later build
 on, and the experiment semantics (preregistration, guardrails, per-condition effect
@@ -33,7 +33,7 @@ Service (CaaS, as used in this paper) possible — and trustworthy.
 
 ## 0.2 Relationship to Observability
 
-> **AgentMeasure assumes that telemetry may already exist. Its purpose is not to replace
+> **Verovo assumes that telemetry may already exist. Its purpose is not to replace
 > tracing, logging, or evaluation systems, but to define portable measurement objects and
 > rules over their evidence.**
 
@@ -50,7 +50,7 @@ Both telemetry systems are correct.
 Their measurement semantics are not the same.
 ```
 
-AgentMeasure does not re-collect observability data; it defines cross-system
+Verovo does not re-collect observability data; it defines cross-system
 comparable measurement objects, statistical units and derivation rules over existing
 evidence (OTel / Langfuse / Logfire / Phoenix / runtime logs):
 
@@ -142,7 +142,7 @@ infrastructure.** That is the thesis of this paper.
 
 ### Thesis and assumptions
 
-AgentMeasure is built on three trend judgments that are **not yet fully established**:
+Verovo is built on three trend judgments that are **not yet fully established**:
 
 1. Agents will mediate a growing share of software selection and execution.
 2. More software capabilities will be exposed independently of their human UI.
@@ -178,7 +178,7 @@ single observer sees the whole task.
 
 **3. Measurement must sit above them.** The more composable software becomes,
 the more important portable measurement semantics become. This is why
-AgentMeasure defines semantics (Operation, Attempt, Delegation, evidence
+Verovo defines semantics (Operation, Attempt, Delegation, evidence
 grades) over existing telemetry rather than another telemetry format, and why
 harness profiles — a public record of what each runtime can and cannot observe
 — are part of the standard itself.
@@ -251,7 +251,7 @@ result actually used?) are the difference between a channel and a slot machine.
 
 ## 3. Measurement Objects
 
-An observation is an *evidence unit*, not a *business measurement unit*. AgentMeasure
+An observation is an *evidence unit*, not a *business measurement unit*. Verovo
 defines the business units first:
 
 ```text
@@ -327,7 +327,7 @@ pipeline would produce numbers that mean different things.
 
 ## 5. Measurement Framework
 
-AgentMeasure defines **metric families**, not a universal KPI. Metric status is
+Verovo defines **metric families**, not a universal KPI. Metric status is
 marked explicitly — **Defined** (formal metric contract), **Draft**, **Research** —
 a concept paper does not pretend the standard is fully defined.
 
@@ -434,12 +434,12 @@ Metering Ledger      replayable, correctable record of metered facts (revision /
 Commercial Attribution  which parties contributed to discovery / selection / revenue
 ```
 
-**Payment is out of scope.** AgentMeasure does not define payment rails, wallets,
+**Payment is out of scope.** Verovo does not define payment rails, wallets,
 settlement currencies, merchant-of-record relationships, or financial custody. It
 produces the facts — qualified operation, confirmed effect, qualified outcome,
 billable quantity, commercial attribution — that payment systems consume.
 
-> **AgentMeasure standardizes economic facts, not money movement.**
+> **Verovo standardizes economic facts, not money movement.**
 
 ### 7.5 From measurement to margin: the value formula
 
@@ -579,7 +579,7 @@ causal incrementality.
 A capability consumer's choice is shaped by many factors. Agents and marketplaces
 can increasingly compare machine-readable performance signals **alongside** brand,
 policy, price, user preference, and platform constraints — exactly the axes
-AgentMeasure's Decision Authority / Selection Constraint model describes:
+Verovo's Decision Authority / Selection Constraint model describes:
 
 ```text
 Capability Signals
@@ -587,7 +587,7 @@ Reliability · Latency · Price · Freshness · Consumption · Effect Success
 Outcome · Safety · Measurement Coverage
 ```
 
-AgentMeasure **does not calculate a universal AgentMeasure Score**. Agent A cares
+Verovo **does not calculate a universal Verovo Score**. Agent A cares
 about price, Agent B about latency, Agent C about privacy. Ranking is a product
 decision for agents and marketplaces; the standard defines only comparable signals
 and the labels that make them comparable. The Measurement Label is the foundation of
@@ -635,12 +635,12 @@ facts rather than extending its core. The experiment formats — preregistration
 manifest, funnel events, report schema — are published as open JSON Schemas
 (`lab/schemas/`) so third parties can implement runners and produce mutually
 recognizable results, and the reference implementation ships a read-only MCP query
-interface (`am mcp serve`) so agents and CI consume the same evidence engineers see —
+interface (`verovo mcp serve`) so agents and CI consume the same evidence engineers see —
 with evidence grades, without rankings.
 
 ## 12. Non-goals and Governance
 
-AgentMeasure is **not** a payment protocol, a marketplace, a wallet, or a universal
+Verovo is **not** a payment protocol, a marketplace, a wallet, or a universal
 reputation system. The standard does not:
 
 - move money or custody funds;
@@ -686,7 +686,7 @@ budgets move on those numbers, it equally needs the discipline that separates
 verified value from manufactured growth: qualification, consumption evidence,
 preregistered experiments, guardrails, honestly-reported transfer effects.
 
-AgentMeasure is that proposal: measurement semantics as infrastructure, experiment
+Verovo is that proposal: measurement semantics as infrastructure, experiment
 semantics as their proof procedure, commercial semantics as a future extension,
 payment as someone else's rails. **Measure how agents use software capabilities
 today; make capabilities comparable, meterable — and experimentally improvable —
@@ -710,7 +710,7 @@ term.**
 11. Hasan et al. — *MCP Tool Descriptions Are Smelly* ([arXiv 2602.14878](https://arxiv.org/abs/2602.14878)): 97.1% of tool descriptions with quality issues; +5.85pp success with +67.46% steps; 16.67% of combinations degrade.
 12. Microsoft Research — [BiasBusters: tool-selection bias in LLMs (ICLR 2026)](https://www.microsoft.com/en-us/research/publication/biasbusters-uncovering-and-mitigating-tool-selection-bias-in-large-language-models/).
 13. Arcade — [ToolBench: MCP server quality benchmark (41,900+ servers; 0.5% grade A)](https://www.arcade.dev/blog/introducing-toolbench-quality-benchmark-mcp-servers/).
-14. AgentMeasure specification — Core, Metrics, Data, Entity, Quality, Correlation
+14. Verovo specification — Core, Metrics, Data, Entity, Quality, Correlation
    (`standard/`); Commercial Extension (`extensions/COMMERCIAL.md`, experimental);
    machine-readable registry (`schemas/`, `registry/`); open experiment engine
    (`lab/` — preregistration, funnel capture, honest statistics, guardrails);
@@ -720,7 +720,7 @@ term.**
 
 *The normative specification (Measurement Objects, Lifecycle, Metric Families,
 Quality, Reporting), the open experiment engine (`lab/`), and the reference
-implementation are published openly. Graduation to AgentMeasure 1.0 requires two
+implementation are published openly. Graduation to Verovo 1.0 requires two
 independent implementations, three runtime profiles, two tool-side implementations,
 a public conformance suite with canonical test vectors, 5–10 real projects, a
 published discrepancy report, and security and privacy reviews.*

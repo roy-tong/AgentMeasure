@@ -1,4 +1,4 @@
-# AgentMeasure Core Specification — Open Measurement Standard for AI-Agent Software Usage（Standard Compatibility agentmeasure-0.4 · Document revision 0.4.5）
+# Verovo Core Specification — Open Measurement Standard for AI-Agent Software Usage（Standard Compatibility verovo-0.4 · Document revision 0.4.5）
 
 > **Draft 0.4：Measurement Objects & Verification Decoupling。** 0.3 解决了"怎么算"；
 > 0.4 解决"算的是什么"——把测量对象扩展为完整的
@@ -6,20 +6,20 @@
 > decision → operation → attempt → result/effect → outcome 的端到端谱系，
 > 并把 Core 与 Verification Profile 解耦。
 >
-> 参考实现（`reference/`）与标准文档同仓演进。**AgentMeasure 不定义谁是真相来源，
+> 参考实现（`reference/`）与标准文档同仓演进。**Verovo 不定义谁是真相来源，
 > 而定义什么证据、按照什么规则，可以支持什么结论。**
 
 ## 0. 版本与治理
 
 - 版本路线：Draft 0.2（框架）→ 0.3（语义）→ **0.4（对象与质量）** → 0.5（价值测量）→ 1.0
-- 指标变更走 **AUP**（`proposals/`）；**AgentMeasure Metrics 是变更最频繁的文档**，whitepaper 保持稳定
+- 指标变更走 **AUP**（`proposals/`）；**Verovo Metrics 是变更最频繁的文档**，whitepaper 保持稳定
 - 毕业标准（不变）：2 独立实现 + 3 profiles + 2 tool-side + conformance + vectors + 5-10 项目 + discrepancy report + 双 review
 
 ## 1. 核心命题（不变）
 
 Reach → Choice → Use → Utility → Value。五问不变。
 
-**规范语言（BCP 14）**：本规范及所有 AgentMeasure 文档中，MUST / MUST NOT /
+**规范语言（BCP 14）**：本规范及所有 Verovo 文档中，MUST / MUST NOT /
 SHOULD / SHOULD NOT / MAY 按 RFC 2119（BCP 14）解释。实现必须满足全部 MUST；
 SHOULD 是强烈建议，偏离 MUST 在 Measurement Label 中披露。
 
@@ -35,7 +35,7 @@ SHOULD 是强烈建议，偏离 MUST 在 Measurement Label 中披露。
 
 **观察发生在 Interaction Surface 上；统计归属到 Entity。** Observer 直接看到的是
 surface，不一定知道 entity——entity 身份由 registry 的 alias 归并推导
-（见 AgentMeasure Entity）。无法归并时，实体归属 MUST 记为 UNKNOWN，绝不猜测。
+（见 Verovo Entity）。无法归并时，实体归属 MUST 记为 UNKNOWN，绝不猜测。
 
 ### 2.1 Software Entity（实体类型）
 
@@ -51,7 +51,7 @@ surface，不一定知道 entity——entity 身份由 registry 的 alias 归并
 | `unknown` | 无法判定 | — |
 
 实体身份规则：
-- 每个 Entity 有且仅有一个规范标识 `entity_id`（registry 权威，见 AgentMeasure Entity）
+- 每个 Entity 有且仅有一个规范标识 `entity_id`（registry 权威，见 Verovo Entity）
 - 同一逻辑软件的不同形态（MCP server / CLI / skill）由 registry alias 归并；
   **alias 归并前的观察 MUST NOT 跨形态合并计数**（不变量 21）
 
@@ -59,7 +59,7 @@ surface，不一定知道 entity——entity 身份由 registry 的 alias 归并
 
 - Capability = Entity 的具名功能；标识 `capability_id`（`<entity_id>:<name>`）
 - Category 是**版本化的 measurement construct**（`category_id + category_version`），
-  建立在 Capability 之上，不是永久真理（AgentMeasure Taxonomy，Draft 0.4 立项）
+  建立在 Capability 之上，不是永久真理（Verovo Taxonomy，Draft 0.4 立项）
 - 同一 Capability 可经多个 Interaction Surface 暴露
 
 ### 2.3 Interaction Surface
@@ -67,7 +67,7 @@ surface，不一定知道 entity——entity 身份由 registry 的 alias 归并
 - Surface = 具体可调用界面；标识 `surface_id`
 - 类型：`mcp_tool` · `cli_command` · `http_endpoint` · `function_call` ·
   `skill_file` · `plugin_hook` · `runtime_builtin` · `unknown`
-- 观察发生在 surface 层；surface → entity 映射由 registry 提供（见 AgentMeasure Entity）
+- 观察发生在 surface 层；surface → entity 映射由 registry 提供（见 Verovo Entity）
 
 ### 2.4 行为对象（决策 → 执行谱系）
 
@@ -80,7 +80,7 @@ surface，不一定知道 entity——entity 身份由 registry 的 alias 归并
 | **Selection** | Agent 选择某 selectable | `selection_id` |
 | **Operation** | 对某 Capability 的一次**逻辑使用**（为某 task 而用） | `operation_id` |
 | **Delegation** | Agent 将子目标连同执行权交给另一 Agent 的**边界事件**（Agent → Agent 调用）；与 Operation 同层，作为 Task 的直接子节点 | `delegation_id` |
-| **Attempt** | **标准执行对象**：一次实际执行（API request / MCP call / CLI execution / Agent-to-Agent call 统一映射为 Attempt）。**不可变事实对象**（Draft 0.4.4） | `attempt_id`（agentmeasure 自有 identity；外部 id 见 `external_ids`） |
+| **Attempt** | **标准执行对象**：一次实际执行（API request / MCP call / CLI execution / Agent-to-Agent call 统一映射为 Attempt）。**不可变事实对象**（Draft 0.4.4） | `attempt_id`（verovo 自有 identity；外部 id 见 `external_ids`） |
 | **Result / Effect** | 执行产生的返回值 / 世界状态改变 | — |
 | **Outcome** | Task 或 Operation 的最终结果 | — |
 
@@ -107,7 +107,7 @@ Task ──▶ Decision Opportunity ──▶ Selection
 - **Attempt** = 标准执行对象；`invocation` 只作为外部协议的原始概念
   （如 MCP invocation），标准内统一为 Attempt（旧命名见 LEGACY-MIGRATION.md）
 - **重试 = 同一 Operation 的多个 Attempt**：关系通过 `operation_id` / `retry_of`
-- **attempt_id 与 protocol/tool_call_id 分离（Draft 0.4.4）**：attempt_id 是 AgentMeasure
+- **attempt_id 与 protocol/tool_call_id 分离（Draft 0.4.4）**：attempt_id 是 Verovo
   自有 canonical identity；tool_call_id / protocol_call_id / trace_id 是 observation surface
   提供的外部证据，放 `external_ids`，用于 correlation，不得与事实对象 identity 混用：
   ```yaml
@@ -124,7 +124,7 @@ Task ──▶ Decision Opportunity ──▶ Selection
   （status / method / rule_id / rule_version，见 CORR §3.1）。
   表达，**不再属于 validity**
 - 无 Operation 证据时，观察只能形成 Attempt；Operation 归并 MUST 遵循
-  AgentMeasure Correlation 的确定性规则（不变量 23：无证据不归并）
+  Verovo Correlation 的确定性规则（不变量 23：无证据不归并）
 
 **Delegation（Agent → Agent 调用，Draft 0.4.5）**：
 
@@ -141,7 +141,7 @@ Delegation **不是**：
 
 | 字段 | 必填 | 说明 |
 |---|---|---|
-| `delegation_id` | ✅ | 委托方侧唯一标识（`am-delegation-*`） |
+| `delegation_id` | ✅ | 委托方侧唯一标识（`verovo-delegation-*`） |
 | `delegating_caller` | ✅ | 发起委托的 Agent entity_id |
 | `called_agent` | ✅ | 被委托的 Agent entity_id |
 | `called_capability` | ✅ | 被调用的被委托方 Capability（如 `agent:accept_subtask`） |
@@ -329,7 +329,7 @@ Attempt 级口径由 collector **派生**（derived_attempt_qualification）：
 
 ## 8. Measurement Label（Draft 0.4 补三轴与 grain 披露）
 
-见 AgentMeasure Quality。每个指标除 label 外必须披露：Numerator / Denominator /
+见 Verovo Quality。每个指标除 label 外必须披露：Numerator / Denominator /
 Observable population / Qualified population / Runtime coverage / Choice mode
 （+ Draft 0.4：Decision authority / Selection constraint / Grain）。
 
@@ -383,21 +383,21 @@ Observable population / Qualified population / Runtime coverage / Choice mode
 | **Bindings** | OTel / MCP / CLI 映射 | 随实现 |
 
 **不变量（P0-7）：验证是高级符合性，不是采用前置条件。** 一个不签名的采集器
-也能产生有效的 AgentMeasure 指标——只是证据等级为 observed（最低显示等级），MUST 在 Label 中声明。
+也能产生有效的 Verovo 指标——只是证据等级为 observed（最低显示等级），MUST 在 Label 中声明。
 
 ## 11. 文档结构（Draft 0.4）
 
 | 文档 | 负责 |
 | --- | --- |
-| AgentMeasure Core（本文） | Objects、Grain、Observability、Eligibility、Qualification、分层、不变量 |
-| AgentMeasure Entity | Entity 身份、alias 归并、registry 格式（Draft 0.4 新增） |
-| AgentMeasure Data | Observation Envelope（六类型）schema |
-| AgentMeasure Metrics | Metric Registry + 指标合同（变更最频繁） |
-| AgentMeasure Trust | Principal、Signature、Trust Domain、Evidence（Verified Profile） |
-| AgentMeasure Correlation | Observation → Attempt → Operation 确定性规则 |
-| AgentMeasure Quality | Context/Validity/Coverage/Observability/Label |
-| AgentMeasure Privacy / SECURITY / BIND / PROFILES | 不变 |
-| AgentMeasure Taxonomy | Category/Capability 分类（Draft 0.4 立项） |
+| Verovo Core（本文） | Objects、Grain、Observability、Eligibility、Qualification、分层、不变量 |
+| Verovo Entity | Entity 身份、alias 归并、registry 格式（Draft 0.4 新增） |
+| Verovo Data | Observation Envelope（六类型）schema |
+| Verovo Metrics | Metric Registry + 指标合同（变更最频繁） |
+| Verovo Trust | Principal、Signature、Trust Domain、Evidence（Verified Profile） |
+| Verovo Correlation | Observation → Attempt → Operation 确定性规则 |
+| Verovo Quality | Context/Validity/Coverage/Observability/Label |
+| Verovo Privacy / SECURITY / BIND / PROFILES | 不变 |
+| Verovo Taxonomy | Category/Capability 分类（Draft 0.4 立项） |
 | extensions/COMMERCIAL.md | 经济语义（Offering / Billable Unit / Metering Policy）——**Experimental / Informative，非规范性，不参与 conformance** |
 | proposals/ | 指标与规范变更提案（AUP） |
 | proposals/2026-08-21-delegation-graph.md | Delegation 对象提案与设计决策记录 |

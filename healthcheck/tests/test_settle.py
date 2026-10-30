@@ -5,7 +5,7 @@ import os
 import tempfile
 import unittest
 
-from am_healthcheck.settle import (bundle_report, generate_bundle,
+from verovo_healthcheck.settle import (bundle_report, generate_bundle,
                                     settlement_csv, settlement_statement,
                                     statement_html, statement_markdown)
 
@@ -124,13 +124,13 @@ class TestGenerateBundle(unittest.TestCase):
         generate_bundle(path, out, {})
         with open(out, encoding="utf-8") as fh:
             reloaded = json.load(fh)
-        self.assertEqual(reloaded["schema"], "agentmeasure.commercial/settlement-bundle")
+        self.assertEqual(reloaded["schema"], "verovo.commercial/settlement-bundle")
 
 
 class TestBundleReport(unittest.TestCase):
     def test_bundle_report_contains_sections(self):
         bundle = {
-            "schema": "agentmeasure.commercial/settlement-bundle",
+            "schema": "verovo.commercial/settlement-bundle",
             "schema_version": "0.1.0",
             "provider_id": "acme",
             "offering_id": "acme:support",
@@ -151,7 +151,7 @@ class TestBundleReport(unittest.TestCase):
 
     def test_bundle_report_handles_empty_summary(self):
         bundle = {
-            "schema": "agentmeasure.commercial/settlement-bundle",
+            "schema": "verovo.commercial/settlement-bundle",
             "provider_id": "",
             "offering_id": "",
             "evidence_level": "none",
@@ -203,7 +203,7 @@ class TestSettlementStatement(unittest.TestCase):
         ])
         text = settlement_statement(b, price_per_unit=1.0)
         self.assertIn("Tier 1  provider's own count (resolved + assumed)   3 of 4", text)
-        self.assertIn("Tier 2  AgentMeasure settlement-grade (affected party) 2 of 4", text)
+        self.assertIn("Tier 2  Verovo settlement-grade (affected party) 2 of 4", text)
         self.assertIn("Disputed class (Tier 1 minus Tier 2)                1", text)
 
     def test_dollars_and_payback(self):
@@ -249,7 +249,7 @@ if __name__ == "__main__":
 
 
 class TestStatementMarkdown(unittest.TestCase):
-    """AMS-1 one-pager (standard/SETTLEMENT.md §2): provenance, two lines,
+    """VSS-1 one-pager (standard/SETTLEMENT.md §2): provenance, two lines,
     both directions, cannot-settle, reproduce block."""
 
     def setUp(self):
@@ -308,7 +308,7 @@ class TestStatementMarkdown(unittest.TestCase):
 
 
 class TestStatementHtml(unittest.TestCase):
-    """AMS-1 one-pager, attachable HTML form: offline, script-free,
+    """VSS-1 one-pager, attachable HTML form: offline, script-free,
     section-complete, and number-pinned to statement_markdown."""
 
     def setUp(self):

@@ -12,8 +12,8 @@ import unittest
 
 from _support import fixture
 
-from am_healthcheck import prepare as prepare_mod
-from am_healthcheck.vendors import load_export
+from verovo_healthcheck import prepare as prepare_mod
+from verovo_healthcheck.vendors import load_export
 
 # A native-style Zendesk ticket export: documentation-confirmed headers, no
 # judgement columns at all — exactly what F1.1 says arrives from a buyer.
@@ -154,7 +154,7 @@ class TestPrepareCLI(unittest.TestCase):
     def _run(self, *argv):
         import contextlib
         import io
-        from am_healthcheck.cli import main
+        from verovo_healthcheck.cli import main
         out, err = io.StringIO(), io.StringIO()
         with contextlib.redirect_stdout(out), contextlib.redirect_stderr(err):
             rc = main(list(argv))

@@ -3,11 +3,11 @@
 - 状态：Draft
 - 作者：Roy Tong
 - 日期：2026-09-18
-- 相关：AgentMeasure Core Draft 0.4 / METRICS M5（新增）/ QUALITY §4 billable_audit / TRUST §3 / extensions/COMMERCIAL §3–5 / whitepaper §8.1 / DR-005
+- 相关：Verovo Core Draft 0.4 / METRICS M5（新增）/ QUALITY §4 billable_audit / TRUST §3 / extensions/COMMERCIAL §3–5 / whitepaper §8.1 / DR-005
 
 ## 问题
 
-按结果收费已是规模化生意（Zendesk $1.50/resolution、Intercom Fin $0.99 附退款担保、Sierra 企业级 outcome 合同），但**「效果是不是增量」没有标准**。AgentMeasure 当前回答的是「什么算一次、结果可不可证明」（usage 语义一致性，PASS / FAIL / UNPROVABLE）；效果费结算还差一层：**效果费能不能收上来，取决于增量能不能被审计——合作方不会为「我们觉得有效」付钱。**
+按结果收费已是规模化生意（Zendesk $1.50/resolution、Intercom Fin $0.99 附退款担保、Sierra 企业级 outcome 合同），但**「效果是不是增量」没有标准**。Verovo 当前回答的是「什么算一次、结果可不可证明」（usage 语义一致性，PASS / FAIL / UNPROVABLE）；效果费结算还差一层：**效果费能不能收上来，取决于增量能不能被审计——合作方不会为「我们觉得有效」付钱。**
 
 具体缺口（每条配反例）：
 
@@ -15,7 +15,7 @@
 2. **无 outcome 分类词表，沉默无法与解决区分**。反例：Intercom 的 "assumed resolution"（静默即视为解决）在社区引发持续反弹；有客户被承诺 70% resolution rate 实际拿到 30%。当前 spec 无法表达「resolved / assumed_resolved / reopened / abandoned」的区分，也无注册的 billable unit 定义。
 3. **重开不回滚账单**。反例：工单被标记解决并计费，3 天后重开——一次逻辑解决变成一次收费 + 一次失败。usage 侧我们有 retry 语义（一次逻辑操作 ≠ 两次请求），outcome 侧同构纪律缺失（reopened ≠ resolved 已写在 blog，未进 spec）。
 4. **归因冒充增量**。反例：厂商宣称「AI 解决了 70% 工单」，其中 30% 不用 AI 也会经自助文档解决——不变量 14（归因不得陈述为因果）已存在，但没有证据等级机制去执行。whitepaper §8.1 的 V0–V4 证据阶梯停留在论文层，TRUST §3 的 Evidence Profile 五轴无因果轴。
-5. **增量指标无合同**。METRICS §6 显式留白「Incremental Lift（实验设计见 AgentMeasure 0.5）」；registry/metrics.yaml 止于 M4.1。无 Numerator/Denominator/Eligibility/反例，两个实现可以算出两个数。
+5. **增量指标无合同**。METRICS §6 显式留白「Incremental Lift（实验设计见 Verovo 0.5）」；registry/metrics.yaml 止于 M4.1。无 Numerator/Denominator/Eligibility/反例，两个实现可以算出两个数。
 
 ## 提案
 

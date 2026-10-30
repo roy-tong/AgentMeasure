@@ -13,9 +13,9 @@ from Codex Desktop; standalone Codex CLI remains unverified and Claude Code is
 not supported.
 
 ```bash
-pipx install "git+https://github.com/roy-tong/AgentMeasure#subdirectory=healthcheck"
-agentmeasure demo
-agentmeasure check --json report.json
+pipx install "git+https://github.com/roy-tong/verovo#subdirectory=healthcheck"
+verovo demo
+verovo check --json report.json
 ```
 
 Without pipx, install into a Python virtual environment using pip and the same
@@ -35,15 +35,15 @@ The HTML report, full `report.json`, and snapshots are personal artifacts. Do
 not attach them to a public issue: they may contain local paths and identifiers.
 
 ```bash
-agentmeasure share report.json                  # preview; writes nothing
-agentmeasure share report.json --out summary.md # export aggregate summary
+verovo share report.json                  # preview; writes nothing
+verovo share report.json --out summary.md # export aggregate summary
 ```
 
 Open `summary.md` yourself before sharing. It contains aggregate counts, without
 prompts, commands, paths, project names, or session IDs. You can also omit the
 summary and describe only the installation problem or confusing result.
 
-[**Open a first-run feedback issue**](https://github.com/roy-tong/AgentMeasure/issues/new?template=6-healthcheck-first-run.yml)
+[**Open a first-run feedback issue**](https://github.com/roy-tong/verovo/issues/new?template=6-healthcheck-first-run.yml)
 
 Please include OS, Python and tool version, whether the data is your own or the
 demo, and what was useful or blocked you. How you first found us and what made
@@ -53,10 +53,10 @@ opening an issue does not automatically count as successful use.
 ## Come back after a change
 
 ```bash
-agentmeasure check --save-snapshot before.json
+verovo check --save-snapshot before.json
 # Make an actual change and run your agent again.
-agentmeasure check --save-snapshot after.json
-agentmeasure compare before.json after.json
+verovo check --save-snapshot after.json
+verovo compare before.json after.json
 ```
 
 Describe the change and whether the comparison informed a decision. Different

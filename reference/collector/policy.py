@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""AgentMeasure Measurement Policy v2（Draft 0.4.2）。
+"""Verovo Measurement Policy v2（Draft 0.4.2）。
 
 Metric 不能脱离 Policy：两个网站都显示 "Agent Usage = 12,000" 但一个只算
 cross-side corroborated、另一个 observed 都算——不可比。v2 变化：
   - Policy **绑定具体 Metric**（metric_id），不再一个 CORE_POLICY 控制所有指标
-  - 废弃遗留：eligible_evidence E1+/E2、VACD、agentmeasure-0.1 spec
+  - 废弃遗留：eligible_evidence E1+/E2、VACD、verovo-0.1 spec
   - 引入 Strict Qualified（production + normal）为 qualification 默认
   - **registry/metrics.yaml 是单一事实源**：METRIC_POLICIES 运行时从 yaml 派生，
     不再手写第二份定义（validate_metrics.py 保证 yaml ↔ METRICS.md 一致）
@@ -31,8 +31,8 @@ STRICT_QUALIFIED = {"context": "production", "validity": "normal"}
 
 # 基础口径（聚合输出默认携带）；具体指标覆盖见 METRIC_POLICIES 与 registry/metrics.yaml
 MEASUREMENT_POLICY = {
-    "policy_id": "AgentMeasure/Measurement-1",
-    "spec_version": "agentmeasure-0.4",
+    "policy_id": "Verovo/Measurement-1",
+    "spec_version": "verovo-0.4",
     "metric_id": "aggregate-base",
     "time_window_days": 30,
     "qualification_policy": dict(STRICT_QUALIFIED),

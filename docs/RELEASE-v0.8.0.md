@@ -2,7 +2,7 @@
 
 CLI release 0.8.0; Provider SDK version remains 0.2.0.
 
-`agentmeasure recount --sample` runs a bundled five-row synthetic export. Three
+`verovo recount --sample` runs a bundled five-row synthetic export. Three
 showcase cases cover findings in both directions, missing evidence and a separate
 buyer contract lane. They are demonstrations, not customer recovery results.
 
@@ -22,9 +22,9 @@ Vendor rule sources remain inspectable; no payment or PMF is established by test
 
 Validation: 511 Healthcheck tests, including 21 new regressions for report evidence
 boundaries, stale input, path confinement and unresolved/offsetting findings.
-Upgrade: `python -m pip install --upgrade agentmeasure`.
+Upgrade: `python -m pip install --upgrade verovo`.
 
-`agentmeasure response-audit FILE.jsonl [FILE.jsonl ...]` adds a read-only Claude
+`verovo response-audit FILE.jsonl [FILE.jsonl ...]` adds a read-only Claude
 cross-file evidence view: response identity reuse, usage conflicts and missing
 fields. It never rewrites logs, selects first/last/max usage or adds cache subsets
 to totals. Session and invoice totals remain unknown. Ten regressions cover

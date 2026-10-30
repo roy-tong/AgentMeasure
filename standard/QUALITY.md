@@ -1,4 +1,4 @@
-# AgentMeasure Quality — Measurement Quality Model（Document revision 0.4.3）
+# Verovo Quality — Measurement Quality Model（Document revision 0.4.3）
 
 > **证据 ≠ 覆盖 ≠ 限定 ≠ 方法。** 一组来源强但只覆盖 2% Agent 的事件不是
 > 市场数据。本文件定义**七维质量模型**、Measurement Use Classes 与

@@ -1,5 +1,5 @@
 {
- "schema": "agentmeasure.evidence/cache-hit-accounting-basis/0.1",
+ "schema": "verovo.evidence/cache-hit-accounting-basis/0.1",
  "fixture_class": "synthetic-offline",
  "origin": "BerriAI/litellm#39057 (external enforcement case by @renezander030)",
  "requests": [

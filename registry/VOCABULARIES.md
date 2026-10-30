@@ -1,4 +1,4 @@
-# AgentMeasure — Vocabulary Registry（由 scripts/gen_vocab.py 生成，勿手改）
+# Verovo — Vocabulary Registry（由 scripts/gen_vocab.py 生成，勿手改）
 
 > 单一事实源：`registry/vocabularies.yaml`（vocab revision 0.4.3-2）。
 > 消费者：`schemas/observation.schema.json`（生成）· `sdk/src/index.ts`（CI 校验）·

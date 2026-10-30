@@ -9,8 +9,8 @@ import unittest
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from agentmeasure_lab import mcp_server
-from agentmeasure_lab.mcp_server import handle_message, serve
+from verovo_lab import mcp_server
+from verovo_lab.mcp_server import handle_message, serve
 from tests._support import LabWorkspace, base_manifest
 
 
@@ -40,7 +40,7 @@ class TestMcpServer(unittest.TestCase):
     def test_initialize_handshake(self):
         resp = handle_message({"jsonrpc": "2.0", "id": 0, "method": "initialize",
                                "params": {"protocolVersion": mcp_server.PROTOCOL_VERSION}})
-        self.assertEqual(resp["result"]["serverInfo"]["name"], "agentmeasure-lab")
+        self.assertEqual(resp["result"]["serverInfo"]["name"], "verovo-lab")
         self.assertIn("tools", resp["result"]["capabilities"])
 
     def test_tools_list(self):
@@ -83,7 +83,7 @@ class TestMcpServer(unittest.TestCase):
     def test_calibration_report_changes_verification_status(self):
         # Write a minimal calibration report into the run dir, then advice must surface it.
         cal = {
-            "schema": "agentmeasure.lab/calibration-report",
+            "schema": "verovo.lab/calibration-report",
             "schema_version": "1.0.0",
             "engine_version": "test",
             "funnel_rules_version": "test",

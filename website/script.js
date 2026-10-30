@@ -1,4 +1,4 @@
-/* AgentMeasure website - interaction layer
+/* Verovo website - interaction layer
    console playback · scroll reveals · nav state · active section */
 
 (function () {

@@ -15,14 +15,14 @@
  *   request → extract clientInfo → CallerClaim → attempt observations
  *
  * Run:   node examples/mcp-integration-v2.js
- * Events: $AGENTMEASURE_EVENTS_DIR/agentmeasure-events.jsonl
+ * Events: $VEROVO_EVENTS_DIR/verovo-events.jsonl
  * Output: 42 calls → 84 canonical observations.
  */
 import { McpServer, InMemoryTransport } from "@modelcontextprotocol/server";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { CallToolResultSchema } from "@modelcontextprotocol/sdk/types.js";
 import { z } from "zod";
-import { agentmeasure } from "../dist/index.js";
+import { verovo } from "../dist/index.js";
 
 const PROJECT = "demo/acme-weather";
 
@@ -35,7 +35,7 @@ function claimFromClientInfo(info) {
   return { type: "unknown", runtime: "unknown", identityStrength: "unknown" };
 }
 
-const mw = agentmeasure({
+const mw = verovo({
   projectId: PROJECT,
   observerPrincipal: "am-sdk@acme",
   trustDomain: "acme",

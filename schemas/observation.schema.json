@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "AgentMeasure Canonical Observation Envelope",
-  "description": "All adapters, Provider SDKs and runtime adapters MUST emit exactly this envelope (standard/DATA.md). Collector ingestion accepts only this format. spec_version: agentmeasure-0.4 (compatibility) · document revision 0.4.3",
+  "title": "Verovo Canonical Observation Envelope",
+  "description": "All adapters, Provider SDKs and runtime adapters MUST emit exactly this envelope (standard/DATA.md). Collector ingestion accepts only this format. spec_version: verovo-0.4 (compatibility) · document revision 0.4.3",
   "type": "object",
   "required": [
     "spec_version",
@@ -18,7 +18,7 @@
     "spec_version": {
       "type": "string",
       "enum": [
-        "agentmeasure-0.4"
+        "verovo-0.4"
       ]
     },
     "observation_id": {

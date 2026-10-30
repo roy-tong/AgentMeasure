@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""AgentMeasure SSE usage conformance runner (SSE-001).
+"""Verovo SSE usage conformance runner (SSE-001).
 
 Pins the Anthropic Messages stream shape from issue #24: prompt-side usage
 (input and cache buckets) arrives on message_start, and the final

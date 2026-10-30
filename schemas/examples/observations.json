@@ -2,7 +2,7 @@
   "note": "Valid canonical observations, one per observation_type. Defaults: usage_context/validity unknown; classification only with evidence.",
   "observations": [
     {
-      "spec_version": "agentmeasure-0.4",
+      "spec_version": "verovo-0.4",
       "observation_id": "obs-1",
       "observation_type": "presentation",
       "observer": {
@@ -30,7 +30,7 @@
       }
     },
     {
-      "spec_version": "agentmeasure-0.4",
+      "spec_version": "verovo-0.4",
       "observation_id": "obs-2",
       "observation_type": "selection",
       "observer": {
@@ -53,7 +53,7 @@
       }
     },
     {
-      "spec_version": "agentmeasure-0.4",
+      "spec_version": "verovo-0.4",
       "observation_id": "obs-3",
       "observation_type": "attempt_started",
       "observer": {
@@ -87,7 +87,7 @@
       }
     },
     {
-      "spec_version": "agentmeasure-0.4",
+      "spec_version": "verovo-0.4",
       "observation_id": "obs-4",
       "observation_type": "attempt_completed",
       "observer": {
@@ -112,7 +112,7 @@
       }
     },
     {
-      "spec_version": "agentmeasure-0.4",
+      "spec_version": "verovo-0.4",
       "observation_id": "obs-5",
       "observation_type": "result_consumed",
       "observer": {
@@ -134,7 +134,7 @@
       }
     },
     {
-      "spec_version": "agentmeasure-0.4",
+      "spec_version": "verovo-0.4",
       "observation_id": "obs-6",
       "observation_type": "task_outcome",
       "observer": {

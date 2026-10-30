@@ -5,7 +5,7 @@ import unittest
 
 from _support import fixture
 
-from am_healthcheck.vendors import (AGREES, BILLABLE_BUT_NOT_BILLED,
+from verovo_healthcheck.vendors import (AGREES, BILLABLE_BUT_NOT_BILLED,
                                     BILLED_BUT_NOT_BILLABLE, CANNOT_SETTLE,
                                     get_vendor, list_vendors, load_export,
                                     recount, recount_report)
@@ -102,7 +102,7 @@ class TestRecount(unittest.TestCase):
         self.assertEqual(r["counts"][CANNOT_SETTLE], 1)
 
     def test_three_state_travels_with_every_verdict(self):
-        # AMS-1 three-state vocabulary: PASS / FAIL / UNPROVABLE rides on every
+        # VSS-1 three-state vocabulary: PASS / FAIL / UNPROVABLE rides on every
         # line and every summary, so a BP reader and a CLI user share one words
         # for the same decision.
         r = self._recount([
@@ -171,7 +171,7 @@ class TestRecountCli(unittest.TestCase):
     """The recount subcommand: parse, list, and produce a report."""
 
     def test_parser_has_recount(self):
-        from am_healthcheck.cli import build_parser
+        from verovo_healthcheck.cli import build_parser
         args = build_parser().parse_args(
             ["recount", "--export", "x.csv", "--vendor", "intercom"])
         self.assertEqual(args.cmd, "recount")
@@ -180,7 +180,7 @@ class TestRecountCli(unittest.TestCase):
     def test_list_vendors_exits_zero(self):
         import contextlib
         import io
-        from am_healthcheck.cli import main
+        from verovo_healthcheck.cli import main
         buf = io.StringIO()
         with contextlib.redirect_stdout(buf):
             rc = main(["recount", "--list-vendors"])
@@ -192,7 +192,7 @@ class TestRecountCli(unittest.TestCase):
     def test_missing_args_is_usage_error(self):
         import contextlib
         import io
-        from am_healthcheck.cli import main
+        from verovo_healthcheck.cli import main
         err = io.StringIO()
         with contextlib.redirect_stderr(err):
             rc = main(["recount", "--vendor", "intercom"])
@@ -201,7 +201,7 @@ class TestRecountCli(unittest.TestCase):
     def test_unknown_vendor_is_usage_error(self):
         import contextlib
         import io
-        from am_healthcheck.cli import main
+        from verovo_healthcheck.cli import main
         err = io.StringIO()
         with contextlib.redirect_stderr(err):
             rc = main(["recount", "--export", fixture("vendor-export-intercom.csv"),
@@ -212,7 +212,7 @@ class TestRecountCli(unittest.TestCase):
         import contextlib
         import io
         import json as _json
-        from am_healthcheck.cli import main
+        from verovo_healthcheck.cli import main
         out = tempfile.NamedTemporaryFile(suffix=".json", delete=False).name
         self.addCleanup(lambda: os.path.exists(out) and os.unlink(out))
         buf = io.StringIO()
@@ -245,7 +245,7 @@ class TestNativeHeaderAliases(unittest.TestCase):
         return path
 
     def test_zendesk_style_headers_map(self):
-        from am_healthcheck.vendors import load_export
+        from verovo_healthcheck.vendors import load_export
         path = self._export([
             "Ticket ID", "Created at", "Solved at",
             "human_agent_participated", "issue_addressed",
@@ -257,7 +257,7 @@ class TestNativeHeaderAliases(unittest.TestCase):
         self.assertEqual(export["columns_missing"], [])
 
     def test_intercom_label_headers_map(self):
-        from am_healthcheck.vendors import load_export
+        from verovo_healthcheck.vendors import load_export
         path = self._export([
             "Conversation ID", "Conversation created at",
             "human_agent_participated", "issue_addressed",
@@ -272,7 +272,7 @@ class TestNativeHeaderAliases(unittest.TestCase):
         "How do I export my tickets from Freshdesk?"). None of those space
         forms were in the alias table, so a native export silently lost both
         timestamps and the recount could not place a single line in time."""
-        from am_healthcheck.vendors import load_export
+        from verovo_healthcheck.vendors import load_export
         path = self._export([
             "Ticket ID", "Created time", "Closed time",
             "human_agent_participated", "issue_addressed",
@@ -287,7 +287,7 @@ class TestNativeHeaderAliases(unittest.TestCase):
         """Freshdesk splits "Resolved time" (status 4) from "Closed time"
         (status 5); either one ends the conversation, so both map to
         closed_at, matching the existing Zendesk "Solved at" alias."""
-        from am_healthcheck.vendors import load_export
+        from verovo_healthcheck.vendors import load_export
         path = self._export([
             "Ticket ID", "Created time", "Resolved time",
             "human_agent_participated", "issue_addressed",

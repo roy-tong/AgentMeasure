@@ -1,8 +1,8 @@
-# AgentMeasure Discussions — Topics & Ground Rules
+# Verovo Discussions — Topics & Ground Rules
 
 > 中文 | [English](#english)
 
-Discussions 是 AgentMeasure 的社区讨论区。它不是一个问答论坛，而是一个**围绕计量语义与证据纪律的公开工作坊**——规格提案、口径争议、基准审计与真实部署案例在这里被公开讨论、被反驳、被修订。
+Discussions 是 Verovo 的社区讨论区。它不是一个问答论坛，而是一个**围绕计量语义与证据纪律的公开工作坊**——规格提案、口径争议、基准审计与真实部署案例在这里被公开讨论、被反驳、被修订。
 
 > **Status:** Discussions 功能待开启。开启后本页的议题分类与守则即刻生效。
 
@@ -66,7 +66,7 @@ Discussions 是 AgentMeasure 的社区讨论区。它不是一个问答论坛，
 
 ## English
 
-AgentMeasure Discussions is a public workshop on measurement semantics and evidence
+Verovo Discussions is a public workshop on measurement semantics and evidence
 discipline — where spec disputes, calibration disputes, benchmark audits, and real
 deployment cases get discussed, rebutted, and revised in the open.
 

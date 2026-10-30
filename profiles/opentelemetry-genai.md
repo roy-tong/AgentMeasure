@@ -1,12 +1,12 @@
-# AgentMeasure Interoperability Profile — OpenTelemetry GenAI
+# Verovo Interoperability Profile — OpenTelemetry GenAI
 
 > Draft 0.4.4 / Draft 0.5 方向。Route B：已有 telemetry → Mapping Profile → Canonical Observation。
-> AgentMeasure 不要求成熟 observability 项目接入 SDK；本 profile 定义如何把 OTel GenAI 语义
-> 映射为 AgentMeasure 的 Attempt / Operation / Consumption 对象。
+> Verovo 不要求成熟 observability 项目接入 SDK；本 profile 定义如何把 OTel GenAI 语义
+> 映射为 Verovo 的 Attempt / Operation / Consumption 对象。
 
 ## 映射表
 
-| OTel GenAI | AgentMeasure | 说明 |
+| OTel GenAI | Verovo | 说明 |
 |---|---|---|
 | `gen_ai.operation.name` | Attempt（执行层） | 一次 model 调用 = 一个 attempt 候选 |
 | `gen_ai.agent.name` | Caller 线索（claimed） | agent 身份声明，非 attestation |
@@ -15,7 +15,7 @@
 | `gen_ai.usage.reasoning.output_tokens` | attempt_usage.subquantity reasoning | **subset，不相加** |
 | `gen_ai.client.token.usage{token_type}` | 仅 input/output 两桶 | reasoning 不作为第三个 token_type（DR-003）|
 | `gen_ai.system` / `gen_ai.provider.name` | provider_side 证据 | 跨侧 correlation 键之一 |
-| span `trace_id` / `span_id` | external_ids（correlation 证据） | 非 AgentMeasure identity |
+| span `trace_id` / `span_id` | external_ids（correlation 证据） | 非 Verovo identity |
 | `gen_ai.completion`（完整响应） | result / effect 证据候选 | 是否被 downstream 消费 → probe vs use |
 
 ## 关键规则

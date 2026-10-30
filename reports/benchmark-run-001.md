@@ -16,7 +16,7 @@
 > 4. **Claim #003 归因错误已修正**：originality.ai 是 secondary source，primary
 >    measurement source 是 Ahrefs（server-log / web-analytics telemetry，不是
 >    independent crawl）——这个错误本身就是本基准存在的理由；
-> 5. AgentMeasure 自身数字移出排名，仅作 Reference Fixture 附录。
+> 5. Verovo 自身数字移出排名，仅作 Reference Fixture 附录。
 
 ---
 
@@ -117,7 +117,7 @@ Infrastructure that *could* carry strong evidence, currently mixing self-reporte
 and observed data without per-badge disclosure — a badge with no disclosed method
 looks stronger than its evidence.
 
-### 6. (Reference fixture — NOT ranked) AgentMeasure Pipeline Validation #001
+### 6. (Reference fixture — NOT ranked) Verovo Pipeline Validation #001
 
 ```text
 Claim            : 42 synthetic calls → 84 canonical observations, 0 rejected, 0 qualified
@@ -134,7 +134,7 @@ Replayability    : yes — ./examples/demo-e2e.sh (isolated workspace, determini
 ```
 
 Listed for transparency only, per `BENCHMARK-DRAFT.md` §3: the benchmark audits
-external claims; AgentMeasure is the reference fixture, not a ranked claimant.
+external claims; Verovo is the reference fixture, not a ranked claimant.
 It proves pipeline integrity, and nothing about real usage, by design.
 
 ---
@@ -153,7 +153,7 @@ It proves pipeline integrity, and nothing about real usage, by design.
    of their source; a badge without method disclosure outruns its evidence.
 4. **Nobody publishes the unit definition.** None of these claims states what counts
    as "a payment", "a merchant", "an AI request", or "an impersonation". This is the
-   definitional gap the AgentMeasure standard exists to close.
+   definitional gap the Verovo standard exists to close.
 5. **Attribution errors are real and this benchmark just caught one.** Claim #003
    changed meaning (surface, population, independence) once the primary measurement
    source was resolved. Secondary-source claims MUST resolve to primary sources.

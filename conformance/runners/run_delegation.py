@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""AgentMeasure Delegation conformance runner (DELEGATION-001..003).
+"""Verovo Delegation conformance runner (DELEGATION-001..003).
 Draft 0.4.5 — runs the nested delegation-family vectors and asserts verdicts.
 
 These checks pin the CORE §9 invariants that CORE 0.4.5 introduced with the

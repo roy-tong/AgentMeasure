@@ -9,12 +9,12 @@
 
 ## What you can do with this release
 
-- Re-check any single finding with `agentmeasure drilldown` — the row, the rule steps in plain language, the verdict, the repro command.
+- Re-check any single finding with `verovo drilldown` — the row, the rule steps in plain language, the verdict, the repro command.
 - Keep three separate value books: recovered cash (`recovery`), hours saved (`delivery`), decisions made differently (`decisions` — new).
-- Send a link, not a PDF: public vendor rule cards (versioned, sourced) and AMS-1 badges (a four-stage evidence ladder — no composite scores).
+- Send a link, not a PDF: public vendor rule cards (versioned, sourced) and VSS-1 badges (a four-stage evidence ladder — no composite scores).
 - Install from PyPI, npm or GitHub; CI smoke-tests the packaged wheel in a fresh environment on every push.
 
-Public release-notes page (kept current with the site): https://roy-tong.github.io/AgentMeasure/releases.html
+Public release-notes page (kept current with the site): https://roy-tong.github.io/verovo/releases.html
 
 Since v0.5.0: the verification system gained its public distribution layer
 and closed the two product gaps BP r32 named. Both package channels are now
@@ -22,7 +22,7 @@ live — this release ships to GitHub, PyPI, and npm in one push.
 
 ## Re-check one finding
 
-`agentmeasure drilldown` replays a single conversation on screen: the row
+`verovo drilldown` replays a single conversation on screen: the row
 exactly as the buyer exported it, every vendor rule step that fired in plain
 language, the verdict with its three-state, the amount at issue, and the
 exact command to reproduce it. The explanation walks the same branches as
@@ -34,7 +34,7 @@ finding" promise, as an artifact.
 ## The third value book
 
 Cash (recovery ledger) and hours (delivery journal) are joined by
-`agentmeasure decisions`: an append-only journal of how the buyer used the
+`verovo decisions`: an append-only journal of how the buyer used the
 verification in a business decision — payment approved or held, discount
 requested, renewal signed, vendor review. Types are enum-validated, entries
 link back to the finding they rest on, outcomes are stated, and amounts are
@@ -48,7 +48,7 @@ three separate books.
   closure timers, source link, registry version. Generated from the same
   registry the CLI and browser recount read, with a CI check so the page
   can never drift.
-- **AMS-1 badges** (website/badges.html) — the four-stage adoption ladder
+- **VSS-1 badges** (website/badges.html) — the four-stage adoption ladder
   as embeddable SVGs with markdown snippets, an adopters snapshot listing
   external conformance authors with links, and an explicit statement of
   what we refuse: no composite score, no A–F grade.

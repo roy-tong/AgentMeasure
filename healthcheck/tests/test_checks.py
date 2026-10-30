@@ -4,14 +4,14 @@ from collections import defaultdict
 
 from _support import fixture
 
-from am_healthcheck.checks import (build_overview, check_duplicate_records,
+from verovo_healthcheck.checks import (build_overview, check_duplicate_records,
                                    check_retry_amplification, check_tool_error_runs,
                                    check_operation_resolution_coverage,
                                    check_cache_accounting_cross_check,
                                    check_token_accounting_stability,
                                    run_checks, retry_chains_for_session)
-from am_healthcheck.codex import parse_session
-from am_healthcheck.model import (CallRecord, ExecRecord, SessionRecord,
+from verovo_healthcheck.codex import parse_session
+from verovo_healthcheck.model import (CallRecord, ExecRecord, SessionRecord,
                                   TokenSnapshot)
 
 

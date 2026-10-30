@@ -1,4 +1,4 @@
-# AgentMeasure Roadmap
+# Verovo Roadmap
 
 ## Current commercial direction — 2026-10-21
 
@@ -32,8 +32,8 @@ A useful result with no difference is valid. Lack of qualified buyer conversatio
 does not isolate price as the reason for a failed experiment.
 
 [Task scope](docs/product-scope.md) · [Commercial boundaries](docs/commercial-narrative.md) ·
-[Existing developer services](https://roy-tong.github.io/AgentMeasure/services.html) ·
-[Latest releases](https://github.com/roy-tong/AgentMeasure/releases)
+[Existing developer services](https://roy-tong.github.io/verovo/services.html) ·
+[Latest releases](https://github.com/roy-tong/verovo/releases)
 
 <details>
 <summary>Historical roadmap — August/September 2026; not current commitments</summary>
@@ -61,7 +61,7 @@ does not isolate price as the reason for a failed experiment.
 | **Next** | Draft 0.5 — Utility & Economic Semantics（Result/Effect 双元 Utility、Interaction Classes 指标化） | 按 gate 分支：Audit 产品化（CLI+真实 adapter）或 conformance toolkit 为 wedge（与 Lab 开源发布 M2 合流）；Provider SDK + Hosted Analytics |
 | **Then** | Draft 0.6 — External Validation（5-10 外部项目、第一份《Measurement Discrepancy Report》） | Runtime 集成 + Optimize（跨 runtime 信号、效果确认） |
 | **Later** | Commercial Measurement Profile（COMMERCIAL 转正：Billable Event/Unit/Metering Policy） | Metering（计费事实输出，对接外部支付 rails） |
-| **Long term** | **AgentMeasure Core 1.0 独立毕业**（2 独立实现 + 3 profiles + conformance + 5-10 项目 + 双 review；**不依赖任何商业化**）＋ Commercial Measurement Profile 0.x 独立毕业 | Intelligence / Ecosystem（跨能力比较信号、生态数据面） |
+| **Long term** | **Verovo Core 1.0 独立毕业**（2 独立实现 + 3 profiles + conformance + 5-10 项目 + 双 review；**不依赖任何商业化**）＋ Commercial Measurement Profile 0.x 独立毕业 | Intelligence / Ecosystem（跨能力比较信号、生态数据面） |
 
 ## 三种资产（从第一天分开）
 
@@ -84,8 +84,8 @@ does not isolate price as the reason for a failed experiment.
 2. 假设 B 入口已修复：官网 Trial 双路径（mailto 主＋issue 次）＋暖池直达；concierge #1（fallback：langfuse demo 公开 artifact）已完成并公开
 3. 验证目标（预注册判据，PRD v0.5 §8.2）：真实 production telemetry ≥2＋强反应（"再测一组"/"怎么接进 CI"级）≥2 人（假设 B）；外部 PR/mapping ≥2＋主动 fixture ≥2（假设 A）
 
-**Substrate — AgentMeasure Lab（开源实验引擎，[lab/](lab/README.md)）**：
-1. v0.4 已落地：预注册锁定 + 规模/功效/预算预估、均衡分配、种子确定性、预算熔断、漏斗采集、诚实统计（效应量+CI+guardrail+null+下轮加样指引）、假增长决策出口拦截（`unverified_growth`）、支配关系标注、双语决策人一页版、价值公式、离线报告、CLI 错误友好化；**真实 Harness 适配器**（claude-code 完整 / codex 实验性：候选集注入=本地 MCP 工具服务器 + headless CLI + transcript 解析；脚本化 transcript 集成测试全绿）；校准分析（生产复测/分条件迁移/not_comparable/再加权）；Connector 数据面（授权三档/撤回/签名导出）；只读 MCP 接口；`am lab history` 本地假设库；local-analytics 基线漏斗（BASE0-002）；74 tests + selftest；**codex 适配器 live-validated（v0.2.1）**
+**Substrate — Verovo Lab（开源实验引擎，[lab/](lab/README.md)）**：
+1. v0.4 已落地：预注册锁定 + 规模/功效/预算预估、均衡分配、种子确定性、预算熔断、漏斗采集、诚实统计（效应量+CI+guardrail+null+下轮加样指引）、假增长决策出口拦截（`unverified_growth`）、支配关系标注、双语决策人一页版、价值公式、离线报告、CLI 错误友好化；**真实 Harness 适配器**（claude-code 完整 / codex 实验性：候选集注入=本地 MCP 工具服务器 + headless CLI + transcript 解析；脚本化 transcript 集成测试全绿）；校准分析（生产复测/分条件迁移/not_comparable/再加权）；Connector 数据面（授权三档/撤回/签名导出）；只读 MCP 接口；`verovo lab history` 本地假设库；local-analytics 基线漏斗（BASE0-002）；74 tests + selftest；**codex 适配器 live-validated（v0.2.1）**
 2. 待办：claude-code live 轮（gate 后）→ 开源发布 M2 → 外部自助实验 ≥10 例（开源采用 Gate）；真实生产事件接入（前置 G0 数据权）；hosted 历史/持续监控（商业层，Next）
 3. **发布纪律（新增）**：live run 后、tag 前，把四件套导出到 `bundles/<experiment-id>/`（见 lab/README.md 清单）；release.yml 自动把 bundles 挂为 release asset
 

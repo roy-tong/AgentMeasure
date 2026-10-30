@@ -1,7 +1,7 @@
 # v0.7.1 — Fix installed conformance and first-run friction
 
 A clean PyPI install of 0.7.0 could run Healthcheck but failed on conformance
-with `No module named am_healthcheck.lab.analysis`. This patch includes that
+with `No module named verovo_healthcheck.lab.analysis`. This patch includes that
 subpackage in the wheel and exercises it in the installed-artifact smoke test.
 
 - `conformance --new-vector` defaults to the caller's working directory, not the Python installation.
@@ -13,9 +13,9 @@ subpackage in the wheel and exercises it in the installed-artifact smoke test.
 ## Upgrade
 
 ```bash
-python -m pip install --upgrade agentmeasure
-agentmeasure conformance --new-vector my-sample --out ./vectors
-agentmeasure conformance --fixture ./vectors/my-sample-001/agentmeasure_my_sample_fixture_001.events.jsonl
+python -m pip install --upgrade verovo
+verovo conformance --new-vector my-sample --out ./vectors
+verovo conformance --fixture ./vectors/my-sample-001/verovo_my_sample_fixture_001.events.jsonl
 ```
 
 The generated fixture is synthetic: 4 PASS, 1 UNPROVABLE for zero-cost preservation;

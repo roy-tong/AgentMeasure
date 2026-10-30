@@ -1,7 +1,7 @@
 {
-  "spec_version": "agentmeasure-0.4",
+  "spec_version": "verovo-0.4",
   "family": "SSE Stream Usage",
-  "description": "Anthropic Messages streaming places prompt-side usage on message_start and the cumulative output count on the final message_delta. A gateway that reads only message_delta drops the input bucket. Transcripts are synthetic and minimal; they are not captured customer traffic. Pins roy-tong/AgentMeasure#24 (precedent: atopos31/llmio#71, modelbus/one-api-pro#13).",
+  "description": "Anthropic Messages streaming places prompt-side usage on message_start and the cumulative output count on the final message_delta. A gateway that reads only message_delta drops the input bucket. Transcripts are synthetic and minimal; they are not captured customer traffic. Pins roy-tong/Verovo#24 (precedent: atopos31/llmio#71, modelbus/one-api-pro#13).",
   "claim_boundary": "synthetic fixture, not a production observation and not an endorsement of any gateway",
   "vectors": [
     {

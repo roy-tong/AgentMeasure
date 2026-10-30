@@ -1,4 +1,4 @@
-# AgentMeasure MVP — Provider-observed Capability Usage（Draft 0.4.2）
+# Verovo MVP — Provider-observed Capability Usage（Draft 0.4.2）
 
 ## 一句话
 
@@ -10,7 +10,7 @@
 ## 范围
 
 ```text
-@agentmeasure/mcp
+@verovo/mcp
         ↓
 provider observations（observe first, qualify later）
         ↓
@@ -82,15 +82,15 @@ Alpha 期间记录 `Measurement insight → action`：
 发现某 runtime failure 高 → 修兼容性
 ```
 
-> 验证目标：**AgentMeasure 是分析工具，不只是日志面板。**
+> 验证目标：**Verovo 是分析工具，不只是日志面板。**
 
 ## 非目标（明确不做）
 
 - ❌ Observed Selection Rate / Share of Choice（无信号）
 - ❌ Consumption 链（无 agent 侧）
-- ❌ Metering / 账单（COMMERCIAL 是语义；支付是别人的 rails）——2026-10-30 更新：此非目标仅约束本 Provider 侧 MVP；买方侧按 A（合约事件核验）/ B（账户账期核验）分别做真实数据验证，统一账本不是当前的平台化授权，Provider 侧也不作为并重商业核心。方向见项目工作区《AgentMeasure-产品定位与双POC商业取舍-v1.1-20261030.md》
+- ❌ Metering / 账单（COMMERCIAL 是语义；支付是别人的 rails）——2026-10-30 更新：此非目标仅约束本 Provider 侧 MVP；买方侧按 A（合约事件核验）/ B（账户账期核验）分别做真实数据验证，统一账本不是当前的平台化授权，Provider 侧也不作为并重商业核心。方向见项目工作区《Verovo-产品定位与双POC商业取舍-v1.1-20261030.md》
 - ❌ 跨 Provider 排名（coverage_basis 限制）
-- ❌ 冒充"AgentMeasure 官方 SDK"——未实现前全部标注 in development
+- ❌ 冒充"Verovo 官方 SDK"——未实现前全部标注 in development
 
 ## 里程碑
 

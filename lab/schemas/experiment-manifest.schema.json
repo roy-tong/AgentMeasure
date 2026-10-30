@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "agentmeasure.lab/experiment-manifest@1.0.0",
-  "title": "AgentMeasure Lab — Experiment Manifest (preregistration)",
+  "$id": "verovo.lab/experiment-manifest@1.0.0",
+  "title": "Verovo Lab — Experiment Manifest (preregistration)",
   "description": "FMT-001. Machine-readable, preregistered experiment definition: factors x variants x harness matrix, primary metric, guardrails, analysis plan, budget, seed. Locked by hash before the run; a third party can implement a runner against this schema and produce mutually recognizable results.",
   "type": "object",
   "additionalProperties": false,
@@ -22,7 +22,7 @@
     "seed"
   ],
   "properties": {
-    "schema": { "const": "agentmeasure.lab/experiment-manifest" },
+    "schema": { "const": "verovo.lab/experiment-manifest" },
     "schema_version": { "const": "1.0.0" },
     "experiment_id": { "type": "string", "minLength": 3, "pattern": "^[a-z0-9][a-z0-9-]*$" },
     "hypothesis": { "type": "string", "minLength": 10 },

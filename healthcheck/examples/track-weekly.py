@@ -2,8 +2,8 @@
 """External integration example: trend table over saved snapshots.
 
 This script is what a third-party integration looks like: it consumes the
-versioned snapshot documents (`agentmeasure check --save-snapshot`) through
-their public schema only — it does NOT import am_healthcheck internals, so it
+versioned snapshot documents (`verovo check --save-snapshot`) through
+their public schema only — it does NOT import verovo_healthcheck internals, so it
 keeps working as long as the snapshot schema stays on v1.
 
 Usage:
@@ -27,8 +27,8 @@ def load_snapshot(path):
     with open(path, "r", encoding="utf-8") as fh:
         data = json.load(fh)
     # A real consumer must refuse schema versions it does not speak.
-    if data.get("tool") != "agentmeasure-healthcheck":
-        raise ValueError("%s is not an AgentMeasure snapshot" % path)
+    if data.get("tool") != "verovo-healthcheck":
+        raise ValueError("%s is not an Verovo snapshot" % path)
     if data.get("schema") != SUPPORTED_SCHEMA:
         raise ValueError("%s uses snapshot schema %r; this reader speaks %s — "
                          "update the reader before reading newer files"

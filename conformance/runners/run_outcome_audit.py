@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""AgentMeasure Outcome Audit conformance runner (OUT-001..004).
+"""Verovo Outcome Audit conformance runner (OUT-001..004).
 Draft 0.4.4 — runs the nested OUT family vectors and asserts expected verdicts.
 
 Usage: python3 conformance/runners/run_outcome_audit.py

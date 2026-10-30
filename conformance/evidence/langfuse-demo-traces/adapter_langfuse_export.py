@@ -29,7 +29,7 @@ import json
 from datetime import datetime
 from pathlib import Path
 
-SPEC = "agentmeasure-0.4"
+SPEC = "verovo-0.4"
 
 
 def _outcome(o: dict) -> str:

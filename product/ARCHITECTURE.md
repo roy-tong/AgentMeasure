@@ -1,4 +1,4 @@
-# AgentMeasure Product Architecture（Draft 0.4.1）
+# Verovo Product Architecture（Draft 0.4.1）
 
 ## 1. 四层架构（Provider 侧）
 
@@ -26,7 +26,7 @@ Collector（本地，与 provider 侧同构）
 | --- | --- |
 | **主业务 fail-open** | SDK 异常、缓冲满、网络断——绝不阻塞或拖慢被度量的 capability 请求 |
 | **测量 fail-closed** | 观察不完整/冲突时，宁可不计数也不猜测（Core fail-closed） |
-| **异步 batching** | 观察异步批量上报，不在请求关键路径上（不变量：AgentMeasure 不在关键路径） |
+| **异步 batching** | 观察异步批量上报，不在请求关键路径上（不变量：Verovo 不在关键路径） |
 | **durable best-effort buffering** | 磁盘缓冲 + 重试；缓冲满丢最旧并**显式记账**（dropped_observation_count）；不承诺"断网不丢" |
 | **source_sequence** | 每个观察源携带单调递增序号；云端据此检出缺口（丢 1004-1006 立即可见） |
 | **重试 / 背压** | 指数退避重试；服务端 429/5xx → 背压到本地缓冲 |
@@ -37,12 +37,12 @@ Collector（本地，与 provider 侧同构）
 ## 3. 组件
 
 ```text
-agentmeasure-sdk            Provider 侧观测库（语言绑定：Python 先行）
-agentmeasure-buffer         ​​本地缓冲（磁盘队列，崩溃恢复）
-agentmeasure-collector      归一 / 关联 / 聚合（复用 reference/collector）
-agentmeasure-ingest         ​​托管接收（OTLP 或原生 JSONL，带鉴权与配额）
-agentmeasure-store          聚合存储（指标 + 原始观察的保留策略）
-agentmeasure-dashboard      指标面板（MVP 字段见 HOSTED-ANALYTICS.md）
+verovo-sdk            Provider 侧观测库（语言绑定：Python 先行）
+verovo-buffer         ​​本地缓冲（磁盘队列，崩溃恢复）
+verovo-collector      归一 / 关联 / 聚合（复用 reference/collector）
+verovo-ingest         ​​托管接收（OTLP 或原生 JSONL，带鉴权与配额）
+verovo-store          聚合存储（指标 + 原始观察的保留策略）
+verovo-dashboard      指标面板（MVP 字段见 HOSTED-ANALYTICS.md）
 ```
 
 ## 4. 数据流（一次调用）

@@ -27,7 +27,7 @@ immutable, and the analysis is of the fetched bytes.
 - Evidence Case Taxonomy: **External Fixture**. Third-party public artifact,
   reproducible by anyone via the commands above.
 - NOT a Production Case. NOT Langfuse endorsing, adopting, or reproducing
-  AgentMeasure. NOT a statement about any Langfuse product beyond the
+  Verovo. NOT a statement about any Langfuse product beyond the
   contents of these three files.
 - All numbers (12 attempts, 0% grouping evidence, 0/26 usage, 4 patterns)
   describe these three traces only. No extrapolation to Langfuse demo data

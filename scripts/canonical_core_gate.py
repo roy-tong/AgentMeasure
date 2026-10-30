@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""AgentMeasure core semantics gate（0.4.3，全部经 canonical ingestion）。
+"""Verovo core semantics gate（0.4.3，全部经 canonical ingestion）。
 
 取代旧的 store_observation + lifecycle_stage 直构测试：本门禁只通过
 Collector 唯一 canonical 输入（ingest_canonical_jsonl）喂数据，任何测试
@@ -42,7 +42,7 @@ def envelope(otype: str, payload: dict, principal: str, side: str, ts: str,
              tool: str = "foo.search", provenance: str = "wrapper",
              ctx_source: str = "none", val_source: str = "none") -> dict:
     return {
-        "spec_version": "agentmeasure-0.4",
+        "spec_version": "verovo-0.4",
         "observation_id": str(uuid.uuid4()),
         "observation_type": otype,
         "observer": {"principal": principal, "trust_domain": "t", "side": side},

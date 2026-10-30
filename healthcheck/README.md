@@ -1,4 +1,4 @@
-# AgentMeasure Healthcheck
+# Verovo Healthcheck
 
 **A local check-up report for your coding agent runs.**
 Point it at the logs your agent runtime already writes. It answers three
@@ -10,20 +10,24 @@ Same honesty rules as the [conformance pack](../conformance/pack/README.md):
 every verdict is `OK / FINDING / UNPROVABLE`, and UNPROVABLE is a first-class
 result — when the logs cannot decide, that is disclosed, never zeroed.
 
-> Status verified 2026-10-15: CLI **v0.8.0** is available on PyPI and GitHub; the separately versioned Provider SDK is **v0.2.0** on npm. 511 Healthcheck tests passed locally. See [release notes](https://roy-tong.github.io/AgentMeasure/releases.html).
+> Status 2026-10-30: CLI **v0.9.0** is tagged on GitHub; the PyPI project `verovo`
+> is not published yet, so `pip install verovo` fails until the first upload (the
+> previous `agentmeasure` project stays at 0.8.0). Use the pinned Git install below
+> in the meantime. Provider SDK is **v0.3.0** (`@verovo/mcp`). 511 Healthcheck tests
+> passed locally. See [release notes](https://roy-tong.github.io/verovo/releases.html).
 
 ## Install
 
 ```bash
-# Current verified release from PyPI (v0.8.0, verified 2026-10-15).
-pip install agentmeasure            # or: pipx install agentmeasure
-agentmeasure demo
+# Pinned Git install of 0.9.0 (works today; the PyPI project `verovo` is not published yet).
+pipx install "git+https://github.com/roy-tong/verovo@v0.9.0#subdirectory=healthcheck"
+verovo demo
 
-# Pinned Git install as fallback.
-pipx install "git+https://github.com/roy-tong/AgentMeasure@v0.8.0#subdirectory=healthcheck"
+# Once `verovo` is on PyPI this is the normal path.
+pip install verovo            # or: pipx install verovo
 
 # Or run from a repository checkout (use a release tag for reproducibility).
-python3 healthcheck/agentmeasure demo
+python3 healthcheck/verovo demo
 ```
 
 Historical note: the 0.4.0 wheel (2026-09) had a known first-command crash.
@@ -37,28 +41,28 @@ The 0.7.0 wheel's conformance command is broken because a bundled dependency was
 omitted. **Upgrade to 0.7.2 or later** for `conformance`; Healthcheck itself was unaffected.
 [Installed conformance quickstart](../conformance/pack/README.md#first-run-from-an-installed-cli).
 
-[Installation and error recovery](https://roy-tong.github.io/AgentMeasure/#install-help)
+[Installation and error recovery](https://roy-tong.github.io/verovo/#install-help)
 includes Windows and virtual environments. The report path is printed after a
 successful check. Keep full JSON/HTML local; only share an inspected summary.
 
 ## Quick start
 
 ```bash
-agentmeasure demo      # synthetic session — see it work, no data needed
-agentmeasure check     # your agent logs, last 7 days (Codex or Claude Code)
-agentmeasure check --all           # every local session
-agentmeasure check --runtime claude   # force the Claude Code adapter
-agentmeasure check --dir ~/.codex/sessions/2026/09/05
-agentmeasure selftest  # adapters + checks on bundled fixtures
-agentmeasure validate export.json  # check an export against its schema
-agentmeasure share run.json        # PREVIEW the sanitized summary (writes nothing)
-agentmeasure share run.json --out summary.md   # export after review
-agentmeasure --version
+verovo demo      # synthetic session — see it work, no data needed
+verovo check     # your agent logs, last 7 days (Codex or Claude Code)
+verovo check --all           # every local session
+verovo check --runtime claude   # force the Claude Code adapter
+verovo check --dir ~/.codex/sessions/2026/09/05
+verovo selftest  # adapters + checks on bundled fixtures
+verovo validate export.json  # check an export against its schema
+verovo share run.json        # PREVIEW the sanitized summary (writes nothing)
+verovo share run.json --out summary.md   # export after review
+verovo --version
 ```
 
-(Without installing, prefix the commands with `python3 healthcheck/agentmeasure`.)
+(Without installing, prefix the commands with `python3 healthcheck/verovo`.)
 
-Options for `check` / `demo`: `--html PATH` (default `agentmeasure-report.html`),
+Options for `check` / `demo`: `--html PATH` (default `verovo-report.html`),
 `--json PATH` (full machine-readable export), `--share PATH` (sanitized summary,
 `.md` or `.json`), `--days N`, `--save-snapshot [PATH]`, `--no-history`.
 `demo` accepts the same output paths and `--no-history`.
@@ -83,31 +87,31 @@ Agents, …). Rules live in the [vendor-rules registry](../registry/vendor-rules
 one pipeline:
 
 ```bash
-agentmeasure prepare --export native-export.csv --vendor zendesk --inspect
-agentmeasure prepare --export native-export.csv --vendor zendesk --out prepared.csv
+verovo prepare --export native-export.csv --vendor zendesk --inspect
+verovo prepare --export native-export.csv --vendor zendesk --out prepared.csv
 #   native Intercom/Zendesk export -> canonical skeleton. Judgement columns
 #   stay EMPTY for human review; native signal columns travel as hint_*
 #   cells; prov_* cells record where every value came from. No verdicts.
 
-agentmeasure recount --export prepared.csv --vendor zendesk --inspect
-agentmeasure recount --export prepared.csv --vendor zendesk --json recount.json
-agentmeasure recount --export prepared.csv --vendor zendesk --contract contract.json
+verovo recount --export prepared.csv --vendor zendesk --inspect
+verovo recount --export prepared.csv --vendor zendesk --json recount.json
+verovo recount --export prepared.csv --vendor zendesk --contract contract.json
 #   Tier 1: the vendor's own published rules, line by line. Findings in BOTH
 #   directions; absent evidence is UNPROVABLE, never guessed. --contract adds
 #   the buyer's outcome standard (e.g. reopen_window_hours: 72) as a separate
 #   outcome lane — renewal leverage, never netted into the claim.
 
-agentmeasure dispute --export prepared.csv --vendor zendesk --contract contract.json
+verovo dispute --export prepared.csv --vendor zendesk --contract contract.json
 #   the negotiable pack: cover letter citing the vendor's own rule per
-#   finding + appendix + (optionally) Tier 2 under the AMS-1 standard.
+#   finding + appendix + (optionally) Tier 2 under the VSS-1 standard.
 
-agentmeasure recovery --pack pack/dispute-pack.json --confirmations confirmations.csv
+verovo recovery --pack pack/dispute-pack.json --confirmations confirmations.csv
 #   what the vendor actually conceded: credited/paid per disputed line, with
 #   confirmation dates and evidence refs. Realized value is counted
 #   separately from the claim — an argument won is not cash.
 ```
 
-`agentmeasure recount --list-vendors` shows the registry with each rule's
+`verovo recount --list-vendors` shows the registry with each rule's
 source and confidence (P = primary/official, S = secondary, U = unverified).
 The browser-local recount at [the website](../website/) runs the same Tier 1
 with no upload; a cross-language parity test keeps the two from drifting.
@@ -122,39 +126,39 @@ using them as client evidence.
 ### The whole story in one artifact
 
 ```bash
-agentmeasure crosscheck --export prepared.csv --vendor zendesk --ledger billing.csv
+verovo crosscheck --export prepared.csv --vendor zendesk --ledger billing.csv
 #   your billing ledger (计费流水) against the export: charges the export
 #   doesn't flag, billed flags the ledger doesn't confirm, amounts off the
 #   published price. Disagreements are named, never resolved.
 
-agentmeasure verify --export prepared.csv --vendor zendesk --contract contract.json \
+verovo verify --export prepared.csv --vendor zendesk --contract contract.json \
     --ledger billing.csv --confirmations confirmations.csv --out vledger
 #   the Verified Ledger: Tier 1 + outcome lane + ledger cross-check +
 #   realized recovery in ONE document (json + md), each lane labelled
 #   claim / leverage / realized and never summed across.
 
-agentmeasure dashboard --pack vledger/verified-ledger.json --out dashboard.html
+verovo dashboard --pack vledger/verified-ledger.json --out dashboard.html
 #   offline single-file HTML: cards, tables, recovery bar. No JS, no
 #   network, printable — renders, never recomputes.
 
-agentmeasure rules-diff last-month-registry.json
+verovo rules-diff last-month-registry.json
 #   the monthly ritual: diff last period's rules snapshot against the
 #   packaged registry. Exit 1 = a material change (trigger, price, reopen
 #   rule) — re-verify the period under the new rule and disclose it.
 
-agentmeasure narrative --pack pack/dispute-pack.json --audience vendor \
+verovo narrative --pack pack/dispute-pack.json --audience vendor \
     --emit-prompt prompt.txt
 #   step 1 of two: the drafting prompt, built from the pack. Run YOUR OWN
 #   model on it, then:
-agentmeasure narrative --pack pack/dispute-pack.json --check-draft draft.txt --out letter.md
+verovo narrative --pack pack/dispute-pack.json --check-draft draft.txt --out letter.md
 #   step 2: every number in the draft is checked against the pack; any
 #   invented or rounded number refuses the draft and the rule-based
 #   template ships. The model never touches the numbers. No model? The
 #   template is the default.
 
-agentmeasure delivery --log delivery.jsonl --log-event \
+verovo delivery --log delivery.jsonl --log-event \
     --engagement ACME --vendor zendesk --period-index 1 --phase mapping --minutes 45
-agentmeasure delivery --log delivery.jsonl
+verovo delivery --log delivery.jsonl
 #   appendix-E metrics from logged phases: first look ≤10h, third period
 #   ≤1h, repeat-period reuse ≥70%. Use the mapping fingerprint `prepare`
 #   prints to track which engagements share the reusable mapping.
@@ -164,16 +168,16 @@ Outcome pricing beyond per-resolution support (qualified lead, completed
 case) is defined — schema first, per the BP — at
 [schemas/outcome-unit.schema.json](../schemas/outcome-unit.schema.json) with
 worked examples. The outcome **engine** now ships too:
-`agentmeasure outcomes --units units.jsonl` verifies them fail-closed, and the
+`verovo outcomes --units units.jsonl` verifies them fail-closed, and the
 schema covers action and usage-aggregate units — an engineering extension beyond the current support-billing sales scope.
 
 ```bash
-agentmeasure crm-join --export prepared.csv --crm crm.csv --out joined.csv
-agentmeasure outcomes --units outcome-units.jsonl --json outcome-ledger.json
-agentmeasure period-compare last-month/verified-ledger.json vledger/verified-ledger.json
-agentmeasure template --export --vendor intercom --fingerprint <fp> --contract contract.json
-agentmeasure certify --pack vledger/verified-ledger.json --digest-out digest.txt
-agentmeasure incrementality --events treatment-holdout.csv
+verovo crm-join --export prepared.csv --crm crm.csv --out joined.csv
+verovo outcomes --units outcome-units.jsonl --json outcome-ledger.json
+verovo period-compare last-month/verified-ledger.json vledger/verified-ledger.json
+verovo template --export --vendor intercom --fingerprint <fp> --contract contract.json
+verovo certify --pack vledger/verified-ledger.json --digest-out digest.txt
+verovo incrementality --events treatment-holdout.csv
 ```
 
 ### Agent commerce: existing engineering reference
@@ -185,7 +189,7 @@ Traditional attribution starts at the click; agent commerce has none. The
 merchant-side measurement receipt (F2.1-F2.9):
 
 ```bash
-agentmeasure commerce-ledger \
+verovo commerce-ledger \
     --events agent-events.jsonl --orders merchant-orders.csv \
     --payments merchant-payments.csv --policy-version 1.0.0
 #   metric + value + evidence table; retries reconcile to 1 Operation /
@@ -199,12 +203,12 @@ blend); metric names carry their strength prefix and are linted against the
 evidence that backs them; every input is sha256-anchored. The operating layer on top:
 
 ```bash
-agentmeasure pnl-trees --orders orders.csv --campaigns campaigns.csv   # Organic / Paid, ROAS in Paid only
-agentmeasure cm-ledger --orders orders.csv --costs costs.csv --period 2026-09
-agentmeasure demand-audit --measurements m.csv --thresholds t.json     # Launch / Watch / Not ready
-agentmeasure intent-taxonomy --file clusters.json                      # Operating Cell health
-agentmeasure decision-audit --policy policy.json --executions log.jsonl
-agentmeasure benchmark-export --rows brand-rows.csv --min-brands 5     # aggregates only, ever
+verovo pnl-trees --orders orders.csv --campaigns campaigns.csv   # Organic / Paid, ROAS in Paid only
+verovo cm-ledger --orders orders.csv --costs costs.csv --period 2026-09
+verovo demand-audit --measurements m.csv --thresholds t.json     # Launch / Watch / Not ready
+verovo intent-taxonomy --file clusters.json                      # Operating Cell health
+verovo decision-audit --policy policy.json --executions log.jsonl
+verovo benchmark-export --rows brand-rows.csv --min-brands 5     # aggregates only, ever
 ```
 
  Schema:
@@ -212,7 +216,7 @@ agentmeasure benchmark-export --rows brand-rows.csv --min-brands 5     # aggrega
 canonical retry vector pinned in CI at
 `conformance/vectors/commerce-retry-baseline/`.
 
-`certify` grades the artifact on the AMS-1 adoption ladder (Stage 0..3) and
+`certify` grades the artifact on the VSS-1 adoption ladder (Stage 0..3) and
 emits the deterministic digest; hand the digest to your own signing tool —
 this package never runs one. `incrementality` produces statistics about a
 difference, never a verdict: the BP's line between rule judgement and causal
@@ -223,9 +227,9 @@ inference stays visible in the output itself.
 The recommended flow never writes a shareable file until you have read it:
 
 ```bash
-agentmeasure check --json run.json          # the report export embeds the summary
-agentmeasure share run.json                 # terminal PREVIEW — nothing is written
-agentmeasure share run.json --out summary.md  # export only after you reviewed it
+verovo check --json run.json          # the report export embeds the summary
+verovo share run.json                 # terminal PREVIEW — nothing is written
+verovo share run.json --out summary.md  # export only after you reviewed it
 ```
 
 `share` re-checks the summary against its whitelist before showing or writing
@@ -238,12 +242,12 @@ The re-run preview: save a snapshot, change something (a prompt, a Skill, a
 dependency), run the agent again, compare.
 
 ```bash
-python3 healthcheck/agentmeasure check --save-snapshot before.json
+python3 healthcheck/verovo check --save-snapshot before.json
 # …make your change and run the agent…
-python3 healthcheck/agentmeasure check --save-snapshot after.json
-python3 healthcheck/agentmeasure compare before.json after.json
+python3 healthcheck/verovo check --save-snapshot after.json
+python3 healthcheck/verovo compare before.json after.json
 # or skip the second snapshot: compare runs a fresh check as side B
-python3 healthcheck/agentmeasure compare --all before.json
+python3 healthcheck/verovo compare --all before.json
 ```
 
 `compare` prints metric deltas (failed executions, retry chains, …), check
@@ -266,7 +270,7 @@ Everything a third party needs is a JSON document with a version on it:
 Reference schemas live in [`schemas/`](schemas/). Compatibility policy:
 **within a schema version, fields are only added — never renamed, retyped, or
 removed**; a consumer that meets an unknown newer version must stop and say so.
-`agentmeasure validate FILE…` checks any export against its schema, and
+`verovo validate FILE…` checks any export against its schema, and
 [`examples/track-weekly.py`](examples/track-weekly.py) is a complete external
 consumer: it reads snapshots through the schema only, imports nothing from the
 package, and refuses future schema versions. MCP-style servers can wrap the
@@ -320,7 +324,7 @@ codes — and a concrete next step.
 | comparison delta | `B − A` per metric; tokens are differenced only when provable on both sides, and version/window/mode mismatches are disclosed as caveats |
 | demo run | executed on the bundled synthetic session; counted separately (`synthetic-demo`) |
 | own-data run | executed on real local logs (`own-data`) |
-| run number | local run history at `~/.agentmeasure/history.jsonl` distinguishes first vs repeated runs; delete the file to reset |
+| run number | local run history at `~/.verovo/history.jsonl` distinguishes first vs repeated runs; delete the file to reset |
 
 ## Privacy
 
@@ -335,7 +339,7 @@ codes — and a concrete next step.
   is built from a fixed whitelist of aggregate counts: no prompts, paths,
   commands, repo names, or session ids can appear in it, and a planted-string
   test enforces this.
-- **Run history** (`~/.agentmeasure/history.jsonl`) stays on the machine and is
+- **Run history** (`~/.verovo/history.jsonl`) stays on the machine and is
   deletable.
 
 ## Verified runtime support
@@ -361,7 +365,7 @@ New cli versions are handled defensively: unknown event types are accounted
 
 ```bash
 python3 -m unittest discover -s healthcheck/tests   # 511 tests verified 2026-10-15
-python3 healthcheck/agentmeasure selftest           # fixtures + redaction + compare + schemas
+python3 healthcheck/verovo selftest           # fixtures + redaction + compare + schemas
 bash healthcheck/scripts/smoke_install.sh           # clean-venv install smoke (packaged artifact)
 ```
 
@@ -375,19 +379,19 @@ asks you to register, connect to a network, or pay — that is a bug.
 
 ## Feedback
 
-- [Open an issue](https://github.com/roy-tong/AgentMeasure/issues) — include
+- [Open an issue](https://github.com/roy-tong/verovo/issues) — include
   the `--json` export (it contains local paths; strip them first if the log
   location is sensitive).
-- [Email](mailto:tongroy18@gmail.com?subject=AgentMeasure%20Healthcheck%20feedback)
+- [Email](mailto:tongroy18@gmail.com?subject=Verovo%20Healthcheck%20feedback)
 
 ## Identify an input before checking it
 
 ```bash
-agentmeasure inspect-input sample.jsonl --json input-routing.json
+verovo inspect-input sample.jsonl --json input-routing.json
 ```
 
 This reads every nonempty JSONL row and identifies canonical provider observations, FMT-002, or Codex rollout shapes. Mixed, invalid and unknown inputs exit 2 with next steps. Exit 0 means a format was recognized, **not** that the schema or measurement passed. The report includes no source rows. Canonical observations use the repository validator and provider onboarding path; do not invent fields to force them into FMT-002.
 
 ## Compare Claude response snapshots (0.8.0)
 
-`agentmeasure response-audit session.jsonl fork.jsonl --json responses.json` compares explicit inputs without rewriting logs or claiming invoice totals. See [scope and next steps](../docs/response-audit.md).
+`verovo response-audit session.jsonl fork.jsonl --json responses.json` compares explicit inputs without rewriting logs or claiming invoice totals. See [scope and next steps](../docs/response-audit.md).

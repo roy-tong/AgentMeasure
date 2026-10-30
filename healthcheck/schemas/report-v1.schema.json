@@ -1,13 +1,13 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://roy-tong.github.io/AgentMeasure/schemas/healthcheck/report-v1.schema.json",
-  "title": "AgentMeasure Healthcheck report export (v1)",
-  "description": "Machine-readable export written by `agentmeasure check --json PATH` / `demo --json PATH`. A personal artifact (contains local paths in evidence and coverage sections); share the share_summary section instead. Within a schema version fields are only added, never renamed or removed.",
+  "$id": "https://roy-tong.github.io/verovo/schemas/healthcheck/report-v1.schema.json",
+  "title": "Verovo Healthcheck report export (v1)",
+  "description": "Machine-readable export written by `verovo check --json PATH` / `demo --json PATH`. A personal artifact (contains local paths in evidence and coverage sections); share the share_summary section instead. Within a schema version fields are only added, never renamed or removed.",
   "type": "object",
   "required": ["schema", "tool", "version", "mode", "window", "overview", "checks", "coverage", "share_summary"],
   "properties": {
     "schema": { "const": 1 },
-    "tool": { "const": "agentmeasure-healthcheck" },
+    "tool": { "const": "verovo-healthcheck" },
     "version": { "type": "string" },
     "mode": { "enum": ["own-data", "synthetic-demo"] },
     "window": { "type": "string" },

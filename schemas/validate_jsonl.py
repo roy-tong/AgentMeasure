@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""AgentMeasure canonical JSONL validator（零依赖，Draft 0.4.3）。
+"""Verovo canonical JSONL validator（零依赖，Draft 0.4.3）。
 
 用法: python3 schemas/validate_jsonl.py <observations.jsonl>
 

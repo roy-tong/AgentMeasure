@@ -5,7 +5,7 @@ Origin: the replay vector proposed by Metrecept (iwasinnam2 / Ivan
 Karpusheff), six-questions answer 2026-10-12 — the fill and the replay of
 the same request, from two planes, with equal request and response digests,
 and a changed payload alongside with its own digests. Fixture and wording:
-AgentMeasure (synthetic). Production cut reserved as external/iwasinnam-005.
+Verovo (synthetic). Production cut reserved as external/iwasinnam-005.
 
 Companion to run_aggregate_join.py: that guards the aggregate edge of
 counting integrity; this guards the crossing edge.

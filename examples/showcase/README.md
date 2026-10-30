@@ -11,7 +11,7 @@ the showcase is not a claim, it is a runnable expectation.
 ## Case A — overcharge, and the rows we refuse to guess
 
 ```bash
-agentmeasure recount --export case-a-overcharge-zendesk.csv --vendor zendesk
+verovo recount --export case-a-overcharge-zendesk.csv --vendor zendesk
 ```
 
 One conversation a human agent finished was still billed (`$2.00` overcharge).
@@ -22,7 +22,7 @@ zeroed. Read: [expected output](case-a-overcharge-zendesk.expected.txt).
 ## Case B — findings run both directions
 
 ```bash
-agentmeasure recount --export case-b-both-directions-intercom.csv --vendor intercom
+verovo recount --export case-b-both-directions-intercom.csv --vendor intercom
 ```
 
 Two overcharged lines (a reopen inside the documented window, a human
@@ -33,7 +33,7 @@ netted before any dollar is claimed: `$1.98 − $0.99 = $0.99`. Read:
 ## Case C — the contract lane is leverage, never netted into the claim
 
 ```bash
-agentmeasure recount --export case-c-contract-lane-intercom.csv --vendor intercom \
+verovo recount --export case-c-contract-lane-intercom.csv --vendor intercom \
   --contract case-c-contract-lane-intercom.contract.json
 ```
 
@@ -47,7 +47,7 @@ Read: [expected output](case-c-contract-lane-intercom.expected.txt).
 
 - All data is synthetic. No customer data appears here.
 - The vendor rule sets and their sources are printed in every report
-  (`agentmeasure recount --list-vendors` for the full registry).
+  (`verovo recount --list-vendors` for the full registry).
 - The frozen expected outputs are compared by CI on every change
   (`healthcheck/tests/test_showcase.py`), so the showcase cannot silently
   drift from the shipped behaviour.

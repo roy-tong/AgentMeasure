@@ -1,7 +1,7 @@
 # FMT-004 — Mapping Core 0.4.4 Semantics to the Lab Experiment Formats
 
 > How the experiment engine's formats (FMT-001/002/003, `lab/schemas/`) instantiate the
-> AgentMeasure Core specification (`standard/CORE.md`, Draft 0.4.4). This document is the
+> Verovo Core specification (`standard/CORE.md`, Draft 0.4.4). This document is the
 > reference for third parties implementing runners or report consumers, and the OTel/AAIF
 > reference scenario anchor. Status: **informational mapping** — where Lab rules are
 > stricter than Core, the stricter rule is stated.
@@ -32,7 +32,7 @@ metric row states its grain in the Measurement Label.
 ## 3. Qualification axes (CORE §7)
 
 Experiment events carry `qualification: controlled experiment environment (not production)`
-in every Measurement Label. Production events (used by calibration, `am lab calibrate`)
+in every Measurement Label. Production events (used by calibration, `verovo lab calibrate`)
 carry `production (gradual rollout)`. The two are never pooled into one number — the
 calibration report exists precisely to compare them **as two labeled environments**
 (CAL-003). This instantiates Usage Context (`production` vs `synthetic`/`controlled`)

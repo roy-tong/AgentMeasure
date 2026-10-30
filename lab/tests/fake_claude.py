@@ -3,7 +3,7 @@
 
 Emits exactly the documented headless transcript shapes so the
 ClaudeCodeRunner adapter can be integration-tested without the real CLI.
-Scenario selected via env AM_FAKE_MODE:
+Scenario selected via env VEROVO_FAKE_MODE:
   subject    — agent picks the subject tool, succeeds, answers (default)
   competitor — agent picks a competitor tool only
   timeout    — hangs (runner's timeout path)
@@ -33,8 +33,8 @@ def tool_result(uid, is_error=False):
 
 
 def main():
-    mode = os.environ.get("AM_FAKE_MODE", "subject")
-    server = "am-lab-tools"
+    mode = os.environ.get("VEROVO_FAKE_MODE", "subject")
+    server = "verovo-lab-tools"
     # discover the server name from --allowedTools if present
     args = sys.argv[1:]
     if "--allowedTools" in args:

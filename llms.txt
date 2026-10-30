@@ -1,25 +1,25 @@
-# AgentMeasure
+# Verovo
 
 > Free local checks for Codex / Claude Code logs and reproducible agent metering verification. Human-delivered diagnostics: $10 Healthcheck and $20 Metering QA. Last reviewed: 2026-10-15.
 
 ## Start here
 
-- [Website](https://roy-tong.github.io/AgentMeasure/): overview and local quickstart
-- [Services](https://roy-tong.github.io/AgentMeasure/services.html): input requirements, prices, turnaround and refunds
-- [Healthcheck](https://github.com/roy-tong/AgentMeasure/blob/main/healthcheck/README.md): CLI 0.7.1, local session checks, sharing and supported commands
-- [SDK](https://github.com/roy-tong/AgentMeasure/blob/main/sdk/README.md): Provider SDK 0.2.0 on npm
-- [Release notes](https://roy-tong.github.io/AgentMeasure/releases.html): independent package versions and dated releases
+- [Website](https://roy-tong.github.io/verovo/): overview and local quickstart
+- [Services](https://roy-tong.github.io/verovo/services.html): input requirements, prices, turnaround and refunds
+- [Healthcheck](https://github.com/roy-tong/verovo/blob/main/healthcheck/README.md): CLI 0.7.1, local session checks, sharing and supported commands
+- [SDK](https://github.com/roy-tong/verovo/blob/main/sdk/README.md): Provider SDK 0.2.0 on npm
+- [Release notes](https://roy-tong.github.io/verovo/releases.html): independent package versions and dated releases
 
 ## Measurement and evidence
 
-- [Core](https://github.com/roy-tong/AgentMeasure/blob/main/standard/CORE.md): objects, grains and invariants
-- [Metrics](https://github.com/roy-tong/AgentMeasure/blob/main/standard/METRICS.md): metric contracts
-- [AMS-1](https://github.com/roy-tong/AgentMeasure/blob/main/standard/SETTLEMENT.md): settlement statement semantics
-- [Quality](https://github.com/roy-tong/AgentMeasure/blob/main/standard/QUALITY.md): evidence and claim discipline
-- [Conformance pack](https://github.com/roy-tong/AgentMeasure/blob/main/conformance/pack/README.md): supported checks and fixture requirements
-- [Claims index](https://roy-tong.github.io/AgentMeasure/claims.html): dated reproductions, corrections and upstream responses
-- [Vocabularies](https://github.com/roy-tong/AgentMeasure/blob/main/registry/vocabularies.yaml): canonical enums
-- [Metric registry](https://github.com/roy-tong/AgentMeasure/blob/main/registry/metrics.yaml): machine-readable contracts
+- [Core](https://github.com/roy-tong/verovo/blob/main/standard/CORE.md): objects, grains and invariants
+- [Metrics](https://github.com/roy-tong/verovo/blob/main/standard/METRICS.md): metric contracts
+- [VSS-1](https://github.com/roy-tong/verovo/blob/main/standard/SETTLEMENT.md): settlement statement semantics
+- [Quality](https://github.com/roy-tong/verovo/blob/main/standard/QUALITY.md): evidence and claim discipline
+- [Conformance pack](https://github.com/roy-tong/verovo/blob/main/conformance/pack/README.md): supported checks and fixture requirements
+- [Claims index](https://roy-tong.github.io/verovo/claims.html): dated reproductions, corrections and upstream responses
+- [Vocabularies](https://github.com/roy-tong/verovo/blob/main/registry/vocabularies.yaml): canonical enums
+- [Metric registry](https://github.com/roy-tong/verovo/blob/main/registry/metrics.yaml): machine-readable contracts
 
 ## Service and evidence limits
 
@@ -29,8 +29,8 @@ Summary counts support interpretation, not guaranteed root-cause diagnosis. Core
 
 ## Further reference
 
-- [Roadmap](https://github.com/roy-tong/AgentMeasure/blob/main/ROADMAP.md): current focus and deferred work
-- [Buyer reconciliation](https://roy-tong.github.io/AgentMeasure/first-look.html): experimental reference, not a current fixed-price or free review offer
-- [Lab](https://github.com/roy-tong/AgentMeasure/blob/main/lab/README.md): existing experimental toolkit
-- [Contributing](https://github.com/roy-tong/AgentMeasure/blob/main/CONTRIBUTING.md): contribution and AI-use rules
-- [Agent instructions](https://github.com/roy-tong/AgentMeasure/blob/main/AGENTS.md): invariants and required checks
+- [Roadmap](https://github.com/roy-tong/verovo/blob/main/ROADMAP.md): current focus and deferred work
+- [Buyer reconciliation](https://roy-tong.github.io/verovo/first-look.html): experimental reference, not a current fixed-price or free review offer
+- [Lab](https://github.com/roy-tong/verovo/blob/main/lab/README.md): existing experimental toolkit
+- [Contributing](https://github.com/roy-tong/verovo/blob/main/CONTRIBUTING.md): contribution and AI-use rules
+- [Agent instructions](https://github.com/roy-tong/verovo/blob/main/AGENTS.md): invariants and required checks

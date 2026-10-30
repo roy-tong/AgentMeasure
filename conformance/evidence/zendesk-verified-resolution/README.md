@@ -90,7 +90,7 @@ Zendesk 文档原文（《About the automated resolutions platform》）：
 于是本不该计费的对话会被计费。** 这是厂商文档里写明的计费错误路径——买方只能
 靠自己审计发现。
 
-## 审计问题清单（AgentMeasure 视角）
+## 审计问题清单（Verovo 视角）
 
 对照我们的 outcome 语义，Zendesk 场景下买方需要能回答：
 
@@ -101,7 +101,7 @@ Zendesk 文档原文（《About the automated resolutions platform》）：
 5. **判错了怎么办？** —— **删除工单不撤销已消费的 resolution；未用额度不结转；
    没有任何争议/信用/退款流程**（对 20 家厂商的核查：全品类都没有）
 
-这五问正好映射到 AgentMeasure 的 outcome_class 词表（`resolved` /
+这五问正好映射到 Verovo 的 outcome_class 词表（`resolved` /
 `assumed_resolved` / `escalated` / `abandoned` / `reopened`）与结算证据包格式。
 
 ## 与 Intercom 的对比（已更正）
@@ -141,4 +141,4 @@ Zendesk 文档原文（《About the automated resolutions platform》）：
 本文只引用 Zendesk 公开文档，不声称 Zendesk 的实现在任何具体客户处出错。
 「卖方 LLM 验证」是官方描述，不是本文的推断。配置错误路径是官方文档自己列出的
 注意事项。本案例的价值在于：**当一个「已验证」的声称由卖方自己产生时，买方需要
-什么才能独立复核**——这是 AgentMeasure 效果审计层要回答的问题。
+什么才能独立复核**——这是 Verovo 效果审计层要回答的问题。

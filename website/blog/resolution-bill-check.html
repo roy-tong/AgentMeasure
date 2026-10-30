@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Your AI support bill counts “resolutions” it attested itself — AgentMeasure</title>
+  <title>Your AI support bill counts “resolutions” it attested itself — Verovo</title>
   <meta name="description" content="Per-resolution AI billing (Intercom Fin, Zendesk AI, Salesforce) bills outcomes the vendor's own system marked. A free, local, evidence-based way to check that bill.">
   <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
-  <link rel="canonical" href="https://roy-tong.github.io/AgentMeasure/blog/resolution-bill-check.html">
+  <link rel="canonical" href="https://roy-tong.github.io/verovo/blog/resolution-bill-check.html">
   <meta property="og:type" content="article">
-  <meta property="og:site_name" content="AgentMeasure">
+  <meta property="og:site_name" content="Verovo">
   <meta property="og:title" content="Your AI support bill counts “resolutions” it attested itself">
   <meta property="og:description" content="Per-resolution AI bills are metered by the vendor's AI. A free, local, evidence-based check.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -39,10 +39,10 @@
 </head>
 <body>
   <main class="post" id="main">
-    <a class="post-back" href="../index.html">← AgentMeasure</a>
+    <a class="post-back" href="../index.html">← Verovo</a>
     <p class="post-k">Practice note · Billing</p>
     <h1>Your AI support bill counts “resolutions” it attested&nbsp;itself</h1>
-    <p class="post-meta">2026-09-19 · about the <a href="https://github.com/roy-tong/AgentMeasure/blob/main/standard/SETTLEMENT.md" target="_blank" rel="noopener">AMS-1 settlement-statement standard</a> · <a href="#get-checked">run the free tools →</a></p>
+    <p class="post-meta">2026-09-19 · about the <a href="https://github.com/roy-tong/verovo/blob/main/standard/SETTLEMENT.md" target="_blank" rel="noopener">VSS-1 settlement-statement standard</a> · <a href="#get-checked">run the free tools →</a></p>
 
     <p>The invoice line reads <strong>8,012 resolutions × $0.99</strong>. Or × $1.50, or × $2.00 — Intercom Fin, Zendesk AI, and Salesforce all now bill AI support this way, and the model is spreading.</p>
     <p>Here is the question nobody on the invoice answers: <strong>who confirmed that each of those 8,012 was a resolution?</strong></p>
@@ -67,7 +67,7 @@
     </table>
     <p>An outcome the vendor attested and an outcome your customer attested are different facts. Blending them into one number is how a bill becomes unarguable.</p>
 
-    <h2>The two-line statement (AMS-1)</h2>
+    <h2>The two-line statement (VSS-1)</h2>
     <p>Our open settlement-statement standard refuses to blend. A statement carries exactly two lines, computed from your own export:</p>
     <pre>Tier 1 — everything the vendor's OWN published rules would bill
         (their resolutions + their assumed resolutions)
@@ -79,16 +79,16 @@ The gap between the two lines is the disputed class.</pre>
 
     <h2 id="get-checked">Run the existing tools locally</h2>
     <ul>
-      <li><strong>Run it yourself:</strong> the CLI reads your conversations/tickets export on your machine and writes the one-page statement + dispute bundle. <code>pipx run agentmeasure</code>; nothing leaves your machine.</li>
+      <li><strong>Run it yourself:</strong> the CLI reads your conversations/tickets export on your machine and writes the one-page statement + dispute bundle. <code>pipx run verovo</code>; nothing leaves your machine.</li>
       <li><strong>Zero install:</strong> <a href="../recount.html">recount Tier 1 in your browser</a> from a counts-only export.</li>
       <li><strong>Service update, 2026-10-14:</strong> the earlier free reconciliation trial is no longer a current offer. The <a href="../first-look.html">workflow remains a research reference</a>; current diagnostics focus on agent logs and metering samples.</li>
     </ul>
-    <p>→ <a href="../first-look.html">Workflow reference</a> · <a href="https://github.com/roy-tong/AgentMeasure/discussions/21" target="_blank" rel="noopener">Historical proposal</a></p>
+    <p>→ <a href="../first-look.html">Workflow reference</a> · <a href="https://github.com/roy-tong/verovo/discussions/21" target="_blank" rel="noopener">Historical proposal</a></p>
 
     <h2>What this is not</h2>
     <p>We measure, and we check conformance to declared rules. We do <strong>not</strong> adjudicate (“should have been billed”), do not touch payments, and do not take a cut of anything recovered — a meter that only earns when it finds overbilling is a meter with an incentive problem. Fixed statements, from declared rules and observed execution only.</p>
 
-    <p class="post-meta" style="margin-top:40px">AgentMeasure audits AI usage-metering in the open: <a href="https://github.com/roy-tong/AgentMeasure/blob/main/campaigns/audit-report-2026-09.md" target="_blank" rel="noopener">~110 tools audited, 45+ verified bugs, 21 fixes merged upstream</a>. This note applies the same discipline to the bill itself.</p>
+    <p class="post-meta" style="margin-top:40px">Verovo audits AI usage-metering in the open: <a href="https://github.com/roy-tong/verovo/blob/main/campaigns/audit-report-2026-09.md" target="_blank" rel="noopener">~110 tools audited, 45+ verified bugs, 21 fixes merged upstream</a>. This note applies the same discipline to the bill itself.</p>
   </main>
 </body>
 </html>

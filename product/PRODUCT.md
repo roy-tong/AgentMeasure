@@ -1,4 +1,4 @@
-# AgentMeasure Product
+# Verovo Product
 
 > 三种资产的边界（ROADMAP.md）：**Standard**（最开放）· **Open-source Reference
 > Infrastructure**（开源）· **Commercial Network / Product**（商业层不得控制第 1 层）。
@@ -34,6 +34,6 @@ Caller runtime（declared / unknown）· Measurement Coverage。
 ## 与标准的关系
 
 - 产品消费 Core 的测量事实（Observation Envelope），**不修改标准定义**
-- Provider SDK 未实现前，任何产品能力不得自称"AgentMeasure 官方"——文档标注
+- Provider SDK 未实现前，任何产品能力不得自称"Verovo 官方"——文档标注
   in development
 - 商业层（托管分析）不得成为标准采用的前置条件

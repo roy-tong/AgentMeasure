@@ -12,12 +12,12 @@ from pathlib import Path
 from unittest.mock import patch
 
 from _support import HEALTHCHECK_DIR
-from am_healthcheck import cli, codex, history
-from am_healthcheck.checks import (build_overview, coverage_findings, run_checks,
+from verovo_healthcheck import cli, codex, history
+from verovo_healthcheck.checks import (build_overview, coverage_findings, run_checks,
                                    retry_chains_for_session)
-from am_healthcheck.model import Overview
-from am_healthcheck.report_html import _overview_grid
-from am_healthcheck.share import build_share_summary, share_json, share_markdown
+from verovo_healthcheck.model import Overview
+from verovo_healthcheck.report_html import _overview_grid
+from verovo_healthcheck.share import build_share_summary, share_json, share_markdown
 
 
 def event(item, ts="2026-09-05T12:01:00Z"):

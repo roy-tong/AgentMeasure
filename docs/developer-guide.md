@@ -13,7 +13,7 @@ the experiment engine, the core specification and the provider SDK. It supports 
 
 Mock MCP server → canonical observations → local metrics, all on your machine, no
 cloud. The demo is **reproducible**: it runs in an isolated workspace (never touches
-`~/.agentmeasure`) — same fixture + same policy = same result (42 calls → 84
+`~/.verovo`) — same fixture + same policy = same result (42 calls → 84
 canonical observations, caller claims claude:14 · codex:14 · unknown:14).
 
 Then read why we audit the ecosystem's usage claims:
@@ -24,13 +24,13 @@ kept out of the ranking as a reference baseline.
 
 ---
 
-## Run a preregistered experiment — AgentMeasure Lab
+## Run a preregistered experiment — Verovo Lab
 
 ```bash
-python3 lab/am lab selftest                                   # planted uplift recovered + honest null
-python3 lab/am lab init                                       # workspace + example experiment
-python3 lab/am lab preregister am-lab/experiments/example-manifest.json
-python3 lab/am lab run am-lab/experiments/example-manifest.prereg.json
+python3 lab/verovo lab selftest                                   # planted uplift recovered + honest null
+python3 lab/verovo lab init                                       # workspace + example experiment
+python3 lab/verovo lab preregister verovo-lab/experiments/example-manifest.json
+python3 lab/verovo lab run verovo-lab/experiments/example-manifest.prereg.json
 ```
 
 The open experiment engine ([lab/](../lab/README.md)): task set × harness matrix × factor
@@ -74,7 +74,7 @@ reliability reports get distorted.
 
 Start smaller than a trial: **send a trace, get a measurement check** — 20–100 anonymized trace/log rows (or a public export), mapped locally, with a short report of what safely counts as attempts vs operations, where retries may inflate usage, and what the telemetry cannot prove. No SDK, no integration; raw data stays local unless you explicitly authorize sharing a sanitized sample. A sample check is not a full audit and claims no causal effect.
 
-If the check pays for itself, AgentMeasure is looking for **3 MCP/API providers** for short external measurement runs.
+If the check pays for itself, Verovo is looking for **3 MCP/API providers** for short external measurement runs.
 
 The goal is not to prove the model works. It is to find where it breaks on real provider traffic.
 
@@ -82,7 +82,7 @@ A trial can stay fully local, requires no agent-side install, and can start with
 
 **Best feedback:** a concrete trace, counterexample, or field that cannot be measured safely.
 
-→ The formal offer, schedule, and FAQ live in **[product/AUDIT.md](../product/AUDIT.md)** · apply in **[Issue #2 — Looking for 3 MCP/API providers for external measurement runs](https://github.com/roy-tong/AgentMeasure/issues/2)**.
+→ The formal offer, schedule, and FAQ live in **[product/AUDIT.md](../product/AUDIT.md)** · apply in **[Issue #2 — Looking for 3 MCP/API providers for external measurement runs](https://github.com/roy-tong/verovo/issues/2)**.
 
 ---
 
@@ -120,7 +120,7 @@ Agent → Capability → Execution → Outcome
               Usage / Value / Transaction
 ```
 
-If a capability is to become an economic unit that agents can discover, compare, and eventually purchase automatically, it must first be **identifiable, measurable, and comparable under a shared semantics**. That is what AgentMeasure provides.
+If a capability is to become an economic unit that agents can discover, compare, and eventually purchase automatically, it must first be **identifiable, measurable, and comparable under a shared semantics**. That is what Verovo provides.
 
 Traditional usage metrics cannot support this economy — the old chain breaks at every link, and the last link is new:
 
@@ -142,7 +142,7 @@ The last inequality is why the Operation/Attempt model matters commercially: 3 a
 
 ## The measurement view: Reach → Choice → Use → Utility → Value
 
-AgentMeasure defines **metric families**, not a universal KPI. A search capability, a booking API, and a compute job have different value structures.
+Verovo defines **metric families**, not a universal KPI. A search capability, a booking API, and a compute job have different value structures.
 
 | Layer | Question | Representative metrics |
 | --- | --- | --- |
@@ -154,7 +154,7 @@ AgentMeasure defines **metric families**, not a universal KPI. A search capabili
 
 The five layers are the **measurement view**. The same facts map onto an economic view:
 
-| CaaS Domain | AgentMeasure |
+| CaaS Domain | Verovo |
 | --- | --- |
 | Demand | Reach + Choice |
 | Delivery | Use + Utility |
@@ -163,7 +163,7 @@ The five layers are the **measurement view**. The same facts map onto an economi
 
 Claim discipline throughout: *observed choice is not preference*. A selection can be made by the model, a router, a workflow, the user, a policy, or the platform; **Observed Selection Rate** reports what was observed, and **Observed Head-to-Head Choice Share** is an *observed head-to-head choice share under comparable candidate conditions* — comparable means the same candidate set, category, choice mode, and decision axes (Decision Authority / Selection Constraint) are declared.
 
-## How AgentMeasure works in production
+## How Verovo works in production
 
 ```text
 Agent Runtime                     Capability Provider
@@ -175,7 +175,7 @@ Claude / Codex
                          ┌──────────────────────┐
                          │ Customer Capability  │
                          │                      │
-                         │ AgentMeasure SDK     │
+                         │ Verovo SDK     │
                          │ Business Handler     │
                          └──────────┬───────────┘
                                     │
@@ -185,7 +185,7 @@ Claude / Codex
                               Collector
                                     │
                                     ▼
-                            AgentMeasure Cloud
+                            Verovo Cloud
 ```
 
 Four things a real developer needs to know:
@@ -194,14 +194,14 @@ Four things a real developer needs to know:
 >
 > MCP is **not** required — it is the first reference surface.
 >
-> Third-party agents do **not** need AgentMeasure installed for provider-side usage measurement.
+> Third-party agents do **not** need Verovo installed for provider-side usage measurement.
 >
-> AgentMeasure is **not** on the critical request path.
+> Verovo is **not** on the critical request path.
 
 Product architecture (Provider SDK → local buffer → hosted ingestion → dashboard):
 [product/ARCHITECTURE.md](../product/ARCHITECTURE.md).
 
-## What AgentMeasure measures today
+## What Verovo measures today
 
 - **Decision Opportunity / Candidate Set / Presentation / Selection** — the four objects of choice; the Observed Selection Rate denominator is Presented, not Available
 - **Software Entity → Capability → Interaction Surface** — what exists, what it can do, and the observable interface; observation happens on surfaces, attribution resolves to entities through the machine-readable registry
@@ -215,13 +215,13 @@ The full model lives in the [Core Specification](../standard/CORE.md), [Metrics]
 
 ## From measurement to CaaS
 
-AgentMeasure is **progressively standardizing** the measurement chain from discovery
+Verovo is **progressively standardizing** the measurement chain from discovery
 and choice through execution, utility and value: core usage semantics are defined
 today; utility/value and commercial metering remain active drafts. Metering and
 commercial attribution are future extensions; payment rails can be provided by
 existing payment infrastructure.
 
-> **AgentMeasure standardizes economic facts, not money movement.**
+> **Verovo standardizes economic facts, not money movement.**
 >
 > Extended thesis: [docs/CAPABILITY-ECONOMY.md](../docs/CAPABILITY-ECONOMY.md) ·
 > Economic semantics: [extensions/COMMERCIAL.md](../extensions/COMMERCIAL.md)（Experimental）
@@ -229,7 +229,7 @@ existing payment infrastructure.
 ## Harness profiles — what each runtime can (and cannot) observe
 
 Portable semantics need a public record of observation blind spots. Per-harness
-profiles map each runtime's native objects to AgentMeasure semantics:
+profiles map each runtime's native objects to Verovo semantics:
 
 | Harness | Profile | Highlights |
 | --- | --- | --- |
@@ -245,9 +245,9 @@ D](../experiments/EXPERIMENT-D-cross-harness-compatibility.md) turns that into
 evidence; [Proposal: Delegation](../proposals/2026-08-21-delegation-graph.md)
 defines the agent-to-agent boundary the object model was missing.
 
-## What AgentMeasure is / is not
+## What Verovo is / is not
 
-| AgentMeasure is | AgentMeasure is not |
+| Verovo is | Verovo is not |
 | --- | --- |
 | Measurement standard | Payment protocol |
 | Usage analytics foundation | Marketplace |
@@ -259,7 +259,7 @@ defines the agent-to-agent boundary the object model was missing.
 
 | Audience | Why |
 | --- | --- |
-| **Teams billed per outcome** (AI support: Intercom Fin, Zendesk, Salesforce Agentforce) | re-run the bill locally; AMS-1 settlement statements for renewals and disputes |
+| **Teams billed per outcome** (AI support: Intercom Fin, Zendesk, Salesforce Agentforce) | re-run the bill locally; VSS-1 settlement statements for renewals and disputes |
 | **Teams billed per task / compute** (Copilot premium requests, Cursor, Devin ACU) | one semantics for "what counts as one task" when retries and loops keep billing |
 | **Teams billed per usage** (APIs and gateways, multiple vendors) | align incommensurable meters into one auditable statement |
 | **Capability Provider** | measure and eventually meter agent usage of your capabilities |
@@ -272,7 +272,7 @@ defines the agent-to-agent boundary the object model was missing.
 ## Try the standard
 
 ```bash
-git clone https://github.com/roy-tong/AgentMeasure && cd AgentMeasure
+git clone https://github.com/roy-tong/verovo && cd Verovo
 python3 conformance/runners/run_metrics.py   # metric vectors (M2.2 / M2.5 / M4.1)
 python3 verify_vectors.py                     # verification / correlation / operation vectors
 python3 registry/validate_entities.py         # validate the machine-readable registry
@@ -281,16 +281,16 @@ python3 registry/validate_entities.py         # validate the machine-readable re
 ## Product MVP — first real measurement (in development)
 
 The first product path is **Remote MCP / API Capability Measurement**: an
-[AgentMeasure Provider SDK](../sdk/) (`@agentmeasure/mcp`) that emits observations from
+[Verovo Provider SDK](../sdk/) (`@verovo/mcp`) that emits observations from
 the provider side (no agent-side install), feeding a local collector. Local analytics
 run without any cloud:
 
 ```bash
-npm install @agentmeasure/mcp
+npm install @verovo/mcp
 # SDK 0.2.0 on npm; verified 2026-10-14
 # wrap your MCP server's tool handlers: server.tool = (name, schema, mw.wrapTool(name, handler))
 node examples/mcp-integration.js          # synthetic traffic → local JSONL
-python3 product/local-analytics.py ~/.agentmeasure/events/agentmeasure-events.jsonl
+python3 product/local-analytics.py ~/.verovo/events/verovo-events.jsonl
 ```
 
 Status: SDK v0.2.0 — External-Ready (canonical output, non-blocking spool with
@@ -305,7 +305,7 @@ Scope and acceptance: [product/MVP.md](../product/MVP.md) · SDK contract:
 ## Repository map
 
 ```text
-AgentMeasure/
+Verovo/
 ├── standard/          # the normative standard (CORE / METRICS / QUALITY / DATA / ...)
 ├── extensions/        # experimental, non-normative profiles (COMMERCIAL.md)
 ├── product/           # product architecture (SDK / hosted analytics, in development)
@@ -345,12 +345,12 @@ The roadmap runs on two tracks — the standard (0.4 objects & quality → 0.5 u
 
 ## Contribute
 
-- **Join the community**: [Discussions](https://github.com/roy-tong/AgentMeasure/discussions) — categories: Metric Semantics · Runtime Observation · Experiments · Capability Economy · Implementers; ground rules in [docs/DISCUSSIONS.md](../docs/DISCUSSIONS.md)
-- **Where to start**: the open debate on [Strict Qualified Usage as the default](https://github.com/roy-tong/AgentMeasure/discussions/1), or [onboard the first external Provider](https://github.com/roy-tong/AgentMeasure/issues/2)
+- **Join the community**: [Discussions](https://github.com/roy-tong/verovo/discussions) — categories: Metric Semantics · Runtime Observation · Experiments · Capability Economy · Implementers; ground rules in [docs/DISCUSSIONS.md](../docs/DISCUSSIONS.md)
+- **Where to start**: the open debate on [Strict Qualified Usage as the default](https://github.com/roy-tong/verovo/discussions/1), or [onboard the first external Provider](https://github.com/roy-tong/verovo/issues/2)
 - **Propose standard changes**: `proposals/` (AUP: Draft → Discussion → Accepted → Experimental → Stable)
 - **Report measurement discrepancies**: `reports/` (Discrepancy Report template)
 - **Fix the reference implementation**: PRs must pass all `conformance/` vectors
 
 ---
 
-*AgentMeasure does not define who owns the truth. It defines what evidence, under what rules, can support what conclusions.*
+*Verovo does not define who owns the truth. It defines what evidence, under what rules, can support what conclusions.*

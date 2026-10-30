@@ -1,13 +1,13 @@
-# AgentMeasure Settlement Statement — AMS-1（Draft 0.1）
+# Verovo Settlement Statement — VSS-1（Draft 0.1）
 
 > 结算声明的公开标准。对照物：TareCount ARS-1（LinkedIn Pulse，单作者）——我们采纳了其中
-> 三条最扎实的实践（见 COMMERCIAL §5.1 的 D-1/D-2/D-3），本文将其与 AgentMeasure 既有纪律
+> 三条最扎实的实践（见 COMMERCIAL §5.1 的 D-1/D-2/D-3），本文将其与 Verovo 既有纪律
 > 合并为一份**开放治理、工具免费、第三方可复现**的标准。条款 S-1…S-8 每条都引用其执行测试
 > ——「声明里的名字就是代码里的名字」（ARS-1 最好的纪律，我们用 conformance 向量匹配它）。
 
 > **本标准管的是哪一半**（The Colony 评论的劈分）：计费争议 = **计数完整性 × 判定完整性**。
 > 签名、append-only、防篡改只能保证前者（计数没被改）；**后者——「resolved 这个判定本身
-> 站不站得住」——才是钱所在的地方**，也是 AMS-1 的全部管辖范围。两半都要，但不要混。
+> 站不站得住」——才是钱所在的地方**，也是 VSS-1 的全部管辖范围。两半都要，但不要混。
 
 ## 0. 判决词表（verdict taxonomy）
 
@@ -25,7 +25,7 @@
 
 - **Tier 1**：被审方自己的规则会计费的全部（resolved + assumed）。
   谈判以 Tier 1 领衔：对方无法反驳自己的规则，只能反驳数据——而数据在你手里。
-- **Tier 2**：AgentMeasure 结算级（affected party 确认的 resolved）。
+- **Tier 2**：Verovo 结算级（affected party 确认的 resolved）。
   Tier 2 是续约议价依据，**不是**争议条款。
 - 两线的差额是**争议类**，永远呈现为两个独立数字，不得合并为单一「真实值」。
 - **类 × 等级必须交叉计算**：边缘聚合会骗人（escalated × affected_party 不是 resolved）。
@@ -95,13 +95,13 @@ ARS-1 的自我修正机制是盲读者分歧（「读者分歧 = 文本有罪�
   distinctness / no-shortcut / no-merge 守卫）。
 - 语义出处：Metrecept（iwasinnam2 / Ivan Karpusheff）10/9 生产事故报告与六问回复
   （2026-10-12）——join/replay 向量语义与"计数第二条边"由其提出；他确认
-  「聚合上的签名让缺席看起来像证明」这一概括"是对的"（原句为 AgentMeasure 的
-  preamble，作者 Roy Tong——按贡献者署名条件，概括句归属 AgentMeasure，
+  「聚合上的签名让缺席看起来像证明」这一概括"是对的"（原句为 Verovo 的
+  preamble，作者 Roy Tong——按贡献者署名条件，概括句归属 Verovo，
   确认句归属 Metrecept）。条款措辞为本标准职责。
 
 ## 2. 结算声明格式（一页纸规范）
 
-证据包的正式名称：**AgentMeasure Dispute Bundle（ADB）**——`agentmeasure settle`
+证据包的正式名称：**Verovo Dispute Bundle（ADB）**——`verovo settle`
 输出的 JSON 容器（metering policy 引用、逐 outcome 行含可追溯性、增量性证据、
 UNPROVABLE 披露），第三方可独立重算。机器可读条款清单：
 [standard/settlement.manifest.json](settlement.manifest.json)（版本化；每条款
@@ -120,11 +120,11 @@ UNPROVABLE 披露），第三方可独立重算。机器可读条款清单：
 生成命令：
 
 ```bash
-agentmeasure settle --effects effects.jsonl --format md \
+verovo settle --effects effects.jsonl --format md \
   --price 0.99 --audit-cost 2500 --out statement.md
 ```
 
-## 3. AMS-1 不替代什么
+## 3. VSS-1 不替代什么
 
 显式列出边界（工具宣称越少，可验证性越强）：
 
@@ -139,10 +139,10 @@ agentmeasure settle --effects effects.jsonl --format md \
 
 | 阶梯 | 能力 | 声称示例 |
 | --- | --- | --- |
-| **Stage 0 — Discovery** | 读懂本标准与 manifest 条款 | "AMS-1 Stage 0 aware" |
-| **Stage 1 — Transport** | 发送/接受 effect-confirmed JSONL（schema 合规） | "AMS-1 Stage 1 conformant" |
-| **Stage 2 — Policy** | 通过 OUT 审计向量（UNPROVABLE fail-closed、OUT-005 对称披露） | "AMS-1 Stage 2 conformant" |
-| **Stage 3 — Commerce** | 生成 ADB + 合规一页纸声明（settle 命令） | "AMS-1 Stage 3 conformant" |
+| **Stage 0 — Discovery** | 读懂本标准与 manifest 条款 | "VSS-1 Stage 0 aware" |
+| **Stage 1 — Transport** | 发送/接受 effect-confirmed JSONL（schema 合规） | "VSS-1 Stage 1 conformant" |
+| **Stage 2 — Policy** | 通过 OUT 审计向量（UNPROVABLE fail-closed、OUT-005 对称披露） | "VSS-1 Stage 2 conformant" |
+| **Stage 3 — Commerce** | 生成 ADB + 合规一页纸声明（settle 命令） | "VSS-1 Stage 3 conformant" |
 
 ## 4. 与人工重数服务的关系
 

@@ -12,11 +12,11 @@ import unittest
 
 from _support import REPO_ROOT
 
-from am_healthcheck import pnl as pnl_mod
-from am_healthcheck import audit as audit_mod
-from am_healthcheck import taxonomy as tax_mod
-from am_healthcheck import policy as policy_mod
-from am_healthcheck import benchmark as bench_mod
+from verovo_healthcheck import pnl as pnl_mod
+from verovo_healthcheck import audit as audit_mod
+from verovo_healthcheck import taxonomy as tax_mod
+from verovo_healthcheck import policy as policy_mod
+from verovo_healthcheck import benchmark as bench_mod
 
 
 def tmpfile(suffix, text, mode="w", encoding="utf-8"):
@@ -288,7 +288,7 @@ class TestCliWave2(unittest.TestCase):
     def _run(self, *argv):
         import contextlib
         import io
-        from am_healthcheck.cli import main
+        from verovo_healthcheck.cli import main
         out, err = io.StringIO(), io.StringIO()
         with contextlib.redirect_stdout(out), contextlib.redirect_stderr(err):
             rc = main(list(argv))
@@ -350,12 +350,12 @@ class TestDashboardWave2(unittest.TestCase):
     """The four new commerce schemas render as offline dashboards."""
 
     def _render(self, doc):
-        from am_healthcheck import dashboard as dash
+        from verovo_healthcheck import dashboard as dash
         return dash.render_dashboard(doc)
 
     def test_receipt_renders(self):
         from _support import FIXTURES_DIR
-        import am_healthcheck.commerce as cm
+        import verovo_healthcheck.commerce as cm
         schema = json.loads(open(os.path.join(
             REPO_ROOT, "schemas", "commerce-profile.schema.json"),
             encoding="utf-8").read())
@@ -403,7 +403,7 @@ class TestDashboardWave2(unittest.TestCase):
             os.unlink(p)
 
     def test_hostile_labels_escaped_everywhere(self):
-        doc = {"schema": "agentmeasure.commerce/demand-audit",
+        doc = {"schema": "verovo.commerce/demand-audit",
                "channel": "<script>alert(1)</script>",
                "reading": "x", "verdict": "Watch", "axes": {}}
         html_text = self._render(doc)

@@ -2,24 +2,24 @@
 """LLM 对账员 step2 评分驱动（包外两步式的第二步）。
 
 输入：
-  --instances  amsbench-instances.jsonl（含 ground_truth，仅评分用）
+  --instances  verovobench-instances.jsonl（含 ground_truth，仅评分用）
   --preds      llm-run/predictions/*.jsonl（每行 {"instance_id":..., "output": {...}}）
 
 流程：读预测 → eval_reconciler.parse_prediction() 校验 → score_instance() 评分 →
 聚合（与 eval_reconciler.evaluate 同口径：类召回/精确匹配/预测精确率/行引用命中/置信度）。
 
-纪律：不修改 amsbench 评测包；本脚本仅 import 其公开评分函数（parse_prediction /
+纪律：不修改 verovobench 评测包；本脚本仅 import 其公开评分函数（parse_prediction /
 score_instance / CLASSES），被测 LLM 在包外已运行完毕（step1=分片代理）。
 """
 import argparse, glob, json, sys
 from pathlib import Path
 
 _HERE = Path(__file__).resolve().parent          # llm-run/
-sys.path.insert(0, str(_HERE.parent.parent / "amsbench"))
+sys.path.insert(0, str(_HERE.parent.parent / "verovobench"))
 from eval_reconciler import parse_prediction, score_instance, CLASSES  # noqa: E402
 
 # 默认路径基于脚本位置（llm-run/），与运行时 CWD 无关
-_DEF_INSTANCES = str(_HERE.parent.parent / "amsbench" / "amsbench-instances.jsonl")
+_DEF_INSTANCES = str(_HERE.parent.parent / "verovobench" / "verovobench-instances.jsonl")
 _DEF_PREDS = str(_HERE / "predictions" / "*.jsonl")
 _DEF_OUT = str(_HERE / "llm-eval-report-v1.3-rerun.json")
 

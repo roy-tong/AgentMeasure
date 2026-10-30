@@ -15,8 +15,8 @@ import unittest
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from agentmeasure_lab.harness import get_runner
-from agentmeasure_lab.rng import DetRng
+from verovo_lab.harness import get_runner
+from verovo_lab.rng import DetRng
 from tests._support import TASK_SET_NAME, LabWorkspace, base_manifest
 
 TESTS_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -42,13 +42,13 @@ def _make_executable(path):
 
 def _run_episode(runner_id, cli_path, mode, levels=None):
     _make_executable(cli_path)
-    os.environ["AM_FAKE_MODE"] = mode
+    os.environ["VEROVO_FAKE_MODE"] = mode
     try:
         runner = get_runner(runner_id)
         runner.setup({"cli_path": cli_path, "timeout_seconds": 5, "max_turns": 6})
         return runner.run_episode(TASK, levels or {}, ASSIGNMENT, DetRng(1, "ep"))
     finally:
-        os.environ.pop("AM_FAKE_MODE", None)
+        os.environ.pop("VEROVO_FAKE_MODE", None)
 
 
 def _events_by_type(events):
@@ -64,14 +64,14 @@ class TestClaudeCodeRunner(unittest.TestCase):
         """Live-validation regression: the spec file the runner writes must be
         consumable by toolserver.ToolServer (a KeyError('name') here is what
         crashed the first live run — the agent saw 'server failed to start')."""
-        from agentmeasure_lab.toolserver import ToolServer
+        from verovo_lab.toolserver import ToolServer
 
         for runner_id in ("claude-code", "codex"):
             runner = get_runner(runner_id)
             runner.setup({"cli_path": "/bin/true"})
             tools = runner._toolset_for({"description_clarity": "clear",
                                          "output_verbosity": "verbose"})
-            server = ToolServer({"tools": tools, "server_name": "am-lab-tools"})
+            server = ToolServer({"tools": tools, "server_name": "verovo-lab-tools"})
             listed = server.dispatch({"jsonrpc": "2.0", "id": 1, "method": "tools/list"})
             names = [t["name"] for t in listed["result"]["tools"]]
             self.assertIn("your-search-api", names)
@@ -119,7 +119,7 @@ class TestClaudeCodeRunner(unittest.TestCase):
         self.assertIn("continuation proxy", json.dumps(d["observability"]))
 
     def test_missing_cli_is_clean_error(self):
-        from agentmeasure_lab.rng import DetRng as R
+        from verovo_lab.rng import DetRng as R
 
         runner = get_runner("claude-code")
         runner.setup({"cli_path": "/nonexistent/claude", "timeout_seconds": 2})
@@ -168,7 +168,7 @@ class TestCodexRunner(unittest.TestCase):
         joined = " ".join(cmd)
         self.assertIn("--approve-for-me", joined)
         self.assertIn("--ephemeral", joined)
-        self.assertIn('mcp_servers.am-lab-tools.command=', joined)
+        self.assertIn('mcp_servers.verovo-lab-tools.command=', joined)
         self.assertIn('model_reasoning_effort="low"', joined)
         # candidate-set steering lives in the episode prompt
         self.assertIn("ONLY the tools provided", runner._prompt_for({"instruction": "x"}))
@@ -184,7 +184,7 @@ class TestRunnerThroughEngine(unittest.TestCase):
 
     def test_engine_run_with_claude_adapter(self):
         ws = LabWorkspace()
-        os.environ["AM_FAKE_MODE"] = "subject"
+        os.environ["VEROVO_FAKE_MODE"] = "subject"
         try:
             manifest = base_manifest(experiment_id="e2e-claude", seed=1, replicates=2)
             manifest["analysis"]["min_sample_per_arm"] = 2
@@ -202,8 +202,8 @@ class TestRunnerThroughEngine(unittest.TestCase):
                       open(os.path.join(run_dir, "events.jsonl"), encoding="utf-8").read().splitlines() if l.strip()]
             self.assertTrue(any(e["event"] == "choice" and e["selected_subject"] for e in events))
             # events conform to FMT-002
-            from agentmeasure_lab.prereg import load_schema
-            from agentmeasure_lab.schemas import validate
+            from verovo_lab.prereg import load_schema
+            from verovo_lab.schemas import validate
 
             schema = load_schema("funnel-event.schema.json")
             for ev in events:
@@ -211,7 +211,7 @@ class TestRunnerThroughEngine(unittest.TestCase):
             # disclosure reaches the report
             self.assertIn("claude-code", json.dumps(report["run"]["harnesses"]))
         finally:
-            os.environ.pop("AM_FAKE_MODE", None)
+            os.environ.pop("VEROVO_FAKE_MODE", None)
             ws.close()
 
 

@@ -25,8 +25,8 @@ import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
 
-from agentmeasure_lab import FUNNEL_RULES_VERSION  # noqa: E402
-from agentmeasure_lab.rng import DetRng  # noqa: E402
+from verovo_lab import FUNNEL_RULES_VERSION  # noqa: E402
+from verovo_lab.rng import DetRng  # noqa: E402
 
 CANDIDATES = ["your-search-api", "web-search-pro", "docs-search", "site-crawler"]
 
@@ -58,7 +58,7 @@ def main() -> int:
                 rng = DetRng(args.seed, "production", args.experiment, variant_id, i)
                 task_id = task_ids[rng.below(len(task_ids))]
                 base = {
-                    "schema": "agentmeasure.lab/funnel-event",
+                    "schema": "verovo.lab/funnel-event",
                     "schema_version": "1.0.0",
                     "experiment_id": args.experiment,
                     "assignment_id": f"{args.experiment}/{args.harness}/{task_id}/p{i:05d}/{variant_id}",

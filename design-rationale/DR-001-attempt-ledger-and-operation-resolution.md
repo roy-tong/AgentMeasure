@@ -6,7 +6,7 @@
 
 ## Problem
 
-AgentMeasure must answer "what is one agent operation". Early models treated operation as the
+Verovo must answer "what is one agent operation". Early models treated operation as the
 primary record and retry as an outcome value. External review showed: **consumption is an
 attempt-level fact, intent is an operation-level semantics**; mixing the two units causes
 double counting, cache mispricing and operation inflation, and becomes unauditable.

@@ -13,12 +13,12 @@ import unittest
 
 from _support import FIXTURES_DIR, REPO_ROOT
 
-from am_healthcheck import console as console_mod
-from am_healthcheck import ledger as ledger_mod
-from am_healthcheck import commerce as cm
-from am_healthcheck import pnl as pnl_mod
-from am_healthcheck import audit as audit_mod
-from am_healthcheck import policy as policy_mod
+from verovo_healthcheck import console as console_mod
+from verovo_healthcheck import ledger as ledger_mod
+from verovo_healthcheck import commerce as cm
+from verovo_healthcheck import pnl as pnl_mod
+from verovo_healthcheck import audit as audit_mod
+from verovo_healthcheck import policy as policy_mod
 
 EXPORT = os.path.join(FIXTURES_DIR, "vendor-export-intercom.csv")
 CFIX = os.path.join(FIXTURES_DIR, "commerce")
@@ -55,7 +55,7 @@ class TestBillingShell(unittest.TestCase):
             ledger=self.doc)
 
     def test_sidebar_with_groups_and_hash_routes(self):
-        self.assertIn("AgentMeasure", self.page)
+        self.assertIn("Verovo", self.page)
         self.assertIn("Bill verification", self.page)  # group label
         for view in ("overview", "data", "recount", "standard", "money",
                      "pack", "recovery"):
@@ -152,7 +152,7 @@ class TestChannelShell(unittest.TestCase):
 class TestDecisionGuardrails(unittest.TestCase):
     def test_findings_render_with_policy_basis(self):
         policy_path = tmpfile(".json", json.dumps({
-            "schema": "agentmeasure.commerce/decision-policy",
+            "schema": "verovo.commerce/decision-policy",
             "policy_version": "2026.10",
             "risk_policy_ref": "agentic-ops/action-risk-policy#v3",
             "rules": [{"rule_id": "R-1", "action_type": "coupon",
@@ -180,7 +180,7 @@ class TestWriteConsole(unittest.TestCase):
         self.addCleanup(lambda: os.path.exists(out) and os.unlink(out))
         written = console_mod.write_console(page, out)
         with open(written, encoding="utf-8") as fh:
-            self.assertIn("AgentMeasure", fh.read())
+            self.assertIn("Verovo", fh.read())
 
 
 if __name__ == "__main__":
@@ -201,7 +201,7 @@ class TestJourneyModel(unittest.TestCase):
             ledger=self.doc)
 
     def test_billing_journey_stepper_renders_all_stages(self):
-        from am_healthcheck.console import _billing_stages
+        from verovo_healthcheck.console import _billing_stages
         stages = _billing_stages(self.doc)
         ids = [s["id"] for s in stages]
         self.assertEqual(ids, ["data", "recount", "standard", "money",
@@ -211,7 +211,7 @@ class TestJourneyModel(unittest.TestCase):
         self.assertIn("Re-run next month", self.page)
 
     def test_state_derivation_follows_the_documents(self):
-        from am_healthcheck.console import _billing_stages
+        from verovo_healthcheck.console import _billing_stages
         by_id = {s["id"]: s for s in _billing_stages(self.doc)}
         # findings exist -> recount and pack demand action
         self.assertEqual(by_id["recount"]["state"], "action")
@@ -223,7 +223,7 @@ class TestJourneyModel(unittest.TestCase):
         self.assertEqual(by_id["next"]["state"], "info")
 
     def test_clean_period_produces_no_action_stages(self):
-        from am_healthcheck.console import _billing_stages
+        from verovo_healthcheck.console import _billing_stages
         doc = json.loads(json.dumps(self.doc))
         doc["tier1"]["counts"]["billed_but_not_billable"] = 0
         doc["recovery"]["totals"]["outstanding"] = 0
@@ -235,7 +235,7 @@ class TestJourneyModel(unittest.TestCase):
             self.assertEqual(stages[sid]["state"], "done", sid)
 
     def test_channel_stages_need_their_documents(self):
-        from am_healthcheck.console import _channel_stages
+        from verovo_healthcheck.console import _channel_stages
         self.assertEqual(_channel_stages(None, None, None, None), [])
 
     def test_overview_shows_where_you_are(self):

@@ -1,4 +1,4 @@
-# AgentMeasure Data — Canonical Observation Envelope（Document revision 0.4.3）
+# Verovo Data — Canonical Observation Envelope（Document revision 0.4.3）
 
 > **Canonical Observation 是唯一 ingestion 输入。** 所有 Adapter、Provider SDK、
 > Runtime Adapter 只允许产出这一种 Envelope（schemas/observation.schema.json）。
@@ -6,7 +6,7 @@
 > 签名与认证是 **Verified Measurement Profile** 的可选能力（Core §10）；
 > Core-conformant 实现不实现 Ed25519 也成立。
 >
-> 版本：Standard Compatibility `agentmeasure-0.4` · Document revision `0.4.3`
+> 版本：Standard Compatibility `verovo-0.4` · Document revision `0.4.3`
 
 ## 1. Observation Envelope（统一外壳）
 
@@ -14,7 +14,7 @@
 
 ```jsonc
 {
-  "spec_version": "agentmeasure-0.4",
+  "spec_version": "verovo-0.4",
   "observation_id": "uuid",
   "observation_type": "presentation | selection | attempt_started | attempt_completed | result_consumed | task_outcome",
   "observer": {"principal": "am-sdk@acme", "trust_domain": "acme", "side": "server"},

@@ -4,8 +4,8 @@ import os
 import tempfile
 import unittest
 
-from am_healthcheck.model import ExecRecord, SessionRecord
-from am_healthcheck.sdk_events import build_cross_side_report, load_sdk_events
+from verovo_healthcheck.model import ExecRecord, SessionRecord
+from verovo_healthcheck.sdk_events import build_cross_side_report, load_sdk_events
 
 
 def session_with_calls(call_ids):

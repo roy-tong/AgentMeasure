@@ -1,5 +1,5 @@
 {
-  "spec_version": "agentmeasure-0.4",
+  "spec_version": "verovo-0.4",
   "family": "DELEGATION Multi-Agent Audit",
   "description": "The four delegation cost-accounting failure modes, derived from the 2026-09 demand scan (4 L3 + 15 L2 issues across coding-agent harnesses). DELEGATION-001..003 pin the counting discipline; 004..007 pin the failure taxonomy an audit must cover. A check family that only tests roll-up arithmetic misses three of the four.",
   "taxonomy": {
@@ -286,7 +286,7 @@
           "input": {
             "task_id": "t-50",
             "delegation": {
-              "delegation_id": "am-delegation-50",
+              "delegation_id": "verovo-delegation-50",
               "budget_declared": 100.0,
               "budget_propagated_to_child": false,
               "enforcement": "pull-based"
@@ -306,7 +306,7 @@
           "input": {
             "task_id": "t-51",
             "delegation": {
-              "delegation_id": "am-delegation-51",
+              "delegation_id": "verovo-delegation-51",
               "budget_declared": 100.0,
               "budget_propagated_to_child": true,
               "enforcement": "in-path"
@@ -325,7 +325,7 @@
           "input": {
             "task_id": "t-52",
             "delegation": {
-              "delegation_id": "am-delegation-52",
+              "delegation_id": "verovo-delegation-52",
               "budget_declared": null,
               "budget_propagated_to_child": false
             },

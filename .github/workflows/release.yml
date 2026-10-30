@@ -1,7 +1,7 @@
 name: release
 
 # Creates/updates GitHub Releases from docs/RELEASE-<tag>.md and, when an npm
-# token exists, publishes @agentmeasure/mcp. Uses the Actions-provided
+# token exists, publishes @verovo/mcp. Uses the Actions-provided
 # GITHUB_TOKEN (contents: write) — no local credentials required.
 #
 # Triggers:
@@ -15,7 +15,7 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: 'Existing release tag, e.g. v0.8.0 (required for a manual run)'
+        description: 'Existing release tag, e.g. v0.9.0 (required for a manual run)'
         required: true
         default: ''
 
@@ -57,7 +57,7 @@ jobs:
           if gh release view "$TAG" --json tagName >/dev/null 2>&1; then
             gh release edit "$TAG" --notes-file "$NOTES"
           else
-            gh release create "$TAG" --title "$TAG — AgentMeasure" --notes-file "$NOTES"
+            gh release create "$TAG" --title "$TAG — Verovo" --notes-file "$NOTES"
           fi
 
       - name: Mark v0.1.0 as superseded (history kept, not deleted)
@@ -89,7 +89,7 @@ jobs:
           npm run build
           PKG_VERSION=$(node -p "require('./package.json').version")
           npm pack --pack-destination .
-          gh release upload "$TAG" "agentmeasure-mcp-${PKG_VERSION}.tgz" --clobber
+          gh release upload "$TAG" "verovo-mcp-${PKG_VERSION}.tgz" --clobber
 
       # ── process fix (live-codex-desc-clarity-001 lesson): bundles ship with the tag ──
       # Every bundles/<experiment-id>/ is zipped and attached as a release asset, so a
@@ -125,7 +125,7 @@ jobs:
         with:
           node-version: '22'
           registry-url: 'https://registry.npmjs.org/'
-      - name: Publish @agentmeasure/mcp (runs only when NPM_TOKEN secret exists)
+      - name: Publish @verovo/mcp (runs only when NPM_TOKEN secret exists)
         if: ${{ env.HAS_NPM_TOKEN == 'true' }}
         working-directory: sdk
         env:
@@ -136,17 +136,17 @@ jobs:
           npm test
           # idempotent: a re-run of the same tag must not 409 on npm
           PKG_VERSION=$(node -p "require('./package.json').version")
-          if npm view "@agentmeasure/mcp@${PKG_VERSION}" version >/dev/null 2>&1; then
-            echo "@agentmeasure/mcp@${PKG_VERSION} already on npm — skipping publish"
+          if npm view "@verovo/mcp@${PKG_VERSION}" version >/dev/null 2>&1; then
+            echo "@verovo/mcp@${PKG_VERSION} already on npm — skipping publish"
           else
             npm publish --access public
           fi
 
-  # ── PyPI: `pipx install agentmeasure` ──
+  # ── PyPI: `pipx install verovo` ──
   # Uses PyPI trusted publishing (OIDC): NO API token to store or leak.
   # One-time setup on PyPI (account owner): Publishing → Add a pending publisher
-  #   PyPI project name: agentmeasure
-  #   owner: roy-tong · repository: AgentMeasure · workflow: release.yml
+  #   PyPI project name: verovo
+  #   owner: roy-tong · repository: Verovo · workflow: release.yml
   #   environment: (leave empty)
   # After that, commit the empty marker file `healthcheck/.pypi-ready` and push
   # a vX tag — this job then builds and publishes the healthcheck CLI.
@@ -162,10 +162,10 @@ jobs:
       - name: Skip if this version is already live on PyPI (idempotent re-runs)
         run: |
           VER=$(python3 -c "import tomllib; print(tomllib.load(open('healthcheck/pyproject.toml','rb'))['project']['version'])" 2>/dev/null || echo unknown)
-          LIVE=$(curl -sf "https://pypi.org/pypi/agentmeasure/json" | python3 -c "import json,sys; print(json.load(sys.stdin)['info']['version'])" 2>/dev/null || echo none)
+          LIVE=$(curl -sf "https://pypi.org/pypi/verovo/json" | python3 -c "import json,sys; print(json.load(sys.stdin)['info']['version'])" 2>/dev/null || echo none)
           echo "local=$VER live=$LIVE"
           if [[ "$VER" != "unknown" && "$VER" == "$LIVE" ]]; then
-            echo "agentmeasure $VER already live on PyPI — skipping publish"
+            echo "verovo $VER already live on PyPI — skipping publish"
             echo "pypi_skip=true" >> "$GITHUB_ENV"
           else
             echo "pypi_skip=false" >> "$GITHUB_ENV"
@@ -190,7 +190,7 @@ jobs:
           python -m pip install --user build
           python -m build --sdist --wheel --outdir dist/ healthcheck/
           ls -l dist/
-      - name: Publish agentmeasure to PyPI
+      - name: Publish verovo to PyPI
         if: ${{ steps.gate.outputs.ready == 'true' && env.pypi_skip != 'true' }}
         uses: pypa/gh-action-pypi-publish@release/v1
         with:

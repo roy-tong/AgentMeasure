@@ -4,8 +4,8 @@ import unittest
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from agentmeasure_lab import stats
-from agentmeasure_lab.rng import DetRng, balanced_variant_sequence
+from verovo_lab import stats
+from verovo_lab.rng import DetRng, balanced_variant_sequence
 
 
 class TestRng(unittest.TestCase):

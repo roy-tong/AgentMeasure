@@ -5,7 +5,7 @@ This is an honest downgrade, documented below, not a euphemism.
 
 ## What this experiment is
 
-Live validation round of the AgentMeasure Lab experiment engine against a real
+Live validation round of the Verovo Lab experiment engine against a real
 harness (codex-cli 0.149.0-alpha, 2026-08-22). Hypothesis: a clearer tool
 description raises real-agent selection rate. Result: **honest null** —
 `clear 1/4 (25%)` vs `control 0/4 (0%)`, difference +25.0pp,
@@ -17,7 +17,7 @@ effect of the observed size, plan ≈31 per arm next round.
 
 | File | Role |
 | --- | --- |
-| `report.json` | The official engine report, verbatim (schema `agentmeasure.lab/report` v1.0.0, engine v0.4.0). Carries the preregistration `manifest_hash` (31c1c298…) and the `run_fingerprint` (d6b161fd…) inside it. |
+| `report.json` | The official engine report, verbatim (schema `verovo.lab/report` v1.0.0, engine v0.4.0). Carries the preregistration `manifest_hash` (31c1c298…) and the `run_fingerprint` (d6b161fd…) inside it. |
 | `recompute_stats.py` | Independent recomputation of the statistics layer from per-arm counts only (stdlib). Compares against the report's `primary_comparison`; exits non-zero on any disagreement. |
 | `MANIFEST.md` | This file — provenance, limits, downgrade rationale. |
 
@@ -26,7 +26,7 @@ effect of the observed size, plan ≈31 per arm next round.
 The canonical bundle-verifiable set is: preregistration manifest, raw events
 (JSONL), run metadata, report. **The first three were not retained** for this
 run: live execution wrote them under gitignored paths (`runs/`,
-`.agentmeasure/`), and no export step existed at the time. They are **not
+`.verovo/`), and no export step existed at the time. They are **not
 recoverable, and are not reconstructed** — fabricating them would be worse
 than the gap.
 
@@ -61,7 +61,7 @@ verbatim; the spec moved on. Do not edit history to match vocabulary.
    assets at tag time.
 2. Release checklist (docs/RELEASE template + lab README): after a live run,
    copy the four-piece set from the run directory into
-   `bundles/<experiment-id>/` **before** tagging. `am lab history` resolves
+   `bundles/<experiment-id>/` **before** tagging. `verovo lab history` resolves
    the run directory.
 3. CI (`conformance.yml`) executes `recompute_stats.py` on every push, so any
    future edit to the report or the recomputation trips the build.

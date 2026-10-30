@@ -82,7 +82,7 @@ def build_status() -> dict:
     run_id = os.environ.get("GITHUB_RUN_ID")
     if run_id:
         server = os.environ.get("GITHUB_SERVER_URL", "https://github.com")
-        repo = os.environ.get("GITHUB_REPOSITORY", "roy-tong/AgentMeasure")
+        repo = os.environ.get("GITHUB_REPOSITORY", "roy-tong/Verovo")
         status["verified"] = {
             "sha": os.environ.get("GITHUB_SHA", "")[:7],
             "at": datetime.datetime.now(datetime.timezone.utc).date().isoformat(),

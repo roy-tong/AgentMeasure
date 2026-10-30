@@ -1,4 +1,4 @@
-# AgentMeasure Benchmark — Draft 0.2
+# Verovo Benchmark — Draft 0.2
 
 **Benchmarking "agent usage" claims across the ecosystem: an evidence-profile audit.**
 
@@ -14,7 +14,7 @@
 > **Draft 0.2 变更（v0.1.1 External-Ready 收敛）**：废弃单轴 E0–E5 阶梯
 > （与标准 `standard/TRUST.md` §3 的 Evidence Profile 多轴模型冲突）；"Context"
 > 更名为 **Observation Surface / Provenance**（CORE 的 `usage_context` 是另一概念，
-> 保留其原始语义）；取消 A/B/C/D 综合评分；AgentMeasure 自身不再参与排名，
+> 保留其原始语义）；取消 A/B/C/D 综合评分；Verovo 自身不再参与排名，
 > 仅作为参考 fixture 单列。
 >
 > **Draft 0.3 变更（v0.1.1 RC → External Alpha）**：`Authentication` 严格遵守
@@ -158,7 +158,7 @@ Replayability    : no (no public ledger, no raw data)
 
 为什么不做综合分：维度正交且用途相关。平台遥测可能 Coverage 强但 Independence
 低；独立爬虫可能 Independence 强但 Coverage 弱——谁"更好"取决于用途。综合分
-会隐藏这两者的差异，这正是 AgentMeasure 自己的质量模型反对的。
+会隐藏这两者的差异，这正是 Verovo 自己的质量模型反对的。
 
 ## 3. Cohort v0.1
 
@@ -171,7 +171,7 @@ Replayability    : no (no public ledger, no raw data)
 | Declared indexes | llms.txt / llms-full.txt adopters | "read by AI" claims vs actual request logs |
 | Observation standards | OpenTelemetry GenAI semantic conventions, AAIF outputs | span coverage, tool-call semantics maturity |
 
-**外部 cohort 只审外部声称。** AgentMeasure 自己的数字（Pipeline Validation #001）
+**外部 cohort 只审外部声称。** Verovo 自己的数字（Pipeline Validation #001）
 作为 **Reference Fixture** 单列于报告附录，不进排名——避免"自己建评分体系给
 自己评级"。
 

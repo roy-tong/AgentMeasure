@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""AgentMeasure conformance runner（Draft 0.3，按指标运行 vectors）。
+"""Verovo conformance runner（Draft 0.3，按指标运行 vectors）。
 
 用法: python3 conformance/runners/run_metrics.py
 读 conformance/vectors/*.json，对每个 metric 的 vectors 跑参考实现，
-断言输出与 expect 一致。任何 AgentMeasure 实现应对同一 vectors 产生同一结果。
+断言输出与 expect 一致。任何 Verovo 实现应对同一 vectors 产生同一结果。
 """
 from __future__ import annotations
 

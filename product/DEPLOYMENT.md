@@ -1,10 +1,10 @@
-# AgentMeasure Deployment（Draft 0.4.1）
+# Verovo Deployment（Draft 0.4.1）
 
 ## 两种模式
 
 | | Self-hosted | Hosted |
 | --- | --- | --- |
-| 谁运行 | Provider 自己 | AgentMeasure 托管 |
+| 谁运行 | Provider 自己 | Verovo 托管 |
 | 数据去向 | 自己的存储 | 托管 ingestion（可配置保留期） |
 | 适合 | 数据主权敏感 / 企业 | 快速开始 / 中小 Provider |
 | 支持 | Collector + Dashboard 本地部署 | Hosted Analytics（产品线） |
@@ -17,13 +17,13 @@ Hosted 是显式选择。
 ```text
 ┌─ Provider 环境 ─────────────────────────────┐
 │  app / MCP server / API                     │
-│    └─ agentmeasure-sdk（进程内，fail-open）  │
-│         └─ agentmeasure-buffer（磁盘队列）    │
+│    └─ verovo-sdk（进程内，fail-open）  │
+│         └─ verovo-buffer（磁盘队列）    │
 └──────────────────────┬──────────────────────┘
                        │ 批量上报（异步）
               ┌────────▼────────┐
               │  ingest 端点     │  ← self-hosted: 自建 collector
-              └────────┬────────┘     hosted: agentmeasure.cloud
+              └────────┬────────┘     hosted: verovo.cloud
                        ▼
               collector → store → dashboard
 ```
@@ -31,11 +31,11 @@ Hosted 是显式选择。
 ## 环境变量（沿用 reference 约定）
 
 ```text
-AGENTMEASURE_EVENTS_DIR    本地事件目录（默认 ~/.agentmeasure/events）
-AGENTMEASURE_INGEST_URL    hosted/self-hosted 上报端点（空 = 仅本地）
-AGENTMEASURE_API_KEY       ingest 鉴权（hosted 必填）
-AGENTMEASURE_BUFFER_LIMIT  缓冲上限（默认 10k 条，超出丢最旧并披露）
-AGENTMEASURE_OPTIN         显式开启上报（默认仅本地）
+VEROVO_EVENTS_DIR    本地事件目录（默认 ~/.verovo/events）
+VEROVO_INGEST_URL    hosted/self-hosted 上报端点（空 = 仅本地）
+VEROVO_API_KEY       ingest 鉴权（hosted 必填）
+VEROVO_BUFFER_LIMIT  缓冲上限（默认 10k 条，超出丢最旧并披露）
+VEROVO_OPTIN         显式开启上报（默认仅本地）
 DO_NOT_TRACK=1             完全禁用
 ```
 

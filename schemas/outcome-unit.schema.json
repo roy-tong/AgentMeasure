@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "AgentMeasure Outcome Unit (v1, rev 0.2: + action / usage_aggregate)",
-  "description": "BP r28 p14 'Emerging · Outcome' row: the billable unit for outcome-priced contracts beyond per-resolution support — a qualified lead, a completed case. This schema defines the unit BEFORE any engine reads it: one file, one unit, every field traceable to a contract clause or an observer. Judgement discipline mirrors AMS-1: a criterion that cannot be evidenced is listed in criteria_unproven, never silently counted; status 'unproven' is a first-class state. vendor and buyer each keep their own units; agreement is a separate reconciliation, never assumed.",
+  "title": "Verovo Outcome Unit (v1, rev 0.2: + action / usage_aggregate)",
+  "description": "BP r28 p14 'Emerging · Outcome' row: the billable unit for outcome-priced contracts beyond per-resolution support — a qualified lead, a completed case. This schema defines the unit BEFORE any engine reads it: one file, one unit, every field traceable to a contract clause or an observer. Judgement discipline mirrors VSS-1: a criterion that cannot be evidenced is listed in criteria_unproven, never silently counted; status 'unproven' is a first-class state. vendor and buyer each keep their own units; agreement is a separate reconciliation, never assumed.",
   "type": "object",
   "required": [
     "schema_version",
@@ -17,7 +17,7 @@
   "properties": {
     "schema_version": {
       "type": "string",
-      "enum": ["agentmeasure-outcome-0.1"]
+      "enum": ["verovo-outcome-0.1"]
     },
     "unit_id": {
       "type": "string",
@@ -47,7 +47,7 @@
     "observer_grade": {
       "type": "string",
       "enum": ["self_attested", "affected_party", "third_party_corroborated"],
-      "description": "Same evidence ladder as AMS-1 settlement (standard/SETTLEMENT.md): who observed the outcome."
+      "description": "Same evidence ladder as VSS-1 settlement (standard/SETTLEMENT.md): who observed the outcome."
     },
     "qualification": {
       "type": "object",
@@ -110,7 +110,7 @@
         "quantity": {"type": "number", "minimum": 0},
         "unit": {"type": "string"}
       },
-      "description": "For usage_aggregate units: the measured quantity as recorded, with its unit. The metering is the vendor's telemetry, taken as input — AgentMeasure verifies billing, not telemetry."
+      "description": "For usage_aggregate units: the measured quantity as recorded, with its unit. The metering is the vendor's telemetry, taken as input — Verovo verifies billing, not telemetry."
     },
     "evidence": {
       "type": "array",

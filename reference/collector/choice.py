@@ -1,17 +1,17 @@
 #!/usr/bin/env python3
-"""AgentMeasure Choice 家族（Draft 0.4：Grain = Decision Opportunity）。
+"""Verovo Choice 家族（Draft 0.4：Grain = Decision Opportunity）。
 
-对象模型（AgentMeasure-CORE §2.4）：
+对象模型（Verovo-CORE §2.4）：
   Decision Opportunity（decision_id）→ Candidate Set（candidate_set_id）
   → Tool Presentation（presentation_id）→ Selection（selection_id）
 
-三轴（AgentMeasure-CORE §6）：
+三轴（Verovo-CORE §6）：
   Choice Mode（决策结构）× Decision Authority（谁决策）× Selection Constraint（多自由）
 
 计数纪律：presentation 按 decision 计（同 decision 同 tool 只计 1）；
 Agent 一天看到 Exa 10 次选 1 次 = 10 presentations / 1 selection = 10%。
 
-指标（AgentMeasure-METRICS M2）：
+指标（Verovo-METRICS M2）：
   M2.1 Presented Opportunities
   M2.2 Observed Selection Rate = Observed Selected ÷ Presented
       （observed ≠ preference：required/forced 的"选择"不是偏好，须按轴披露）

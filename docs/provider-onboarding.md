@@ -8,7 +8,7 @@
 
 ## Identify your input first
 
-With CLI 0.7.2+, run `agentmeasure inspect-input your.jsonl`. This is format routing only, not validation or a conformance pass. Path A/B below uses canonical observations; `agentmeasure conformance` uses FMT-002. These are different contracts. A valid canonical file must not be repaired by inventing FMT-002 fields.
+With CLI 0.7.2+, run `verovo inspect-input your.jsonl`. This is format routing only, not validation or a conformance pass. Path A/B below uses canonical observations; `verovo conformance` uses FMT-002. These are different contracts. A valid canonical file must not be repaired by inventing FMT-002 fields.
 
 ## Three entry paths (pick one)
 
@@ -71,5 +71,5 @@ A run is **successful** when all four hold:
   (`conformance/README.md`) — receipt format, counting integrity, outcome
   audit families.
 
-Questions go in [issue #6](https://github.com/roy-tong/AgentMeasure/issues/6)
+Questions go in [issue #6](https://github.com/roy-tong/verovo/issues/6)
 — public, so the next provider reads the answer.

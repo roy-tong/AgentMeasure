@@ -20,10 +20,10 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO / "lab"))
-from agentmeasure_lab.schemas import validate
+from verovo_lab.schemas import validate
 EVENT_SCHEMA = json.loads((REPO / "lab/schemas/funnel-event.schema.json").read_text())
 
-SCHEMA = "agentmeasure.lab/funnel-event"
+SCHEMA = "verovo.lab/funnel-event"
 SCHEMA_VERSION = "1.0.0"
 
 

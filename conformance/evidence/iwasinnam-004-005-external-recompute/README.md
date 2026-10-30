@@ -1,6 +1,6 @@
 # Independent recomputation receipt — iwasinnam-004 (join) / iwasinnam-005 (replay)
 
-Date: 2026-10-16. Recomputed by AgentMeasure (Roy Tong), returned in the
+Date: 2026-10-16. Recomputed by Verovo (Roy Tong), returned in the
 originating mail thread as promised on 2026-10-15. Free conformance
 collaboration — no charge, per the standing agreement. The claim boundary for
 each fixture is the contributor's `CLAIM_BOUNDARY.md`, carried verbatim next to

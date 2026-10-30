@@ -1,4 +1,4 @@
-# AgentMeasure Harness Profile — DeepSeek Harness（DSH）
+# Verovo Harness Profile — DeepSeek Harness（DSH）
 
 > Draft 0.4.4。来源：deepseek-harness 仓库 `docs/subsystems/`（session.md /
 > subagent.md，master@2026-08）。DSH 处于开发者预览，事件词汇表可能随插件演化。
@@ -8,7 +8,7 @@
 DSH 的核心事实：**Session 是 append-only 的 `SessionEvent` 日志**，消息历史由日志
 派生。这意味着 DSH 是目前 harness 侧观察保真度最高的平台之一。
 
-| DSH 事件 | 说明 | AgentMeasure 映射 |
+| DSH 事件 | 说明 | Verovo 映射 |
 |---|---|---|
 | `user/message` | 用户输入 / 注入上下文 / steering | Task 候选边界（intent 证据） |
 | `assistant/message` | 模型输出，**携带 usage（token）**，`interrupted` 标记 | attempt_usage（model 层） |
@@ -45,7 +45,7 @@ DSH 的核心事实：**Session 是 append-only 的 `SessionEvent` 日志**，�
 - **插件扩展事件**（compaction、hook bridge 等）不是 SurfaceEventType，adapter
   不得当作计量事件。
 
-## 4. 为什么 DSH 对 AgentMeasure 特别重要
+## 4. 为什么 DSH 对 Verovo 特别重要
 
 DSH 把"Agent 调 Agent"做成了显式的、带 lineage 和 depth 的对象。这是
 Delegation Graph（见 proposals/2026-08-21-delegation-graph.md）第一个

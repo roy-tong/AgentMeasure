@@ -9,12 +9,12 @@ from datetime import datetime, timezone
 
 from _support import fixture, HEALTHCHECK_DIR, FIXTURES_DIR, DEMO_DIR
 
-from am_healthcheck import cli
-from am_healthcheck.checks import build_overview, run_checks, session_summaries
-from am_healthcheck.codex import parse_session
-from am_healthcheck.discover import filter_by_date, parse_date
-from am_healthcheck.share import build_share_summary, share_json
-from am_healthcheck import snapshot as snapshot_mod
+from verovo_healthcheck import cli
+from verovo_healthcheck.checks import build_overview, run_checks, session_summaries
+from verovo_healthcheck.codex import parse_session
+from verovo_healthcheck.discover import filter_by_date, parse_date
+from verovo_healthcheck.share import build_share_summary, share_json
+from verovo_healthcheck import snapshot as snapshot_mod
 
 
 class CliHarness(unittest.TestCase):
@@ -124,9 +124,9 @@ class TestSnapshotFlow(CliHarness):
             out, _err = self.run_cli([
                 "check", "--dir", FIXTURES_DIR,
                 "--save-snapshot", "--no-history"])
-            self.assertIn("agentmeasure-snapshot-", out)
+            self.assertIn("verovo-snapshot-", out)
             files = [f for f in os.listdir(self.tmp.name)
-                     if f.startswith("agentmeasure-snapshot-")]
+                     if f.startswith("verovo-snapshot-")]
             self.assertEqual(len(files), 1)
         finally:
             os.chdir(cwd)
@@ -185,7 +185,7 @@ class TestSnapshotFlow(CliHarness):
 
 class TestCompareContracts(unittest.TestCase):
     def setUp(self):
-        from am_healthcheck.codex import parse_files
+        from verovo_healthcheck.codex import parse_files
         self.a = snapshot_mod.build_snapshot(
             *self._run(fixture("codex-ok.jsonl"), "wa"),
             mode="synthetic-demo", window_label="wa", command="x")

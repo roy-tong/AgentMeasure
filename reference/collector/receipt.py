@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""AgentMeasure Usage Receipt Protocol（AgentMeasure-DATA/TRUST 的实现核心）。
+"""Verovo Usage Receipt Protocol（Verovo-DATA/TRUST 的实现核心）。
 
 Usage Receipt = 某个可验证 Observer 对一次 Agent-tool interaction 所做的
 最小、签名、隐私安全声明。
@@ -27,7 +27,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from collector.usage import pseudonymize, utc_now  # noqa: E402
 
-PROTOCOL_VERSION = "agentmeasure-0.1"
+PROTOCOL_VERSION = "verovo-0.1"
 
 RECEIPT_FIELDS = (
     "spec_version", "receipt_id", "observed_at",

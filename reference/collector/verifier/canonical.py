@@ -1,4 +1,4 @@
-"""AgentMeasure canonical JSON（AgentMeasure-DATA 规定的确定性序列化）。
+"""Verovo canonical JSON（Verovo-DATA 规定的确定性序列化）。
 
 目的：所有实现必须对同一 Signed Observation 产生完全相同的签名字节。
 规则（对 signed 字段集）：

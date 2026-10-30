@@ -1,4 +1,4 @@
-# AgentMeasure Hosted Analytics（Draft 0.4.2 — in development）
+# Verovo Hosted Analytics（Draft 0.4.2 — in development）
 
 ## 1. 管道
 

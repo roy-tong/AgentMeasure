@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""AgentMeasure metric registry validator（零依赖，Draft 0.4.2）。
+"""Verovo metric registry validator（零依赖，Draft 0.4.2）。
 
 用法: python3 registry/validate_metrics.py
 校验 registry/metrics.yaml：

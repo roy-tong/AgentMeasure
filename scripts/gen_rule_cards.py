@@ -30,7 +30,7 @@ TRIGGER_TEXT = {
     "algorithmic_classification": "an internal algorithm classifies the conversation as resolved",
     "llm_verified_only": "only an affirmative model adjudication counts — silence alone is free",
     "autonomous_completion": "bills on autonomous completion (no published timer or reopen rule)",
-    "unknown": "no published rule — only the AgentMeasure standard applies",
+    "unknown": "no published rule — only the Verovo standard applies",
 }
 
 REOPEN_TEXT = {
@@ -65,17 +65,17 @@ _PAGE = """<!doctype html>
 <meta name="description" content="{desc}">
 <link rel="stylesheet" href="../light.css">
 <style>{css}</style>
-<link rel="canonical" href="https://roy-tong.github.io/AgentMeasure/rules/index.html">
+<link rel="canonical" href="https://roy-tong.github.io/verovo/rules/index.html">
 </head>
 <body>
 <header class="snav">
   <div class="snav-in">
-    <a class="snav-brand" href="../index.html">AgentMeasure<span>_</span></a>
+    <a class="snav-brand" href="../index.html">Verovo<span>_</span></a>
     <nav class="snav-links" aria-label="Sections">
       <a href="../index.html#evidence">Evidence</a>
       <a href="../index.html#pricing">Pricing</a>
       <a href="../recount.html">Free recount</a>
-      <a class="ext" href="https://github.com/roy-tong/AgentMeasure" target="_blank" rel="noopener">GitHub&nbsp;↗</a>
+      <a class="ext" href="https://github.com/roy-tong/verovo" target="_blank" rel="noopener">GitHub&nbsp;↗</a>
     </nav>
     <a class="snav-cta" href="../services.html">Get a diagnosis&nbsp;→</a>
   </div>
@@ -85,11 +85,11 @@ _PAGE = """<!doctype html>
 </div>
 <footer class="sfoot">
   <div class="sfoot-in">
-    <span class="sfoot-brand">AgentMeasure<span>_</span></span>
+    <span class="sfoot-brand">Verovo<span>_</span></span>
     <a href="../index.html">Home</a>
     <a href="../claims.html">Claims index</a>
     <a href="../releases.html">Release notes</a>
-    <a href="https://github.com/roy-tong/AgentMeasure" target="_blank" rel="noopener">GitHub</a>
+    <a href="https://github.com/roy-tong/verovo" target="_blank" rel="noopener">GitHub</a>
     <span class="sfoot-note">Open source under MIT. The verification rules stay public and free.</span>
   </div>
 </footer>
@@ -130,7 +130,7 @@ def _vendor_card(vendor_id: str, v: dict) -> str:
 </dl>
 {('<ul class="notes">%s</ul>' % notes) if notes else ''}
 {extra}
-<p class="muted">Re-run the recount yourself: <a href="../recount.html">in the browser</a> or <code>agentmeasure recount --vendor {vendor_id}</code>. Rules change; this card records the version it was read from.</p>
+<p class="muted">Re-run the recount yourself: <a href="../recount.html">in the browser</a> or <code>verovo recount --vendor {vendor_id}</code>. Rules change; this card records the version it was read from.</p>
 </div>"""
 
 
@@ -145,7 +145,7 @@ def render() -> dict:
     body = f"""<h1>Vendor billing rules, in public</h1>
 <p class="muted">One card per vendor: what the vendor charges per, what its own published
 rules say, and where every fact came from. This is the same
-<a href="https://github.com/roy-tong/AgentMeasure/blob/main/registry/vendor-rules.json">registry
+<a href="https://github.com/roy-tong/verovo/blob/main/registry/vendor-rules.json">registry
 file</a> the CLI and the browser recount read — a parity test in CI keeps the three from
 drifting. Registry version <strong>v{version}</strong>.</p>
 <p class="muted">Confidence: <span class="badge P">P</span> primary/official source ·
@@ -156,10 +156,10 @@ drifting. Registry version <strong>v{version}</strong>.</p>
 {chr(10).join(cards)}
 </div>
 <p class="muted" style="margin-top:28px">Find a rule that changed, or one we read wrong?
-<a href="https://github.com/roy-tong/AgentMeasure/edit/main/registry/vendor-rules.json">Edit the registry</a> —
+<a href="https://github.com/roy-tong/verovo/edit/main/registry/vendor-rules.json">Edit the registry</a> —
 pull requests welcome, every field carries its source.</p>"""
     return {"index.html": _PAGE.format(
-        title="Vendor billing rules — AgentMeasure",
+        title="Vendor billing rules — Verovo",
         desc="What AI support vendors charge per and what their own published rules say — versioned, sourced, re-runnable.",
         css=_CSS, body=body)}
 

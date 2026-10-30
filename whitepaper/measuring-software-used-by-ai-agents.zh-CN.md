@@ -2,10 +2,10 @@
 
 **面向 CaaS 与 Agent Capability Economy 的统一计量基础**
 
-*Whitepaper v0.3 · AgentMeasure Standard Draft 0.4.4*
+*Whitepaper v0.3 · Verovo Standard Draft 0.4.4*
 
 > 作者：Roy Tong（仝夏瑞）
-> 参考实现与开放实验引擎（[`lab/`](../lab/README.md)）均在 AgentMeasure 仓库发布。
+> 参考实现与开放实验引擎（[`lab/`](../lab/README.md)）均在 Verovo 仓库发布。
 
 ## 摘要
 
@@ -19,7 +19,7 @@ API、CLI 这些接口越来越容易创建与分发时，经济价值日益向�
 之出现：**区分真增长与假增长**——retry 膨胀、未被消费的结果、内部循环交易——在任何
 人据此做预算之前。
 
-AgentMeasure 为这个正在形成的 Capability Economy 提出一套开放计量标准：Reach →
+Verovo 为这个正在形成的 Capability Economy 提出一套开放计量标准：Reach →
 Choice → Use → Utility → Value 的共同数据语言，未来 Metering、Marketplace 与支付
 轨道可以构建其上的测量语义，以及把测量从被动观察变成可检验主张的实验语义（预注册、
 guardrail、分条件效应量）。目标不是仪表盘，而是让 **Capability as a Service（CaaS，
@@ -27,7 +27,7 @@ guardrail、分条件效应量）。目标不是仪表盘，而是让 **Capabili
 
 ## 〇.二、与 Observability 的关系
 
-> **AgentMeasure 假设遥测可能已经存在。它的目的不是替代 tracing、logging 或
+> **Verovo 假设遥测可能已经存在。它的目的不是替代 tracing、logging 或
 > evaluation 系统，而是在其证据之上定义可移植的测量对象与规则。**
 
 不同系统可以观测到同一 agent 行为，却报出不同的 usage 数字：
@@ -42,7 +42,7 @@ guardrail、分条件效应量）。目标不是仪表盘，而是让 **Capabili
 它们的测量语义并不相同。
 ```
 
-AgentMeasure 不重新采集 observability 数据；它在已有证据（OTel / Langfuse /
+Verovo 不重新采集 observability 数据；它在已有证据（OTel / Langfuse /
 Logfire / Phoenix / 运行时日志）之上定义可跨系统比较的测量对象、统计单位与推导
 规则：
 
@@ -125,7 +125,7 @@ Agent → Capability → 操作 / 结果
 
 ### 论点与假设（Thesis and assumptions）
 
-AgentMeasure 建立在三个**尚未完全证实**的趋势判断上：
+Verovo 建立在三个**尚未完全证实**的趋势判断上：
 
 1. Agent 将中介越来越多的软件选择与执行。
 2. 更多软件能力将脱离其人类 UI 被独立暴露。
@@ -154,7 +154,7 @@ call、subagent、request——也有自己的盲区（哪些候选能力被呈�
 Agent 的委托会跨越 Harness 边界，没有任何单一观察者能看到完整任务。
 
 **3. 测量必须位于它们之上。** 软件越可组合，可移植的测量语义越重要。这正是
-AgentMeasure 在既有遥测之上定义语义对象（Operation、Attempt、Delegation、
+Verovo 在既有遥测之上定义语义对象（Operation、Attempt、Delegation、
 证据等级）而不是再造一种遥测格式的原因，也是 Harness Profiles——每个运行时
 能/不能观察到什么的公开记录——本身成为标准一部分的原因。
 
@@ -214,7 +214,7 @@ Provider 能主张价值吗？
 
 ## 三、测量对象
 
-**Observation 是证据单位，不是业务测量单位。** AgentMeasure 先定义业务单位：
+**Observation 是证据单位，不是业务测量单位。** Verovo 先定义业务单位：
 
 ```text
 Provider
@@ -283,7 +283,7 @@ communication / control / storage / sensing）决定适用哪条链路、哪些 
 
 ## 五、测量框架
 
-AgentMeasure 定义 **Metric Families**，不定义全局北极星。指标状态明确标注——
+Verovo 定义 **Metric Families**，不定义全局北极星。指标状态明确标注——
 **Defined**（正式指标合同）、**Draft**（草案）、**Research**（方向）——概念论文
 不冒充标准已全定义。
 
@@ -380,11 +380,11 @@ Metering Ledger       可重放、可纠错的计量事实账本（revision / su
 Commercial Attribution  哪些参与方贡献了发现 / 选择 / 收入
 ```
 
-**支付不在范围内。** AgentMeasure 不定义支付轨道、钱包、结算货币、商户记录关系或
+**支付不在范围内。** Verovo 不定义支付轨道、钱包、结算货币、商户记录关系或
 金融托管。它产出支付系统消费的事实——合格操作、已确认效应、合格结果、计费数量、
 商业归因。
 
-> **AgentMeasure 标准化经济事实，不移动金钱。**
+> **Verovo 标准化经济事实，不移动金钱。**
 
 ### 七.五、从测量到毛利：价值公式
 
@@ -497,7 +497,7 @@ GitHub Skill → Registry → Agent 推荐 → Capability → 支付
 ## 九、能力信任与可比性（Capability Trust and Comparability）
 
 能力消费者的选择受多种因素塑造。Agent 与 Marketplace 可以在品牌、政策、价格、
-用户偏好与平台约束**之外**越来越多地比较机器可读的性能信号——这正是 AgentMeasure
+用户偏好与平台约束**之外**越来越多地比较机器可读的性能信号——这正是 Verovo
 的 Decision Authority / Selection Constraint 模型描述的轴：
 
 ```text
@@ -505,7 +505,7 @@ Capability Signals
 可靠性 · 延迟 · 价格 · 新鲜度 · 消费 · 效应成功 · 结果 · 安全 · 测量覆盖
 ```
 
-AgentMeasure **不计算通用 AgentMeasure Score**。Agent A 在乎价格，Agent B 在乎延迟，
+Verovo **不计算通用 Verovo Score**。Agent A 在乎价格，Agent B 在乎延迟，
 Agent C 在乎隐私。排名是 Agent 与 Marketplace 的产品决策；标准只定义可比较的信号
 与让它们可比较的 Label。Measurement Label 是这种可比性的基础。
 
@@ -545,12 +545,12 @@ MCP 承载生命周期事件与 trace context；OpenTelemetry 承载工具 span�
 Code/DeepSeek Harness 暴露带能力声明的观察点；registry 提供实体身份。未来的支付
 轨道消费标准的事实，而不是扩展标准的核心。实验格式——预注册 manifest、漏斗事件、
 报告 schema——以开放 JSON Schema 发布（`lab/schemas/`），第三方可以据此实现自己的
-runner 并产出互认的结果；参考实现还内置了只读 MCP 查询接口（`am mcp serve`），
+runner 并产出互认的结果；参考实现还内置了只读 MCP 查询接口（`verovo mcp serve`），
 让 Agent 与 CI 消费与工程师相同的证据——带证据等级，不带排名。
 
 ## 十二、不做什么与治理
 
-AgentMeasure **不是**支付协议、Marketplace、钱包或通用声誉系统。标准不：
+Verovo **不是**支付协议、Marketplace、钱包或通用声誉系统。标准不：
 
 - 移动金钱或托管资金；
 - 给能力排名或给 Provider 打分；
@@ -583,7 +583,7 @@ AgentMeasure **不是**支付协议、Marketplace、钱包或通用声誉系统�
 它同样需要把验证过的价值与制造出来的增长分开的纪律：合格性、消费证据、预注册实验、
 guardrail、如实报告的迁移效应。
 
-AgentMeasure 就是那个提案：测量语义作为基础设施，实验语义作为它的证明程序，商业
+Verovo 就是那个提案：测量语义作为基础设施，实验语义作为它的证明程序，商业
 语义作为未来扩展，支付交给别人的轨道。**今天：让开发者知道 Agent 如何真实使用
 自己的能力。下一步：让 Capability 可以跨 Agent 被统一度量、比较、计量——并且可以
 被实验性地优化。长期：成为 CaaS 与 Agent Capability Economy 的统一计量基础。**
@@ -606,7 +606,7 @@ AgentMeasure 就是那个提案：测量语义作为基础设施，实验语义�
 11. Hasan et al. — *MCP Tool Descriptions Are Smelly*（[arXiv 2602.14878](https://arxiv.org/abs/2602.14878)）：97.1% 的工具描述有质量问题；成功率 +5.85pp 且步骤 +67.46%；16.67% 的组合退化。
 12. Microsoft Research — [BiasBusters：LLM 工具选择偏置（ICLR 2026）](https://www.microsoft.com/en-us/research/publication/biasbusters-uncovering-and-mitigating-tool-selection-bias-in-large-language-models/)。
 13. Arcade — [ToolBench：MCP Server 质量基准（41,900+ servers；0.5% 评 A）](https://www.arcade.dev/blog/introducing-toolbench-quality-benchmark-mcp-servers/)。
-14. AgentMeasure 规范 — Core / Metrics / Data / Entity / Quality / Correlation
+14. Verovo 规范 — Core / Metrics / Data / Entity / Quality / Correlation
     （`standard/`）；Commercial Extension（`extensions/COMMERCIAL.md`，实验性）；
     机器可读 registry（`schemas/`、`registry/`）；开放实验引擎（`lab/`——预注册、
     漏斗采集、诚实统计、guardrail）；参考实现与 conformance vectors 同仓发布。
@@ -614,6 +614,6 @@ AgentMeasure 就是那个提案：测量语义作为基础设施，实验语义�
 ---
 
 *规范全文（测量对象、生命周期、指标家族、质量、报告）、开放实验引擎（`lab/`）
-与参考实现均已开源。AgentMeasure 1.0 毕业标准：2 个独立实现、3 个 runtime
+与参考实现均已开源。Verovo 1.0 毕业标准：2 个独立实现、3 个 runtime
 profiles、2 个 tool-side 实现、公开 conformance + canonical test vectors、5-10 个
 真实项目、已发布的 discrepancy report、安全与隐私审查。*

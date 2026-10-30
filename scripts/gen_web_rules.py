@@ -40,7 +40,7 @@ def render() -> str:
             + "  if (typeof module === \"object\" && module.exports) {\n"
             + "    module.exports = factory();\n"
             + "  } else {\n"
-            + "    root.AGENTMEASURE_VENDOR_RULES = factory();\n"
+            + "    root.VEROVO_VENDOR_RULES = factory();\n"
             + "  }\n"
             + "})(typeof self !== \"undefined\" ? self : this, function () {\n"
             + "  return " + body + ";\n"

@@ -1,12 +1,12 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { chmodSync } from "node:fs";
-import { AgentMeasure } from "../dist/index.js";
+import { Verovo } from "../dist/index.js";
 import { makeEventsDir, readEvents } from "./helpers.mjs";
 
 test("fail-open: emit never throws, even when the spool is unwritable", async () => {
   const dir = makeEventsDir();
-  const am = new AgentMeasure({ eventsDir: dir, projectId: "t/failopen", flushIntervalMs: 60_000 });
+  const am = new Verovo({ eventsDir: dir, projectId: "t/failopen", flushIntervalMs: 60_000 });
   am.emit({ type: "attempt_started", payload: { tool_call_id: "x" } });
   chmodSync(dir, 0o500); // remove write permission
   am.emit({ type: "attempt_completed", payload: { tool_call_id: "x", outcome: "success" } });
@@ -23,7 +23,7 @@ test("fail-open: emit never throws, even when the spool is unwritable", async ()
 
 test("fail-open: handler errors propagate; failure attempt is observed", async () => {
   const dir = makeEventsDir();
-  const am = new AgentMeasure({ eventsDir: dir, projectId: "t/failopen2", flushIntervalMs: 60_000 });
+  const am = new Verovo({ eventsDir: dir, projectId: "t/failopen2", flushIntervalMs: 60_000 });
   const wrapped = am.wrapTool("boom", async () => {
     throw new Error("business failure");
   });
@@ -39,7 +39,7 @@ test("fail-open: handler errors propagate; failure attempt is observed", async (
 
 test("fail-open: isError metadata marks failure without reading content", async () => {
   const dir = makeEventsDir();
-  const am = new AgentMeasure({ eventsDir: dir, projectId: "t/failopen3", flushIntervalMs: 60_000 });
+  const am = new Verovo({ eventsDir: dir, projectId: "t/failopen3", flushIntervalMs: 60_000 });
   const wrapped = am.wrapTool("t", async () => ({ content: "SECRET", isError: true }));
   const result = await wrapped();
   assert.equal(result.isError, true);

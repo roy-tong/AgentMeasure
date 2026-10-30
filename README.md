@@ -1,8 +1,11 @@
-# AgentMeasure
+# Verovo
+
+<p align="left"><img src="assets/verovo-logo-card.png" alt="Verovo" width="300"></p>
+
 
 **Verify AI service charges and delivery with evidence your team can check.**
 
-AgentMeasure helps AI service buyers connect applicable billing rules with
+Verovo helps AI service buyers connect applicable billing rules with
 event records and business requirements. Start with a specific AI support bill
 or an upcoming acceptance or renewal decision.
 
@@ -13,12 +16,12 @@ Local CLI commands do not upload data.
 
 | Your task | Start here |
 |---|---|
-| A specific AI support billing question | [Describe the task and check fit](https://roy-tong.github.io/AgentMeasure/first-look.html#contact), or run the free recount below |
-| An upcoming acceptance or renewal decision | [Discuss the decision and evidence needed](https://roy-tong.github.io/AgentMeasure/first-look.html); project scope is exploratory |
-| A local log anomaly or one metering sample | [Free measurement runs](https://roy-tong.github.io/AgentMeasure/services.html) — bring a sanitized sample, we run the check |
+| A specific AI support billing question | [Describe the task and check fit](https://roy-tong.github.io/verovo/first-look.html#contact), or run the free recount below |
+| An upcoming acceptance or renewal decision | [Discuss the decision and evidence needed](https://roy-tong.github.io/verovo/first-look.html); project scope is exploratory |
+| A local log anomaly or one metering sample | [Free measurement runs](https://roy-tong.github.io/verovo/services.html) — bring a sanitized sample, we run the check |
 | Contribute a rule, counterexample or adapter | [Maintainer resources](#for-tool-maintainers-and-providers) |
 
-[Website](https://roy-tong.github.io/AgentMeasure/) · [中文](README.zh-CN.md) · [Healthcheck guide](healthcheck/README.md) · [Release notes](https://roy-tong.github.io/AgentMeasure/releases.html)
+[Website](https://roy-tong.github.io/verovo/) · [中文](README.zh-CN.md) · [Healthcheck guide](healthcheck/README.md) · [Release notes](https://roy-tong.github.io/verovo/releases.html)
 
 ## Two questions, different next steps
 
@@ -53,8 +56,10 @@ c-005,N,Y,Y,Y
 ```
 
 ```bash
-pip install agentmeasure
-agentmeasure recount --export export.csv --vendor zendesk
+# 0.9.0 is tagged on GitHub; the PyPI project `verovo` is pending its first publish.
+pip install "git+https://github.com/roy-tong/verovo@v0.9.0#subdirectory=healthcheck"
+# once published: pip install verovo
+verovo recount --export export.csv --vendor zendesk
 ```
 
 The output prints the vendor's rule with its public source, findings in both
@@ -67,7 +72,7 @@ undercharge (vendor favour) 0.00
 net variance                2.00
 ```
 
-No CSV at hand? `agentmeasure recount --sample` runs the same bundled synthetic export in CLI 0.8.0.
+No CSV at hand? `verovo recount --sample` runs the same bundled synthetic export in CLI 0.8.0.
 In this synthetic example, four rows remain unsettled; $8 is not a verified
 billable total. The $2 is a rule-priced finding, not recovered money.
 
@@ -142,10 +147,10 @@ Each period needs a fresh, reviewed export; no vendor data is fetched automatica
 Six vendor rule sets ship today — Intercom Fin, Zendesk AI Agents, HubSpot
 Breeze, Salesforce Agentforce, Ada and a generic per-resolution baseline —
 each citing its source and confidence grade
-(`agentmeasure recount --list-vendors`). When a recount disagrees with the
-invoice: `agentmeasure prepare` maps a native Intercom or Zendesk export onto
-the canonical columns, `agentmeasure dispute` builds the Dispute & Recovery
-Pack, and `agentmeasure recovery` records what the vendor actually conceded,
+(`verovo recount --list-vendors`). When a recount disagrees with the
+invoice: `verovo prepare` maps a native Intercom or Zendesk export onto
+the canonical columns, `verovo dispute` builds the Dispute & Recovery
+Pack, and `verovo recovery` records what the vendor actually conceded,
 counted separately from the claim.
 
 A recount is arithmetic, not a verdict: rows without enough evidence land in
@@ -155,27 +160,27 @@ two paid services below.
 
 ## Start with your own machine (free)
 
-`agentmeasure check` inspects your local Codex / Claude Code sessions for
+`verovo check` inspects your local Codex / Claude Code sessions for
 duplicate records, retry amplification and token anomalies — the same evidence
-discipline pointed at your own logs. `agentmeasure demo` runs a bundled
+discipline pointed at your own logs. `verovo demo` runs a bundled
 synthetic session with no account and no upload. Missing evidence stays
 unknown; a retry is not automatically a second logical operation.
 
-Python 3.9+. CLI **0.8.0** on [PyPI](https://pypi.org/project/agentmeasure/);
-Provider SDK **0.2.0** on [npm](https://www.npmjs.com/package/@agentmeasure/mcp),
+Python 3.9+. CLI **0.8.0** on [PyPI](https://pypi.org/project/verovo/);
+Provider SDK **0.2.0** on [npm](https://www.npmjs.com/package/@verovo/mcp),
 verified 2026-10-15. These packages have separate version numbers.
 On macOS/Linux use `python3 -m pip` if needed; on Windows use `py -m pip`.
 For permission or
-“externally managed” errors, use the [virtual-environment instructions](https://roy-tong.github.io/AgentMeasure/#install-help).
+“externally managed” errors, use the [virtual-environment instructions](https://roy-tong.github.io/verovo/#install-help).
 With both runtimes present, auto-discovery prefers Codex; use
-`agentmeasure check --runtime claude` for Claude Code. No logs in the default
+`verovo check --runtime claude` for Claude Code. No logs in the default
 seven-day window? Try `--all` or an explicit `--dir` and `--runtime`. A missing
-input is not a passing check. [More recovery steps](https://roy-tong.github.io/AgentMeasure/#how).
+input is not a passing check. [More recovery steps](https://roy-tong.github.io/verovo/#how).
 
 ### Compare Claude response evidence across files
 
 ```bash
-agentmeasure response-audit first-session.jsonl fork-session.jsonl --json responses.json
+verovo response-audit first-session.jsonl fork-session.jsonl --json responses.json
 ```
 
 This read-only command groups supplied response IDs and shows repeated usage
@@ -196,7 +201,7 @@ handle with the claim boundary you state (nothing customer-identifying; hash or
 drop identifiers), and if the check was useful, a star on the repo — never a
 condition.
 
-- Start in [issue #6](https://github.com/roy-tong/AgentMeasure/issues/6) (public, so the next reader learns from your run), or email tongroy18@gmail.com
+- Start in [issue #6](https://github.com/roy-tong/verovo/issues/6) (public, so the next reader learns from your run), or email tongroy18@gmail.com
 - Guide: [docs/provider-onboarding.md]
 - Run the same review yourself: [docs/review-method/](docs/review-method/README.md) — intake checks, mapping, commands and report templates behind every free run(docs/provider-onboarding.md) — three entry paths, five steps, and what counts as a successful run
 
@@ -206,15 +211,15 @@ project is now entirely free and open source.
 To prepare a summary locally:
 
 ```bash
-agentmeasure check --json report.json
-agentmeasure share report.json --out summary.json
-agentmeasure validate summary.json
+verovo check --json report.json
+verovo share report.json --out summary.json
+verovo validate summary.json
 ```
 
 `--out` writes immediately on your machine. Inspect the file before you choose to
 send it. Nothing is automatically uploaded. "No finding" and "not enough
 evidence" are valid outcomes. Tool bugs can be reported in
-[Issues](https://github.com/roy-tong/AgentMeasure/issues/new), with a redacted
+[Issues](https://github.com/roy-tong/verovo/issues/new), with a redacted
 reproduction.
 
 ## For tool maintainers and providers
@@ -222,13 +227,13 @@ reproduction.
 | Resource | Use it for |
 |---|---|
 | [Conformance pack](conformance/pack/README.md) | Check fixtures and reported metrics; PASS / FAIL / UNPROVABLE |
-| [Provider SDK](sdk/README.md) | Capture canonical observations from MCP tool handlers: `npm install @agentmeasure/mcp` |
-| [Core specification](standard/CORE.md) and [AMS-1](standard/SETTLEMENT.md) | Define measurement grains and the evidence needed for claims |
-| [Claims index](https://roy-tong.github.io/AgentMeasure/claims.html) | Inspect dated findings, reproductions and upstream responses |
+| [Provider SDK](sdk/README.md) | Capture canonical observations from MCP tool handlers: `npm install @verovo/mcp` |
+| [Core specification](standard/CORE.md) and [VSS-1](standard/SETTLEMENT.md) | Define measurement grains and the evidence needed for claims |
+| [Claims index](https://roy-tong.github.io/verovo/claims.html) | Inspect dated findings, reproductions and upstream responses |
 | [Lab](lab/README.md) | Existing experimental tooling; no hosted product commitment |
 
 The buyer tools above (`recount`, `prepare`, `dispute`, `recovery`) share one
-[end-to-end walkthrough](https://roy-tong.github.io/AgentMeasure/first-look.html).
+[end-to-end walkthrough](https://roy-tong.github.io/verovo/first-look.html).
 They are free CLI capabilities, not one of the two current fixed-price
 services. Current development priorities are in the [roadmap](ROADMAP.md).
 
@@ -239,8 +244,8 @@ The [September audit report](campaigns/audit-report-2026-09.md) documents the
 the claims index. Engineering evidence does not establish paid demand, customer
 savings or a right to a refund. Customer value and repeat purchase remain under validation.
 
-511 Healthcheck unit tests passed on 2026-10-15. See [CI](https://github.com/roy-tong/AgentMeasure/actions/workflows/conformance.yml)
-for current results and [v0.8.0](https://github.com/roy-tong/AgentMeasure/releases/tag/v0.8.0)
+511 Healthcheck unit tests passed on 2026-10-15. See [CI](https://github.com/roy-tong/verovo/actions/workflows/conformance.yml)
+for current results and [v0.8.0](https://github.com/roy-tong/verovo/releases/tag/v0.8.0)
 for the release scope. Example fixtures are not production customer data.
 
 ## Open-source commitments

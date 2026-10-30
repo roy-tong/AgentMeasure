@@ -3,12 +3,12 @@ sdk/node_modules/
 sdk/dist/*.js.map
 # 本地数据
 *.db
-.agentmeasure/
+.verovo/
 
 # Lab 本地工作区与运行产物（绝不提交：实验输出属于用户）
 __pycache__/
 *.pyc
-am-lab/
+verovo-lab/
 runs/
 connector.key
 connector.json
@@ -16,12 +16,12 @@ connector-export.json
 production-events.jsonl
 prod-events.jsonl
 
-# 本地浏览入口（指向 ~/.agentmeasure/outreach，绝不提交）
+# 本地浏览入口（指向 ~/.verovo/outreach，绝不提交）
 /funnel.html
 /funnel-data.js
 
 # 构建产物不入库（healthcheck 打包试验残留）
 healthcheck/build/
-healthcheck/agentmeasure.egg-info/
+healthcheck/verovo.egg-info/
 healthcheck/dist/
 x-ops-automation/

@@ -1,4 +1,4 @@
-# AgentMeasure — Machine-readable vocabulary registry（单一事实源）
+# Verovo — Machine-readable vocabulary registry（单一事实源）
 #
 # 本文件是下列枚举的单一事实源（Draft 0.4.3 · vocab revision 0.4.3-2）：
 #   - schemas/observation.schema.json 的 enum（由 scripts/gen_vocab.py --build 生成）

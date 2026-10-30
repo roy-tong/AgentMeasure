@@ -1,4 +1,4 @@
-# AgentMeasure Entity — Software Entity Identity & Alias Resolution（Draft 0.4）
+# Verovo Entity — Software Entity Identity & Alias Resolution（Draft 0.4）
 
 > 观察发生在 Interaction Surface 上，统计归属到 Software Entity。
 > 本文定义：entity 身份是什么、surface → entity 如何解析、registry 的机器可读格式、
@@ -33,7 +33,7 @@ entity_id（规范标识，registry 权威）
 
 ## 3. 实体类型
 
-见 AgentMeasure Core §2.1：Tool · Skill · API · Data Source · Agent ·
+见 Verovo Core §2.1：Tool · Skill · API · Data Source · Agent ·
 Application · Runtime Capability · unknown。类型影响 Utility 度量方式
 （Interaction Class，见 Core §2.7），不影响计数。
 
@@ -44,13 +44,13 @@ schema 见 `schemas/entity.schema.json`（JSON Schema），CI 与本地
 `python3 registry/validate_entities.py` 强制校验（零依赖实现：`registry/mini_yaml.py`）。
 
 ```yaml
-schema_version: "agentmeasure-0.4"
+schema_version: "verovo-0.4"
 entity:
   entity_id: github.com/foo/bar
   entity_type: tool            # tool | skill | api | data_source | agent | application | runtime_capability | unknown
   name: bar
   declared_by: github.com/foo/bar
-  verified: false              # AgentMeasure 验证后置 true
+  verified: false              # Verovo 验证后置 true
   aliases:
     mcp_server: io.github.foo/bar
     npm: "@foo/bar-mcp"

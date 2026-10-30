@@ -26,7 +26,7 @@ This sprint asks each project one question:
 | # | Project | Surface checked | Invariant | Status | Upstream artifact |
 | --- | --- | --- | --- | --- | --- |
 | 1 | [OpenLIT](https://github.com/openlit/openlit) | token accounting | token subset (reasoning ⊂ output) | **subset attribute + invariant merged** | [PR #1476 merged](https://github.com/openlit/openlit/pull/1476) |
-| 2 | [Urusilla](https://github.com/jaden3824/urusilla) | operation aggregation (checked AgentMeasure itself) | execution / reconciliation / operation grain | **3 FAILs → fixed** | vectors [001](../conformance/vectors/external/urusilla-001/) · [002](../conformance/vectors/external/urusilla-002/) · issues [#8](https://github.com/roy-tong/AgentMeasure/issues/8) [#9](https://github.com/roy-tong/AgentMeasure/issues/9) [#12](https://github.com/roy-tong/AgentMeasure/issues/12) · CI integration [PR jaden3824/urusilla#15](https://github.com/jaden3824/urusilla/pull/15) |
+| 2 | [Urusilla](https://github.com/jaden3824/urusilla) | operation aggregation (checked Verovo itself) | execution / reconciliation / operation grain | **3 FAILs → fixed** | vectors [001](../conformance/vectors/external/urusilla-001/) · [002](../conformance/vectors/external/urusilla-002/) · issues [#8](https://github.com/roy-tong/verovo/issues/8) [#9](https://github.com/roy-tong/verovo/issues/9) [#12](https://github.com/roy-tong/verovo/issues/12) · CI integration [PR jaden3824/urusilla#15](https://github.com/jaden3824/urusilla/pull/15) |
 | 3 | [pydantic-ai](https://github.com/pydantic/pydantic-ai) | OTel usage attributes | token subset emission | **intended / consumer-contract gap** | [issue #7975](https://github.com/pydantic/pydantic-ai/issues/7975) — emission confirmed intended; the consumer subset contract is unstated; routing to semconv |
 | 4 | [LiteLLM](https://github.com/BerriAI/litellm) | cache-hit usage logging | cache accounting | **confirmed by third party** | [issue #39057](https://github.com/BerriAI/litellm/issues/39057) — independent dev confirmed the ambiguity changes budget enforcement, not just reports |
 | 5 | [Phoenix](https://github.com/Arize-ai/phoenix) | token aggregation | leaf-span counting | reviewing | [issue #15793](https://github.com/Arize-ai/phoenix/issues/15793) |
@@ -74,7 +74,7 @@ a change.)*
   published as a FAIL.
 - UNPROVABLE is a valid and important result: "your telemetry cannot decide
   this" is itself the finding.
-- The checker checks itself: AgentMeasure's own three externally found defects
+- The checker checks itself: Verovo's own three externally found defects
   (row 2) stay at the top of this table on purpose.
 
 ## Follow along
@@ -93,7 +93,7 @@ on your own fixture) · X → [@elliwoodtong](https://x.com/elliwoodtong)
 | token-monitor | Pi fork cross-session dedup | **upstream issue + regression vector accepted** | [tokscale#1306](https://github.com/junhoyeo/tokscale/issues/1306) (vector) · [token-monitor#627](https://github.com/Javis603/token-monitor/issues/627) tracker · dup [#1305](https://github.com/junhoyeo/tokscale/issues/1305) closed |
 | langfuse | OTel cache-write alias gap | **fix PR by maintainers in flight** | [langfuse#17117](https://github.com/langfuse/langfuse/issues/17117) · [PR #17118](https://github.com/langfuse/langfuse/pull/17118) · invariant + spec-text fixture offer |
 | OpenLIT | reasoning-subset on every provider path | **new checklist issue opened** | [openlit#1537](https://github.com/openlit/openlit/issues/1537) (+inline fixture comment) — after [#1476 merged](https://github.com/openlit/openlit/pull/1476) |
-| awesome-ai-devtools | AgentMeasure listing | open PR (template-compliant) | [PR #1063](https://github.com/jamesmurdza/awesome-ai-devtools/pull/1063) (replaced bot-closed #1052) |
+| awesome-ai-devtools | Verovo listing | open PR (template-compliant) | [PR #1063](https://github.com/jamesmurdza/awesome-ai-devtools/pull/1063) (replaced bot-closed #1052) |
 | cloudflare-docs | AI Gateway field→grain mapping | maintainer asked for the mapping draft; delivered | [#32983](https://github.com/cloudflare/cloudflare-docs/issues/32983) (4-case table + UNPROVABLE rule) |
 | weave | rollup double-count (leaf × ancestors) | repro delivered | [#7831](https://github.com/wandb/weave/issues/7831) |
 | helicone | accepted_prediction_tokens added to total | repro delivered | [#5805](https://github.com/Helicone/helicone/issues/5805) |

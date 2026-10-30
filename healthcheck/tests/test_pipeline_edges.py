@@ -15,14 +15,14 @@ import unittest
 
 from _support import fixture
 
-from am_healthcheck import crosscheck as cc
-from am_healthcheck import dashboard as dash
-from am_healthcheck import delivery as del_mod
-from am_healthcheck import ledger as ledger_mod
-from am_healthcheck import narrative as narr
-from am_healthcheck import rulesdiff as rd
-from am_healthcheck import prepare as prepare_mod
-from am_healthcheck.vendors import load_export, recount
+from verovo_healthcheck import crosscheck as cc
+from verovo_healthcheck import dashboard as dash
+from verovo_healthcheck import delivery as del_mod
+from verovo_healthcheck import ledger as ledger_mod
+from verovo_healthcheck import narrative as narr
+from verovo_healthcheck import rulesdiff as rd
+from verovo_healthcheck import prepare as prepare_mod
+from verovo_healthcheck.vendors import load_export, recount
 
 EXPORT = fixture("vendor-export-intercom.csv")
 
@@ -42,7 +42,7 @@ class TestLegacyPackCompatibility(unittest.TestCase):
         with open(os.path.join(tempfile.mkdtemp(), "pack.json"), "w",
                   encoding="utf-8") as fh:
             json.dump({
-                "schema": "agentmeasure.commercial/dispute-pack",
+                "schema": "verovo.commercial/dispute-pack",
                 "schema_version": "0.1.0",
                 "generated_at": "2026-09-01T00:00:00+00:00",
                 "vendor": {"name": "Intercom Fin", "id": "intercom",
@@ -81,7 +81,7 @@ class TestLegacyPackCompatibility(unittest.TestCase):
 
     def test_narrative_template_on_legacy_pack(self):
         pack = json.loads(json.dumps({
-            "schema": "agentmeasure.commercial/dispute-pack",
+            "schema": "verovo.commercial/dispute-pack",
             "vendor": {"name": "V", "rule_source": "x"},
             "buyer_label": "B", "period": {"start": None, "end": None},
             "currency": "USD",
@@ -166,7 +166,7 @@ class TestHostileCsv(unittest.TestCase):
 
 class TestCliEdgeExits(unittest.TestCase):
     def _run(self, *argv):
-        from am_healthcheck.cli import main
+        from verovo_healthcheck.cli import main
         out, err = io.StringIO(), io.StringIO()
         with contextlib.redirect_stdout(out), contextlib.redirect_stderr(err):
             rc = main(list(argv))
@@ -188,7 +188,7 @@ class TestCliEdgeExits(unittest.TestCase):
 
     def test_rules_diff_identical_snapshot_exits_zero(self):
         registry = os.path.join(os.path.dirname(os.path.dirname(
-            os.path.abspath(__file__))), "am_healthcheck", "vendor-rules.json")
+            os.path.abspath(__file__))), "verovo_healthcheck", "vendor-rules.json")
         rc, out, _ = self._run("rules-diff", registry)
         self.assertEqual(rc, 0)
         self.assertIn("No rule changes", out)

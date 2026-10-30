@@ -46,7 +46,7 @@ DeepSeek Harness   （session event log）
 ### 输出
 
 `reports/compatibility-report-001.md`：一张主表（同行为 × 三系统的对象/单位
-映射）+ 每系统一段不可观察清单 + 对 AgentMeasure 映射规则的修订清单。
+映射）+ 每系统一段不可观察清单 + 对 Verovo 映射规则的修订清单。
 
 预期形如：
 

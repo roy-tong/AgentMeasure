@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""AgentMeasure registry mini-YAML parser（零依赖，registry 专用子集）。
+"""Verovo registry mini-YAML parser（零依赖，registry 专用子集）。
 
 只支持 registry/entities/*.yaml 用到的 YAML 子集：
   - 顶层 map（`key: value` / `key:` + 缩进子块）

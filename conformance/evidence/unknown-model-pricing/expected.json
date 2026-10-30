@@ -1,6 +1,6 @@
 {
   "case": "unknown-model-pricing",
-  "schema": "agentmeasure.evidence/unknown-model-pricing/0.1",
+  "schema": "verovo.evidence/unknown-model-pricing/0.1",
   "fixture_class": "synthetic-offline",
   "test_registry": {
     "known-model-001": {

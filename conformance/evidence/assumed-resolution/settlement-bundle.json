@@ -1,5 +1,5 @@
 {
-  "schema": "agentmeasure.commercial/settlement-bundle",
+  "schema": "verovo.commercial/settlement-bundle",
   "schema_version": "0.1.0",
   "generated_at": "2026-09-19T07:05:37Z",
   "billing_period": {

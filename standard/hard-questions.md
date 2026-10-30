@@ -1,10 +1,10 @@
 # Hard Questions
 
-> 本页回答一个持怀疑态度的读者在信任 AgentMeasure 的任何结论之前**应该**问的问题。
+> 本页回答一个持怀疑态度的读者在信任 Verovo 的任何结论之前**应该**问的问题。
 > 结构借鉴 Inferock Standard 的 `docs/hard-questions.md`（公开标准里少见的好实践）：
 > 把敌意问题放在最显眼的位置，答案放在公开文档里，而不是留在销售话术里。
 >
-> **一句话立场**：AgentMeasure 的结论是**证据**，不是**权威**。
+> **一句话立场**：Verovo 的结论是**证据**，不是**权威**。
 
 | 如果你在检查 | 从这里开始 |
 |-------------|-----------|
@@ -77,7 +77,7 @@ cannot settle / UNPROVABLE  →  从索赔总额移除（默认）
 
 ## Q6. 我该分享什么而不是原始日志？
 
-**默认什么都不用分享。** 工具在本地运行，`agentmeasure check` 不联网
+**默认什么都不用分享。** 工具在本地运行，`verovo check` 不联网
 （包内无网络代码，有测试断言）。
 
 如果要做对账，需要的是**计数型导出**，不是对话内容：
@@ -94,7 +94,7 @@ cannot settle / UNPROVABLE  →  从索赔总额移除（默认）
 | 向量 | `conformance/vectors/` 里的 golden 输入/输出，任何实现可对照 |
 | 案例 | `conformance/evidence/*/` 用真实公开材料复现，数字被 CI 锁定 |
 
-`agentmeasure selftest` 与 `python3 -m unittest discover -s tests` 都在 CI 里跑。
+`verovo selftest` 与 `python3 -m unittest discover -s tests` 都在 CI 里跑。
 **CI 红 = 不可发布。**
 
 ## Q8. 你们和厂商自己的对账功能有什么区别？

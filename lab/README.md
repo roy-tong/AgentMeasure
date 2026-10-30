@@ -1,4 +1,4 @@
-# AgentMeasure Lab
+# Verovo Lab
 
 **Open experiment engine for the agent channel** — preregistered, offline, zero dependencies, no registration.
 
@@ -15,25 +15,25 @@ task set × harness matrix × factor variants
 ## Quickstart (under 5 minutes)
 
 ```bash
-git clone https://github.com/roy-tong/AgentMeasure && cd AgentMeasure
+git clone https://github.com/roy-tong/verovo && cd Verovo
 
 # 1. sanity: planted uplift must be recovered, a zero-effect factor must report an honest null
-python3 lab/am lab selftest
+python3 lab/verovo lab selftest
 
 # 2. init a workspace with an example experiment
-python3 lab/am lab init
+python3 lab/verovo lab init
 
 # 3. lock the preregistration (hypothesis, primary metric, guardrails, analysis plan — hashed)
-python3 lab/am lab preregister am-lab/experiments/example-manifest.json
+python3 lab/verovo lab preregister verovo-lab/experiments/example-manifest.json
 
 # 4. run it (fully local)
-python3 lab/am lab run am-lab/experiments/example-manifest.prereg.json
+python3 lab/verovo lab run verovo-lab/experiments/example-manifest.prereg.json
 
 # 5. re-verify the run any time (prereg hash, event schema, determinism fingerprint)
-python3 lab/am lab verify am-lab/runs/example-desc-clarity-001 am-lab/experiments/example-manifest.prereg.json
+python3 lab/verovo lab verify verovo-lab/runs/example-desc-clarity-001 verovo-lab/experiments/example-manifest.prereg.json
 ```
 
-Open `am-lab/runs/example-desc-clarity-001/report.html`. The report opens with a
+Open `verovo-lab/runs/example-desc-clarity-001/report.html`. The report opens with a
 bilingual **decision-maker one-pager** (conclusion / uplift / monthly margin /
 certainty / recommended action — no statistics vocabulary required), then the
 evidence. The shipped example deliberately contains two candidate variants:
@@ -63,8 +63,8 @@ python3 lab/examples/generate-production-events.py \
   --tasks lab/tasks/search-retrieval-scrape.v1.json --out prod-events.jsonl
 
 # 2. production re-test + per-condition transfer effects (CAL-002/003)
-python3 lab/am lab calibrate am-lab/runs/example-desc-clarity-001 \
-  am-lab/experiments/example-manifest.prereg.json --production-events prod-events.jsonl
+python3 lab/verovo lab calibrate verovo-lab/runs/example-desc-clarity-001 \
+  verovo-lab/experiments/example-manifest.prereg.json --production-events prod-events.jsonl
 ```
 
 The calibration report computes production uplift under the **same preregistered plan**
@@ -80,11 +80,11 @@ agent app / buyer side / runtime cooperation). The **connector** is the local-fi
 plane for that handoff:
 
 ```bash
-python3 lab/am connector init --config connector.json --experiment <id>
-python3 lab/am connector set choice export --config connector.json   # tiers: off | local | export
-python3 lab/am connector export prod-events.jsonl --config connector.json --out export.json
-python3 lab/am connector verify export.json --key connector.key
-python3 lab/am connector revoke --config connector.json              # immediate; exports refuse
+python3 lab/verovo connector init --config connector.json --experiment <id>
+python3 lab/verovo connector set choice export --config connector.json   # tiers: off | local | export
+python3 lab/verovo connector export prod-events.jsonl --config connector.json --out export.json
+python3 lab/verovo connector verify export.json --key connector.key
+python3 lab/verovo connector revoke --config connector.json              # immediate; exports refuse
 ```
 
 Exports are aggregate counts only (schema-level: no per-assignment rows, no content),
@@ -97,7 +97,7 @@ under contract (G0), outside this code.
 Agents and CI are first-class users (LAB-009):
 
 ```bash
-python3 lab/am mcp serve
+python3 lab/verovo mcp serve
 ```
 
 Tools: `get_run_summary`, `get_presentation_advice` (variant recommendations with
@@ -112,7 +112,7 @@ Experiments are a repeating need — channels drift, models change. After runs
 accumulate:
 
 ```bash
-python3 lab/am lab history          # every run: date, experiment, verdicts, prereg + fingerprint
+python3 lab/verovo lab history          # every run: date, experiment, verdicts, prereg + fingerprint
 ```
 
 This is the local half of the hypothesis library (the hosted/monitored half is
@@ -156,7 +156,7 @@ Two kinds of runner ship in this repository:
 2. **Real harness adapters** (`claude-code`, `codex`) — run the *actual* harness
    headless against a **controlled candidate set**: the runner exposes your
    capability plus competitors through a per-episode local MCP tool server
-   ([`toolserver.py`](agentmeasure_lab/toolserver.py), pure stdlib), varies the
+   ([`toolserver.py`](verovo_lab/toolserver.py), pure stdlib), varies the
    presentation per variant (descriptions, output verbosity), executes
    `claude -p --output-format stream-json --mcp-config …` / `codex exec --json`,
    and parses the transcript into funnel events.
@@ -191,8 +191,8 @@ Community runners still follow the plugin interface
 
 | Path | Purpose |
 | --- | --- |
-| `am` | CLI entry (`am lab …` / `am connector …` / `am mcp serve`) |
-| `agentmeasure_lab/` | engine: rng, prereg, matrix, runner, funnel, stats, analysis, report, value, calibrate, connector, mcp_server, harness_cli, toolserver |
+| `verovo` | CLI entry (`verovo lab …` / `verovo connector …` / `verovo mcp serve`) |
+| `verovo_lab/` | engine: rng, prereg, matrix, runner, funnel, stats, analysis, report, value, calibrate, connector, mcp_server, harness_cli, toolserver |
 | `schemas/` | open formats: experiment manifest (FMT-001), funnel events (FMT-002), report (FMT-003), calibration report |
 | `docs/CORE-MAPPING.md` | FMT-004: Core 0.4.4 ↔ experiment formats mapping + reference scenarios |
 | `tasks/search-retrieval-scrape.v1.json` | synthetic vertical corpus v1 — 36 tasks, 3 tiers (LAB-005) |
@@ -210,7 +210,7 @@ Community runners still follow the plugin interface
   calibration analysis (production re-test, per-condition transfer, not_comparable,
   reweighting suggestions); connector data plane (three-tier authorization, immediate
   revocation, signed aggregate-only export); read-only MCP query interface; local
-  experiment history (`am lab history`); **real harness adapters** (`claude-code` full,
+  experiment history (`verovo lab history`); **real harness adapters** (`claude-code` full,
   `codex` experimental) with candidate injection via a local MCP tool server.
 - **Not yet done**: live-CLI validation of the adapters (implemented + scripted-transcript
   integration-tested; first live runs should be treated as validation); real production
@@ -228,11 +228,11 @@ never a different ruler.
 
 ## Releasing a live run (bundle checklist)
 
-Live-run artifacts live under gitignored paths (`runs/`, `.agentmeasure/`) —
+Live-run artifacts live under gitignored paths (`runs/`, `.verovo/`) —
 if you tag a release without exporting them, they are gone for good. Before
 tagging after a live experiment:
 
-1. `am lab history` → resolve the run directory for the experiment.
+1. `verovo lab history` → resolve the run directory for the experiment.
 2. Copy the four-piece set into `bundles/<experiment-id>/`:
    preregistration manifest, raw events JSONL, run metadata, report.
 3. If (and only if) some pieces no longer exist, ship what does, add a

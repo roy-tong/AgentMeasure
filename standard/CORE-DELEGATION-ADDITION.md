@@ -9,7 +9,7 @@
 
 **替换**：
 ```
-# AgentMeasure Core Specification — Open Measurement Standard for AI-Agent Software Usage（Standard Compatibility agentmeasure-0.4 · Document revision 0.4.5）
+# Verovo Core Specification — Open Measurement Standard for AI-Agent Software Usage（Standard Compatibility verovo-0.4 · Document revision 0.4.5）
 ```
 
 ---
@@ -27,7 +27,7 @@
 ```
 | **Operation** | 对某 Capability 的一次**逻辑使用**（为某 task 而用） | `operation_id` |
 | **Delegation** | Agent 将子目标连同执行权交给另一 Agent 的**边界事件**（Agent → Agent 调用）；与 Operation 同层，作为 Task 的直接子节点 | `delegation_id` |
-| **Attempt** | **标准执行对象**：一次实际执行（API request / MCP call / CLI execution / Agent-to-Agent call 统一映射为 Attempt）。**不可变事实对象**（Draft 0.4.4） | `attempt_id`（agentmeasure 自有 identity；外部 id 见 `external_ids`） |
+| **Attempt** | **标准执行对象**：一次实际执行（API request / MCP call / CLI execution / Agent-to-Agent call 统一映射为 Attempt）。**不可变事实对象**（Draft 0.4.4） | `attempt_id`（verovo 自有 identity；外部 id 见 `external_ids`） |
 ```
 
 ---
@@ -60,7 +60,7 @@ Task ──▶ Decision Opportunity ──▶ Selection
 
 ## 块 D：新增 Delegation 定义子节（§2.4 内，在 Operation/Attempt 拆分之后）
 
-**位置**：在第 123 行（"AgentMeasure Correlation 的确定性规则（不变量 23：无证据不归并）"）之后、第 125 行（"### 2.5 Decision Authority（决策主体）"）之前插入
+**位置**：在第 123 行（"Verovo Correlation 的确定性规则（不变量 23：无证据不归并）"）之后、第 125 行（"### 2.5 Decision Authority（决策主体）"）之前插入
 
 **文本**：
 ```
@@ -80,7 +80,7 @@ Delegation **不是**：
 
 | 字段 | 必填 | 说明 |
 |---|---|---|
-| `delegation_id` | ✅ | 委托方侧唯一标识（`am-delegation-*`） |
+| `delegation_id` | ✅ | 委托方侧唯一标识（`verovo-delegation-*`） |
 | `delegating_caller` | ✅ | 发起委托的 Agent entity_id |
 | `called_agent` | ✅ | 被委托的 Agent entity_id |
 | `called_capability` | ✅ | 被调用的被委托方 Capability（如 `agent:accept_subtask`） |

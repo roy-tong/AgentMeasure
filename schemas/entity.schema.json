@@ -1,13 +1,13 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "AgentMeasure Entity Registry Entry",
+  "title": "Verovo Entity Registry Entry",
   "description": "Machine-readable identity entry for one Software Entity (standard/ENTITY.md). Canonical registry format: YAML subset (see registry/mini_yaml.py).",
   "type": "object",
   "required": ["schema_version", "entity"],
   "properties": {
     "schema_version": {
       "type": "string",
-      "enum": ["agentmeasure-0.4"]
+      "enum": ["verovo-0.4"]
     },
     "entity": {
       "type": "object",

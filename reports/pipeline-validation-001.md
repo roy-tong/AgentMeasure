@@ -5,18 +5,18 @@
 > Observation JSONL → 校验 → Collector → Metrics`，以及 0.4.3 的 fail-closed
 > 语义如何在真实管道中生效。
 >
-> **Measurement Report #001 的编号预留给第一个外部 Provider**（[Issue #2](https://github.com/roy-tong/AgentMeasure/issues/2)）。
+> **Measurement Report #001 的编号预留给第一个外部 Provider**（[Issue #2](https://github.com/roy-tong/verovo/issues/2)）。
 > 本报告只验证管道，不产生任何"使用量"结论——合成流量不证明任何真实使用。
 
 ## 设置
 
 - 被测面：`acme-weather`（MCP SDK 注册路径，42 次调用，3 类 caller）
-- 接入：`@agentmeasure/mcp` v0.1.1 中间件（注册时包装 handler，参数/结果零接触）
+- 接入：`@verovo/mcp` v0.1.1 中间件（注册时包装 handler，参数/结果零接触）
 - 流量：42 次合成调用（claude ×14 / codex ×14 / unknown ×14），失败模式固定
   （callIndex % 8 == 0 → 6 次失败）
 - 语义：`usage_context=synthetic`（源头标注，绝不计入 production）
 - 采集：内存队列 → 批量落盘 → Canonical JSONL → reference collector（唯一 canonical 输入）
-- 窗口：单次运行；demo 使用隔离 workspace（`mktemp -d`），不触碰 `~/.agentmeasure`
+- 窗口：单次运行；demo 使用隔离 workspace（`mktemp -d`），不触碰 `~/.verovo`
 - 可复现：`./examples/demo-e2e.sh` —— **确定性 fixture**（固定失败模式 +
   固定延迟序列 20+(i×37)%280；duration_ms 由 fixture 的计划延迟记录，
   生产路径记录真实墙钟耗时）。相同 fixture + 相同 policy =
@@ -71,7 +71,7 @@ Caller attribution             : claude:14 codex:14 unknown:14 (strength: declar
 ## 下一步（Product Gate A）
 
 - [x] P0-1 Canonical 端到端（Adapter → SDK → Collector → Metrics）
-- [x] P0-2 Provider SDK（@agentmeasure/mcp v0.1.1：async queue + spool、per-request caller、MCP v1/v2）
+- [x] P0-2 Provider SDK（@verovo/mcp v0.1.1：async queue + spool、per-request caller、MCP v1/v2）
 - [x] P0-3 Local Analytics（--days / latency histogram / caller attribution）
 - [ ] P0-4 第一个**真实外部** MCP server 接入 → 发布真正的 **Measurement Report #001**
 - [ ] Hosted ingestion（P1）

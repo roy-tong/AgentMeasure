@@ -23,7 +23,7 @@ in code their own tests cover happily.
 
 1. Take the fixture files from the
    [conformance pack](../conformance/pack/README.md) (plain JSONL + expected
-   totals — no AgentMeasure runtime, no install).
+   totals — no Verovo runtime, no install).
 2. Point your parser at them the way you point it at real logs.
 3. Compare your totals against the expected values in each fixture.
 
@@ -36,7 +36,7 @@ compare fixes against (see the
 ## What we ask in return
 
 Nothing mandatory. If the fixtures saved you a bug, a star or a "fixtures
-from AgentMeasure" line in your README both help others find them — and a
+from Verovo" line in your README both help others find them — and a
 link back to your fixed issue grows the shared casebook. That's the whole
 loop.
 

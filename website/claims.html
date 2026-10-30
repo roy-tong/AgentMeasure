@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Metering claims index — AgentMeasure</title>
+<title>Metering claims index — Verovo</title>
 <meta name="description" content="A public, linkable index of metering-accounting findings across AI usage tools: verified mismatches, fixes re-verified, passes, and what stays unprovable. No composite scores.">
 <link rel="stylesheet" href="light.css">
 <style>
@@ -30,17 +30,17 @@ code{background:#f0f2f5;padding:1px 5px;border-radius:4px;font-size:12.5px}
 .snippet{background:#f6f7f9;border:1px solid #e3e8ef;border-radius:8px;padding:10px 14px;font-size:12.5px;overflow-x:auto;font-family:ui-monospace,Menlo,monospace}
 .claims-scroll{max-width:100%;overflow-x:auto;margin-bottom:26px}.claims-scroll:focus-visible{outline:2px solid #1f4f8a;outline-offset:3px}.claims-scroll table.claims{margin-bottom:0}
 </style>
-<link rel="canonical" href="https://roy-tong.github.io/AgentMeasure/claims.html">
+<link rel="canonical" href="https://roy-tong.github.io/verovo/claims.html">
 </head>
 <body>
 <header class="snav">
   <div class="snav-in">
-    <a class="snav-brand" href="index.html">AgentMeasure<span>_</span></a>
+    <a class="snav-brand" href="index.html"><img class="snav-mark" src="assets/verovo-mark.png" alt="" width="30" height="16">Verovo<span>_</span></a>
     <nav class="snav-links" aria-label="Sections">
       <a href="index.html#evidence">Evidence</a>
       <a href="index.html#pricing">Free runs</a>
       <a href="services.html">Free runs</a>
-      <a class="ext" href="https://github.com/roy-tong/AgentMeasure" target="_blank" rel="noopener">GitHub&nbsp;↗</a>
+      <a class="ext" href="https://github.com/roy-tong/verovo" target="_blank" rel="noopener">GitHub&nbsp;↗</a>
     </nav>
     <a class="snav-cta" href="services.html">Get a free run&nbsp;→</a>
   </div>
@@ -80,7 +80,7 @@ vendor says it charges, where that rule is published, and how far a
 counts-only export can be re-counted under the vendor's <em>own</em> rules.
 Confidence grades: <strong>[P]</strong> primary source read directly,
 <strong>[S]</strong> secondary, <strong>[U]</strong> unpublished. Every row is
-re-printed by the CLI itself (<code>agentmeasure recount --list-vendors</code>)
+re-printed by the CLI itself (<code>verovo recount --list-vendors</code>)
 and pinned in the repository's vendor-rules registry — this table never
 disagrees with the shipped tool.</p>
 <div class="claims-scroll" role="region" aria-label="Vendor billing-rule scorecard; scroll horizontally on small screens" tabindex="0"><table class="claims">
@@ -90,7 +90,7 @@ disagrees with the shipped tool.</p>
 <tr><td>HubSpot Breeze</td><td>USD 0.5 / resolution <strong>[S]</strong></td><td>Per-resolution</td><td>Secondary — knowledge.hubspot.com is JS-only and could not be read directly</td><td>Runs at [S] confidence; findings carry the weaker grade</td></tr>
 <tr><td>Salesforce Agentforce</td><td>Not published <strong>[U]</strong></td><td>Press release only; no official metering document</td><td>Press release</td><td>Counts only, no dollar claim possible</td></tr>
 <tr><td>Ada</td><td>Not published <strong>[S]</strong></td><td>Rule reported from public docs</td><td>ada.cx pricing/terms (403 to automated reads)</td><td>Counts only, no dollar claim possible</td></tr>
-<tr><td>Generic baseline</td><td>— <strong>[U]</strong></td><td>Per-resolution standard (AgentMeasure standard only)</td><td>—</td><td>The no-vendor-rules baseline a claim never rides on</td></tr>
+<tr><td>Generic baseline</td><td>— <strong>[U]</strong></td><td>Per-resolution standard (Verovo standard only)</td><td>—</td><td>The no-vendor-rules baseline a claim never rides on</td></tr>
 </table></div>
 <p class="lead">Why this column matters: a vendor changing what counts as a
 billable resolution changes your bill without changing the price — Zendesk's
@@ -98,7 +98,7 @@ billable resolution changes your bill without changing the price — Zendesk's
 example. When a rule changes, the registry entry changes with a new date, and
 recounts before and after stay comparable because both pin their rule version.
 Read the current registry:
-<a href="https://github.com/roy-tong/AgentMeasure/blob/main/healthcheck/am_healthcheck/vendor-rules.json">vendor-rules.json</a>.</p>
+<a href="https://github.com/roy-tong/verovo/blob/main/healthcheck/verovo_healthcheck/vendor-rules.json">vendor-rules.json</a>.</p>
 </section>
 
 <section>
@@ -111,8 +111,8 @@ Read the current registry:
 </div>
 <p class="lead">Method: read the code, build a synthetic fixture, run the
 tool's own parser against it. Full method and case list:
-<a href="https://github.com/roy-tong/AgentMeasure/blob/main/campaigns/audit-report-2026-09.md">the audit report</a>
-and <a href="https://github.com/roy-tong/AgentMeasure/blob/main/campaigns/measurement-casebook.md">measurement casebook</a>.
+<a href="https://github.com/roy-tong/verovo/blob/main/campaigns/audit-report-2026-09.md">the audit report</a>
+and <a href="https://github.com/roy-tong/verovo/blob/main/campaigns/measurement-casebook.md">measurement casebook</a>.
 Below are the named entries; the casebook carries the rest.</p>
 
 <h3 id="distribution">Where the bugs sit — the recount distribution</h3>
@@ -207,7 +207,7 @@ vendor's rules in writing.</p>
 <p class="how">Most audited repos passed. We name the clean ones because that matters. And one filing we got wrong the first time — an emission shape with no unguarded consumer is an intended contract, not a bug; the maintainer was right to close it not-actionable, and it is now a methodology rule.</p>
 <div class="claims-scroll" role="region" aria-label="Metering findings table; scroll horizontally on small screens" tabindex="0"><table class="claims">
 <tr><th>Tool</th><th class="s">Status</th><th>Evidence</th></tr>
-<tr><td>promptfoo · Portkey model data · TokenTracker</td><td class="s"><span class="chip cp">Conformance Pass</span></td><td>named clean in the <a href="https://github.com/roy-tong/AgentMeasure/blob/main/campaigns/audit-report-2026-09.md">audit report</a>, 2026-09</td></tr>
+<tr><td>promptfoo · Portkey model data · TokenTracker</td><td class="s"><span class="chip cp">Conformance Pass</span></td><td>named clean in the <a href="https://github.com/roy-tong/verovo/blob/main/campaigns/audit-report-2026-09.md">audit report</a>, 2026-09</td></tr>
 <tr><td>pydantic-ai</td><td class="s"><span class="chip na">Not a bug · semantics</span></td><td><a href="https://github.com/pydantic-ai/pydantic-ai/issues/7975">issue #7975</a> closed not-actionable — correctly</td></tr>
 </table></div>
 </div>
@@ -216,11 +216,11 @@ vendor's rules in writing.</p>
 <h2>Audit your own tool in 10 minutes</h2>
 <p class="lead">The fixture corpus is open data — plain JSONL plus expected
 totals, no runtime. Point your parser at it like at real logs:</p>
-<div class="snippet">git clone --depth 1 https://github.com/roy-tong/AgentMeasure
-python3 conformance/pack/agentmeasure selftest   # the expected-totals style
-agentmeasure conformance --new-vector my-check   # pin your own shape as a vector</div>
+<div class="snippet">git clone --depth 1 https://github.com/roy-tong/verovo
+python3 conformance/pack/verovo selftest   # the expected-totals style
+verovo conformance --new-vector my-check   # pin your own shape as a vector</div>
 <p class="lead" style="margin-top:10px">Found a metering claim this index
-should carry? <a href="https://github.com/roy-tong/AgentMeasure/issues">File it</a> —
+should carry? <a href="https://github.com/roy-tong/verovo/issues">File it</a> —
 a finding needs a reproduction and a date, that is the whole bar.</p>
 <p class="lead" style="margin-top:10px">Want a human check on your own numbers?
 The <a href="services.html">free metering QA run</a> takes one sample and one
@@ -233,18 +233,18 @@ within 24 hours, fit confirmed before anything is charged.</p>
 merge dates are the upstream links' own. All reproductions are synthetic —
 no private logs anywhere. Most audited repos passed. This audit was performed
 with the methods and fixtures of this repository — that is the demo; no
-audited project endorses AgentMeasure. The report's live merge counter:
+audited project endorses Verovo. The report's live merge counter:
 <a href="https://github.com/search?q=author%3Aroy-tong+type%3Apr+is%3Amerged">author:roy-tong is:merged</a>.
 </div>
 
 </div>
 <footer class="sfoot">
   <div class="sfoot-in">
-    <span class="sfoot-brand">AgentMeasure<span>_</span></span>
+    <span class="sfoot-brand">Verovo<span>_</span></span>
     <a href="index.html">Home</a>
     <a href="rules/index.html">Vendor rule cards</a>
     <a href="releases.html">Release notes</a>
-    <a href="https://github.com/roy-tong/AgentMeasure" target="_blank" rel="noopener">GitHub</a>
+    <a href="https://github.com/roy-tong/verovo" target="_blank" rel="noopener">GitHub</a>
     <span class="sfoot-note">Open source under MIT. The verification rules stay public and free.</span>
   </div>
 </footer>

@@ -33,7 +33,7 @@ python3 -m unittest discover -s tests -t .     # 当前 106 项测试
 pip install playwright && playwright install chromium
 
 # 可选：OpenAI 兼容 LLM，仅用于首次生成解析草案
-export AM_LLM_BASE_URL=... AM_LLM_API_KEY=... AM_LLM_MODEL=...
+export VEROVO_LLM_BASE_URL=... VEROVO_LLM_API_KEY=... VEROVO_LLM_MODEL=...
 ```
 
 核心仅使用 Python ≥3.9 标准库。LLM 端点必须使用 HTTPS；仅本机端点允许 HTTP。
@@ -125,7 +125,7 @@ $B audit verify <trail.jsonl>
 # macOS 示例；只在专用 profile 上使用，不要对日常浏览器启用
 /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome \
   --remote-debugging-port=9222 \
-  --user-data-dir="$HOME/.agentmeasure/chrome-cdp"
+  --user-data-dir="$HOME/.verovo/chrome-cdp"
 
 # 用户亲手登录后，系统只检查 CDP 和设备信息
 $B session cdp --endpoint http://127.0.0.1:9222

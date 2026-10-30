@@ -1,6 +1,6 @@
-# agentmeasure-dsh — DeepSeek Harness Adapter
+# verovo-dsh — DeepSeek Harness Adapter
 
-> DSH 是 AgentMeasure 的第一方深集成目标（cross-side corroboration 证据能力的来源）。
+> DSH 是 Verovo 的第一方深集成目标（cross-side corroboration 证据能力的来源）。
 > 本文件基于 DSH 实际源码（@deepseek-ai/dsh-agent-loop）确认的事件流编写。
 
 ## 1. 架构
@@ -10,7 +10,7 @@ DSH session event stream（dsh-agent-loop 持久化事件流）
   ├─ tool/call     {turn, step, callId, name, arguments}   ← 执行起点
   ├─ tool/result   {turn, step, message, error, meta}      ← 完成 + outcome（经 sourceEventSeqs 关联）
   ├─ turn/start / step/start / step/end / turn/end         ← session 级归一
-  └─ agentmeasure plugin（Cordis）
+  └─ verovo plugin（Cordis）
         ├─ 监听 tool/call + tool/result
         ├─ 只提取: name / callId / turn / step / outcome / 时间差
         ├─ DROP: arguments / message 内容 / 路径
@@ -19,7 +19,7 @@ DSH session event stream（dsh-agent-loop 持久化事件流）
 
 ## 2. 已确认的事件结构（源码核实，`dsh-agent-loop/lib/index.js`）
 
-| 事件 | 字段 | AgentMeasure 用途 | 处理 |
+| 事件 | 字段 | Verovo 用途 | 处理 |
 | --- | --- | --- | --- |
 | `tool/call` | `turn, step, callId, name, arguments` | 执行起点, tool=name, tool_use_id=callId | `arguments` **DROP** |
 | `tool/result` | `turn, step, message{content,isError}, error, meta` | 完成 + outcome=isError?failure:success, 耗时=tool/call→tool/result 时间差 | `message.content` **DROP** |
@@ -30,14 +30,14 @@ DSH session event stream（dsh-agent-loop 持久化事件流）
 
 ## 3. 事件映射（standard/BIND.md）
 
-| DSH 字段 | agentmeasure.* |
+| DSH 字段 | verovo.* |
 | --- | --- |
 | `name`（tool/call） | `gen_ai.tool.name` → unified `tool` |
 | `callId` | `tool_use_id` |
 | `session`（DSH session id） | 伪匿名 `session_id`（本地哈希） |
-| — | `agentmeasure.agent.host = "deepseek-harness"` |
-| — | `agentmeasure.observer.side = "client"` |
-| — | `agentmeasure.provenance = "platform"`（harness 原生） |
+| — | `verovo.agent.host = "deepseek-harness"` |
+| — | `verovo.observer.side = "client"` |
+| — | `verovo.provenance = "platform"`（harness 原生） |
 
 ## 4. 证据说明
 

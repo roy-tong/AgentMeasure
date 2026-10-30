@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
-"""AgentMeasure — MCP wrapper（M0 骨架，零依赖 stdlib）。
+"""Verovo — MCP wrapper（M0 骨架，零依赖 stdlib）。
 
 在真实调用边界（被调方）记录 agent 工具调用事件，输出本地 JSONL。
 用法:
-  agentmeasure wrap -- <mcp-server-command> [args...]
+  verovo wrap -- <mcp-server-command> [args...]
 
 环境变量:
-  AGENTMEASURE_EVENTS_DIR  事件目录（默认 ~/.agentmeasure/events）
-  AGENTMEASURE_TARGET      被包装项目的标识（默认 github.com/roy-tong/AgentMeasure）
-  AGENTMEASURE_OPTIN=1     允许上传聚合（当前版本仅记录，不实现上传）
+  VEROVO_EVENTS_DIR  事件目录（默认 ~/.verovo/events）
+  VEROVO_TARGET      被包装项目的标识（默认 github.com/roy-tong/verovo）
+  VEROVO_OPTIN=1     允许上传聚合（当前版本仅记录，不实现上传）
   DO_NOT_TRACK=1         完全禁用记录
 
 隐私边界（写死）: 只记工具名/结果/粗粒度耗时，绝不记录参数、结果、内容、路径。
@@ -28,15 +28,15 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 EVENTS_DIR = Path(
-    os.environ.get("AGENTMEASURE_EVENTS_DIR", str(Path.home() / ".agentmeasure" / "events"))
+    os.environ.get("VEROVO_EVENTS_DIR", str(Path.home() / ".verovo" / "events"))
 ).expanduser()
-TARGET = os.environ.get("AGENTMEASURE_TARGET", "github.com/roy-tong/AgentMeasure")
+TARGET = os.environ.get("VEROVO_TARGET", "github.com/roy-tong/verovo")
 DO_NOT_TRACK = os.environ.get("DO_NOT_TRACK", "0") == "1"
-SIGNING_SECRET = os.environ.get("AGENTMEASURE_SECRET", "")  # 空 = 本地无签名模式
-KEY_ID = os.environ.get("AGENTMEASURE_KEY_ID", "local")
-OBSERVER_PRINCIPAL = os.environ.get("AGENTMEASURE_PRINCIPAL", "mcp-wrapper@local")
-TRUST_DOMAIN = os.environ.get("AGENTMEASURE_TRUST_DOMAIN", "local")
-INSTANCE_ID = os.environ.get("AGENTMEASURE_INSTANCE_ID", f"wrap-{os.getpid()}")
+SIGNING_SECRET = os.environ.get("VEROVO_SECRET", "")  # 空 = 本地无签名模式
+KEY_ID = os.environ.get("VEROVO_KEY_ID", "local")
+OBSERVER_PRINCIPAL = os.environ.get("VEROVO_PRINCIPAL", "mcp-wrapper@local")
+TRUST_DOMAIN = os.environ.get("VEROVO_TRUST_DOMAIN", "local")
+INSTANCE_ID = os.environ.get("VEROVO_INSTANCE_ID", f"wrap-{os.getpid()}")
 
 _SEQUENCE = [0]
 
@@ -80,7 +80,7 @@ def record(surface: str, tool: str, outcome: str, seconds: float, agent_host: st
     if DO_NOT_TRACK:
         return
     event = {
-        "spec_version": "agentmeasure-0.4",
+        "spec_version": "verovo-0.4",
         "observation_id": str(uuid.uuid4()),
         "observation_type": "attempt_completed",
         "observer": {"principal": OBSERVER_PRINCIPAL, "side": "server",
@@ -125,7 +125,7 @@ def main(argv) -> int:
     if argv and argv[0] == "--":
         argv = argv[1:]
     if not argv:
-        print("usage: agentmeasure wrap -- <mcp-server-command> [args...]", file=sys.stderr)
+        print("usage: verovo wrap -- <mcp-server-command> [args...]", file=sys.stderr)
         return 2
 
     try:
@@ -137,7 +137,7 @@ def main(argv) -> int:
             bufsize=1,
         )
     except OSError as exc:
-        print(f"agentmeasure: cannot start {argv[0]}: {exc}", file=sys.stderr)
+        print(f"verovo: cannot start {argv[0]}: {exc}", file=sys.stderr)
         return 2
 
     pending: dict = {}  # jsonrpc id -> (tool, start_ts)

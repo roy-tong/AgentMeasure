@@ -1,7 +1,43 @@
 # Changelog
 
-All notable changes to AgentMeasure (standard, SDK, and reference product) are
+All notable changes to Verovo (standard, SDK, and reference product) are
 documented here. Format follows [Keep a Changelog](https://keepachangelog.com/).
+
+> Entries below v0.9.0 are kept as written and use the former name
+> (AgentMeasure). The rename is recorded in v0.9.0 and in
+> [docs/RELEASE-v0.9.0.md](docs/RELEASE-v0.9.0.md).
+
+## [v0.9.0] - 2026-10-30
+
+### Changed
+
+- **Renamed to Verovo** (formerly AgentMeasure). CLI `agentmeasure` → `verovo`
+  (0.9.0), PyPI distribution `agentmeasure` → `verovo`, SDK `@agentmeasure/mcp` →
+  `@verovo/mcp` (0.3.0), environment variables `AGENTMEASURE_*`/`AM_*` →
+  `VEROVO_*`, local data directory `~/.agentmeasure/` → `~/.verovo/`, schema
+  namespaces `agentmeasure.*` → `verovo.*`, Python module `am_healthcheck` →
+  `verovo_healthcheck`, settlement standard AMS-1 → VSS-1.
+- **Repository and site**: `roy-tong/AgentMeasure` → `roy-tong/verovo`,
+  `roy-tong.github.io/AgentMeasure` → `roy-tong.github.io/verovo`. Canonical,
+  Open Graph, sitemap and badge URLs point at the new paths.
+- **New brand assets**: wordmark and owl mark in `assets/` and `website/assets/`,
+  new favicon, regenerated Open Graph card and caller-identity ladder diagram,
+  usage rules in [docs/brand.md](docs/brand.md).
+
+### Compatibility
+
+- External conformance vectors and recorded run logs are preserved unchanged.
+  `funnel-event` and `report` schemas accept `agentmeasure.lab/*` as permanent
+  legacy aliases, and the urusilla-002 runner reads the pinned fixture's original
+  key, so the external vectors still validate and re-derive their metrics.
+- JSON exports keep the tool tag `verovo-healthcheck`; schema version and field
+  names are unchanged.
+
+### Verified
+
+- 511 healthcheck unit tests, healthcheck `selftest`, 91 lab tests, 106 buyer-ledger
+  tests, 21 SDK tests, all conformance runners and the vocabulary/registry checks
+  pass on the renamed tree.
 
 ## [v0.8.0] - 2026-10-15
 
@@ -145,7 +181,7 @@ documented here. Format follows [Keep a Changelog](https://keepachangelog.com/).
 
 ## [v0.2.0] - 2026-08-22 — Whitepaper v0.3 + AgentMeasure Lab v0.4 (open experiment engine)
 
-- **Lab v0.4 — real harness runners (LAB-004) + experiment history (G6 local)**: `claude-code` adapter — runs the real harness headless (`claude -p --output-format stream-json --mcp-config`) against a **controlled candidate set** injected through a per-episode local MCP tool server ([`toolserver.py`](lab/agentmeasure_lab/toolserver.py), pure stdlib; presentation varies per variant); `codex` adapter (experimental, `codex exec --json`, App Server surface future work); transcript→funnel parsing with honest limits (choice from transcript, success from tool_result, consumption = continuation proxy, latency/cost placeholders — disclosed in every report); integration-tested end-to-end against scripted CLI transcripts (tests/fake_claude.py / fake_codex.py) — **live-CLI validation pending, first live runs are validation runs**; `am lab history` — local experiment/hypothesis library (every run with date, verdicts, prereg hash, fingerprint); `run.json` now records `created_at`; baseline funnel section in [product/local-analytics.py](product/local-analytics.py) (BASE0-002: attempts → resolved operations → success, with explicit "not observable provider-side" boundaries); 74 tests (14 new).
+- **Lab v0.4 — real harness runners (LAB-004) + experiment history (G6 local)**: `claude-code` adapter — runs the real harness headless (`claude -p --output-format stream-json --mcp-config`) against a **controlled candidate set** injected through a per-episode local MCP tool server ([`toolserver.py`](lab/verovo_lab/toolserver.py), pure stdlib; presentation varies per variant); `codex` adapter (experimental, `codex exec --json`, App Server surface future work); transcript→funnel parsing with honest limits (choice from transcript, success from tool_result, consumption = continuation proxy, latency/cost placeholders — disclosed in every report); integration-tested end-to-end against scripted CLI transcripts (tests/fake_claude.py / fake_codex.py) — **live-CLI validation pending, first live runs are validation runs**; `am lab history` — local experiment/hypothesis library (every run with date, verdicts, prereg hash, fingerprint); `run.json` now records `created_at`; baseline funnel section in [product/local-analytics.py](product/local-analytics.py) (BASE0-002: attempts → resolved operations → success, with explicit "not observable provider-side" boundaries); 74 tests (14 new).
 - **Lab v0.3 — business-POC-driven release hardening**: fake growth now blocks the decision exit — a significant selection uplift whose consumption drop is significant or material (>5pp) is verdicted `unverified_growth` with a "do not ship: fix consumption first" recommendation (previously the warning existed but the verdict still said adopt); the check is significance-aware, so within-noise consumption dips no longer false-flag; **dominated candidates are called out** (no more money at higher cost → "pick the other one"); **null results carry next-round sizing guidance** (≈n per arm to resolve the observed effect — a boss must not read "null" as "no effect"); reports open with a **bilingual decision-maker one-pager** (conclusion / uplift / monthly margin / certainty / recommended action, no statistics vocabulary); `preregister` prints a **scale / power / budget preview** (per-arm n vs minimum, n needed for +2/+3/+5/+8pp at an assumed baseline, budget caps + worst-case spend — LAB-002 acceptance and NFR-COST-001 now met); CLI errors print **one clean line** instead of tracebacks (`AM_LAB_DEBUG=1` restores them); task-set paths fall back to the shipped corpus; run output defaults to a predictable cwd-relative `runs/`; mock harness default effect amplitudes cut to **realistic literature scale** (single-digit pp, echoing Hasan et al.) so demos cannot flatter the engine; MCP advice now carries plain-language verdicts, verified monthly margin, dominance and power notes; 60 tests (7 new POC regression tests encoding boss-level acceptance criteria).
 - **Lab v0.2 — calibration loop + MCP interface**: production re-test analysis ([`am lab calibrate`](lab/README.md), CAL-002/003) — offline vs production uplift under the same preregistered plan, per-condition (harness × task stratum) transfer effects with intervals (never a single global coefficient), verdicts `production_confirmed` / `direction_mismatch` / `transfer_not_established` / `not_comparable` (gap named, never assumed), matrix-reweighting suggestions (CAL-004 minimal); connector data plane (`am connector`, CAL-001) — local-first aggregation, three-tier per-class authorization (`off`/`local`/`export`), immediate revocation, HMAC-signed aggregate-only exports (schema-level: no per-assignment rows, no content); read-only MCP query interface (`am mcp serve`, LAB-009) — `get_run_summary` / `get_presentation_advice` (evidence grades, guardrails, production-verification status) / `get_funnel_metrics`, no rankings, no competitor data; calibration-report schema; [FMT-004 mapping doc](lab/docs/CORE-MAPPING.md) (Core 0.4.4 ↔ experiment formats + 2 reference scenarios); synthetic production-event generator for demos; 53 tests. Real production ingestion still gated on G0 data rights — validated on synthetic rollouts with planted transfer, disclosed as such.
 - **Lab v0.1 — open experiment engine** ([lab/](lab/README.md)): end-to-end preregistered experiments (M1 synthetic-harness scope) — CLI (`am lab init/preregister/run/report/verify/selftest`), enforced preregistration lock (hash), balanced blocked assignment, seed determinism (same seed → same run fingerprint), budget circuit breaker (safe stop, data kept, honest "incomplete" analysis), Reach→Choice→Success→Consumption funnel capture with Operation/Attempt semantics, honest statistics (Wilson/Newcombe intervals, two-proportion tests, honest nulls, "undetermined" with required n), guardrails (`effective_not_qualified` verdict), fake-growth warning, value-formula bridge, offline HTML/JSON reports with Measurement Labels; open formats FMT-001/002/003 ([lab/schemas/](lab/schemas/)); synthetic vertical task corpus v1 (36 tasks, 3 tiers); 30 tests + built-in selftest; synthetic mock harness with planted ground truth (disclosed in every report) — real harness runners (claude-code/codex) are plugin-interface pending

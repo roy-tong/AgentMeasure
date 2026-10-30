@@ -38,18 +38,18 @@ sys.path.insert(0, str(ROOT / "healthcheck"))
 
 
 def _run(args: list) -> int:
-    """Run one agentmeasure subcommand, streaming output."""
+    """Run one verovo subcommand, streaming output."""
     print("\n" + "=" * 64)
-    print("$ agentmeasure " + " ".join(args))
+    print("$ verovo " + " ".join(args))
     print("=" * 64)
-    proc = subprocess.run([sys.executable, "-m", "am_healthcheck.cli"] + args,
+    proc = subprocess.run([sys.executable, "-m", "verovo_healthcheck.cli"] + args,
                           cwd=str(ROOT / "healthcheck"))
     return proc.returncode
 
 
 def demo() -> int:
     """The ritual on sandbox fixtures: proves the pipeline end to end."""
-    fixtures = ROOT / "healthcheck" / "am_healthcheck" / "fixtures"
+    fixtures = ROOT / "healthcheck" / "verovo_healthcheck" / "fixtures"
     export = str(fixtures / "vendor-export-intercom.csv")
     print("MONTHLY REVIEW — DEMO (sandbox fixtures, no real data)")
     rc = _run(["recount", "--export", export, "--vendor", "intercom"])
@@ -128,7 +128,7 @@ def main(argv=None) -> int:
         _run([journal, "--log", log])
 
     print("\nMonthly ritual complete. Ledger: %s/verified-ledger.json" % args.out)
-    print("Next: agentmeasure console --ledger %s/verified-ledger.json "
+    print("Next: verovo console --ledger %s/verified-ledger.json "
           "--out console.html" % args.out)
     return 0
 

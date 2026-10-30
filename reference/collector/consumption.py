@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""AgentMeasure collector — consumption chain（Consumption / Result Consumed 检测）。
+"""Verovo collector — consumption chain（Consumption / Result Consumed 检测）。
 
 Claude Code 是 Consumption 的第一个实证平台（docs/adapters.md）：
   - claude_code.tool_result span：{tool_name, tool_use_id, success, duration_ms}

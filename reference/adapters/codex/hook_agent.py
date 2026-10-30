@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""AgentMeasure — Codex PostToolUse hook adapter（v3，measurement-integrity）。
+"""Verovo — Codex PostToolUse hook adapter（v3，measurement-integrity）。
 
 能力边界（诚实声明）：
   - 可可靠提供：tool_name / tool_use_id / session_id / model / turn_id
@@ -23,14 +23,14 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from collector.usage import pseudonymize  # noqa: E402
 
 EVENTS_DIR = Path(
-    os.environ.get("AGENTMEASURE_EVENTS_DIR", str(Path.home() / ".agentmeasure" / "events"))
+    os.environ.get("VEROVO_EVENTS_DIR", str(Path.home() / ".verovo" / "events"))
 ).expanduser()
 DO_NOT_TRACK = os.environ.get("DO_NOT_TRACK", "0") == "1"
-AGENT_HOST = os.environ.get("AGENTMEASURE_HOST", "codex")
-TARGET = os.environ.get("AGENTMEASURE_TARGET", "github.com/roy-tong/AgentMeasure")
-OBSERVER_PRINCIPAL = os.environ.get("AGENTMEASURE_PRINCIPAL", "codex-hook@local")
-TRUST_DOMAIN = os.environ.get("AGENTMEASURE_TRUST_DOMAIN", "local")
-INSTANCE_ID = os.environ.get("AGENTMEASURE_INSTANCE_ID", f"hook-{os.getpid()}")
+AGENT_HOST = os.environ.get("VEROVO_HOST", "codex")
+TARGET = os.environ.get("VEROVO_TARGET", "github.com/roy-tong/verovo")
+OBSERVER_PRINCIPAL = os.environ.get("VEROVO_PRINCIPAL", "codex-hook@local")
+TRUST_DOMAIN = os.environ.get("VEROVO_TRUST_DOMAIN", "local")
+INSTANCE_ID = os.environ.get("VEROVO_INSTANCE_ID", f"hook-{os.getpid()}")
 
 _SEQUENCE = [0]
 
@@ -64,7 +64,7 @@ def main() -> int:
     # 内存内伪匿名：原始 session 只出现在本函数内；落盘为 client_key
     client_key = pseudonymize(str(raw_session), AGENT_HOST) if raw_session else None
     envelope = {
-        "spec_version": "agentmeasure-0.4",
+        "spec_version": "verovo-0.4",
         "observation_id": str(uuid.uuid4()),
         "observation_type": "attempt_completed",   # PostToolUse = 执行已结束（outcome 不可判）
         "observer": {"principal": OBSERVER_PRINCIPAL, "side": "client",

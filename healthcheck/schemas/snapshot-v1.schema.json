@@ -1,13 +1,13 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://roy-tong.github.io/AgentMeasure/schemas/healthcheck/snapshot-v1.schema.json",
-  "title": "AgentMeasure Healthcheck snapshot (v1)",
-  "description": "Local artifact written by `agentmeasure check --save-snapshot`. Contains project names and session short-ids; do not upload as-is. Within a schema version fields are only added, never renamed or removed. Consumers that meet an unknown schema version must stop and disclose it.",
+  "$id": "https://roy-tong.github.io/verovo/schemas/healthcheck/snapshot-v1.schema.json",
+  "title": "Verovo Healthcheck snapshot (v1)",
+  "description": "Local artifact written by `verovo check --save-snapshot`. Contains project names and session short-ids; do not upload as-is. Within a schema version fields are only added, never renamed or removed. Consumers that meet an unknown schema version must stop and disclose it.",
   "type": "object",
   "required": ["schema", "tool", "tool_version", "saved_at", "mode", "window_label", "source_command", "overview", "checks", "sessions", "notes"],
   "properties": {
     "schema": { "const": 1 },
-    "tool": { "const": "agentmeasure-healthcheck" },
+    "tool": { "const": "verovo-healthcheck" },
     "tool_version": { "type": "string" },
     "saved_at": { "type": "string" },
     "mode": { "enum": ["own-data", "synthetic-demo"] },

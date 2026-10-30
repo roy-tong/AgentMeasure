@@ -10,7 +10,7 @@
     "metrics": {
       "project": "langfuse/demo-seed-traces",
       "days": 420,
-      "policy": "AgentMeasure/Measurement-1 [aggregate-base] (qualified=production+normal, evidence>=observed, coverage=participating_network, sampling=unsampled-only, window=30d)",
+      "policy": "Verovo/Measurement-1 [aggregate-base] (qualified=production+normal, evidence>=observed, coverage=participating_network, sampling=unsampled-only, window=30d)",
       "operation_summary_reconciliation": {
         "declared_summaries": 0,
         "reconciled": 0,
@@ -96,7 +96,7 @@
     "metrics": {
       "project": "langfuse/demo-seed-traces",
       "days": 420,
-      "policy": "AgentMeasure/Measurement-1 [aggregate-base] (qualified=production+normal, evidence>=observed, coverage=participating_network, sampling=unsampled-only, window=30d)",
+      "policy": "Verovo/Measurement-1 [aggregate-base] (qualified=production+normal, evidence>=observed, coverage=participating_network, sampling=unsampled-only, window=30d)",
       "operation_summary_reconciliation": {
         "declared_summaries": 0,
         "reconciled": 0,

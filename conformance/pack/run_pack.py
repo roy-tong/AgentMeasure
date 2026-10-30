@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""AgentMeasure Conformance Pack — check a caller-provided telemetry fixture
+"""Verovo Conformance Pack — check a caller-provided telemetry fixture
 against measurement invariants. PASS / FAIL / UNPROVABLE, never silent zeros.
 
 Subcommands:
@@ -11,7 +11,7 @@ Subcommands:
 Exit codes: 0 = no FAIL (UNPROVABLE allowed unless --require'd); 1 = FAIL
 present, or a required invariant not PROVEN; 2 = usage / input error.
 
-First-principle: AgentMeasure does not tell you whether your agent system is
+First-principle: Verovo does not tell you whether your agent system is
 good. It tells you whether your metrics mean what you think they mean.
 """
 from __future__ import annotations
@@ -23,8 +23,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "lab"))
-from agentmeasure_lab.analysis import aggregate  # noqa: E402
-from agentmeasure_lab.schemas import SchemaError, validate  # noqa: E402
+from verovo_lab.analysis import aggregate  # noqa: E402
+from verovo_lab.schemas import SchemaError, validate  # noqa: E402
 
 PACK = Path(__file__).resolve().parent
 REGISTRY = json.loads((PACK / "invariants.json").read_text(encoding="utf-8"))
@@ -204,7 +204,7 @@ def evaluate(events, claims):
 
 
 def human_report(results, metadata_warnings, claims_mode, registry):
-    lines = ["AgentMeasure Conformance Pack v" + registry["pack_version"]]
+    lines = ["Verovo Conformance Pack v" + registry["pack_version"]]
     counts = {PASS: 0, FAIL: 0, UNPROVABLE: 0}
     for r in results:
         lines.append("")
@@ -243,7 +243,7 @@ def human_report(results, metadata_warnings, claims_mode, registry):
 
 
 def main(argv=None) -> int:
-    ap = argparse.ArgumentParser(prog="agentmeasure", description=__doc__.splitlines()[0])
+    ap = argparse.ArgumentParser(prog="verovo", description=__doc__.splitlines()[0])
     sub = ap.add_subparsers(dest="cmd", required=True)
 
     c = sub.add_parser("conformance")
@@ -324,7 +324,7 @@ def selftest() -> int:
     r = evaluate(events, {"median_steps_per_operation": 2.5})[0]
     expect("correct claims (2.5/2) → PASS", r["operation-grain"]["verdict"] == PASS)
 
-    # case 2: wrong claims (the pre-fix AgentMeasure number) → FAIL
+    # case 2: wrong claims (the pre-fix Verovo number) → FAIL
     r = evaluate(events, {"median_steps_per_operation": 5.0})[0]
     expect("wrong claims (5.0 assignment grain) → FAIL", r["operation-grain"]["verdict"] == FAIL)
 

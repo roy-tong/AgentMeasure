@@ -1,7 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "agentmeasure.lab/report@1.0.0",
-  "title": "AgentMeasure Lab — Experiment Report",
+  "$id": "verovo.lab/report@1.0.0",
+  "$comment": "The agentmeasure.lab/report namespace is a permanent legacy alias for evidence recorded before the 2026-10-30 Verovo rename.",
+  "title": "Verovo Lab — Experiment Report",
   "description": "FMT-003. Report JSON emitted by the engine (open renderer; commercial layer may add private data but never a different ruler — same labels, same schema lineage).",
   "type": "object",
   "additionalProperties": true,
@@ -18,7 +19,7 @@
     "limitations"
   ],
   "properties": {
-    "schema": { "const": "agentmeasure.lab/report" },
+    "schema": { "enum": ["verovo.lab/report", "agentmeasure.lab/report"] },
     "schema_version": { "const": "1.0.0" },
     "engine_version": { "type": "string" },
     "funnel_rules_version": { "type": "string" },

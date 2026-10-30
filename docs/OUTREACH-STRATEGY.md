@@ -8,7 +8,7 @@
 **External Provider #001 → Real Traffic → Measurement Report #001 → 一个真实
 Actionability Case。**
 
-成功定义：第一个外部 Provider 接入后，AgentMeasure 告诉了他一件他原来不知道的
+成功定义：第一个外部 Provider 接入后，Verovo 告诉了他一件他原来不知道的
 事实（以及一件"以当前 lineage 无法知道"的事实），并且他因此改了产品。
 
 ## 2. 分池（2026-08 修订：MCP 项目 ≠ Measurement Alpha 项目）
@@ -54,7 +54,7 @@ meeting → security → legal → three months。当前各目标评分见私有
 
 统一卖点：
 
-> **AgentMeasure tells you what can actually be known about your agent traffic —
+> **Verovo tells you what can actually be known about your agent traffic —
 > and what is still unknowable.**
 
 下面接：
@@ -79,10 +79,10 @@ meeting → security → legal → three months。当前各目标评分见私有
 **B — 已有 telemetry 的 Provider**（Postman / Apify / Grafana / Rootly）
 绝不说 "We built an analytics SDK"。说：
 
-> You already collect most of the raw facts. AgentMeasure is an attempt to make
+> You already collect most of the raw facts. Verovo is an attempt to make
 > those facts portable and comparable across agent-facing software.
 
-合作形态可以是 `现有 telemetry → AgentMeasure adapter → Canonical Observation
+合作形态可以是 `现有 telemetry → Verovo adapter → Canonical Observation
 Envelope`，根本不一定装 SDK。
 
 **C — 大型官方 Hosted MCP**（Figma / Vercel / Slack / GitLab / Google / Cloudflare / Atlassian）

@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { AgentMeasure } from "../dist/index.js";
+import { Verovo } from "../dist/index.js";
 import { makeEventsDir, drain } from "./helpers.mjs";
 
 const CLAUDE = { type: "claimed_agent", runtime: "claude", identityStrength: "declared" };
@@ -8,7 +8,7 @@ const CODEX = { type: "claimed_agent", runtime: "codex", identityStrength: "decl
 
 test("caller: per-request resolver wins over server fallback (v1 meta shape)", async () => {
   const dir = makeEventsDir();
-  const am = new AgentMeasure({
+  const am = new Verovo({
     eventsDir: dir,
     projectId: "t/caller1",
     caller: { type: "claimed_agent", runtime: "fallback", identityStrength: "declared" },
@@ -33,7 +33,7 @@ test("caller: per-request resolver wins over server fallback (v1 meta shape)", a
 
 test("caller: v2 request shape (ctx.mcpReq._meta.clientInfo) resolves per request", async () => {
   const dir = makeEventsDir();
-  const am = new AgentMeasure({ eventsDir: dir, projectId: "t/caller2" });
+  const am = new Verovo({ eventsDir: dir, projectId: "t/caller2" });
   const wrapped = am.wrapTool("t", async () => ({}), {
     getCaller: (ctx) => {
       const info = ctx?.mcpReq?._meta?.clientInfo;
@@ -61,7 +61,7 @@ test("caller: v2 request shape (ctx.mcpReq._meta.clientInfo) resolves per reques
 
 test("caller: server-level claim is used only when no per-request context resolves", async () => {
   const dir = makeEventsDir();
-  const am = new AgentMeasure({
+  const am = new Verovo({
     eventsDir: dir,
     projectId: "t/caller3",
     caller: { type: "claimed_agent", runtime: "fixture", identityStrength: "declared" },

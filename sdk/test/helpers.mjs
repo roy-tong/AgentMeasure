@@ -10,7 +10,7 @@ export function makeEventsDir() {
   return mkdtempSync(join(tmpdir(), "am-sdk-test-"));
 }
 
-export function readEvents(dir, file = "agentmeasure-events.jsonl") {
+export function readEvents(dir, file = "verovo-events.jsonl") {
   const p = join(dir, file);
   return readFileSync(p, "utf8")
     .split("\n")

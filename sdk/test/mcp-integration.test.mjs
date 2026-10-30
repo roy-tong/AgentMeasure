@@ -9,7 +9,7 @@ function runExample(name, dir) {
     cwd: SDK_ROOT,
     encoding: "utf8",
     timeout: 180_000,
-    env: { ...process.env, AGENTMEASURE_EVENTS_DIR: dir },
+    env: { ...process.env, VEROVO_EVENTS_DIR: dir },
   });
 }
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""AgentMeasure collector — invocation matcher（观察 → 逻辑调用）。
+"""Verovo collector — invocation matcher（观察 → 逻辑调用）。
 
 数据模型（measurement-integrity review）：
   observations        adapter 观察事实（唯一输入）
@@ -137,7 +137,7 @@ def connect(db_path: Path = DB_DEFAULT) -> sqlite3.Connection:
 
 
 def store_observation(conn, obs: dict) -> bool:
-    # fail-closed（AgentMeasure-CORE 不变量）：无 observation_id 的观察拒绝入库
+    # fail-closed（Verovo-CORE 不变量）：无 observation_id 的观察拒绝入库
     if not obs.get("observation_id"):
         return False
     try:
@@ -270,7 +270,7 @@ RETRY_OUTCOMES = ("failure", "retry", "denied")
 
 
 def derive_operations(conn, enable_structural: bool = False) -> dict:
-    """Operation 归并（AgentMeasure-CORE §2.4 / CORR §3，fail-closed，Draft 0.4.3）。
+    """Operation 归并（Verovo-CORE §2.4 / CORR §3，fail-closed，Draft 0.4.3）。
 
     只处理 operation_resolution IS NULL 的 attempt（幂等）：
       1. explicit   观察自带 operation_id / idempotency / 精确关联 → 直接归组
@@ -438,7 +438,7 @@ def _make_invocation(conn, obs_list: list, matched_by: str) -> None:
     # （不变量 23：无 Operation 证据时不得归并，由 derive_operations 按规则处理）
     operation_id = next((o.get("operation_id") for o in obs_list if o.get("operation_id")), None)
     task_id = next((o.get("task_id") for o in obs_list if o.get("task_id")), None)
-    # outcome：冲突保留（AgentMeasure-CORE 不变量 12）——client success + server failure
+    # outcome：冲突保留（Verovo-CORE 不变量 12）——client success + server failure
     # → derived_outcome = "inconsistent"，绝不压平为 success
     outcomes = set(o.get("outcome") for o in obs_list if o.get("outcome"))
     if len(outcomes) > 1:

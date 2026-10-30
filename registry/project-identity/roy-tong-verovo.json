@@ -1,0 +1,11 @@
+{
+  "project_id": "github.com/roy-tong/verovo",
+  "name": "Verovo",
+  "aliases": {
+    "skill": "verovo",
+    "cli": "verovo"
+  },
+  "tools": ["verovo.wrap", "verovo.hook", "verovo.collect"],
+  "declared_by": "github.com/roy-tong/verovo",
+  "verified": false
+}

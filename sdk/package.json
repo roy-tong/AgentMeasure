@@ -1,7 +1,7 @@
 {
-  "name": "@agentmeasure/mcp",
-  "version": "0.2.0",
-  "description": "AgentMeasure Provider SDK — observe-first capability usage measurement for MCP servers. Emits canonical observations (AgentMeasure Draft 0.4.3); non-blocking buffered spool; no content captured.",
+  "name": "@verovo/mcp",
+  "version": "0.3.0",
+  "description": "Verovo Provider SDK — observe-first capability usage measurement for MCP servers. Emits canonical observations (Verovo Draft 0.4.3); non-blocking buffered spool; no content captured.",
   "license": "MIT",
   "type": "module",
   "main": "dist/index.js",
@@ -28,7 +28,7 @@
     "mcp",
     "measurement",
     "analytics",
-    "agentmeasure",
+    "verovo",
     "observability"
   ]
 }

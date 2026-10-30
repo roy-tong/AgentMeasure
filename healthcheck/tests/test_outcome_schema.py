@@ -112,7 +112,7 @@ class TestOutcomeUnitSchema(unittest.TestCase):
         self.assertTrue(unit["qualification"]["criteria_unproven"])
 
     def test_schema_discipline_matches_settlement_grades(self):
-        # observer_grade must stay aligned with AMS-1's ladder.
+        # observer_grade must stay aligned with VSS-1's ladder.
         schema = load(SCHEMA_PATH)
         grades = schema["properties"]["observer_grade"]["enum"]
         self.assertEqual(

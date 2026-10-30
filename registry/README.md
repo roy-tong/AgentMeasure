@@ -1,4 +1,4 @@
-# AgentMeasure Registry（机器可读）
+# Verovo Registry（机器可读）
 
 互补的机器可读注册表：
 
@@ -26,7 +26,7 @@
 ## project-identity/（既有格式）
 
 Project 级身份（`project.id ↔ aliases ↔ tools`），dogfooding 见
-`roy-tong-AgentMeasure.json`。字段与 entities/ 对齐后统一迁移到 entities/。
+`roy-tong-Verovo.json`。字段与 entities/ 对齐后统一迁移到 entities/。
 
 ## 校验器
 

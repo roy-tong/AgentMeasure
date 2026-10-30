@@ -1,5 +1,5 @@
 {
-  "spec_version": "agentmeasure-0.4",
+  "spec_version": "verovo-0.4",
   "note": "Operation/Attempt（Core §2.4）：重试 = 同一 operation 的多个 attempt；无证据不归并（不变量 23）。resolution: explicit | structural | none。",
   "vectors": [
     {

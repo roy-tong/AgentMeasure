@@ -2,9 +2,9 @@
 """S2 四被测系统跑分（论文线：规则引擎/朴素 diff/阈值/LLM 两步式）。
 
 被测系统（行级差异预测 [{event, direction}]，direction∈over/under）：
-  rule_engine : 仓库 recount 引擎（healthcheck/am_healthcheck/vendors.recount）。
-                AMSBench 实例事件流 → judgement CSV 行 → recount(verdicts)。
-                双实现边界：amsbench 评测包不 import 本仓库引擎；本驱动器在包外
+  rule_engine : 仓库 recount 引擎（healthcheck/verovo_healthcheck/vendors.recount）。
+                VerovoBench 实例事件流 → judgement CSV 行 → recount(verdicts)。
+                双实现边界：verovobench 评测包不 import 本仓库引擎；本驱动器在包外
                 （benchmark/s2-baselines/）以被测系统身份调用它，属黑盒评测。
   naive_diff  : 仅发票内部一致性（无合约）：amount≠qty×unit_price、同 event 重复行、
                 行内 human_replies>0 却计费、summary 与行和不符。
@@ -23,8 +23,8 @@
 import argparse, json, math, random, statistics, sys
 from pathlib import Path
 
-AMS = Path(__file__).resolve().parent.parent / "amsbench"
-sys.path.insert(0, str(AMS))
+BENCH = Path(__file__).resolve().parent.parent / "verovobench"
+sys.path.insert(0, str(BENCH))
 import generator as G  # 事件流重建=取得厂商 conversation log（对账输入）
 
 PROFILE_BY_ID = {p["id"]: p for p in G.SEED_PROFILES}
@@ -62,7 +62,7 @@ _HEALTHCHECK = Path(__file__).resolve().parents[2] / "healthcheck"
 
 def load_rule_engine():
     sys.path.insert(0, str(_HEALTHCHECK))
-    from am_healthcheck import vendors as V
+    from verovo_healthcheck import vendors as V
     return V
 
 
@@ -157,7 +157,7 @@ def threshold_predict(inst):
 # ---------------- 被测系统 d：LLM 两步式 step1 ----------------
 
 def llm_step1_prompts(instances, n, out_path):
-    sys.path.insert(0, str(AMS))
+    sys.path.insert(0, str(BENCH))
     import eval_reconciler as ER
     sample = instances[:n] if n else instances
     with open(out_path, "w", encoding="utf-8") as f:
@@ -227,7 +227,7 @@ def score(preds_by_system, instances):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--instances", default=str(AMS / "amsbench-instances.jsonl"))
+    ap.add_argument("--instances", default=str(BENCH / "verovobench-instances.jsonl"))
     ap.add_argument("--limit", type=int, default=0)
     ap.add_argument("--llm-prompts", type=int, default=0, help=">0: 只生成 LLM step1 prompts 后退出")
     ap.add_argument("--llm-prompts-out", default="llm-prompts-sample.jsonl")

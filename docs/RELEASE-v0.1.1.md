@@ -24,7 +24,7 @@ convergence that makes the SDK safe to hand to the first external provider.
   know; `normal` is collector-derived; `provider_configuration` validity is
   never strong qualification
 
-**SDK `@agentmeasure/mcp` v0.1.1**
+**SDK `@verovo/mcp` v0.1.1**
 
 - Non-blocking: `emit()` only enqueues; background flusher batches to rotating
   spool files (dir 0700 / files 0600); loss accounting in `bufferHealth` and in
@@ -68,10 +68,10 @@ boundary." That overstated the guarantee. The accurate statement:
 ## Install
 
 ```bash
-npm install @agentmeasure/mcp   # publish pending npm scope + token — see CHANGELOG
-# or: git clone https://github.com/roy-tong/AgentMeasure && cd sdk && npm install
-# or: download the attached agentmeasure-mcp-0.1.1.tgz and:
-#     npm install ./agentmeasure-mcp-0.1.1.tgz
+npm install @verovo/mcp   # publish pending npm scope + token — see CHANGELOG
+# or: git clone https://github.com/roy-tong/verovo && cd sdk && npm install
+# or: download the attached verovo-mcp-0.1.1.tgz and:
+#     npm install ./verovo-mcp-0.1.1.tgz
 ```
 
 ## Demo

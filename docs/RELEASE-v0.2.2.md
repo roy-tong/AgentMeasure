@@ -5,8 +5,8 @@
 > Both fixes in this release were **found by the first external conformance
 > pass** (Urusilla / @jaden3824, [langfuse#16383](https://github.com/langfuse/langfuse/discussions/16383))
 > and were committed "before the next tag" per
-> [#8](https://github.com/roy-tong/AgentMeasure/issues/8) and
-> [#9](https://github.com/roy-tong/AgentMeasure/issues/9). This release is
+> [#8](https://github.com/roy-tong/verovo/issues/8) and
+> [#9](https://github.com/roy-tong/verovo/issues/9). This release is
 > that commitment, delivered.
 
 ---
@@ -62,7 +62,7 @@ exact metric reproduction, and **#9** (tampered declarations must surface
 `reconciliation: failed`, never silent trust).
 
 **Claim boundary (unchanged from the source project):** this fixture is
-synthetic, project-authored evidence. It is not an AgentMeasure endorsement,
+synthetic, project-authored evidence. It is not an Verovo endorsement,
 a Langfuse adoption, an external reproduction, or a real provider-cost
 observation.
 
@@ -88,7 +88,7 @@ Bundle contents (all in-repo, versioned with this tag):
 | Expected metrics | `…/agentmeasure_urusilla_fixture_001.expected.json` |
 | Mapping / methodology | `…/AGENTMEASURE_URUSILLA_MAPPING_2026-08-23.md` |
 | Guard runner | `conformance/runners/run_external_fixture.py` |
-| Fixes | `lab/agentmeasure_lab/schemas.py`, `lab/agentmeasure_lab/analysis.py`, `reference/collector/aggregator/aggregator.py`, `reference/collector/correlator/correlator.py` |
+| Fixes | `lab/verovo_lab/schemas.py`, `lab/verovo_lab/analysis.py`, `reference/collector/aggregator/aggregator.py`, `reference/collector/correlator/correlator.py` |
 
 ## Also in this release
 

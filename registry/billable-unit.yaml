@@ -1,4 +1,4 @@
-# AgentMeasure — Billable Unit Registry（Draft 0.4.5）
+# Verovo — Billable Unit Registry（Draft 0.4.5）
 # 可计费单位的单一事实源。COMMERCIAL §3 的 billable_event 引用本注册表。
 # status: draft | stable | deprecated
 
@@ -56,7 +56,7 @@ billable_units:
     description: "一个计量周期内的用量聚合（compute/A3 计量）"
     typical_event: usage_measured
     status: draft
-    notes: "telemetry 为厂商侧输入，AgentMeasure 验证计费不重新计量"
+    notes: "telemetry 为厂商侧输入，Verovo 验证计费不重新计量"
 
   - id: incrementality_claim
     description: "一条带对照证据的增量主张（performance 阶段）"

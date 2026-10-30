@@ -2,7 +2,7 @@
 """External fixture conformance: Urusilla-001 (#8 / #9 regression guard).
 
 Source: first external conformance pass by @jaden3824 (Urusilla), pinned
-AgentMeasure v0.2.1 @ 20807ad — langfuse/langfuse#16383.
+Verovo v0.2.1 @ 20807ad — langfuse/langfuse#16383.
 Accepted upstream per the commitment in issues #8 and #9.
 
 Guards:
@@ -16,7 +16,7 @@ Guards:
                 reconciliation: failed, never silent trust.
 
 Claim boundary (from the source project): this fixture is project-authored
-synthetic evidence — not an AgentMeasure endorsement, a Langfuse adoption,
+synthetic evidence — not an Verovo endorsement, a Langfuse adoption,
 an external reproduction, or a real provider-cost observation.
 
 Exit 0 = all guards pass.
@@ -29,8 +29,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "lab"))
-from agentmeasure_lab.analysis import aggregate  # noqa: E402
-from agentmeasure_lab.schemas import SchemaError, validate  # noqa: E402
+from verovo_lab.analysis import aggregate  # noqa: E402
+from verovo_lab.schemas import SchemaError, validate  # noqa: E402
 
 VEC = ROOT / "conformance" / "vectors" / "external" / "urusilla-001"
 EVENTS_FILE = VEC / "agentmeasure_urusilla_fixture_001.events.jsonl"

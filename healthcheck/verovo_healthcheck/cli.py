@@ -1,0 +1,2286 @@
+"""CLI orchestration: check / demo / compare / selftest / history.
+
+Exit codes (R5 contract):
+  0  the check or compare ran and produced its output (findings or not)
+  2  input/output error: no readable logs, bad arguments, unreadable directory,
+     unusable snapshot, or report output cannot be written
+
+A run with FINDING results still exits 0 — findings describe the user's agent
+runs, not a failure of this tool.
+"""
+import argparse
+import json
+import os
+import shlex
+import sys
+from datetime import datetime, timezone
+from typing import List, Optional, Tuple
+
+from . import __version__
+from . import checks as checks_mod
+from . import claude as claude_adapter
+from . import codex as codex_adapter
+from . import discover as discover_mod
+from . import history as history_mod
+from . import report_html as html_mod
+from . import report_text as text_mod
+from . import share as share_mod
+from . import snapshot as snapshot_mod
+from . import schema as schema_mod
+from . import sdk_events as sdk_events_mod
+from . import settle as settle_mod
+from . import vendors as vendors_mod
+from . import dispute as dispute_mod
+from . import export as export_mod
+from . import prepare as prepare_mod
+from . import recovery as recovery_mod
+from . import crosscheck as crosscheck_mod
+from . import ledger as ledger_mod
+from . import rulesdiff as rulesdiff_mod
+from . import narrative as narrative_mod
+from . import delivery as delivery_mod
+from . import dashboard as dashboard_mod
+from . import outcomes as outcomes_mod
+from . import crm as crm_mod
+from . import periods as periods_mod
+from . import certify as certify_mod
+from . import incrementality as inc_mod
+from . import templates as templates_mod
+from . import commerce as commerce_mod
+from . import pnl as pnl_mod
+from . import audit as audit_mod
+from . import taxonomy as tax_mod
+from . import policy as policy_mod
+from . import benchmark as bench_mod
+from . import console as console_mod
+from . import drilldown as drilldown_mod
+from . import decisions as decisions_mod
+from . import scaffold as scaffold_mod
+# Conformance pack loaded lazily in cmd_conformance
+
+DEFAULT_DAYS = 7
+DEFAULT_HTML = "verovo-report.html"
+
+
+class _InputError(Exception):
+    """User-facing input problem; message is printed and the run exits 2."""
+
+
+def _window_label(args, since=None, until=None) -> str:
+    if getattr(args, "all", False):
+        base = "all local sessions"
+    elif since or until:
+        parts = []
+        if since:
+            parts.append(since.strftime("%Y-%m-%d"))
+        parts.append("→")
+        if until:
+            parts.append(until.strftime("%Y-%m-%d"))
+        base = "sessions %s" % " ".join(parts)
+    elif getattr(args, "dir", None):
+        base = "explicit directory: %s" % args.dir
+    else:
+        base = "last %d day(s) of local sessions" % getattr(args, "days", DEFAULT_DAYS)
+    project = getattr(args, "project", None)
+    if project:
+        base += " · project ~%s" % project
+    return base
+
+
+def _parse_date_arg(text: Optional[str], flag: str):
+    if not text:
+        return None
+    try:
+        return discover_mod.parse_date(text)
+    except ValueError as exc:
+        raise _InputError("%s: %s" % (flag, exc))
+
+
+def _validate_output_paths(input_paths: List[str], *output_paths) -> str:
+    """Reject collisions and missing parents before any report is written."""
+    outputs = [str(p) for p in output_paths if p]
+    normalized = [os.path.realpath(os.path.abspath(p)) for p in outputs]
+    if len(set(normalized)) != len(normalized):
+        return "HTML, JSON, snapshot, and share outputs must use different paths"
+    inputs = {os.path.realpath(os.path.abspath(p)) for p in input_paths}
+    if inputs.intersection(normalized):
+        return "an output path would overwrite an input log; choose another path"
+    for p, absolute in zip(outputs, normalized):
+        if os.path.exists(absolute):
+            for source in input_paths:
+                try:
+                    if os.path.exists(source) and os.path.samefile(absolute, source):
+                        return "an output path refers to an input log (including a hard link); choose another path"
+                except OSError:
+                    continue
+        if os.path.isdir(absolute):
+            return "output path is a directory: %s" % p
+        parent = os.path.dirname(absolute)
+        if not os.path.isdir(parent):
+            return "output parent directory does not exist: %s" % parent
+    return ""
+
+
+def _has_supported_signal(session) -> bool:
+    return bool(session.session_id or session.execs or session.calls or session.tokens or
+                session.thread_tokens or session.turns or session.compactions or
+                session.file_changes or session.subagent_activity)
+
+
+def _collect_paths(args, since=None, until=None) -> List[str]:
+    """Shared input collection for check and compare-fresh runs."""
+    if getattr(args, "dir", None):
+        if not os.path.isdir(args.dir):
+            raise _InputError("--dir %s is not a directory" % args.dir)
+        paths = sorted(
+            os.path.join(base, name)
+            for base, _dirs, names in os.walk(args.dir)
+            for name in names if name.endswith(".jsonl"))
+        if not paths:
+            raise _InputError("no .jsonl files under %s" % args.dir)
+        if since or until:
+            paths, skipped, undated = discover_mod.filter_by_date(paths, since, until)
+            if skipped:
+                print("note: date filter skipped %d file(s)" % skipped)
+            if undated:
+                print("note: %d file(s) have no rollout date in the name and were "
+                      "kept (window cannot be decided)" % undated)
+            if not paths:
+                raise _InputError("the date filter removed every file under %s" % args.dir)
+        runtime = getattr(args, "runtime", "auto")
+        if runtime == "auto":
+            runtime = "codex"  # legacy default for --dir; pass --runtime claude to override
+        return paths, runtime
+
+    result = discover_mod.discover(
+        since_days=None if (getattr(args, "all", False) or since or until)
+        else getattr(args, "days", DEFAULT_DAYS),
+        scan_all=getattr(args, "all", False), since=since, until=until)
+    for rt in result.runtimes:
+        if rt.note:
+            print("note [%s]: %s" % (rt.runtime, rt.note))
+    wanted = getattr(args, "runtime", "auto")
+    primary = None
+    if wanted in ("codex", "claude"):
+        for rt in result.runtimes:
+            if rt.runtime == wanted:
+                primary = rt
+                break
+        if primary is None or not primary.files:
+            raise _InputError("no %s log files found in the selected window. "
+                              "Try --days N, --since/--until, --all, or --dir <path>."
+                              % ("Codex rollout" if wanted == "codex" else "Claude Code session"))
+    else:
+        # auto: prefer whichever supported runtime has files; Codex first (legacy default)
+        for rt in result.runtimes:
+            if rt.supported and rt.files:
+                primary = rt
+                break
+        if primary is None:
+            raise _InputError("no supported log files found in the selected window. "
+                              "Try --days N, --since/--until, --all, or --dir <path>.")
+    return primary.files, primary.runtime
+
+
+def _analyze(paths: List[str], project: Optional[str], window_label: str,
+             runtime: str = "codex", audit_mode: bool = False,
+             sdk_events_path: Optional[str] = None):
+    """Parse, filter, and run checks. Returns everything a report needs."""
+    adapter = claude_adapter if runtime == "claude" else codex_adapter
+    sessions = [adapter.parse_session(p) for p in paths]
+    if not any(_has_supported_signal(s) for s in sessions):
+        raise _InputError("no supported %s events found in the selected input"
+                          % ("Claude Code session" if runtime == "claude"
+                             else "Codex rollout"))
+    if project:
+        needle = project.lower()
+        known = sorted({s.project or "(unknown)" for s in sessions})
+        sessions = [s for s in sessions if needle in (s.project or "(unknown)").lower()]
+        if not sessions:
+            raise _InputError("no sessions match --project %r; known projects: %s"
+                              % (project, ", ".join(known) or "none"))
+    ov, check_results, coverage, top3 = checks_mod.run_checks(
+        sessions, window_label, audit_mode=audit_mode)
+    rows = checks_mod.session_summaries(sessions)
+
+    # Cross-side SDK pairing for audit mode
+    cross_side = None
+    if sdk_events_path:
+        try:
+            sdk_events = sdk_events_mod.load_sdk_events(sdk_events_path)
+            cross_side = sdk_events_mod.build_cross_side_report(sessions, sdk_events)
+        except (ValueError, OSError) as exc:
+            print("warning: --sdk-events could not be loaded: %s" % exc, file=sys.stderr)
+
+    return sessions, ov, check_results, coverage, top3, rows, cross_side
+
+
+def _run_check(paths: List[str], mode: str, window_label: str, command: str,
+               html_path: str, json_path, share_path, snapshot_path,
+               use_history: bool, home=None, project=None, runtime: str = "codex",
+               audit_mode: bool = False, sdk_events_path: str = None,
+               otel_path: Optional[str] = None,
+               prom_path: Optional[str] = None) -> int:
+    output_error = _validate_output_paths(paths, html_path, json_path, share_path,
+                                          snapshot_path)
+    if output_error:
+        print("error: %s" % output_error, file=sys.stderr)
+        return 2
+    try:
+        sessions, ov, check_results, coverage, top3, rows, cross_side = _analyze(
+            paths, project, window_label, runtime,
+            audit_mode=audit_mode,
+            sdk_events_path=sdk_events_path)
+    except _InputError as exc:
+        print("error: %s" % exc, file=sys.stderr)
+        return 2
+    summary = share_mod.build_share_summary(ov, check_results, mode, window_label)
+    run_no = history_mod.run_number(mode, None) if use_history else 1
+    runtime_note = "runtime: %s adapter v%s" % (
+        "claude-code-session" if runtime == "claude" else "codex-rollout", __version__)
+
+    print(text_mod.render_terminal(ov, check_results, top3, mode, run_no,
+                                   runtime_note))
+
+    try:
+        with open(html_path, "w", encoding="utf-8") as fh:
+            fh.write(html_mod.render_html(ov, check_results, coverage, top3,
+                                          sessions, mode, window_label,
+                                          command, summary))
+        print("\nHTML report  → %s (contains local paths — do not upload as-is)"
+              % os.path.abspath(html_path))
+    except OSError as exc:
+        print("\nerror: could not write HTML report: %s" % exc, file=sys.stderr)
+        return 2
+
+    payload = {
+        "schema": schema_mod.REPORT_SCHEMA,
+        "tool": "verovo-healthcheck", "version": __version__,
+        "mode": mode, "window": window_label,
+        "overview": snapshot_mod.overview_dict(ov),
+        "checks": [_check_dict(c) for c in check_results],
+        "coverage": [_finding_dict(f) for f in coverage],
+        "share_summary": summary,
+    }
+    if json_path:
+        try:
+            with open(json_path, "w", encoding="utf-8") as fh:
+                # ASCII escaping keeps lone Unicode surrogates from malformed
+                # input from turning an otherwise valid export into a write
+                # error. The JSON remains standards-compliant and readable.
+                json.dump(payload, fh, ensure_ascii=True, indent=2)
+        except OSError as exc:
+            print("error: could not write JSON export: %s" % exc, file=sys.stderr)
+            return 2
+        print("JSON export  → %s" % os.path.abspath(json_path))
+
+    if otel_path:
+        try:
+            with open(otel_path, "w", encoding="utf-8") as fh:
+                fh.write(export_mod.to_otel(payload))
+        except OSError as exc:
+            print("error: could not write OTel export: %s" % exc, file=sys.stderr)
+        else:
+            print("OTel export  → %s" % os.path.abspath(otel_path))
+
+    if prom_path:
+        try:
+            with open(prom_path, "w", encoding="utf-8") as fh:
+                fh.write(export_mod.to_prometheus(payload))
+        except OSError as exc:
+            print("error: could not write Prometheus export: %s" % exc, file=sys.stderr)
+        else:
+            print("Prometheus  → %s" % os.path.abspath(prom_path))
+
+    if share_path:
+        if share_path.endswith(".json"):
+            body = share_mod.share_json(summary)
+        else:
+            body = share_mod.share_markdown(summary)
+        try:
+            with open(share_path, "w", encoding="utf-8") as fh:
+                fh.write(body + "\n")
+        except OSError as exc:
+            print("error: could not write share summary: %s" % exc, file=sys.stderr)
+            return 2
+        print("Share summary → %s (sanitized: aggregate counts only)"
+              % os.path.abspath(share_path))
+
+    if snapshot_path:
+        snap = snapshot_mod.build_snapshot(ov, check_results, rows, mode,
+                                           window_label, command)
+        try:
+            snapshot_mod.save_snapshot(snap, snapshot_path)
+        except OSError as exc:
+            print("error: could not write snapshot: %s" % exc, file=sys.stderr)
+            return 2
+        print("Snapshot     → %s (local artifact; compare with `compare`)"
+              % os.path.abspath(snapshot_path))
+
+    if use_history:
+        history_mod.record_run({
+            "ts": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+            "mode": mode, "window": window_label, "sessions": ov.sessions,
+            "executions": ov.exec_total, "failed": ov.exec_failed,
+            "retry_chains": ov.retry_chains,
+            "checks": {c.check_id: c.status for c in check_results},
+            "report": os.path.abspath(html_path),
+        }, home)
+    return 0
+
+
+def _check_dict(c):
+    return {"check_id": c.check_id, "name": c.name, "status": c.status,
+            "summary": c.summary, "unprovable_reason": c.unprovable_reason,
+            "findings": [_finding_dict(f) for f in c.findings]}
+
+
+def _finding_dict(f):
+    return {"title": f.title, "severity": f.severity,
+            "explanation": f.explanation, "next_step": f.next_step,
+            "evidence": [{"session": e.session, "file": e.file, "line": e.line,
+                          "detail": e.detail} for e in f.evidence]}
+
+
+def _demo_fixture_path() -> str:
+    return os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                        "demo", "demo-codex.jsonl")
+
+
+def _fixture_path(name: str) -> str:
+    return os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                        "fixtures", name)
+
+
+def _resolve_snapshot_path(value) -> Optional[str]:
+    if value is True:
+        stamp = datetime.now().strftime("%Y%m%d-%H%M%S")
+        return "verovo-snapshot-%s.json" % stamp
+    return value
+
+
+def _validate_run_args(args) -> Tuple[Optional[object], Optional[object]]:
+    if getattr(args, "days", DEFAULT_DAYS) < 0:
+        raise _InputError("--days must be >= 0")
+    since = _parse_date_arg(getattr(args, "since", None), "--since")
+    until = _parse_date_arg(getattr(args, "until", None), "--until")
+    if since and until and until < since:
+        raise _InputError("--until is earlier than --since")
+    return since, until
+
+
+def cmd_check(args) -> int:
+    command = "python3 healthcheck/verovo " + shlex.join(
+        getattr(args, "_argv", sys.argv[1:]) or ["check"])
+    mode = "own-data"
+    try:
+        since, until = _validate_run_args(args)
+        paths, runtime = _collect_paths(args, since, until)
+        window_label = _window_label(args, since, until)
+    except _InputError as exc:
+        print("error: %s" % exc, file=sys.stderr)
+        return 2
+
+    print("reading %d %s file(s)…" % (
+        len(paths), "Claude Code session" if runtime == "claude" else "rollout"))
+    html_path = args.html or DEFAULT_HTML
+    snapshot_path = _resolve_snapshot_path(args.save_snapshot)
+    return _run_check(paths, mode, window_label, command, html_path,
+                      args.json, args.share, snapshot_path,
+                      not args.no_history, project=args.project, runtime=runtime,
+                      audit_mode=args.audit, sdk_events_path=args.sdk_events,
+                      otel_path=getattr(args, "export_otel", None),
+                      prom_path=getattr(args, "export_prometheus", None))
+
+
+def cmd_demo(args) -> int:
+    fixture = _demo_fixture_path()
+    if not os.path.isfile(fixture):
+        print("error: demo fixture missing: %s" % fixture, file=sys.stderr)
+        return 2
+    command = "python3 healthcheck/verovo " + shlex.join(
+        getattr(args, "_argv", sys.argv[1:]) or ["demo"])
+    html_path = args.html or "verovo-demo-report.html"
+    snapshot_path = _resolve_snapshot_path(args.save_snapshot)
+    return _run_check([fixture], "synthetic-demo", "synthetic demo session",
+                      command, html_path, args.json, args.share, snapshot_path,
+                      not args.no_history)
+
+
+def cmd_compare(args) -> int:
+    if len(args.snapshots) > 2:
+        print("error: compare takes one snapshot (compared against a fresh run) "
+              "or two snapshots", file=sys.stderr)
+        return 2
+    command = "python3 healthcheck/verovo " + shlex.join(
+        getattr(args, "_argv", sys.argv[1:]) or ["compare"])
+    try:
+        snap_a = snapshot_mod.load_snapshot(args.snapshots[0])
+        snap_a["_path"] = os.path.abspath(args.snapshots[0])
+        if len(args.snapshots) == 2:
+            snap_b = snapshot_mod.load_snapshot(args.snapshots[1])
+            snap_b["_path"] = os.path.abspath(args.snapshots[1])
+        else:
+            since, until = _validate_run_args(args)
+            paths, runtime = _collect_paths(args, since, until)
+            window_label = _window_label(args, since, until)
+            print("reading %d %s file(s) for the fresh side…" % (
+                len(paths), "Claude Code session" if runtime == "claude" else "rollout"))
+            _sessions, ov, check_results, _cov, _top, rows, _cs = _analyze(
+                paths, getattr(args, "project", None), window_label, runtime)
+            snap_b = snapshot_mod.build_snapshot(
+                ov, check_results, rows, "own-data", window_label, command)
+            snap_b["_path"] = ""
+    except (_InputError, snapshot_mod.SnapshotError) as exc:
+        print("error: %s" % exc, file=sys.stderr)
+        return 2
+
+    if args.json:
+        output_error = _validate_output_paths(
+            [p for p in (snap_a.get("_path"), snap_b.get("_path")) if p], args.json)
+        if output_error:
+            print("error: %s" % output_error, file=sys.stderr)
+            return 2
+
+    cmp = snapshot_mod.compare_snapshots(snap_a, snap_b)
+    print(snapshot_mod.render_compare_text(cmp))
+
+    if args.json:
+        try:
+            with open(args.json, "w", encoding="utf-8") as fh:
+                json.dump(cmp, fh, ensure_ascii=True, indent=2)
+        except OSError as exc:
+            print("error: could not write compare export: %s" % exc, file=sys.stderr)
+            return 2
+        print("\nCompare export → %s" % os.path.abspath(args.json))
+
+    if not args.no_history:
+        history_mod.record_run({
+            "ts": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+            "mode": "compare",
+            "a": snap_a.get("_path") or "in-memory",
+            "b": snap_b.get("_path") or "fresh run",
+            "changed_verdicts": len(cmp["changed_verdicts"]),
+        })
+    return 0
+
+
+def cmd_share(args) -> int:
+    """Preview-then-export: show the sanitized summary, write only with --out.
+
+    The default is a PREVIEW on the terminal — nothing is exported until the
+    user re-runs with an explicit --out after reviewing what would leave the
+    machine. The summary is re-checked against the whitelist before either
+    step (defense in depth for hand-edited or future report files).
+    """
+    kind, errors = schema_mod.validate_file(args.report)
+    if errors:
+        for err in errors:
+            print("error: %s" % err, file=sys.stderr)
+        return 2
+    if kind != "report":
+        print("error: %s is a %s export; sharing works from a report export "
+              "(`check --json` / `demo --json`)" % (args.report, kind),
+              file=sys.stderr)
+        return 2
+    try:
+        with open(args.report, "r", encoding="utf-8") as fh:
+            data = json.load(fh)
+    except (OSError, ValueError) as exc:
+        print("error: cannot re-read %s: %s" % (args.report, exc), file=sys.stderr)
+        return 2
+    summary = data.get("share_summary")
+    problems = share_mod.summary_problems(summary)
+    if problems:
+        for problem in problems:
+            print("error: refusing to show/export: %s" % problem, file=sys.stderr)
+        return 2
+
+    body = (share_mod.share_json(summary) if (args.out or "").endswith(".json")
+            else share_mod.share_markdown(summary))
+    print("— sanitized share summary (preview) —")
+    print(body)
+    print("— end of preview · contains aggregate counts only; no prompts, "
+          "paths, commands, repo names, or session ids —")
+
+    if args.out:
+        output_error = _validate_output_paths([args.report], args.out)
+        if output_error:
+            print("error: %s" % output_error, file=sys.stderr)
+            return 2
+        try:
+            with open(args.out, "w", encoding="utf-8") as fh:
+                fh.write(body + "\n")
+        except OSError as exc:
+            print("error: could not write share summary: %s" % exc, file=sys.stderr)
+            return 2
+        print("\nExported → %s (saved locally; inspect the file before sharing)" % os.path.abspath(args.out))
+    else:
+        print("\nPreview only — nothing was written. To export after review, "
+              "re-run with: --out summary.md")
+    return 0
+
+
+def cmd_validate(args) -> int:
+    """Validate exported JSON files against their versioned schemas."""
+    problems = 0
+    for path in args.paths:
+        kind, errors = schema_mod.validate_file(path)
+        if errors:
+            problems += 1
+            print("%s: INVALID" % path)
+            for err in errors:
+                print("  - %s" % err)
+        else:
+            print("%s: valid %s" % (path, kind))
+    print("validate: %s" % ("PASS" if problems == 0 else
+                            "FAIL (%d invalid file(s))" % problems))
+    return 0 if problems == 0 else 2
+
+
+def cmd_new_vector(args) -> int:
+    """Scaffold a CI-valid external conformance vector directory (C1)."""
+    try:
+        paths = scaffold_mod.scaffold(args.new_vector,
+                                      out_root=args.out,
+                                      contributed_by=args.by or "")
+    except (ValueError, OSError) as exc:
+        print("error: %s" % exc, file=sys.stderr)
+        return 2
+    print("Vector scaffold created:")
+    for key, path in paths.items():
+        print("  %-10s %s" % (key, path))
+    print()
+    print("Validate the generated fixture (should pass as-is):")
+    print("  verovo conformance --fixture %s --metadata %s"
+          % (paths["fixture"], paths["metadata"]))
+    return 0
+
+
+def cmd_response_audit(args) -> int:
+    from . import response_audit
+    try:
+        error = _validate_output_paths(args.paths, args.json_out)
+        if error:
+            raise ValueError(error)
+        result = response_audit.audit(args.paths)
+        rendered = json.dumps(result, indent=2, ensure_ascii=True)
+        if args.json_out:
+            with open(args.json_out, "w", encoding="utf-8") as stream:
+                stream.write(rendered + "\n")
+        print(rendered)
+        return 0
+    except (OSError, ValueError) as exc:
+        print("error: %s" % exc, file=sys.stderr)
+        return 2
+
+
+def cmd_inspect_input(args) -> int:
+    from . import input_inspect
+    try:
+        path_error = _validate_output_paths([args.path], args.json_out)
+        if path_error:
+            raise ValueError(path_error)
+        result = input_inspect.inspect(args.path)
+        if args.json_out:
+            with open(args.json_out, "w", encoding="utf-8") as fh:
+                json.dump(result, fh, indent=2, ensure_ascii=False)
+                fh.write("\n")
+        print(input_inspect.render(result))
+        return 0 if result["format"] in ("fmt002", "canonical-observations", "codex-rollout") else 2
+    except (OSError, ValueError) as exc:
+        print("error: %s" % exc, file=sys.stderr)
+        return 2
+
+
+def cmd_conformance(args) -> int:
+    """Run the conformance pack on a caller-provided telemetry fixture.
+
+    Delegates to the bundled Verovo Conformance Pack
+    (PASS / FAIL / UNPROVABLE invariant checks).
+    """
+    if args.new_vector:
+        args.out = args.out or os.path.join(
+            os.getcwd(), "conformance", "vectors", "external")
+        return cmd_new_vector(args)
+    if not args.fixture:
+        print("error: provide --fixture <events.jsonl>. To try a synthetic sample, run:\n"
+              "  verovo conformance --new-vector my-sample --out ./vectors\n"
+              "then run the validation command printed by the scaffold.", file=sys.stderr)
+        return 2
+    from . import input_inspect
+    try:
+        routing = input_inspect.inspect(args.fixture)
+    except (OSError, ValueError) as exc:
+        print("error: %s" % exc, file=sys.stderr)
+        return 2
+    if routing["format"] in ("canonical-observations", "codex-rollout", "mixed", "ambiguous"):
+        print(input_inspect.render(routing), file=sys.stderr)
+        print("Conformance requires one FMT-002 input. No conformance verdict was produced.", file=sys.stderr)
+        return 2
+    try:
+        from . import pack as pack_mod
+    except ImportError as e:
+        print("error: conformance pack not available in this install (%s). "
+              "Run from the repository checkout for the full pack experience." % e,
+              file=sys.stderr)
+        return 2
+    argv = ["conformance", "--fixture", args.fixture]
+    if args.metadata:
+        argv += ["--metadata", args.metadata]
+    if args.claims:
+        argv += ["--claims", args.claims]
+    if args.json_out:
+        argv += ["--json", args.json_out]
+    if args.require:
+        argv += ["--require", args.require]
+    return pack_mod.main(argv)
+
+
+def cmd_history(args) -> int:
+    if args.last < 1:
+        print("error: --last must be >= 1", file=sys.stderr)
+        return 2
+    entries = history_mod.load_history()
+    if not entries:
+        print("no runs recorded yet (~/.verovo/history.jsonl)")
+        return 0
+    print("%d run(s) recorded locally (newest last):" % len(entries))
+    for e in entries[-max(1, args.last):]:
+        print("  %s  %-14s sessions=%s exec=%s failed=%s chains=%s"
+              % (e.get("ts", "?"), e.get("mode", "?"), e.get("sessions", "?"),
+                 e.get("executions", "?"), e.get("failed", "?"),
+                 e.get("retry_chains", "?")))
+    print("local file only — never uploaded; delete it to reset run numbering.")
+    return 0
+
+
+def cmd_trend(args) -> int:
+    """Aggregate local run history into a trend report (weekly/monthly)."""
+    t = history_mod.trend()
+    print(history_mod.render_trend(t))
+    return 0
+
+
+def _selftest_snapshot_and_compare() -> int:
+    ok = codex_adapter.parse_session(_fixture_path("codex-ok.jsonl"))
+    retries = codex_adapter.parse_session(_fixture_path("codex-retries.jsonl"))
+    ov_a, checks_a, _cov, _top = checks_mod.run_checks([ok], "selftest-a")
+    ov_b, checks_b, _cov, _top = checks_mod.run_checks([retries], "selftest-b")
+    rows_a = checks_mod.session_summaries([ok])
+    rows_b = checks_mod.session_summaries([retries])
+    snap_a = snapshot_mod.build_snapshot(ov_a, checks_a, rows_a, "synthetic-demo",
+                                         "selftest-a", "selftest")
+    snap_b = snapshot_mod.build_snapshot(ov_b, checks_b, rows_b, "synthetic-demo",
+                                         "selftest-b", "selftest")
+    problems = 0
+
+    cmp = snapshot_mod.compare_snapshots(snap_a, snap_b)
+    failed_row = next(r for r in cmp["rows"] if r["metric"] == "failed executions")
+    if not failed_row["delta"].startswith("+"):
+        print("  compare: failed-executions delta not positive  [MISMATCH]")
+        problems += 1
+    changed = {v["check_id"] for v in cmp["changed_verdicts"]}
+    if not {"HC-02", "HC-03"}.issubset(changed):
+        print("  compare: expected HC-02/HC-03 transitions missing  [MISMATCH]")
+        problems += 1
+    if cmp["token_state"] != "provable" or not cmp["token_rows"]:
+        print("  compare: token sides should be provable here  [MISMATCH]")
+        problems += 1
+
+    unprov = dict(snap_b)
+    unprov["overview"] = dict(snap_b["overview"], token=None,
+                              token_provable=False, token_missing_sessions=1)
+    cmp2 = snapshot_mod.compare_snapshots(snap_a, unprov)
+    if cmp2["token_state"] != "unprovable" or cmp2["token_rows"]:
+        print("  compare: unprovable side must not produce deltas  [MISMATCH]")
+        problems += 1
+    if "UNPROVABLE" not in snapshot_mod.render_compare_text(cmp2):
+        print("  compare: unprovable token not rendered  [MISMATCH]")
+        problems += 1
+
+    import tempfile
+    with tempfile.TemporaryDirectory() as tmp:
+        path = os.path.join(tmp, "snap.json")
+        snapshot_mod.save_snapshot(snap_a, path)
+        loaded = snapshot_mod.load_snapshot(path)
+        if loaded["overview"]["exec_total"] != snap_a["overview"]["exec_total"]:
+            print("  snapshot roundtrip lost counts  [MISMATCH]")
+            problems += 1
+        try:
+            with open(path, "w", encoding="utf-8") as fh:
+                json.dump({"tool": "other", "schema": 1}, fh)
+            snapshot_mod.load_snapshot(path)
+            print("  snapshot: foreign file accepted  [MISMATCH]")
+            problems += 1
+        except snapshot_mod.SnapshotError:
+            pass
+
+    print("  snapshot + compare contracts  [%s]"
+          % ("ok" if problems == 0 else "see above"))
+    return problems
+
+
+def cmd_selftest(args) -> int:
+    """Run the bundled fixtures through adapter + checks and verify verdicts."""
+    cases = [
+        ("codex-ok.jsonl", "HC-02", "ok"),
+        ("codex-retries.jsonl", "HC-02", "finding"),
+        ("codex-retries.jsonl", "HC-03", "finding"),
+        ("codex-duplicates.jsonl", "HC-01", "finding"),
+        ("codex-corrupt.jsonl", "HC-01", "ok"),
+        ("claude-ok.jsonl", "HC-02", "ok"),
+        ("claude-retries.jsonl", "HC-02", "finding"),
+        ("claude-retries.jsonl", "HC-03", "finding"),
+        ("claude-duplicates.jsonl", "HC-01", "finding"),
+    ]
+    failures = 0
+    for name, check_id, expected in cases:
+        path = _fixture_path(name)
+        adapter = claude_adapter if name.startswith("claude-") else codex_adapter
+        session = adapter.parse_session(path)
+        ov, results, coverage, top3 = checks_mod.run_checks([session], "selftest")
+        verdict = next((c.status for c in results if c.check_id == check_id), None)
+        status = "ok" if verdict == expected else "MISMATCH"
+        if verdict != expected:
+            failures += 1
+        print("  %-28s %s expect=%s got=%s  [%s]"
+              % (name, check_id, expected, verdict, status))
+
+    empty = codex_adapter.parse_session(_fixture_path("codex-empty.jsonl"))
+    if empty.line_stats.total != 0 or empty.execs or empty.calls:
+        print("  %-28s [MISMATCH] empty file produced records" % "codex-empty.jsonl")
+        failures += 1
+    else:
+        print("  %-28s empty file → 0 records  [ok]" % "codex-empty.jsonl")
+
+    claude_empty = claude_adapter.parse_session(_fixture_path("claude-empty.jsonl"))
+    if claude_empty.line_stats.total != 0 or claude_empty.execs or claude_empty.calls:
+        print("  %-28s [MISMATCH] empty file produced records" % "claude-empty.jsonl")
+        failures += 1
+    else:
+        print("  %-28s empty file → 0 records  [ok]" % "claude-empty.jsonl")
+
+    summary_session = codex_adapter.parse_session(_fixture_path("codex-ok.jsonl"))
+    _ov, results, _cov, _top = checks_mod.run_checks([summary_session], "selftest")
+    share = share_mod.build_share_summary(_ov, results, "synthetic-demo", "selftest")
+    blob = share_mod.share_json(share) + share_mod.share_markdown(share)
+    for planted in ("secret-project", "Users/tongxiarui", "call_demo_1",
+                    "deploy-prod", "SESSIONUUID"):
+        if planted in blob:
+            print("  share redaction [MISMATCH]: %s leaked" % planted)
+            failures += 1
+    print("  share redaction planted-string scan  [%s]"
+          % ("ok" if failures == 0 else "see above"))
+
+    failures += _selftest_snapshot_and_compare()
+    failures += _selftest_export_schemas()
+    failures += _selftest_share_flow()
+
+    print("selftest: %s" % ("PASS" if failures == 0 else
+                            "FAIL (%d mismatches)" % failures))
+    return 0 if failures == 0 else 1
+
+
+def _selftest_share_flow() -> int:
+    import tempfile
+    problems = 0
+    ok = codex_adapter.parse_session(_fixture_path("codex-ok.jsonl"))
+    ov, checks, _cov, _top = checks_mod.run_checks([ok], "selftest")
+    summary = share_mod.build_share_summary(ov, checks, "synthetic-demo",
+                                            "selftest")
+    if share_mod.summary_problems(summary):
+        print("  share flow: summary fails whitelist  [MISMATCH]")
+        problems += 1
+    preview = share_mod.share_markdown(summary)
+    for planted in ("secret-project", "Users/tongxiarui", "call_demo_1",
+                    "deploy-prod", "SESSIONUUID"):
+        if planted in preview:
+            print("  share flow: %s leaked into preview  [MISMATCH]" % planted)
+            problems += 1
+    with tempfile.TemporaryDirectory() as tmp:
+        report = os.path.join(tmp, "run.json")
+        snap = dict(schema=schema_mod.REPORT_SCHEMA,
+                    tool="verovo-healthcheck", version=__version__,
+                    mode="synthetic-demo", window="selftest",
+                    overview=snapshot_mod.overview_dict(ov),
+                    checks=[_check_dict(c) for c in checks], coverage=[],
+                    share_summary=summary)
+        with open(report, "w", encoding="utf-8") as fh:
+            json.dump(snap, fh, ensure_ascii=True)
+        body = share_mod.share_markdown(json.load(
+            open(report, encoding="utf-8"))["share_summary"])
+        if "Verovo Healthcheck" not in body:
+            print("  share flow: report roundtrip preview broken  [MISMATCH]")
+            problems += 1
+    print("  share preview-then-export contracts  [%s]"
+          % ("ok" if problems == 0 else "see above"))
+    return problems
+
+
+def _selftest_export_schemas() -> int:
+    import tempfile
+    problems = 0
+    ok = codex_adapter.parse_session(_fixture_path("codex-ok.jsonl"))
+    ov, checks, _cov, _top = checks_mod.run_checks([ok], "selftest")
+    rows = checks_mod.session_summaries([ok])
+    snap = snapshot_mod.build_snapshot(ov, checks, rows, "synthetic-demo",
+                                       "selftest", "selftest")
+    errors = schema_mod.validate_snapshot(snap)
+    if errors:
+        print("  schema: snapshot has errors: %s" % errors[:3])
+        problems += 1
+    report = {
+        "schema": schema_mod.REPORT_SCHEMA,
+        "tool": "verovo-healthcheck", "version": __version__,
+        "mode": "synthetic-demo", "window": "selftest",
+        "overview": snapshot_mod.overview_dict(ov),
+        "checks": [_check_dict(c) for c in checks], "coverage": [],
+        "share_summary": share_mod.build_share_summary(ov, checks,
+                                                       "synthetic-demo", "selftest"),
+    }
+    errors = schema_mod.validate_report(report)
+    if errors:
+        print("  schema: report has errors: %s" % errors[:3])
+        problems += 1
+    with tempfile.TemporaryDirectory() as tmp:
+        path = os.path.join(tmp, "snap.json")
+        snapshot_mod.save_snapshot(snap, path)
+        detected, errors = schema_mod.validate_file(path)
+        if detected != "snapshot" or errors:
+            print("  schema: file detection/validation failed  [MISMATCH]")
+            problems += 1
+        broken = dict(snap, schema=99)
+        if not schema_mod.validate_snapshot(broken):
+            print("  schema: broken schema version accepted  [MISMATCH]")
+            problems += 1
+    print("  export schema contracts  [%s]" % ("ok" if problems == 0 else "see above"))
+    return problems
+
+
+def _add_filter_args(parser) -> None:
+    parser.add_argument("--dir", help="explicit directory with agent session logs "
+                                       "(skips auto-discovery; --runtime picks the adapter)")
+    parser.add_argument("--runtime", choices=["auto", "codex", "claude"], default="auto",
+                        help="which runtime's logs to read (default auto: first "
+                             "supported runtime with files, Codex preferred)")
+    parser.add_argument("--days", type=int, default=DEFAULT_DAYS,
+                         help="look back N days (default %d)" % DEFAULT_DAYS)
+    parser.add_argument("--all", action="store_true",
+                         help="ignore the day window, scan every local session")
+    parser.add_argument("--since", metavar="YYYY-MM-DD", default=None,
+                         help="only sessions on/after this date (overrides --days)")
+    parser.add_argument("--until", metavar="YYYY-MM-DD", default=None,
+                         help="only sessions on/before this date (overrides --days)")
+    parser.add_argument("--project", metavar="SUBSTRING", default=None,
+                         help="keep only sessions whose project (cwd basename) "
+                              "contains SUBSTRING, case-insensitive")
+
+
+def cmd_settle(args) -> int:
+    """Generate a settlement evidence bundle from effect-confirmed records."""
+    try:
+        bundle = settle_mod.generate_bundle(
+            effects_path=args.effects,
+            output_path=args.output,
+            metadata={"period_start": args.period_start,
+                      "period_end": args.period_end,
+                      "evidence_level": args.evidence,
+                      "provider": args.provider,
+                      "offering": args.offering}
+        )
+    except (ValueError, OSError) as e:
+        print("error: %s" % e, file=sys.stderr)
+        return 2
+
+    print("Settlement bundle  \u2192 %s" % os.path.abspath(args.output))
+
+    if args.statement and args.format == "text":
+        print()
+        print(settle_mod.settlement_statement(
+            bundle, price_per_unit=args.price, audit_cost=args.audit_cost))
+
+    if args.statement and args.format == "md":
+        md_path = os.path.splitext(os.path.abspath(args.output))[0] + "-statement.md"
+        md = settle_mod.statement_markdown(
+            bundle, effects_path=args.effects,
+            price_per_unit=args.price, audit_cost=args.audit_cost)
+        with open(md_path, "w", encoding="utf-8") as fh:
+            fh.write(md)
+        print("Settlement statement (VSS-1 one-pager) \u2192 %s" % md_path)
+
+    if args.statement and args.format == "html":
+        html_path = os.path.splitext(os.path.abspath(args.output))[0] + "-statement.html"
+        html = settle_mod.statement_html(
+            bundle, effects_path=args.effects,
+            price_per_unit=args.price, audit_cost=args.audit_cost)
+        with open(html_path, "w", encoding="utf-8") as fh:
+            fh.write(html)
+        print("Settlement statement (VSS-1 one-pager, HTML) \u2192 %s" % html_path)
+    if args.statement and args.format == "csv":
+        csv_path = os.path.splitext(os.path.abspath(args.output))[0] + "-statement.csv"
+        csv_text = settle_mod.settlement_csv(
+            bundle, price_per_unit=args.price)
+        with open(csv_path, "w", encoding="utf-8", newline="") as fh:
+            fh.write(csv_text)
+        print("Settlement line detail (finance CSV) -> %s" % csv_path)
+
+    if args.verbose:
+        print()
+        print(settle_mod.bundle_report(bundle))
+
+    return 0
+
+
+def cmd_recount(args) -> int:
+    """Tier 1: apply the vendor's own published rules to a counts-only export."""
+    if args.list_vendors:
+        for v in vendors_mod.list_vendors():
+            price = ("%s %s" % (v["currency"], v["unit_price"])
+                     if v.get("unit_price") else "not published")
+            print("%-12s %-34s [%s] %s" % (v["id"], v["name"], v["confidence"], price))
+            print("             source: %s" % v["source"])
+        return 0
+
+    if getattr(args, "sample", False):
+        if args.export:
+            print("error: --sample and --export are mutually exclusive",
+                  file=sys.stderr)
+            return 2
+        args.export = os.path.join(
+            os.path.dirname(os.path.abspath(__file__)),
+            "demo", "sample-recount-export.csv")
+        if not args.vendor:
+            args.vendor = "zendesk"
+
+    if not args.export or not args.vendor:
+        print("error: --export and --vendor are both required "
+              "(or use --sample / --list-vendors)", file=sys.stderr)
+        return 2
+
+    try:
+        export = vendors_mod.load_export(args.export)
+    except OSError as exc:
+        print("error: cannot read export: %s" % exc, file=sys.stderr)
+        return 2
+
+    if args.inspect:
+        # Align the columns before any number is produced: a wrong mapping read
+        # as a finding is the most expensive mistake this tool can make.
+        print("Column alignment — no numbers produced")
+        print("=" * 50)
+        print("export columns: %s" % ", ".join(export["export_columns"]))
+        print()
+        print("matched:")
+        for c in sorted(export["columns_found"]):
+            print("  %-36s -> %s" % (vendors_mod.COLUMN_ALIASES[c][0], c))
+        if export["columns_missing"]:
+            print()
+            print("MISSING (required):")
+            for c in export["columns_missing"]:
+                print("  %s" % c)
+            print()
+            print("Every row will be cannot_settle. Fix the export before "
+                  "reading any recount.")
+        else:
+            print()
+            print("all required columns matched. Re-run without --inspect to recount.")
+        return 0
+
+    try:
+        result = vendors_mod.recount(export, args.vendor)
+    except ValueError as exc:
+        print("error: %s" % exc, file=sys.stderr)
+        return 2
+
+    contract_lane = None
+    if args.contract:
+        try:
+            contract = vendors_mod.load_contract(args.contract)
+        except (ValueError, OSError) as exc:
+            print("error: bad contract overlay: %s" % exc, file=sys.stderr)
+            return 2
+        contract_lane = vendors_mod.outcome_lane(export, args.vendor, contract)
+
+    print(vendors_mod.recount_report(result))
+
+    if contract_lane is not None:
+        print()
+        print(vendors_mod.outcome_lane_report(contract_lane))
+
+    if args.json_out:
+        if contract_lane is not None:
+            result["contract_lane"] = contract_lane
+        try:
+            with open(args.json_out, "w", encoding="utf-8") as fh:
+                json.dump(result, fh, ensure_ascii=True, indent=2)
+        except OSError as exc:
+            print("error: could not write recount export: %s" % exc, file=sys.stderr)
+            return 2
+        print("\nRecount export \u2192 %s" % os.path.abspath(args.json_out))
+
+    return 0
+
+
+def cmd_dispute(args) -> int:
+    """Build the negotiable Dispute & Recovery Pack."""
+    try:
+        pack = dispute_mod.build_pack(
+            export_path=args.export,
+            vendor_id=args.vendor,
+            effects_path=args.effects,
+            price=args.price,
+            audit_cost=args.audit_cost,
+            period_start=args.period_start,
+            period_end=args.period_end,
+            buyer_label=args.buyer,
+            contract_path=args.contract)
+    except ValueError as exc:
+        print("error: %s" % exc, file=sys.stderr)
+        return 2
+    except OSError as exc:
+        print("error: cannot read input: %s" % exc, file=sys.stderr)
+        return 2
+
+    try:
+        paths = dispute_mod.write_pack(pack, args.out)
+    except OSError as exc:
+        print("error: could not write pack: %s" % exc, file=sys.stderr)
+        return 2
+
+    claim = pack["claim"]
+    print("Dispute & Recovery Pack")
+    print("=" * 50)
+    print("vendor:            %s" % pack["vendor"]["name"])
+    print("billed, not billable under their own rule: %d"
+          % claim["billed_but_not_billable"])
+    print("billable, not billed (their favour):       %d"
+          % claim["billable_but_not_billed"])
+    print("net:               %+d" % claim["net"])
+    print("cannot settle:     %d" % claim["cannot_settle"])
+    if claim.get("dollars"):
+        d = claim["dollars"]
+        print("net variance:      %s %s" % (pack["currency"], d["net_variance"]))
+    print()
+    print("cover letter + appendix \u2192 %s" % os.path.abspath(paths["markdown"]))
+    print("machine-readable pack   \u2192 %s" % os.path.abspath(paths["json"]))
+    return 0
+
+
+def cmd_prepare(args) -> int:
+    """Map a native vendor export onto the canonical columns. Judges nothing."""
+    try:
+        prepared = prepare_mod.prepare(args.export, args.vendor)
+    except OSError as exc:
+        print("error: cannot read export: %s" % exc, file=sys.stderr)
+        return 2
+    except ValueError as exc:
+        print("error: %s" % exc, file=sys.stderr)
+        return 2
+
+    print(prepare_mod.prepare_report(prepared))
+    if args.inspect:
+        return 0
+
+    try:
+        written = prepare_mod.write_prepared(prepared, args.out)
+    except OSError as exc:
+        print("error: could not write prepared export: %s" % exc, file=sys.stderr)
+        return 2
+    print()
+    print("Prepared canonical export \u2192 %s" % os.path.abspath(written))
+    return 0
+
+
+def cmd_recovery(args) -> int:
+    """Join vendor concessions to the disputed lines: the realized-value table."""
+    try:
+        ledger = recovery_mod.build_ledger(args.pack, args.confirmations)
+    except recovery_mod.RecoveryError as exc:
+        print("error: %s" % exc, file=sys.stderr)
+        return 2
+    except (ValueError, OSError) as exc:
+        print("error: %s" % exc, file=sys.stderr)
+        return 2
+
+    paths = recovery_mod.write_ledger(ledger, args.out)
+    t = ledger["totals"]
+    print("Recovery ledger")
+    print("=" * 50)
+    print("disputed lines:    %d" % t["disputed_lines"])
+    print("claimed:           %s %s" % (ledger.get("currency") or "", t["claimed"]))
+    print("realized:          %s %s  (credited + paid)"
+          % (ledger.get("currency") or "", t["realized"]))
+    print("outstanding:       %s %s" % (ledger.get("currency") or "", t["outstanding"]))
+    if ledger["unmatched"]:
+        print("unmatched rows:    %d (listed in the ledger, never counted)"
+              % len(ledger["unmatched"]))
+    print()
+    print("ledger CSV \u2192 %s" % os.path.abspath(paths["csv"]))
+    print("ledger MD  \u2192 %s" % os.path.abspath(paths["markdown"]))
+    return 0
+
+
+def cmd_crosscheck(args) -> int:
+    """Put the export and the billing ledger side by side; name disagreements."""
+    try:
+        export = vendors_mod.load_export(args.export)
+        rows = crosscheck_mod.load_ledger(args.ledger)
+        result = crosscheck_mod.crosscheck(export, rows, args.vendor)
+    except (ValueError, OSError) as exc:
+        print("error: %s" % exc, file=sys.stderr)
+        return 2
+
+    print(crosscheck_mod.crosscheck_report(result))
+    if args.json_out:
+        try:
+            with open(args.json_out, "w", encoding="utf-8") as fh:
+                json.dump(result, fh, ensure_ascii=True, indent=2)
+        except OSError as exc:
+            print("error: could not write crosscheck export: %s" % exc,
+                  file=sys.stderr)
+            return 2
+        print("\nCrosscheck export \u2192 %s" % os.path.abspath(args.json_out))
+    return 0
+
+
+def cmd_verify(args) -> int:
+    """Compose the Verified Ledger: every lane, one artifact."""
+    try:
+        doc = ledger_mod.build_ledger_document(
+            export_path=args.export,
+            vendor_id=args.vendor,
+            contract_path=args.contract,
+            effects_path=args.effects,
+            ledger_path=args.ledger,
+            confirmations_path=args.confirmations,
+            price=args.price,
+            audit_cost=args.audit_cost,
+            period_start=args.period_start,
+            period_end=args.period_end,
+            buyer_label=args.buyer)
+    except (ValueError, OSError) as exc:
+        print("error: %s" % exc, file=sys.stderr)
+        return 2
+
+    try:
+        paths = ledger_mod.write_ledger_document(doc, args.out)
+    except OSError as exc:
+        print("error: could not write verified ledger: %s" % exc, file=sys.stderr)
+        return 2
+
+    t1 = doc["tier1"]
+    t = t1["three_state_counts"]
+    print("Verified Ledger")
+    print("=" * 50)
+    print("vendor:         %s (registry v%s)"
+          % (doc["vendor"]["name"], doc["vendor"]["rules_version"]))
+    print("three-state:    PASS %d / FAIL %d / UNPROVABLE %d"
+          % (t["PASS"], t["FAIL"], t["UNPROVABLE"]))
+    for label, key in (("outcome lane", "outcome_lane"),
+                       ("ledger crosscheck", "billing_crosscheck"),
+                       ("recovery", "recovery"),
+                       ("tier 2", "tier2")):
+        print("%-15s %s" % (label + ":", "included" if doc.get(key) else "-"))
+    print()
+    print("ledger MD   \u2192 %s" % os.path.abspath(paths["markdown"]))
+    print("ledger JSON \u2192 %s" % os.path.abspath(paths["json"]))
+    print("next: verovo dashboard --pack %s --out dashboard.html"
+          % paths["json"])
+    return 0
+
+
+def cmd_rules_diff(args) -> int:
+    """Diff two vendor-rules snapshots; exit 1 on a material change."""
+    try:
+        old_doc = rulesdiff_mod.load_rules(args.old)
+        new_doc = (rulesdiff_mod.load_rules(args.rules)
+                   if args.rules else vendors_mod._RULES)
+        result = rulesdiff_mod.diff_rules(old_doc, new_doc)
+    except (ValueError, OSError) as exc:
+        print("error: %s" % exc, file=sys.stderr)
+        return 2
+
+    print(rulesdiff_mod.rules_diff_report(result))
+    if args.json_out:
+        try:
+            with open(args.json_out, "w", encoding="utf-8") as fh:
+                json.dump(result, fh, ensure_ascii=True, indent=2)
+        except OSError as exc:
+            print("error: could not write diff export: %s" % exc, file=sys.stderr)
+            return 2
+    return 1 if result["material"] else 0
+
+
+def cmd_narrative(args) -> int:
+    """Two-step narrative: emit the prompt, then check the model's draft.
+
+    The package never runs a model (offline discipline). Step 1 writes the
+    prompt built from the pack; you run your own model command on it. Step 2
+    checks every number in the draft against the pack — any invented or
+    rounded number refuses the draft and the rule-based template ships.
+    """
+    try:
+        pack = dashboard_mod.load_document(args.pack)
+        if pack.get("schema") != "verovo.commercial/dispute-pack":
+            print("error: narrative needs a dispute pack (dispute-pack.json)",
+                  file=sys.stderr)
+            return 2
+    except (ValueError, OSError) as exc:
+        print("error: %s" % exc, file=sys.stderr)
+        return 2
+
+    if args.emit_prompt:
+        prompt = narrative_mod.build_prompt(pack, args.audience)
+        try:
+            with open(args.emit_prompt, "w", encoding="utf-8") as fh:
+                fh.write(prompt + "\n")
+        except OSError as exc:
+            print("error: could not write prompt: %s" % exc, file=sys.stderr)
+            return 2
+        print("Prompt (%s) \u2192 %s" % (args.audience, os.path.abspath(args.emit_prompt)))
+        print("next: run your own model command on it, then --check-draft.")
+        return 0
+
+    draft = None
+    if args.check_draft:
+        try:
+            with open(args.check_draft, "r", encoding="utf-8") as fh:
+                draft = fh.read()
+        except OSError as exc:
+            print("error: cannot read draft: %s" % exc, file=sys.stderr)
+            return 2
+
+    text, source, violations = narrative_mod.render_or_draft(
+        pack, draft, args.audience)
+
+    if args.out:
+        try:
+            with open(args.out, "w", encoding="utf-8") as fh:
+                fh.write(text + "\n")
+        except OSError as exc:
+            print("error: could not write narrative: %s" % exc, file=sys.stderr)
+            return 2
+        print("Narrative (%s) \u2192 %s" % (source, os.path.abspath(args.out)))
+    else:
+        print(text)
+    if violations:
+        print()
+        print("LLM draft REFUSED — numbers not present in the pack: %s"
+              % ", ".join(violations[:8]), file=sys.stderr)
+        print("shipped the rule-based template instead. The model never "
+              "touches the numbers.", file=sys.stderr)
+    return 0
+
+
+def cmd_delivery(args) -> int:
+    """Log delivery phases as they happen; report 附录 E metrics."""
+    if args.log_event:
+        try:
+            event = delivery_mod.log_event(
+                args.log, engagement=args.engagement, vendor=args.vendor,
+                period_index=args.period_index, phase=args.phase,
+                minutes=args.minutes, fingerprint=args.fingerprint or "",
+                note=args.note or "")
+        except (ValueError, OSError) as exc:
+            print("error: %s" % exc, file=sys.stderr)
+            return 2
+        print("logged: %s %s p%s %s %.1fmin"
+              % (event["engagement"], event["vendor"], event["period_index"],
+                 event["phase"], event["minutes"]))
+        return 0
+
+    try:
+        events = delivery_mod.load_events(args.log)
+    except (ValueError, OSError) as exc:
+        print("error: %s" % exc, file=sys.stderr)
+        return 2
+    print(delivery_mod.report_text(delivery_mod.report(events)))
+    return 0
+
+
+def cmd_dashboard(args) -> int:
+    """Render the offline single-file dashboard from a ledger or pack JSON."""
+    try:
+        doc = dashboard_mod.load_document(args.pack)
+        html_text = dashboard_mod.render_dashboard(doc)
+    except (ValueError, OSError) as exc:
+        print("error: %s" % exc, file=sys.stderr)
+        return 2
+    try:
+        with open(args.out, "w", encoding="utf-8") as fh:
+            fh.write(html_text + "\n")
+    except OSError as exc:
+        print("error: could not write dashboard: %s" % exc, file=sys.stderr)
+        return 2
+    print("Dashboard \u2192 %s" % os.path.abspath(args.out))
+    return 0
+
+
+def cmd_outcomes(args) -> int:
+    """Verify outcome-unit JSONL against its schema and its own consistency."""
+    schema_path = args.schema
+    if not schema_path:
+        repo_root = os.path.dirname(os.path.dirname(
+            os.path.dirname(os.path.abspath(__file__))))
+        candidate = os.path.join(repo_root, "schemas",
+                                 "outcome-unit.schema.json")
+        if os.path.exists(candidate):
+            schema_path = candidate
+        else:
+            print("error: no schema found next to this checkout; pass "
+                  "--schema /path/to/outcome-unit.schema.json", file=sys.stderr)
+            return 2
+    try:
+        schema = outcomes_mod.load_schema(schema_path)
+        units = outcomes_mod.load_units(args.units)
+        result = outcomes_mod.verify_units(units, schema,
+                                           contract_label=args.contract_label or "")
+    except (ValueError, OSError) as exc:
+        print("error: %s" % exc, file=sys.stderr)
+        return 2
+    print(outcomes_mod.outcome_ledger_markdown(result))
+    if args.json_out:
+        try:
+            with open(args.json_out, "w", encoding="utf-8") as fh:
+                json.dump(result, fh, ensure_ascii=True, indent=2)
+        except OSError as exc:
+            print("error: could not write outcome ledger: %s" % exc,
+                  file=sys.stderr)
+            return 2
+        print("\nOutcome ledger \u2192 %s" % os.path.abspath(args.json_out))
+    return 0
+
+
+def cmd_crm_join(args) -> int:
+    """Join buyer CRM records to the export: fill empties, name conflicts."""
+    try:
+        rows = crm_mod.load_crm(args.crm)
+        result = crm_mod.crm_join(args.export, rows, args.out)
+    except (ValueError, OSError) as exc:
+        print("error: %s" % exc, file=sys.stderr)
+        return 2
+    print(crm_mod.crm_join_report(result))
+    print()
+    print("Joined export \u2192 %s" % os.path.abspath(args.out))
+    return 0
+
+
+def cmd_period_compare(args) -> int:
+    """Two verified ledgers in, one honest delta out."""
+    try:
+        result = periods_mod.compare_periods(args.previous, args.current)
+    except (ValueError, OSError) as exc:
+        print("error: %s" % exc, file=sys.stderr)
+        return 2
+    print(periods_mod.compare_markdown(result))
+    if args.out:
+        try:
+            with open(args.out, "w", encoding="utf-8") as fh:
+                fh.write(periods_mod.compare_markdown(result) + "\n")
+        except OSError as exc:
+            print("error: could not write compare: %s" % exc, file=sys.stderr)
+            return 2
+        print("Compare report \u2192 %s" % os.path.abspath(args.out))
+    return 0
+
+
+def cmd_certify(args) -> int:
+    """Grade a verification artifact on the VSS-1 adoption ladder."""
+    try:
+        doc = certify_mod.load_artifact(args.pack)
+        result = certify_mod.certify(doc)
+    except (ValueError, OSError) as exc:
+        print("error: %s" % exc, file=sys.stderr)
+        return 2
+    if args.emit_reproduction:
+        print("Paste this into the artifact's \"reproductions\" array to "
+              "promote it to stage-2:")
+        print(certify_mod.emit_reproduction(
+            doc, reproduced_by=args.emit_reproduction))
+        return 0
+    print(certify_mod.certification_report(result))
+    if args.digest_out:
+        try:
+            with open(args.digest_out, "w", encoding="utf-8") as fh:
+                fh.write(result["digest"] + "\n")
+        except OSError as exc:
+            print("error: could not write digest: %s" % exc, file=sys.stderr)
+            return 2
+        print("Digest \u2192 %s" % os.path.abspath(args.digest_out))
+    return 0
+
+
+def cmd_incrementality(args) -> int:
+    """Treatment-vs-holdout statistics. Evidence, never a verdict."""
+    try:
+        groups = inc_mod.load_groups(args.events,
+                                     group_col=args.group_col,
+                                     outcome_col=args.outcome_col)
+        result = inc_mod.analyze(groups)
+    except (ValueError, OSError) as exc:
+        print("error: %s" % exc, file=sys.stderr)
+        return 2
+    print(inc_mod.report_text(result))
+    if args.json_out:
+        try:
+            with open(args.json_out, "w", encoding="utf-8") as fh:
+                json.dump(result, fh, ensure_ascii=True, indent=2)
+        except OSError as exc:
+            print("error: could not write incrementality export: %s" % exc,
+                  file=sys.stderr)
+            return 2
+    return 0
+
+
+def cmd_template(args) -> int:
+    """Export/import/list engagement templates (method, never client data)."""
+    if args.template_export:
+        contract = None
+        if args.contract:
+            try:
+                with open(args.contract, "r", encoding="utf-8") as fh:
+                    contract = json.load(fh)
+            except (ValueError, OSError) as exc:
+                print("error: cannot read contract: %s" % exc, file=sys.stderr)
+                return 2
+        cases = []
+        if args.boundary:
+            try:
+                with open(args.boundary, "r", encoding="utf-8") as fh:
+                    cases = json.load(fh)
+            except (ValueError, OSError) as exc:
+                print("error: cannot read boundary cases: %s" % exc,
+                      file=sys.stderr)
+                return 2
+        doc = templates_mod.export_template(
+            args.vendor, args.fingerprint or "", contract=contract,
+            boundary_cases=cases, note=args.note or "")
+        try:
+            path = templates_mod.save_template(doc, args.dir)
+        except (ValueError, OSError) as exc:
+            print("error: %s" % exc, file=sys.stderr)
+            return 2
+        print("Template \u2192 %s" % os.path.abspath(path))
+        return 0
+
+    templates = templates_mod.list_templates(args.dir)
+    if not templates:
+        print("no templates in %s" % args.dir)
+        return 0
+    print("Engagement templates (method artifacts — no client data)")
+    print("=" * 58)
+    for t in templates:
+        print("%-40s %-10s fp=%s contract=%s cases=%d"
+              % (t["file"], t["vendor"], t["fingerprint"][:12] or "-",
+                 "yes" if t["contract"] else "no", t["boundary_cases"]))
+    return 0
+
+
+def cmd_commerce_ledger(args) -> int:
+    """Merchant-side measurement receipt for the agent-commerce chain."""
+    schema_path = args.schema
+    if not schema_path:
+        repo_root = os.path.dirname(os.path.dirname(
+            os.path.dirname(os.path.abspath(__file__))))
+        candidate = os.path.join(repo_root, "schemas",
+                                 "commerce-profile.schema.json")
+        if os.path.exists(candidate):
+            schema_path = candidate
+        else:
+            print("error: no schema found next to this checkout; pass "
+                  "--schema /path/to/commerce-profile.schema.json",
+                  file=sys.stderr)
+            return 2
+    try:
+        events = commerce_mod.load_events(args.events,
+                                          outcomes_mod.load_schema(schema_path))
+        orders = commerce_mod.load_orders(args.orders)
+        payments = commerce_mod.load_payments(args.payments)
+        receipt = commerce_mod.reconcile(
+            events, orders, payments,
+            policy_version=args.policy_version,
+            inputs={
+                "events": commerce_mod._sha256_of(args.events),
+                "orders": commerce_mod._sha256_of(args.orders),
+                "payments": commerce_mod._sha256_of(args.payments),
+            })
+    except (ValueError, OSError) as exc:
+        print("error: %s" % exc, file=sys.stderr)
+        return 2
+
+    print(commerce_mod.receipt_markdown(receipt))
+    if args.json_out:
+        try:
+            with open(args.json_out, "w", encoding="utf-8") as fh:
+                json.dump(receipt, fh, ensure_ascii=True, indent=2)
+        except OSError as exc:
+            print("error: could not write receipt: %s" % exc, file=sys.stderr)
+            return 2
+        print("\nReceipt \u2192 %s" % os.path.abspath(args.json_out))
+    return 0
+
+
+def _load_json(path: str):
+    with open(path, "r", encoding="utf-8") as fh:
+        return json.load(fh)
+
+
+def cmd_pnl_trees(args) -> int:
+    """Organic / Paid trees, metered separately; ROAS inside Paid only."""
+    try:
+        orders = pnl_mod.load_channel_orders(args.orders)
+        campaigns = (pnl_mod.load_campaigns(args.campaigns)
+                     if args.campaigns else None)
+        report = pnl_mod.pnl_trees(orders, campaigns)
+    except (ValueError, OSError) as exc:
+        print("error: %s" % exc, file=sys.stderr)
+        return 2
+    print(pnl_mod.trees_markdown(report))
+    return 0
+
+
+def cmd_cm_ledger(args) -> int:
+    """Contribution Margin ledger — the monthly operating-review basis."""
+    try:
+        orders = pnl_mod.load_channel_orders(args.orders)
+        costs = pnl_mod.load_costs(args.costs)
+        report = pnl_mod.contribution_margin(orders, costs,
+                                             period_label=args.period or "")
+    except (ValueError, OSError) as exc:
+        print("error: %s" % exc, file=sys.stderr)
+        return 2
+    print(pnl_mod.cm_markdown(report))
+    return 0
+
+
+def cmd_demand_audit(args) -> int:
+    """Channel potential vs operator performance -> Launch/Watch/Not ready."""
+    try:
+        thresholds = audit_mod.load_thresholds(args.thresholds)
+        measurements = audit_mod.load_measurements(args.measurements)
+        result = audit_mod.audit_channel(measurements, thresholds,
+                                         channel=args.channel or "")
+    except (ValueError, OSError) as exc:
+        print("error: %s" % exc, file=sys.stderr)
+        return 2
+    print(audit_mod.audit_markdown(result))
+    return 0
+
+
+def cmd_intent_taxonomy(args) -> int:
+    """Validate and health-check an intent-cluster taxonomy."""
+    if args.seed:
+        path = tax_mod.write_seed_template(args.file)
+        print("Seed taxonomy with worked examples \u2192 %s" % os.path.abspath(path))
+        return 0
+    try:
+        doc = tax_mod.load_taxonomy(args.file)
+        stats = tax_mod.validate_taxonomy(doc)
+    except (ValueError, OSError) as exc:
+        print("error: %s" % exc, file=sys.stderr)
+        return 2
+    print(tax_mod.taxonomy_markdown(stats))
+    return 0
+
+
+def cmd_decision_audit(args) -> int:
+    """Grade agent commercial executions against the decision policy."""
+    try:
+        policy = policy_mod.load_policy(args.policy)
+        executions = policy_mod.load_executions(args.executions)
+        result = policy_mod.audit_executions(policy, executions)
+    except (ValueError, OSError) as exc:
+        print("error: %s" % exc, file=sys.stderr)
+        return 2
+    print(policy_mod.audit_markdown(result))
+    return 0
+
+
+def cmd_benchmark_export(args) -> int:
+    """Export the anonymous cross-brand benchmark; verify before sharing."""
+    try:
+        rows = bench_mod.load_brand_rows(args.rows)
+        doc = bench_mod.export_benchmark(
+            rows, min_brands=args.min_brands,
+            taxonomy_version=args.taxonomy_version or "",
+            method_ref=args.method_ref or "")
+        violations = bench_mod.verify_benchmark(doc)
+    except (ValueError, OSError) as exc:
+        print("error: %s" % exc, file=sys.stderr)
+        return 2
+    if violations:
+        print("error: benchmark failed its own anonymisation check:",
+              file=sys.stderr)
+        for v in violations:
+            print("  %s" % v, file=sys.stderr)
+        return 2
+    print(bench_mod.benchmark_markdown(doc))
+    if args.out:
+        try:
+            with open(args.out, "w", encoding="utf-8") as fh:
+                json.dump(doc, fh, ensure_ascii=False, indent=2)
+        except OSError as exc:
+            print("error: could not write benchmark: %s" % exc, file=sys.stderr)
+            return 2
+        print("\nBenchmark \u2192 %s" % os.path.abspath(args.out))
+    return 0
+
+
+def cmd_console(args) -> int:
+    """Compose the user-facing console page from verification documents."""
+    def _doc(path):
+        return dashboard_mod.load_document(path) if path else None
+    try:
+        ledgers = [_doc(p) for p in (args.ledger or [])]
+        page = console_mod.build_console_multi(
+            meta={"title": args.title, "vendor": args.vendor,
+                  "period": args.period, "buyer": args.buyer},
+            ledgers=[d for d in ledgers if d is not None],
+            receipt=_doc(args.receipt),
+            margin=_doc(args.margin),
+            channel_audit=_doc(args.channel_audit),
+            decisions=_doc(args.decisions))
+        written = console_mod.write_console(page, args.out)
+    except (ValueError, OSError) as exc:
+        print("error: %s" % exc, file=sys.stderr)
+        return 2
+    print("Console \u2192 %s" % os.path.abspath(written))
+    print("open it in a browser - it is a single offline file.")
+    return 0
+
+
+def cmd_drilldown(args) -> int:
+    """Replay ONE finding on screen: the row, the rule steps, the verdict."""
+    try:
+        export = vendors_mod.load_export(args.export)
+        result = drilldown_mod.drilldown(export, args.vendor,
+                                         conversation=args.conversation,
+                                         line=args.line)
+    except (ValueError, OSError) as exc:
+        print("error: %s" % exc, file=sys.stderr)
+        return 2
+    print(drilldown_mod.drilldown_text(result, args.export))
+    if args.md:
+        try:
+            with open(args.md, "w", encoding="utf-8") as fh:
+                fh.write(drilldown_mod.drilldown_markdown(result,
+                                                          args.export) + "\n")
+        except OSError as exc:
+            print("error: could not write drill-down: %s" % exc,
+                  file=sys.stderr)
+            return 2
+        print("\nDrill-down (markdown) \u2192 %s" % os.path.abspath(args.md))
+    return 0
+
+
+def cmd_decisions(args) -> int:
+    """Record or review how verification changed business decisions."""
+    if args.log_event:
+        try:
+            entry = decisions_mod.log_entry(
+                args.log, engagement=args.engagement, vendor=args.vendor,
+                decision_type=args.decision_type, linked=args.linked or "",
+                outcome=args.outcome, amount=args.amount,
+                note=args.note or "")
+        except (ValueError, OSError) as exc:
+            print("error: %s" % exc, file=sys.stderr)
+            return 2
+        print("recorded: %s %s %s (%s)"
+              % (entry["date"], entry["engagement"], entry["vendor"],
+                 entry["decision_type"]))
+        return 0
+    try:
+        entries = decisions_mod.load_entries(args.log)
+    except (ValueError, OSError) as exc:
+        print("error: %s" % exc, file=sys.stderr)
+        return 2
+    print(decisions_mod.report_text(decisions_mod.report(entries)))
+    return 0
+
+
+def build_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(
+        prog="verovo",
+        description="Verovo Healthcheck — a local check-up report for "
+                    "your coding agent runs. Reads local logs, checks duplicate "
+                    "records, retry amplification and tool-error runs, and "
+                    "writes a local HTML report. No network, no upload.")
+    parser.add_argument("--version", action="version",
+                        version="verovo-healthcheck %s" % __version__)
+    sub = parser.add_subparsers(dest="cmd")
+
+    p_check = sub.add_parser("check", help="check local agent logs (default)")
+    _add_filter_args(p_check)
+    p_check.add_argument("--html", metavar="PATH", default=None,
+                         help="HTML report path (default ./%s)" % DEFAULT_HTML)
+    p_check.add_argument("--json", metavar="PATH", default=None,
+                         help="also write a full JSON export")
+    p_check.add_argument("--share", metavar="PATH", default=None,
+                         help="write the sanitized share summary (.md or .json)")
+    p_check.add_argument("--save-snapshot", metavar="PATH", nargs="?", const=True,
+                         default=None,
+                         help="save a snapshot for later `compare` "
+                              "(default name: verovo-snapshot-<date>.json)")
+    p_check.add_argument("--no-history", action="store_true",
+                         help="do not append to the local run history")
+    p_check.add_argument("--audit", action="store_true",
+                         help="enable increment/effect audit checks (HC-04/05/06: "
+                              "operation resolution, cache accounting, token stability)")
+    p_check.add_argument("--sdk-events", metavar="PATH", default=None,
+                         help="cross-side pairing with @verovo/mcp SDK observations JSONL")
+    p_check.add_argument("--export-otel", metavar="PATH", default=None,
+                         help="export report to OpenTelemetry metrics JSON")
+    p_check.add_argument("--export-prometheus", metavar="PATH", default=None,
+                         help="export report to Prometheus text format")
+    p_check.set_defaults(func=cmd_check)
+
+    p_demo = sub.add_parser("demo", help="run on a bundled synthetic session")
+    p_demo.add_argument("--html", metavar="PATH", default=None)
+    p_demo.add_argument("--json", metavar="PATH", default=None)
+    p_demo.add_argument("--share", metavar="PATH", default=None)
+    p_demo.add_argument("--save-snapshot", metavar="PATH", nargs="?", const=True,
+                        default=None,
+                        help="save a synthetic snapshot (try `compare` with it)")
+    p_demo.add_argument("--no-history", action="store_true")
+    p_demo.set_defaults(func=cmd_demo)
+
+    p_cmp = sub.add_parser(
+        "compare", help="compare two snapshots, or one snapshot against a fresh run")
+    p_cmp.add_argument("snapshots", nargs="+", metavar="SNAPSHOT",
+                       help="snapshot file(s): one (vs fresh run) or two (vs each other)")
+    _add_filter_args(p_cmp)
+    p_cmp.add_argument("--json", metavar="PATH", default=None,
+                       help="write the machine-readable comparison")
+    p_cmp.add_argument("--no-history", action="store_true")
+    p_cmp.set_defaults(func=cmd_compare)
+
+    p_share = sub.add_parser(
+        "share", help="preview the sanitized summary from a report export; "
+                      "write it only with --out (preview-then-export)")
+    p_share.add_argument("report", metavar="REPORT.json",
+                         help="a `check --json` / `demo --json` export")
+    p_share.add_argument("--out", metavar="PATH", default=None,
+                         help="export after review (.md or .json); "
+                              "without it, nothing is written")
+    p_share.set_defaults(func=cmd_share)
+
+    p_val = sub.add_parser("validate",
+                           help="validate exported JSON (report/snapshot/compare) "
+                                "against its versioned schema")
+    p_val.add_argument("paths", nargs="+", metavar="FILE")
+    p_val.set_defaults(func=cmd_validate)
+
+    p_responses = sub.add_parser("response-audit", help="compare Claude response usage snapshots across selected JSONL files; not a token or invoice total")
+    p_responses.add_argument("paths", nargs="+", metavar="FILE.jsonl")
+    p_responses.add_argument("--json", dest="json_out", default=None)
+    p_responses.set_defaults(func=cmd_response_audit)
+
+    p_input = sub.add_parser("inspect-input", help="identify JSONL format and the correct check entry point; not a conformance verdict")
+    p_input.add_argument("path", metavar="FILE")
+    p_input.add_argument("--json", dest="json_out", default=None)
+    p_input.set_defaults(func=cmd_inspect_input)
+
+    p_conf = sub.add_parser("conformance",
+                             help="verify a telemetry fixture against measurement invariants "
+                                  "(PASS / FAIL / UNPROVABLE); --new-vector scaffolds "
+                                  "a CI-valid external vector directory instead")
+    p_conf.add_argument("--fixture", default=None,
+                        help="FMT-002 funnel-event JSONL (caller's telemetry data)")
+    p_conf.add_argument("--metadata", default=None,
+                        help="optional sidecar metadata JSON (source, time_window, etc.)")
+    p_conf.add_argument("--claims", default=None,
+                        help="optional observed-claims JSON for claim-evidence matching")
+    p_conf.add_argument("--json", dest="json_out", default=None,
+                        help="write machine-readable JSON results here")
+    p_conf.add_argument("--require", default="",
+                        help="comma-separated invariant ids that must be PROVEN")
+    p_conf.add_argument("--new-vector", metavar="NAME", default=None,
+                        dest="new_vector",
+                        help="scaffold a new external vector directory under "
+                             "--out (default conformance/vectors/external/); "
+                             "valid FMT-002 as generated")
+    p_conf.add_argument("--out", default=None,
+                        help="output root for --new-vector")
+    p_conf.add_argument("--by", default=None,
+                        help="contributor credit for the scaffolded README")
+    p_conf.set_defaults(func=cmd_conformance)
+
+    p_settle = sub.add_parser("settle",
+                               help="generate a settlement evidence bundle for outcome-based billing")
+    p_settle.add_argument("--effects", required=True,
+                          help="path to effect-confirmed JSONL")
+    p_settle.add_argument("--output", required=True,
+                          help="output JSON path")
+    p_settle.add_argument("--provider", default="",
+                          help="provider identifier")
+    p_settle.add_argument("--offering", default="",
+                          help="offering identifier")
+    p_settle.add_argument("--period-start",
+                          help="billing period start (ISO 8601)")
+    p_settle.add_argument("--period-end",
+                          help="billing period end (ISO 8601)")
+    p_settle.add_argument("--evidence",
+                          choices=["none", "v2_ablation", "v4_holdout"],
+                          default="none",
+                          help="incrementality evidence level")
+    p_settle.add_argument("--format", choices=["text", "md", "html", "csv"], default="text",
+                          help="statement rendering: terminal text, VSS-1 "
+                               "one-pager (md/html), or line-level finance CSV "
+                               "(written next to --output)")
+    p_settle.add_argument("--statement", "-s", action="store_true",
+                          help="print the negotiable two-line settlement statement "
+                               "(COMMERCIAL 5.1: both directions, netted)")
+    p_settle.add_argument("--price", type=float, default=None,
+                          help="price per billable unit, for the dollar variance and payback")
+    p_settle.add_argument("--audit-cost", type=float, default=None,
+                          dest="audit_cost",
+                          help="cost of the audit, to compute months-to-payback")
+    p_settle.add_argument("--verbose", "-v", action="store_true",
+                          help="print human-readable report after generation")
+    p_settle.set_defaults(func=cmd_settle)
+
+    p_recount = sub.add_parser(
+        "recount",
+        help="Tier 1: apply a vendor's own published billing rules to your "
+             "counts-only export (findings cite rules the vendor published)")
+    p_recount.add_argument("--export", metavar="PATH", default=None,
+                           help="counts-only CSV export (7 columns, 5 required)")
+    p_recount.add_argument("--sample", action="store_true",
+                           help="run the bundled 5-row synthetic export instead "
+                                "of --export (defaults to the zendesk rule set)")
+    p_recount.add_argument("--vendor", default=None,
+                           help="which vendor's rules to apply: %s"
+                                % ", ".join(v["id"] for v in vendors_mod.list_vendors()))
+    p_recount.add_argument("--json", dest="json_out", metavar="PATH", default=None,
+                           help="write the machine-readable recount here")
+    p_recount.add_argument("--list-vendors", action="store_true",
+                           help="show the registry with each rule's source and confidence")
+    p_recount.add_argument("--inspect", action="store_true",
+                           help="print the column mapping and stop before producing "
+                                "any number, so a wrong mapping cannot be misread as "
+                                "a finding")
+    p_recount.add_argument("--contract", metavar="JSON", default=None,
+                           help="buyer contract overlay (outcome standard). Its "
+                                "findings are listed as a separate outcome lane — "
+                                "renewal leverage, never netted into the claim")
+    p_recount.set_defaults(func=cmd_recount)
+
+    p_dispute = sub.add_parser(
+        "dispute",
+        help="build the negotiable Dispute & Recovery Pack: cover letter, "
+             "Tier 1 recount under the vendor's own rules, Tier 2 under ours")
+    p_dispute.add_argument("--export", metavar="PATH", required=True,
+                           help="counts-only CSV export from your helpdesk")
+    p_dispute.add_argument("--vendor", required=True,
+                           help="which vendor's rules to apply: %s"
+                                % ", ".join(v["id"] for v in vendors_mod.list_vendors()))
+    p_dispute.add_argument("--effects", metavar="PATH", default=None,
+                           help="optional effect-confirmed JSONL for the Tier 2 line")
+    p_dispute.add_argument("--out", metavar="DIR", default="dispute-pack",
+                           help="output directory (default ./dispute-pack)")
+    p_dispute.add_argument("--price", type=float, default=None,
+                           help="price per resolution; defaults to the vendor's published rate")
+    p_dispute.add_argument("--audit-cost", type=float, default=None, dest="audit_cost",
+                           help="cost of producing this pack, for the payback line")
+    p_dispute.add_argument("--period-start", default=None)
+    p_dispute.add_argument("--period-end", default=None)
+    p_dispute.add_argument("--contract", metavar="JSON", default=None,
+                           help="buyer contract overlay (outcome standard); "
+                                "rendered as a separate outcome lane, never "
+                                "part of the claim")
+    p_dispute.add_argument("--buyer", default=None, help="name to sign the cover letter with")
+    p_dispute.set_defaults(func=cmd_dispute)
+
+    p_prepare = sub.add_parser(
+        "prepare",
+        help="map a native Intercom/Zendesk export onto the canonical columns; "
+             "judgement columns stay empty for human review (no verdicts)")
+    p_prepare.add_argument("--export", metavar="PATH", required=True,
+                           help="native vendor export CSV")
+    p_prepare.add_argument("--vendor", required=True,
+                           help="which vendor's registry entry to prepare against: %s"
+                                % ", ".join(v["id"] for v in vendors_mod.list_vendors()))
+    p_prepare.add_argument("--out", metavar="PATH", default="prepared-export.csv",
+                           help="canonical skeleton path (default ./prepared-export.csv)")
+    p_prepare.add_argument("--inspect", action="store_true",
+                           help="print the alignment report only; write nothing")
+    p_prepare.set_defaults(func=cmd_prepare)
+
+    p_recovery = sub.add_parser(
+        "recovery",
+        help="join vendor concessions to the disputed lines: the realized-value "
+             "ledger, counted separately from the claim")
+    p_recovery.add_argument("--pack", metavar="JSON", required=True,
+                            help="a `dispute` pack (dispute-pack.json)")
+    p_recovery.add_argument("--confirmations", metavar="CSV", required=True,
+                            help="concessions CSV: conversation_id,status,confirmed_date,"
+                                 "amount,evidence_ref[,note]")
+    p_recovery.add_argument("--out", metavar="DIR", default="recovery-ledger",
+                            help="output directory (default ./recovery-ledger)")
+    p_recovery.set_defaults(func=cmd_recovery)
+
+    p_xcheck = sub.add_parser(
+        "crosscheck",
+        help="put your export and your billing ledger side by side; "
+             "disagreements are named, never resolved")
+    p_xcheck.add_argument("--export", metavar="PATH", required=True,
+                          help="canonical counts-only CSV export")
+    p_xcheck.add_argument("--ledger", metavar="PATH", required=True,
+                          help="buyer billing ledger CSV (conversation_id,amount,billed_at)")
+    p_xcheck.add_argument("--vendor", required=True,
+                          help="which vendor's registry entry applies")
+    p_xcheck.add_argument("--json", dest="json_out", metavar="PATH", default=None)
+    p_xcheck.set_defaults(func=cmd_crosscheck)
+
+    p_verify = sub.add_parser(
+        "verify",
+        help="compose the Verified Ledger: Tier 1 + outcome lane + ledger "
+             "cross-check + recovery, one artifact")
+    p_verify.add_argument("--export", metavar="PATH", required=True)
+    p_verify.add_argument("--vendor", required=True)
+    p_verify.add_argument("--contract", metavar="JSON", default=None,
+                          help="buyer outcome-standard overlay")
+    p_verify.add_argument("--effects", metavar="PATH", default=None,
+                          help="effect-confirmed JSONL for the Tier 2 lane")
+    p_verify.add_argument("--ledger", metavar="PATH", default=None,
+                          help="buyer billing ledger CSV (计费流水)")
+    p_verify.add_argument("--confirmations", metavar="CSV", default=None,
+                          help="vendor concessions CSV for the recovery lane")
+    p_verify.add_argument("--price", type=float, default=None)
+    p_verify.add_argument("--audit-cost", type=float, default=None, dest="audit_cost")
+    p_verify.add_argument("--period-start", default=None)
+    p_verify.add_argument("--period-end", default=None)
+    p_verify.add_argument("--buyer", default=None)
+    p_verify.add_argument("--out", metavar="DIR", default="verified-ledger",
+                          help="output directory (default ./verified-ledger)")
+    p_verify.set_defaults(func=cmd_verify)
+
+    p_rdiff = sub.add_parser(
+        "rules-diff",
+        help="diff two vendor-rules snapshots; exit 1 on a material change "
+             "(the monthly subscription ritual)")
+    p_rdiff.add_argument("old", metavar="OLD.json",
+                         help="last period's registry snapshot")
+    p_rdiff.add_argument("--rules", metavar="NEW.json", default=None,
+                         help="the new registry (default: the packaged one)")
+    p_rdiff.add_argument("--json", dest="json_out", metavar="PATH", default=None)
+    p_rdiff.set_defaults(func=cmd_rules_diff)
+
+    p_narr = sub.add_parser(
+        "narrative",
+        help="two-step letter drafting: --emit-prompt writes the prompt built "
+             "from the pack; run your own model on it; --check-draft verifies "
+             "every number against the pack and refuses a violating draft "
+             "(the rule-based template ships instead)")
+    p_narr.add_argument("--pack", metavar="JSON", required=True,
+                        help="a `dispute` pack (dispute-pack.json)")
+    p_narr.add_argument("--audience", choices=["vendor", "finance"],
+                        default="vendor",
+                        help="vendor letter or internal finance note")
+    p_narr.add_argument("--emit-prompt", metavar="PATH", default=None,
+                        dest="emit_prompt",
+                        help="step 1: write the drafting prompt here")
+    p_narr.add_argument("--check-draft", metavar="PATH", default=None,
+                        dest="check_draft",
+                        help="step 2: the model's draft to verify and ship "
+                             "(or fall back from)")
+    p_narr.add_argument("--out", metavar="PATH", default=None,
+                        help="write the narrative here (default: stdout)")
+    p_narr.set_defaults(func=cmd_narrative)
+
+    p_deli = sub.add_parser(
+        "delivery",
+        help="log first-look phases as they happen and report the appendix-E "
+             "metrics: first look ≤10h, third period ≤1h, reuse ≥70%%")
+    p_deli.add_argument("--log", metavar="JSONL", required=True,
+                        help="local delivery journal (append-only)")
+    p_deli.add_argument("--log-event", action="store_true",
+                        help="append one phase event (requires the options below)")
+    p_deli.add_argument("--engagement", default=None, help="engagement label")
+    p_deli.add_argument("--vendor", default=None)
+    p_deli.add_argument("--period-index", type=int, default=None,
+                        help="billing period: 1 = first look")
+    p_deli.add_argument("--phase", default=None,
+                        help="one of: %s" % ", ".join(delivery_mod.PHASES))
+    p_deli.add_argument("--minutes", type=float, default=None)
+    p_deli.add_argument("--fingerprint", default=None,
+                        help="mapping fingerprint from `prepare` (reuse tracking)")
+    p_deli.add_argument("--note", default=None)
+    p_deli.set_defaults(func=cmd_delivery)
+
+    p_dash = sub.add_parser(
+        "dashboard",
+        help="render the offline single-file HTML dashboard from a "
+             "verified-ledger.json or dispute-pack.json")
+    p_dash.add_argument("--pack", metavar="JSON", required=True,
+                        dest="pack", help="verified-ledger.json or dispute-pack.json")
+    p_dash.add_argument("--out", metavar="PATH", required=True,
+                        help="dashboard HTML path")
+    p_dash.set_defaults(func=cmd_dashboard)
+
+    p_out = sub.add_parser(
+        "outcomes",
+        help="verify outcome-unit JSONL (schema + internal consistency, "
+             "fail-closed): counted/unproven/disputed/retracted/invalid")
+    p_out.add_argument("--units", required=True, help="outcome-unit JSONL")
+    p_out.add_argument("--schema", default=None,
+                       help="outcome-unit schema (default: repo copy)")
+    p_out.add_argument("--contract-label", default=None, dest="contract_label")
+    p_out.add_argument("--json", dest="json_out", metavar="PATH", default=None)
+    p_out.set_defaults(func=cmd_outcomes)
+
+    p_crm = sub.add_parser(
+        "crm-join",
+        help="join buyer CRM/business records to the export: fills EMPTY "
+             "judgement cells (provenance says so), conflicts are named, "
+             "never resolved")
+    p_crm.add_argument("--export", required=True, help="canonical export CSV")
+    p_crm.add_argument("--crm", required=True,
+                       help="CRM CSV: conversation_id[,reopened_at,human_handover_at]")
+    p_crm.add_argument("--out", required=True, help="joined export path")
+    p_crm.set_defaults(func=cmd_crm_join)
+
+    p_per = sub.add_parser(
+        "period-compare",
+        help="two verified ledgers in, one honest delta out (three-state, "
+             "variance, new/cleared disputes, recovery)")
+    p_per.add_argument("previous", metavar="PREV.json")
+    p_per.add_argument("current", metavar="CURR.json")
+    p_per.add_argument("--out", metavar="PATH", default=None,
+                       help="write the compare report here")
+    p_per.set_defaults(func=cmd_period_compare)
+
+    p_cert = sub.add_parser(
+        "certify",
+        help="grade a verified ledger / dispute pack on the VSS-1 adoption "
+             "ladder (stage-0 self-attested .. stage-3 counterparty accepted) "
+             "+ deterministic digest")
+    p_cert.add_argument("--pack", required=True, metavar="JSON")
+    p_cert.add_argument("--digest-out", metavar="PATH", default=None,
+                        dest="digest_out",
+                        help="write the deterministic digest here (for your "
+                             "own signing tool)")
+    p_cert.add_argument("--emit-reproduction", metavar="WHO",
+                        default=None, dest="emit_reproduction",
+                        help="print the reproductions block to paste into the "
+                             "artifact for a Stage-2 promotion (argument = "
+                             "who re-ran it)")
+    p_cert.set_defaults(func=cmd_certify)
+
+    p_inc = sub.add_parser(
+        "incrementality",
+        help="treatment-vs-holdout statistics (two-proportion z + Newcombe "
+             "CI). Evidence about a difference — never a billing verdict")
+    p_inc.add_argument("--events", required=True,
+                       help="CSV: group(treatment|holdout),converted(0/1)")
+    p_inc.add_argument("--group-col", default="group", dest="group_col")
+    p_inc.add_argument("--outcome-col", default="converted", dest="outcome_col")
+    p_inc.add_argument("--json", dest="json_out", metavar="PATH", default=None)
+    p_inc.set_defaults(func=cmd_incrementality)
+
+    p_tpl = sub.add_parser(
+        "template",
+        help="engagement templates: mapping fingerprint + contract overlay + "
+             "boundary cases — the reusable method, never client data")
+    p_tpl.add_argument("--dir", default="engagement-templates",
+                       help="template directory (default ./engagement-templates)")
+    p_tpl.add_argument("--export", dest="template_export", action="store_true",
+                       help="export a new template (with --vendor)")
+    p_tpl.add_argument("--vendor", default=None)
+    p_tpl.add_argument("--fingerprint", default=None,
+                       help="mapping fingerprint from `prepare`")
+    p_tpl.add_argument("--contract", metavar="JSON", default=None,
+                       help="buyer contract overlay to embed")
+    p_tpl.add_argument("--boundary", metavar="JSON", default=None,
+                       help="boundary cases JSON: [{name?, columns, expected_3state}]")
+    p_tpl.add_argument("--note", default=None)
+    p_tpl.set_defaults(func=cmd_template)
+
+    p_com = sub.add_parser(
+        "commerce-ledger",
+        help="merchant-side measurement receipt for the agent-commerce chain "
+             "(F2.5): invocation/order/payment/refund logs in, metric+value+"
+             "evidence table out, materiality vs the naive dashboard view")
+    p_com.add_argument("--events", required=True,
+                       help="agent commerce events JSONL (commerce profile)")
+    p_com.add_argument("--orders", required=True,
+                       help="merchant order log CSV: order_id,agent_operation_id,"
+                            "amount,currency,status,created_at[,idempotency_key]")
+    p_com.add_argument("--payments", required=True,
+                       help="merchant payment log CSV: payment_id,order_id,"
+                            "amount,type(charge|refund),created_at")
+    p_com.add_argument("--policy-version", required=True,
+                       help="measurement policy version (governance: mixed "
+                            "versions are refused)")
+    p_com.add_argument("--schema", default=None,
+                       help="commerce profile schema (default: repo copy)")
+    p_com.add_argument("--json", dest="json_out", metavar="PATH", default=None)
+    p_com.set_defaults(func=cmd_commerce_ledger)
+
+    p_pnl = sub.add_parser(
+        "pnl-trees",
+        help="Organic and Paid trees metered separately (F2.10): an order "
+             "belongs to exactly one tree; ROAS is computed inside Paid only")
+    p_pnl.add_argument("--orders", required=True,
+                       help="order CSV with channel(organic|paid)[,campaign_id]")
+    p_pnl.add_argument("--campaigns", default=None,
+                       help="campaign ledger CSV: campaign_id,spend,conversations,"
+                            "engagements,conversions")
+    p_pnl.set_defaults(func=cmd_pnl_trees)
+
+    p_cml = sub.add_parser(
+        "cm-ledger",
+        help="Contribution Margin ledger (F2.11): revenue - coupon - media "
+             "spend - platform/payment cost - service fee - fulfillment "
+             "variance - refund = CM")
+    p_cml.add_argument("--orders", required=True)
+    p_cml.add_argument("--costs", required=True,
+                       help="cost CSV: category(coupon|media_spend|platform_cost|"
+                            "payment_cost|service_fee|fulfillment_variance|refund),"
+                            "amount[,order_id]")
+    p_cml.add_argument("--period", default=None)
+    p_cml.set_defaults(func=cmd_cm_ledger)
+
+    p_aud = sub.add_parser(
+        "demand-audit",
+        help="channel potential vs operator performance (F2.12) -> "
+             "Launch / Watch / Not ready")
+    p_aud.add_argument("--measurements", required=True,
+                       help="metrics CSV: metric,value")
+    p_aud.add_argument("--thresholds", required=True,
+                       help="thresholds JSON: {metric: {threshold}}")
+    p_aud.add_argument("--channel", default=None)
+    p_aud.set_defaults(func=cmd_demand_audit)
+
+    p_tax = sub.add_parser(
+        "intent-taxonomy",
+        help="validate an intent-cluster taxonomy (F2.13): Operating Cell = "
+             "cluster x surface x proposition")
+    p_tax.add_argument("--file", required=True, help="taxonomy JSON")
+    p_tax.add_argument("--seed", action="store_true",
+                       help="write a starter taxonomy with worked examples")
+    p_tax.set_defaults(func=cmd_intent_taxonomy)
+
+    p_pol = sub.add_parser(
+        "decision-audit",
+        help="grade agent commercial executions against the decision policy "
+             "(F2.14): auto / approval / forbidden, every decision with its "
+             "policy basis")
+    p_pol.add_argument("--policy", required=True,
+                       help="policy JSON (schema verovo.commerce/decision-policy)")
+    p_pol.add_argument("--executions", required=True,
+                       help="execution log JSONL: execution_id,action_type,"
+                            "value[,approver]")
+    p_pol.set_defaults(func=cmd_decision_audit)
+
+    p_ben = sub.add_parser(
+        "benchmark-export",
+        help="export the anonymous cross-brand benchmark (F2.15): "
+             "min-brands suppression, identifier columns refused, "
+             "customer data never enters the shared pool")
+    p_ben.add_argument("--rows", required=True,
+                       help="brand metric rows CSV: brand_key,bucket,value")
+    p_ben.add_argument("--min-brands", type=int,
+                       default=bench_mod.DEFAULT_MIN_BRANDS,
+                       help="minimum distinct brands per published bucket")
+    p_ben.add_argument("--taxonomy-version", default=None)
+    p_ben.add_argument("--method-ref", default=None)
+    p_ben.add_argument("--out", metavar="PATH", default=None)
+    p_ben.set_defaults(func=cmd_benchmark_export)
+
+    p_con = sub.add_parser(
+        "console",
+        help="compose the user-facing console page (one integrated, "
+             "plain-language page) from verification documents")
+    p_con.add_argument("--ledger", metavar="JSON", action="append",
+                       default=None,
+                       help="verified-ledger.json (drives the billing flow); "
+                            "repeat once per vendor for a multi-vendor "
+                            "console (pool §七 B1)")
+    p_con.add_argument("--receipt", metavar="JSON", default=None,
+                       help="commerce measurement receipt")
+    p_con.add_argument("--margin", metavar="JSON", default=None,
+                       help="contribution margin report")
+    p_con.add_argument("--channel-audit", metavar="JSON", default=None,
+                       dest="channel_audit", help="channel demand audit")
+    p_con.add_argument("--decisions", metavar="JSON", default=None,
+                       help="commercial decision audit")
+    p_con.add_argument("--title", default="Bill verification")
+    p_con.add_argument("--vendor", default=None)
+    p_con.add_argument("--period", default=None)
+    p_con.add_argument("--buyer", default=None)
+    p_con.add_argument("--out", metavar="PATH", required=True,
+                       help="console HTML path")
+    p_con.set_defaults(func=cmd_console)
+
+    p_drill = sub.add_parser(
+        "drilldown",
+        help="replay ONE finding on screen: the exported row, every rule "
+             "step that fired, the verdict, and the command to re-run it "
+             "(the 're-check one judgement' promise)")
+    p_drill.add_argument("--export", metavar="PATH", required=True,
+                         help="canonical counts-only CSV export")
+    p_drill.add_argument("--vendor", required=True)
+    p_drill.add_argument("--conversation", default=None,
+                         help="the conversation id to replay")
+    p_drill.add_argument("--line", type=int, default=None,
+                         help="alternatively, the export line number")
+    p_drill.add_argument("--md", metavar="PATH", default=None,
+                         help="also write a markdown replay here")
+    p_drill.set_defaults(func=cmd_drilldown)
+
+    p_dec = sub.add_parser(
+        "decisions",
+        help="record or review how the buyer used the verification in a "
+             "business decision (third value book, kept separate from cash "
+             "and hours)")
+    p_dec.add_argument("--log", metavar="JSONL", required=True,
+                       help="local decision journal (append-only)")
+    p_dec.add_argument("--log-event", action="store_true", dest="log_event",
+                       help="append one decision record")
+    p_dec.add_argument("--engagement", default=None)
+    p_dec.add_argument("--vendor", default=None)
+    p_dec.add_argument("--type", default=None, dest="decision_type",
+                       choices=list(decisions_mod.DECISION_TYPES))
+    p_dec.add_argument("--linked", default=None,
+                       help="finding it rests on (conversation id), or omit "
+                            "for the review as a whole")
+    p_dec.add_argument("--outcome", default="pending",
+                       choices=list(decisions_mod.OUTCOMES))
+    p_dec.add_argument("--amount", type=float, default=None,
+                       help="context amount (never summed with recovery)")
+    p_dec.add_argument("--note", default=None)
+    p_dec.set_defaults(func=cmd_decisions)
+
+    p_hist = sub.add_parser("history", help="show local run history")
+    p_hist.add_argument("--last", type=int, default=10)
+    p_hist.set_defaults(func=cmd_history)
+
+    p_trend = sub.add_parser("trend", help="aggregate run history into weekly/monthly trend report")
+    p_trend.set_defaults(func=cmd_trend)
+
+    p_self = sub.add_parser("selftest", help="verify adapters/checks on bundled fixtures")
+    p_self.set_defaults(func=cmd_selftest)
+    return parser
+
+
+def main(argv=None) -> int:
+    # Windows consoles default to legacy code pages (cp1252/cp936) that cannot
+    # encode every glyph in the report output; degrade to '?' instead of
+    # crashing mid-report — the check must finish on any stock terminal.
+    for stream in (sys.stdout, sys.stderr):
+        try:
+            stream.reconfigure(errors="replace")
+        except (AttributeError, ValueError):
+            pass
+    argv = list(sys.argv[1:] if argv is None else argv)
+    parser = build_parser()
+    if not argv:
+        argv = ["check"]
+    args = parser.parse_args(argv)
+    args._argv = argv
+    if not hasattr(args, "func"):
+        parser.print_help()
+        return 2
+    return args.func(args)

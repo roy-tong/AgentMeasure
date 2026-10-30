@@ -12,7 +12,7 @@ import unittest
 
 from _support import REPO_ROOT, PKG_DIR, FIXTURES_DIR
 
-from am_healthcheck import commerce as cm
+from verovo_healthcheck import commerce as cm
 
 SCHEMA_PATH = os.path.join(REPO_ROOT, "schemas", "commerce-profile.schema.json")
 FIXTURES = os.path.join(FIXTURES_DIR, "commerce")
@@ -33,7 +33,7 @@ def write_events(records):
 
 def event(**overrides):
     base = {
-        "schema_version": "agentmeasure-commerce-0.1",
+        "schema_version": "verovo-commerce-0.1",
         "record_type": "attempt_event",
         "observation_mode": "replay",
         "measurement_policy_version": POLICY,
@@ -138,7 +138,7 @@ class TestF22DecisionObservation(unittest.TestCase):
 
     def test_decision_record_round_trips(self):
         rec = {
-            "schema_version": "agentmeasure-commerce-0.1",
+            "schema_version": "verovo-commerce-0.1",
             "record_type": "decision_observation",
             "observation_mode": "live",
             "measurement_policy_version": POLICY,
@@ -322,7 +322,7 @@ class TestCli(unittest.TestCase):
     def test_commerce_ledger_end_to_end(self):
         import contextlib
         import io
-        from am_healthcheck.cli import main
+        from verovo_healthcheck.cli import main
         out = io.StringIO()
         with contextlib.redirect_stdout(out):
             rc = main(["commerce-ledger",
@@ -337,7 +337,7 @@ class TestCli(unittest.TestCase):
     def test_mixed_modes_exit_two(self):
         import contextlib
         import io
-        from am_healthcheck.cli import main
+        from verovo_healthcheck.cli import main
         records = [event(), event(observation_mode="synthetic",
                                   attempt_id="A-lab")]
         path = write_events(records)

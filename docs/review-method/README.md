@@ -5,7 +5,7 @@
 > QA) are retired — **their method is now open**. This directory is that
 > method: the same intake checks, the same commands, the same report
 > discipline the maintainers use when someone brings a sample to
-> [issue #6](https://github.com/roy-tong/AgentMeasure/issues/6). Run it on
+> [issue #6](https://github.com/roy-tong/verovo/issues/6). Run it on
 > your own data, or bring the sample and we run it with you — both are free.
 
 ## What is here
@@ -34,6 +34,6 @@ never required, never a condition.
   [provider-onboarding.md](provider-onboarding.md) and
   [registry/provider-mapping.md](../registry/provider-mapping.md)
 - The public claims index these verdicts share vocabulary with:
-  [claims.html](https://roy-tong.github.io/AgentMeasure/claims.html)
+  [claims.html](https://roy-tong.github.io/verovo/claims.html)
 - Historical scope notes: [paid-review-scope.md](paid-review-scope.md)
   (superseded — kept for the record)

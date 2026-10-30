@@ -6,7 +6,7 @@ import unittest
 
 from _support import fixture
 
-from am_healthcheck.dispute import (build_pack, render_cover_letter,
+from verovo_healthcheck.dispute import (build_pack, render_cover_letter,
                                     render_pack_markdown, write_pack)
 
 EXPORT = fixture("vendor-export-intercom.csv")
@@ -21,7 +21,7 @@ class TestBuildPack(unittest.TestCase):
                            "conformance", "evidence", "assumed-resolution",
                            "fixture.jsonl"),
                        price=0.99)
-        self.assertEqual(p["schema"], "agentmeasure.commercial/dispute-pack")
+        self.assertEqual(p["schema"], "verovo.commercial/dispute-pack")
         self.assertIsNotNone(p["tier1"])
         self.assertIsNotNone(p["tier2"])
         self.assertEqual(p["tier1"]["counts"]["billed_but_not_billable"], 4)
@@ -109,7 +109,7 @@ class TestMarkdownPack(unittest.TestCase):
 
 class TestDisputeCli(unittest.TestCase):
     def test_parser_has_dispute(self):
-        from am_healthcheck.cli import build_parser
+        from verovo_healthcheck.cli import build_parser
         args = build_parser().parse_args(
             ["dispute", "--export", "x.csv", "--vendor", "intercom"])
         self.assertEqual(args.cmd, "dispute")
@@ -117,7 +117,7 @@ class TestDisputeCli(unittest.TestCase):
     def test_dispute_end_to_end(self):
         import contextlib
         import io
-        from am_healthcheck.cli import main
+        from verovo_healthcheck.cli import main
         with tempfile.TemporaryDirectory() as d:
             buf = io.StringIO()
             with contextlib.redirect_stdout(buf):
@@ -130,7 +130,7 @@ class TestDisputeCli(unittest.TestCase):
     def test_inspect_produces_no_numbers(self):
         import contextlib
         import io
-        from am_healthcheck.cli import main
+        from verovo_healthcheck.cli import main
         buf = io.StringIO()
         with contextlib.redirect_stdout(buf):
             rc = main(["recount", "--export", EXPORT, "--vendor", "intercom",

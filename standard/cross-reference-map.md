@@ -1,4 +1,4 @@
-# AgentMeasure 标准全文交叉引用地图 — 2026-09-18
+# Verovo 标准全文交叉引用地图 — 2026-09-18
 
 > 完整阅读了 standard/ 全部 11 个文件、extensions/COMMERCIAL.md、known-limits、
 > registry/vocabularies.yaml、registry/metrics.yaml 后的结构审计。
@@ -119,7 +119,7 @@ Effect 的测量对象定义、observability、证据要求、不变量分散在
 
 ### Gap 3：M5 Incremental Lift 零实现
 
-METRICS §6 留白 "实验设计见 AgentMeasure 0.5"。metrics.yaml 也止于 M4.1。
+METRICS §6 留白 "实验设计见 Verovo 0.5"。metrics.yaml 也止于 M4.1。
 known-limits §3 表 M5 行写"条件性"。**Lab 引擎已有 80% 实现**。
 
 **建议**：将 M5 指标合同提前到 0.4.x 补丁（见 §8 分析），因为引擎就绪，缺的只是

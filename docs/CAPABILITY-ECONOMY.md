@@ -41,7 +41,7 @@ CaaS 要能定价、计费与建立声誉，先要有共同的测量语义：
 任务成功了但没有这个能力也能成功：Provider 能主张价值吗？（Incrementality）
 ```
 
-**Measurement before monetization** —— 这就是 AgentMeasure 的 wedge。
+**Measurement before monetization** —— 这就是 Verovo 的 wedge。
 
 ## 4. 现实证据：商业先于计量到来
 
@@ -61,11 +61,11 @@ CaaS 要能定价、计费与建立声誉，先要有共同的测量语义：
 Capability → Discover → Choose → Use → Deliver Value → Measure → Meter → Price / Pay / Settle
 ```
 
-- AgentMeasure 渐进标准化前五步产生的数据与语义（当前已定义：Core usage semantics）
+- Verovo 渐进标准化前五步产生的数据与语义（当前已定义：Core usage semantics）
 - Metering / commercial attribution 是未来扩展（extensions/COMMERCIAL.md）
 - Payment rails 由现有支付基础设施提供
 
-> **AgentMeasure standardizes economic facts, not money movement.**
+> **Verovo standardizes economic facts, not money movement.**
 
 ## 6. 三条线永不耦合
 
@@ -76,7 +76,7 @@ Capability → Discover → Choose → Use → Deliver Value → Measure → Met
 | Product | 帮用户获得这些事实 | product/（in development） |
 | Payment 系统 | 钱 | 外部 |
 
-**CaaS 是 Vision，不是 Core Standard 成立的必要条件**：AgentMeasure Core 1.0
+**CaaS 是 Vision，不是 Core Standard 成立的必要条件**：Verovo Core 1.0
 独立毕业为 Agent 软件测量标准。
 
 ## 7. 叙事锁定

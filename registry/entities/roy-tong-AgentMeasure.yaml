@@ -1,24 +1,24 @@
-schema_version: "agentmeasure-0.4"
+schema_version: "verovo-0.4"
 entity:
-  entity_id: github.com/roy-tong/AgentMeasure
+  entity_id: github.com/roy-tong/verovo
   entity_type: tool
-  name: AgentMeasure
-  declared_by: github.com/roy-tong/AgentMeasure
+  name: Verovo
+  declared_by: github.com/roy-tong/verovo
   verified: false
   aliases:
-    cli: agentmeasure
-    skill: agentmeasure
+    cli: verovo
+    skill: verovo
   capabilities:
-    - capability_id: github.com/roy-tong/AgentMeasure:wrap
+    - capability_id: github.com/roy-tong/verovo:wrap
       interaction_class: action
-    - capability_id: github.com/roy-tong/AgentMeasure:hook
+    - capability_id: github.com/roy-tong/verovo:hook
       interaction_class: action
-    - capability_id: github.com/roy-tong/AgentMeasure:collect
+    - capability_id: github.com/roy-tong/verovo:collect
       interaction_class: computation
   surfaces:
-    - surface_id: cli_command:agentmeasure-wrap
+    - surface_id: cli_command:verovo-wrap
       alias: cli
-    - surface_id: cli_command:agentmeasure-hook
+    - surface_id: cli_command:verovo-hook
       alias: cli
-    - surface_id: cli_command:agentmeasure-collect
+    - surface_id: cli_command:verovo-collect
       alias: cli

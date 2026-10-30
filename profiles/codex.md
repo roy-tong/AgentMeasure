@@ -1,7 +1,7 @@
-# AgentMeasure Harness Profile — Codex（OpenAI Codex CLI / App Server）
+# Verovo Harness Profile — Codex（OpenAI Codex CLI / App Server）
 
 > Draft 0.4.4。回答一份固定问卷：这个 harness 能可靠观察到什么、什么观察不到、
-> 如何映射到 AgentMeasure 语义对象。协议侧摘要见 standard/PROFILES.md P1；
+> 如何映射到 Verovo 语义对象。协议侧摘要见 standard/PROFILES.md P1；
 > 本文是完整 Profile。来源：Codex CLI 公开文档与 `codex proto` / App Server JSON-RPC
 > 接口（截至 2026-08，开发者预览，字段可能变化）。
 
@@ -18,7 +18,7 @@
 
 ## 2. 语义映射
 
-| Codex | AgentMeasure | 说明 |
+| Codex | Verovo | 说明 |
 |---|---|---|
 | Thread 内一个用户目标 | Task 候选 | Codex 无显式 task 对象；线程级目标需调用方声明 |
 | Turn | Execution Context（粒度披露） | turn ≠ operation，不得混用 |

@@ -1,5 +1,5 @@
 import unittest
-from am_healthcheck.vendors import recount,recount_report
+from verovo_healthcheck.vendors import recount,recount_report
 class TestEvidenceHeadline(unittest.TestCase):
     def report(self,rows):
         return recount_report(recount({'records':rows,'columns_missing':[]},'intercom'))

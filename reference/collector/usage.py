@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""AgentMeasure collector — 数据模型 v3（Draft 0.4.2）。
+"""Verovo collector — 数据模型 v3（Draft 0.4.2）。
 
 核心原则（measurement-integrity review）：
   1. Observation ≠ Attempt ≠ Operation。adapter 只产生 observation（观察事实）；
@@ -59,8 +59,8 @@ OBSERVATION_KEYS = (
     "sequence_epoch",       # 序号纪元（重启/轮换分界）
     "dropped_since_last_report",  # SDK 自身丢失数（进入 Measurement Coverage）
     "buffer_overflow",      # 缓冲溢出标记
-    "trust_domain",         # 观察者信任域（AgentMeasure-TRUST；独立佐证判定的关键）
-    "sampling",             # {"method": "fixed", "probability": 0.1} 等（AgentMeasure-QUALITY）
+    "trust_domain",         # 观察者信任域（Verovo-TRUST；独立佐证判定的关键）
+    "sampling",             # {"method": "fixed", "probability": 0.1} 等（Verovo-QUALITY）
     "usage_context",        # production|development|test|benchmark|evaluation|synthetic|ci|unknown
     "validity",             # normal|duplicate|replay|health_check|load_test|suspected_invalid|unknown（无 retry，0.4.3）
     "context_source",       # none|provider_configuration|collector_derived|runtime_propagated
@@ -89,7 +89,7 @@ PROVENANCES = ("hook", "otel", "wrapper", "platform")
 OUTCOMES = ("success", "failure", "retry", "denied", "unknown")
 
 # ---- 伪匿名（spec/privacy.md：HMAC(epoch_secret, host:raw) 按月轮换） ----
-_SECRET_PATH = Path(os.environ.get("AGENTMEASURE_IDENTITY_DIR", str(Path.home() / ".agentmeasure"))) / "identity"
+_SECRET_PATH = Path(os.environ.get("VEROVO_IDENTITY_DIR", str(Path.home() / ".verovo"))) / "identity"
 
 
 def _epoch() -> str:

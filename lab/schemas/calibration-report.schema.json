@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "agentmeasure.lab/calibration-report@1.0.0",
-  "title": "AgentMeasure Lab — Calibration Report (offline vs production)",
+  "$id": "verovo.lab/calibration-report@1.0.0",
+  "title": "Verovo Lab — Calibration Report (offline vs production)",
   "description": "CAL-002/003: production re-measurement against a preregistered offline experiment, with per-condition transfer effects. Same funnel schema, same rules, same ruler — different data.",
   "type": "object",
   "additionalProperties": true,
@@ -18,7 +18,7 @@
     "limitations"
   ],
   "properties": {
-    "schema": { "const": "agentmeasure.lab/calibration-report" },
+    "schema": { "const": "verovo.lab/calibration-report" },
     "schema_version": { "const": "1.0.0" },
     "engine_version": { "type": "string" },
     "funnel_rules_version": { "type": "string" },

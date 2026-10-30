@@ -1,5 +1,5 @@
 /**
- * AgentMeasure — DeepSeek Harness adapter plugin（Cordis）。
+ * Verovo — DeepSeek Harness adapter plugin（Cordis）。
  *
  * 订阅 DSH session 事件流，在工具调用边界记录 usage 元数据：
  *   - tool/call    → 执行起点（callId/name）
@@ -17,15 +17,15 @@ import { homedir } from "node:os";
 import z from "@deepseek-ai/schemastery";
 
 /** Cordis plugin name. */
-const name = "agentmeasure";
+const name = "verovo";
 
 /** Required services: 无（session/event 是 ctx 级事件）。 */
 const inject = [];
 
 /** Runtime schema. */
 const Config = z.object({
-	eventsDir: z.string().default(join(homedir(), ".agentmeasure", "events")),
-	projectId: z.string().default("github.com/roy-tong/AgentMeasure"),
+	eventsDir: z.string().default(join(homedir(), ".verovo", "events")),
+	projectId: z.string().default("github.com/roy-tong/verovo"),
 	doNotTrack: z.boolean().default(false),
 	agentHost: z.string().default("deepseek-harness"),
 	observerPrincipal: z.string().default("dsh-plugin@local"),
@@ -76,7 +76,7 @@ function apply(ctx, config) {
 			// 注意：tool/call + tool/result 只证明生命周期完成（completed），
 			// 不构成独立佐证——evidence 由 verifier 计算，此处绝不自声明
 			const record = {
-				spec_version: "agentmeasure-0.4",
+				spec_version: "verovo-0.4",
 				observation_id: randomUUID(),
 				observation_type: "attempt_completed",
 				observer: { principal: config.observerPrincipal, side: "client",

@@ -6,7 +6,7 @@
 > join semantics and the proposed vector are his (six-questions answer,
 > 2026-10-12): N crossing receipts and the one aggregate they belong to;
 > conformance is `event_count == N` and `amount == sum`. The framing sentence
-> "a signature made the absence look like proof" is **AgentMeasure's**
+> "a signature made the absence look like proof" is **Verovo's**
 > (preamble, applied to his case); his words are the confirmation that it is
 > the right one — attribution kept separate per his stated conditions. This
 > fixture and its wording are ours; his production cut is offered for the
@@ -57,4 +57,4 @@ Four metered crossings; three carry the session tag, one (a bypass, the
 7. **signature is not the join** — the session aggregate carries a valid
    signature and self-consistent counters, yet every member-level mutation
    above still fails reconciliation: signature verification does not
-   discharge the join obligation (AMS-1 S-9).
+   discharge the join obligation (VSS-1 S-9).

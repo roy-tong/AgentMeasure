@@ -6,14 +6,14 @@
 ./examples/demo-e2e.sh
 ```
 
-What you'll see: a mock MCP server instrumented with `@agentmeasure/mcp`
+What you'll see: a mock MCP server instrumented with `@verovo/mcp`
 (**42 calls → 84 canonical observations, 0 rejected**), then the local metrics
 report — with **Strict Qualified Usage defaulting to 0%** (the fixture is labeled
 `synthetic`, never production) and **per-request caller attribution**
 (claude:14 · codex:14 · unknown:14).
 
 The demo runs in an isolated workspace (`mktemp -d`) and never touches
-`~/.agentmeasure` — same fixture + same policy = same result, every run.
+`~/.verovo` — same fixture + same policy = same result, every run.
 
 ## SDK integration examples
 
@@ -36,14 +36,14 @@ cd sdk && node examples/mcp-integration-v2.js   # v2 (primary)
 ## Onboarding your own MCP server (3 steps)
 
 1. Install from the release tarball (npm registry publish pending):
-   `npm install https://github.com/roy-tong/AgentMeasure/releases/download/v0.1.1/agentmeasure-mcp-0.1.1.tgz`
+   `npm install https://github.com/roy-tong/verovo/releases/download/v0.1.1/verovo-mcp-0.1.1.tgz`
 2. Wrap your tool handlers as in `sdk/examples/mcp-integration-v2.js` (v2) or
    `mcp-integration.js` (v1)
 3. Point the metrics tool at the events file:
 
 ```bash
-python3 product/local-analytics.py ~/.agentmeasure/events/agentmeasure-events.jsonl --project github.com/you/your-server
+python3 product/local-analytics.py ~/.verovo/events/verovo-events.jsonl --project github.com/you/your-server
 ```
 
-Questions? [Issue #2: First external Provider onboarding](https://github.com/roy-tong/AgentMeasure/issues/2)
+Questions? [Issue #2: First external Provider onboarding](https://github.com/roy-tong/verovo/issues/2)
 is the front door — we'll add you to the conformance list.

@@ -12,9 +12,9 @@ import unittest
 
 from _support import fixture
 
-from am_healthcheck import dispute as dispute_mod
-from am_healthcheck import recovery as recovery_mod
-from am_healthcheck.recovery import RecoveryError, load_confirmations
+from verovo_healthcheck import dispute as dispute_mod
+from verovo_healthcheck import recovery as recovery_mod
+from verovo_healthcheck.recovery import RecoveryError, load_confirmations
 
 EXPORT = fixture("vendor-export-intercom.csv")
 

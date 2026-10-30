@@ -11,8 +11,8 @@ import os
 import unittest
 from contextlib import redirect_stdout
 
-from am_healthcheck import vendors
-from am_healthcheck.cli import main
+from verovo_healthcheck import vendors
+from verovo_healthcheck.cli import main
 
 SHOWCASE = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                         "..", "..", "examples", "showcase")

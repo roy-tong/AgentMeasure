@@ -5,10 +5,10 @@
  * real integrations resolve the caller per request (see mcp-integration*.js).
  *
  * Run: node examples/server.js  (after `npm install && npm run build`)
- * Events: $AGENTMEASURE_EVENTS_DIR/agentmeasure-events.jsonl
- *         (defaults to ~/.agentmeasure/events/agentmeasure-events.jsonl)
+ * Events: $VEROVO_EVENTS_DIR/verovo-events.jsonl
+ *         (defaults to ~/.verovo/events/verovo-events.jsonl)
  */
-import { agentmeasure } from "../dist/index.js";
+import { verovo } from "../dist/index.js";
 
 // --- a mock "remote server" ---
 const server = {
@@ -23,7 +23,7 @@ const server = {
   },
 };
 
-const mw = agentmeasure({
+const mw = verovo({
   projectId: "github.com/acme/example-search",
   observerPrincipal: "am-sdk@acme",
   trustDomain: "acme",

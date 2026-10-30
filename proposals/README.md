@@ -1,4 +1,4 @@
-# AgentMeasure Proposals
+# Verovo Proposals
 
 标准与指标变更的正式通道。任何人均可提案。
 

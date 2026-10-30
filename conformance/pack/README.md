@@ -1,4 +1,4 @@
-# AgentMeasure Conformance Pack v0.1
+# Verovo Conformance Pack v0.1
 
 **Does your agent metric actually mean what its label says?**
 
@@ -13,9 +13,9 @@ Use CLI **0.7.1 or newer**. The 0.7.0 wheel omitted a required module; upgrade
 before running conformance. No repository clone is needed for this path:
 
 ```bash
-python -m pip install --upgrade agentmeasure
-agentmeasure conformance --new-vector my-sample --out ./vectors
-agentmeasure conformance --fixture ./vectors/my-sample-001/agentmeasure_my_sample_fixture_001.events.jsonl --json result.json
+python -m pip install --upgrade verovo
+verovo conformance --new-vector my-sample --out ./vectors
+verovo conformance --fixture ./vectors/my-sample-001/verovo_my_sample_fixture_001.events.jsonl --json result.json
 ```
 
 The scaffold is synthetic and valid as generated: 4 PASS, 1 UNPROVABLE for its
@@ -27,15 +27,15 @@ never into the Python installation. Existing names are refused rather than overw
 For your own data, use genuine session/operation/attempt identities. Without
 `--claims`, results only concern the sample's internal consistency. For a free
 fit review before a $20 check, send your native schema and redacted sample rows;
-you do not have to perform the mapping first. [Service scope](https://roy-tong.github.io/AgentMeasure/services.html#qa20).
+you do not have to perform the mapping first. [Service scope](https://roy-tong.github.io/verovo/services.html#qa20).
 
 ## Use
 
 ```bash
-python3 conformance/pack/agentmeasure conformance --fixture my-fixture.jsonl
+python3 conformance/pack/verovo conformance --fixture my-fixture.jsonl
 # optional: --metadata sidecar.json  --claims observed-claims.json
 #            --json report.json      --require execution-grain,retry-reconciliation
-python3 conformance/pack/agentmeasure selftest   # repository fixtures, no caller input
+python3 conformance/pack/verovo selftest   # repository fixtures, no caller input
 ```
 
 - Without `--claims`: data-consistency checks and reference computation only.
@@ -49,7 +49,7 @@ python3 conformance/pack/agentmeasure selftest   # repository fixtures, no calle
 ## GitHub Action
 
 ```yaml
-- uses: roy-tong/AgentMeasure@<commit-sha>
+- uses: roy-tong/Verovo@<commit-sha>
   with:
     fixture: fixtures/telemetry.jsonl   # relative to YOUR workspace
     # claims: fixtures/claims.json      # optional

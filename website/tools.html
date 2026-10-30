@@ -3,15 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tool bill coverage | AgentMeasure</title>
-  <meta name="description" content="AgentMeasure catalog for domestic and overseas agent tool bills: token, credits, per-call, browser-hour, sandbox, OCR, voice and generation. Buyer and seller audit views, plus local CDP collection.">
+  <title>Tool bill coverage | Verovo</title>
+  <meta name="description" content="Verovo catalog for domestic and overseas agent tool bills: token, credits, per-call, browser-hour, sandbox, OCR, voice and generation. Buyer and seller audit views, plus local CDP collection.">
   <link rel="icon" type="image/svg+xml" href="./assets/favicon.svg">
-  <link rel="canonical" href="https://roy-tong.github.io/AgentMeasure/tools.html">
+  <link rel="canonical" href="https://roy-tong.github.io/verovo/tools.html">
   <meta name="theme-color" content="#090C10">
   <meta property="og:type" content="website">
-  <meta property="og:title" content="Tool bill coverage | AgentMeasure">
+  <meta property="og:title" content="Tool bill coverage | Verovo">
   <meta property="og:description" content="Cataloged agent-tool billing models, buyer and seller audit views, and local CDP collection. Cataloged is not the same as live-validated.">
-  <meta property="og:url" content="https://roy-tong.github.io/AgentMeasure/tools.html">
+  <meta property="og:url" content="https://roy-tong.github.io/verovo/tools.html">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -21,16 +21,16 @@
 <body>
   <header class="nav">
     <div class="nav-inner">
-      <a class="brand" href="index.html" aria-label="AgentMeasure home">AgentMeasure<span class="brand-cursor">_</span></a>
+      <a class="brand" href="index.html" aria-label="Verovo home"><span class="brand-plate"><img class="brand-mark" src="./assets/verovo-mark.png" alt="" width="42" height="23"></span>Verovo<span class="brand-cursor">_</span></a>
       <nav class="nav-links" id="nav-links" aria-label="Sections">
         <a href="index.html#whynow">Buyer decisions</a>
         <a href="tools.html">Tool bills</a>
         <a href="index.html#evidence">Evidence</a>
         <a href="index.html#developers">Developer tools</a>
-        <a class="ext" href="https://github.com/roy-tong/AgentMeasure/tree/main/buyer-ledger">GitHub ↗</a>
+        <a class="ext" href="https://github.com/roy-tong/verovo/tree/main/buyer-ledger">GitHub ↗</a>
       </nav>
       <div class="nav-cta">
-        <a class="btn btn-primary btn-sm" href="https://github.com/roy-tong/AgentMeasure/tree/main/buyer-ledger">Open Buyer Ledger →</a>
+        <a class="btn btn-primary btn-sm" href="https://github.com/roy-tong/verovo/tree/main/buyer-ledger">Open Buyer Ledger →</a>
         <button class="nav-toggle" id="nav-toggle" aria-expanded="false" aria-controls="nav-links" aria-label="Toggle menu">
           <span></span><span></span><span></span>
         </button>
@@ -44,9 +44,9 @@
         <div class="hero-copy">
           <p class="eyebrow">Research preview · domestic and overseas tools</p>
           <h1>One review layer<br><em>for many tool bills.</em></h1>
-          <p class="lede">Agent stacks now charge by tokens, searches, image outputs, browser hours, sandbox seconds, characters, credits and seats. AgentMeasure catalogs the billing dimensions, imports the evidence, and separates what the bill says from what usage can prove.</p>
+          <p class="lede">Agent stacks now charge by tokens, searches, image outputs, browser hours, sandbox seconds, characters, credits and seats. Verovo catalogs the billing dimensions, imports the evidence, and separates what the bill says from what usage can prove.</p>
           <div class="hero-actions">
-            <a class="btn btn-primary" href="https://github.com/roy-tong/AgentMeasure/blob/main/buyer-ledger/README.md">Run locally</a>
+            <a class="btn btn-primary" href="https://github.com/roy-tong/verovo/blob/main/buyer-ledger/README.md">Run locally</a>
             <a class="btn btn-ghost" href="#matrix">See the support matrix</a>
           </div>
           <p class="note">Cataloged ≠ connected ≠ live-validated. The catalog currently has <strong>26 tools</strong>; <strong>0</strong> have a live customer-bill validation. No customer savings or recovery claims are made here.</p>
@@ -108,7 +108,7 @@ python3 -m buyer_ledger report --period 2026-10 --perspective seller --out selle
       <h2>CDP attach, not credential handoff</h2>
       <p class="body-secondary">Some bill portals have no API. Buyer Ledger can attach to a user-started Chrome over the local DevTools Protocol, reuse the logged-in session, execute a reviewed recipe, download the bill, and push it through the same ingestion and audit pipeline.</p>
       <div class="trial-points">
-        <div class="trial-point"><span class="trial-k">1 · User starts Chrome</span><p>A dedicated profile opens a loopback debugging port. The user signs in and completes MFA; AgentMeasure never handles the password.</p></div>
+        <div class="trial-point"><span class="trial-k">1 · User starts Chrome</span><p>A dedicated profile opens a loopback debugging port. The user signs in and completes MFA; Verovo never handles the password.</p></div>
         <div class="trial-point"><span class="trial-k">2 · Reviewed recipe runs</span><p>HTTPS and allowed hosts are checked before actions. Cross-origin navigation and downloads are blocked before they can enter the ledger.</p></div>
         <div class="trial-point"><span class="trial-k">3 · Bill is analyzed</span><p>The downloaded artifact keeps run_id, recipe hash and audit path. Parsing can be deterministic or produce a pending draft for review.</p></div>
       </div>
@@ -126,7 +126,7 @@ python3 -m buyer_ledger fetch --recipe recipe.json --period 2026-10 --cdp http:/
         <div class="claim"><div class="claim-main"><span class="claim-no">03</span><p class="claim-line"><span>Amap · QWeather</span></p><p class="claim-cap">Quota, prepaid packs, service-family exclusions, monthly tiers and a minimum charge all change the payable amount. A simple “calls × unit price” review is not enough.</p></div></div>
       </div>
       <p class="note">These are public-pricing research examples. They do not claim a customer, refund, saving or live integration.</p>
-      <div class="trial-actions"><a class="btn btn-primary" href="https://github.com/roy-tong/AgentMeasure/tree/main/buyer-ledger">Read the implementation</a><a class="btn btn-ghost" href="https://github.com/roy-tong/AgentMeasure/blob/main/buyer-ledger/REVIEW-20261029.md">Read the review limits</a></div>
+      <div class="trial-actions"><a class="btn btn-primary" href="https://github.com/roy-tong/verovo/tree/main/buyer-ledger">Read the implementation</a><a class="btn btn-ghost" href="https://github.com/roy-tong/verovo/blob/main/buyer-ledger/REVIEW-20261029.md">Read the review limits</a></div>
     </div></section>
 
     <section class="section" id="complaints"><div class="wrap">
@@ -143,16 +143,16 @@ python3 -m buyer_ledger fetch --recipe recipe.json --period 2026-10 --cdp http:/
         <div class="who-card"><span class="who-k">For the buyer ledger</span><p>Model credits, expiry, auto-recharge, hard caps, included quota and cash billing separately. Keep a queue of unexplained charges rather than forcing them into zero.</p><span class="who-v">Entitlement ledger</span></div>
         <div class="who-card"><span class="who-k">For the seller ledger</span><p>Check whether metered usage is represented in billing. Unpriced or unlinked usage remains an evidence gap; it is not automatically leakage revenue.</p><span class="who-v">Metering integrity</span></div>
       </div>
-      <p class="note">Not a complaint rate, not a market validation, and not a claim about any vendor's overall conduct. A larger SURE discovery expansion now holds 50,000 unique public records (HN 49,090); strict evidence remains 66. Discovery volume is not evidence volume. <a href="https://github.com/roy-tong/AgentMeasure/blob/main/buyer-ledger/COMPLAINTS-20261029.md">Read the bounded study summary →</a></p>
+      <p class="note">Not a complaint rate, not a market validation, and not a claim about any vendor's overall conduct. A larger SURE discovery expansion now holds 50,000 unique public records (HN 49,090); strict evidence remains 66. Discovery volume is not evidence volume. <a href="https://github.com/roy-tong/verovo/blob/main/buyer-ledger/COMPLAINTS-20261029.md">Read the bounded study summary →</a></p>
     </div></section>
   </main>
 
   <footer class="footer"><div class="wrap">
     <div class="footer-grid">
-      <div class="footer-brand"><span class="brand">AgentMeasure<span class="brand-cursor">_</span></span><p>Evidence for AI service charges and delivery.</p></div>
+      <div class="footer-brand"><span class="brand"><span class="brand-plate"><img class="brand-mark" src="./assets/verovo-mark.png" alt="" width="42" height="23"></span>Verovo<span class="brand-cursor">_</span></span><p>Evidence for AI service charges and delivery.</p></div>
       <nav class="footer-col" aria-label="Product"><span class="footer-k">Product</span><a href="index.html">Overview</a><a href="tools.html">Tool bills</a><a href="recount.html">Recount</a><a href="services.html">Free runs</a></nav>
-      <nav class="footer-col" aria-label="Project"><span class="footer-k">Project</span><a href="https://github.com/roy-tong/AgentMeasure">GitHub</a><a href="releases.html">Releases</a><a href="https://github.com/roy-tong/AgentMeasure/blob/main/ROADMAP.md">Roadmap</a></nav>
-      <nav class="footer-col" aria-label="Evidence"><span class="footer-k">Evidence</span><a href="claims.html">Claims index</a><a href="https://github.com/roy-tong/AgentMeasure/blob/main/buyer-ledger/REVIEW-20261029.md">Buyer Ledger review</a><a href="https://github.com/roy-tong/AgentMeasure/blob/main/standard/SETTLEMENT.md">AMS-1</a></nav>
+      <nav class="footer-col" aria-label="Project"><span class="footer-k">Project</span><a href="https://github.com/roy-tong/verovo">GitHub</a><a href="releases.html">Releases</a><a href="https://github.com/roy-tong/verovo/blob/main/ROADMAP.md">Roadmap</a></nav>
+      <nav class="footer-col" aria-label="Evidence"><span class="footer-k">Evidence</span><a href="claims.html">Claims index</a><a href="https://github.com/roy-tong/verovo/blob/main/buyer-ledger/REVIEW-20261029.md">Buyer Ledger review</a><a href="https://github.com/roy-tong/verovo/blob/main/standard/SETTLEMENT.md">VSS-1</a></nav>
     </div>
     <div class="footer-bottom"><span>Open source under MIT.</span><span class="footer-epigraph">Cataloged is not connected. Connected is not live-validated.</span></div>
   </div></footer>

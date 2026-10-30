@@ -7,11 +7,11 @@
   if (typeof module === "object" && module.exports) {
     module.exports = factory();
   } else {
-    root.AGENTMEASURE_VENDOR_RULES = factory();
+    root.VEROVO_VENDOR_RULES = factory();
   }
 })(typeof self !== "undefined" ? self : this, function () {
   return {
-  "_comment": "AgentMeasure vendor billing rules — SINGLE SOURCE OF TRUTH. Read by the Python CLI (healthcheck/am_healthcheck/vendors.py) and by the browser-local recount (website/recount.js). A parity test in CI fails if the two disagree on the same fixture. Do not edit a consumer; edit this file.",
+  "_comment": "Verovo vendor billing rules — SINGLE SOURCE OF TRUTH. Read by the Python CLI (healthcheck/verovo_healthcheck/vendors.py) and by the browser-local recount (website/recount.js). A parity test in CI fails if the two disagree on the same fixture. Do not edit a consumer; edit this file.",
   "_comment_optional": "customer_recontacted_at is the recontact TIMESTAMP. The within_window boolean is judged against the vendor's window; only the timestamp lets the outcome-standard lane judge a contractual window (e.g. 72h). Absent is fine — the lane then reads UNPROVABLE instead of guessing.",
   "canonical_columns": [
     "conversation_id",
@@ -88,7 +88,7 @@
     "customer_recontacted_at"
   ],
   "prepare_hints": {
-    "_comment": "Native-export preparation hints for `agentmeasure prepare`. signal_columns maps a lowercase native header to the canonical column it can INFORM. A hint is a lead for human review, never a verdict: the judgement columns stay empty until a person fills them, and prov_ columns record where every value came from.",
+    "_comment": "Native-export preparation hints for `verovo prepare`. signal_columns maps a lowercase native header to the canonical column it can INFORM. A hint is a lead for human review, never a verdict: the judgement columns stay empty until a person fills them, and prov_ columns record where every value came from.",
     "intercom": {
       "note": "First contacted by: a 'Fin AI Agent' value with no Teammate value is evidence AGAINST human participation. 'Has user reply' means ANY reply ever — it is not the post-close recontact window; treat as a lead, not a verdict. Intercom does not export which conversations were billed: vendor_billed needs the invoice or a concierge derivation.",
       "signal_columns": {
@@ -143,7 +143,7 @@
       "reopen_deduction": "not_documented",
       "silence_bills": null,
       "silence_window_hours": null,
-      "source": "no vendor rules; only the AgentMeasure standard is applied",
+      "source": "no vendor rules; only the Verovo standard is applied",
       "unit_price": null
     },
     "hubspot": {

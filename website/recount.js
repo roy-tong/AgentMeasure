@@ -1,23 +1,23 @@
-/* AgentMeasure browser-local recount.
+/* Verovo browser-local recount.
  *
  * The same Tier 1 recount the Python CLI runs, in the browser, with no network
  * request after the page loads. Drop a counts-only export, get the statement.
  * Nothing is uploaded and no message text is read.
  *
  * Usage
- *   browser:  var am = AgentMeasureRecount(window.AGENTMEASURE_VENDOR_RULES);
+ *   browser:  var am = VerovoRecount(window.VEROVO_VENDOR_RULES);
  *   node:     var am = require('./recount.js')(require('./vendor-rules.js'));
  *
  * The vendor rules come from website/vendor-rules.js, generated from
  * registry/vendor-rules.json. A parity test in CI checks that this
- * implementation and healthcheck/am_healthcheck/vendors.py agree on the same
+ * implementation and healthcheck/verovo_healthcheck/vendors.py agree on the same
  * fixture, so the two cannot drift.
  */
 (function (root, factory) {
   if (typeof module === "object" && module.exports) {
     module.exports = factory;
   } else {
-    root.AgentMeasureRecount = factory;
+    root.VerovoRecount = factory;
   }
 })(typeof self !== "undefined" ? self : this, function (RULES) {
   "use strict";
@@ -27,7 +27,7 @@
   var CANNOT_SETTLE = "cannot_settle";
   var AGREES = "agrees";
 
-  /* Same three-state vocabulary as vendors.py (AMS-1 §judgement): the
+  /* Same three-state vocabulary as vendors.py (VSS-1 §judgement): the
    * directional verdicts carry the direction of a FAIL, the three-state
    * carries the decision. Kept in lockstep for the parity test. */
   var THREE_STATE = {};
@@ -39,7 +39,7 @@
   var TRUE_VALUES = ["yes", "true", "1", "y", "t"];
   var FALSE_VALUES = ["no", "false", "0", "n", "f"];
 
-  if (!RULES) throw new Error("AgentMeasureRecount requires the vendor rules document");
+  if (!RULES) throw new Error("VerovoRecount requires the vendor rules document");
 
   function asBool(value) {
     if (value === null || value === undefined) return null;

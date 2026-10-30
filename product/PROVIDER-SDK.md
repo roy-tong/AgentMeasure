@@ -1,4 +1,4 @@
-# AgentMeasure Provider SDK（Draft 0.4.2 — in development）
+# Verovo Provider SDK（Draft 0.4.2 — in development）
 
 > Provider 侧观测库：让 capability 的**真实请求与结果**在 Provider 侧被度量——
 > 不做 Agent 归属的猜测。产品定位：**Provider-observed Capability Usage**
@@ -67,7 +67,7 @@ HTTP request / MCP call
 ```
 
 3 次超时重试在 Provider 侧通常是 **3 个 Attempt、0 个可证 Operation**——这不可耻，
-这是诚实的测量，也是 AgentMeasure 价值的证明（没有它，Metering 无法区分）。
+这是诚实的测量，也是 Verovo 价值的证明（没有它，Metering 无法区分）。
 
 ## 4. Caller Identity Confidence（硬约束）
 

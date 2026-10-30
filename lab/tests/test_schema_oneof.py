@@ -13,7 +13,7 @@ import unittest
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from agentmeasure_lab.schemas import SchemaError, validate
+from verovo_lab.schemas import SchemaError, validate
 
 # Root schema shape mirrors lab/schemas/funnel-event.schema.json:
 # oneOf and required are siblings at the same level.

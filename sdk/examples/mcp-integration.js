@@ -2,7 +2,7 @@
 /**
  * Integration example — MCP SDK v1 path (@modelcontextprotocol/sdk).
  *
- * Shows the provider-side pattern AgentMeasure is built for:
+ * Shows the provider-side pattern Verovo is built for:
  *
  *   request → extract client identity (_meta.sessionId echo) → CallerClaim
  *           → attempt_started / attempt_completed observations
@@ -12,8 +12,8 @@
  * server-level caller claim here: unknown is the honest fallback.
  *
  * Run:   node examples/mcp-integration.js
- * Events: $AGENTMEASURE_EVENTS_DIR/agentmeasure-events.jsonl
- *         (defaults to ~/.agentmeasure/events/agentmeasure-events.jsonl)
+ * Events: $VEROVO_EVENTS_DIR/verovo-events.jsonl
+ *         (defaults to ~/.verovo/events/verovo-events.jsonl)
  *
  * Output: 42 calls → 84 canonical observations (42 attempt_started +
  *         42 attempt_completed). No result_consumed: a provider-side server
@@ -28,14 +28,14 @@ import {
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
 import { z } from "zod";
-import { agentmeasure } from "../dist/index.js";
+import { verovo } from "../dist/index.js";
 
 const PROJECT = "demo/acme-weather";
 
 /** sessionId → CallerClaim, populated from initialize clientInfo. */
 const sessions = new Map();
 
-const mw = agentmeasure({
+const mw = verovo({
   projectId: PROJECT,
   observerPrincipal: "am-sdk@acme",
   trustDomain: "acme",

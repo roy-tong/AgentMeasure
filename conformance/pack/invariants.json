@@ -1,5 +1,5 @@
 {
-  "schema": "agentmeasure.conformance/pack-registry/0.1",
+  "schema": "verovo.conformance/pack-registry/0.1",
   "pack_version": "0.1",
   "notes": "supported = checked against caller-provided FMT-002 fixtures. not-supported = evidence contract not yet frozen; reported explicitly instead of silently passing.",
   "invariants": [

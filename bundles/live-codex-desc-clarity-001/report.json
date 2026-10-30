@@ -86,7 +86,7 @@
       "sha256": "498ac95694343694598012c84298388813fc4f17b2d252ef3e80d77f0666328f"
     }
   },
-  "schema": "agentmeasure.lab/report",
+  "schema": "verovo.lab/report",
   "schema_version": "1.0.0",
   "secondary_metrics_note": "descriptive only — not part of the preregistered analysis plan; do not read as confirmatory",
   "variants": [

@@ -1,10 +1,10 @@
-# AgentMeasure Commercial Extension（COMMERCIAL）— Experimental（Document revision 0.4.3）
+# Verovo Commercial Extension（COMMERCIAL）— Experimental（Document revision 0.4.3）
 
 > **Status: Experimental / Informative.** 本文件**不是**规范性标准的一部分，不参与
 > conformance 认证。它定义 CaaS 所需的*经济语义*（economic semantics），为未来的
 > Commercial Measurement Profile 铺路——**不定义任何支付机制**。
 >
-> 核心原则：**AgentMeasure 标准化经济事实，不移动金钱。**
+> 核心原则：**Verovo 标准化经济事实，不移动金钱。**
 > Payment rails、wallets、settlement currencies、merchant-of-record relationships、
 > financial custody 一律不在范围内。
 
@@ -17,7 +17,7 @@ CORE 的测量对象回答"发生了什么"（Core，规范性）；Commercial E
 - 计费口径是商业决策（`3 attempts` 是否等于 `3 billable operations` 由 Metering
   Policy 决定），不是测量事实
 - Marketplace / 支付方可以各自实现自己的 Metering Profile，共享同一批测量事实
-- **CaaS 是项目的 Vision，不是 Core Standard 成立的必要条件**：AgentMeasure Core
+- **CaaS 是项目的 Vision，不是 Core Standard 成立的必要条件**：Verovo Core
   即使没有任何商业化，也应成立为 Agent 软件测量标准（独立毕业，见 §9）
 
 ## 2. 对象模型（关系模型，不是树）
@@ -110,12 +110,12 @@ billing_scope: project | department | account | unknown
 ```
 
 用途：回答"这次 Capability Usage 应该计入谁的账单"。原始标识符不进 Core；
-`consumer_account_ref` 由 Provider 侧维护，不要求 AgentMeasure 认识真实身份。
+`consumer_account_ref` 由 Provider 侧维护，不要求 Verovo 认识真实身份。
 
 **隐私硬约束：`consumer_account_ref` MUST 以 Provider 或 Offering 为作用域
 （provider_scoped_account_ref），不得成为跨 Provider 的生态级身份。**
 跨 Provider 的计费身份应由 payment/commerce infrastructure 处理，不由
-AgentMeasure 建立——否则托管层可能重建"一个账户跨不同 Provider 的消费轨迹"。
+Verovo 建立——否则托管层可能重建"一个账户跨不同 Provider 的消费轨迹"。
 
 ## 3. 计量语义：Event / Unit / Quantity 三分离
 
@@ -199,7 +199,7 @@ commercial_scope: {region: null, model: null, account: acct_9f2c}
 
 **价格一律用字符串**（`"0.050000"`），避免商业系统中的浮点误差。
 
-AgentMeasure 不负责付款；但可靠的 Metering 必须知道**当时适用的是哪个价格规则**
+Verovo 不负责付款；但可靠的 Metering 必须知道**当时适用的是哪个价格规则**
 （quote_id / pricing_policy_version）。
 
 ## 4. Metering Ledger（计量账本）
@@ -252,7 +252,7 @@ minimum_resolution:
 
 ### Billing Requirements（计量 predicate，非等级）
 
-不用等级阶梯——直接声明 predicate（AgentMeasure-native，且避免与 Evidence 的
+不用等级阶梯——直接声明 predicate（Verovo-native，且避免与 Evidence 的
 Match 轴、Caller Identity 混淆）：
 
 ```yaml
@@ -264,13 +264,13 @@ billing_requirements:
 ```
 
 **双方合同自行决定 `billing_requirements`**（如 `provenance: authenticated +
-operation_resolution: explicit + replay_protection: required`）；AgentMeasure 只
+operation_resolution: explicit + replay_protection: required`）；Verovo 只
 定义 predicate 与判定规则——这就是商业系统里的 auditability requirement。
 `platform-attested` 当前 UNSUPPORTED（不变量 11）。
 
 ### 5.1 Settlement Claim Discipline（结算索赔纪律，Draft 0.4.5）
 
-> 本节纪律已升格为公开标准：**[standard/SETTLEMENT.md — AMS-1 Draft 0.1](../standard/SETTLEMENT.md)**（条款 S-1…S-8，每条引用其执行测试；一页纸声明由 `agentmeasure settle --format md` 生成，带输入 sha256 与第三方复现块）。以下 D-1/D-2/D-3 为其源条款。
+> 本节纪律已升格为公开标准：**[standard/SETTLEMENT.md — VSS-1 Draft 0.1](../standard/SETTLEMENT.md)**（条款 S-1…S-8，每条引用其执行测试；一页纸声明由 `verovo settle --format md` 生成，带输入 sha256 与第三方复现块）。以下 D-1/D-2/D-3 为其源条款。
 
 **举证责任在索赔方。** 一条无法举证的索赔，是对方用来否定其余全部的那一行。
 
@@ -306,7 +306,7 @@ operation_resolution: explicit + replay_protection: required`）；AgentMeasure 
 | 线 | 依据 | 谈判性质 |
 |----|------|---------|
 | **Tier 1 · 对方自己的规则** | 被审方已发布的计费规则 | 对方无法反驳自己的规则，只能质疑数据 |
-| **Tier 2 · AgentMeasure 标准** | 本扩展 + CORE 不变量 | 续约议价依据，不是争议条款 |
+| **Tier 2 · Verovo 标准** | 本扩展 + CORE 不变量 | 续约议价依据，不是争议条款 |
 
 两线的美元差额 MUST 作为**两个独立数字**呈现，禁止合并为单一数字。
 
@@ -376,9 +376,9 @@ measurement_policy
 ## 9. 明确的 Non-goals
 
 - ❌ 不定义支付轨道 / 钱包 / 结算币种 / 商户记录关系 / 金融托管
-- ❌ **测量永远不进支付关键路径**：AgentMeasure 是异步的
+- ❌ **测量永远不进支付关键路径**：Verovo 是异步的
   metering / reconciliation / audit 层，不是 transaction authorization 层——
-  quote/authorization/payment 的同步链路由支付基础设施负责，AgentMeasure 的
+  quote/authorization/payment 的同步链路由支付基础设施负责，Verovo 的
   Metering Ledger 在其后异步对账
 - ❌ 不实现任何计费执行（billing execution）
 - ❌ 不定义通用定价（每个 Provider 自定）
@@ -387,7 +387,7 @@ measurement_policy
 
 ## 10. 毕业路径（与 Core 独立）
 
-**AgentMeasure Core 1.0 与商业扩展独立毕业**：Core 1.0 是 Agent 软件测量标准，
+**Verovo Core 1.0 与商业扩展独立毕业**：Core 1.0 是 Agent 软件测量标准，
 不依赖任何商业化成立；Commercial Measurement Profile 走自己的 0.x 路径。
 
 Commercial Extension（Experimental → Profile）转正标准：

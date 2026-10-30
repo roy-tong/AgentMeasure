@@ -1,4 +1,4 @@
-export declare const SPEC_VERSION = "agentmeasure-0.4";
+export declare const SPEC_VERSION = "verovo-0.4";
 export type UsageContext = "production" | "development" | "test" | "benchmark" | "evaluation" | "synthetic" | "ci" | "demo" | "unknown";
 export type Validity = "normal" | "duplicate" | "replay" | "health_check" | "load_test" | "suspected_invalid" | "unknown";
 /**
@@ -31,7 +31,7 @@ export interface CallerContext {
         [key: string]: unknown;
     };
 }
-export interface AgentMeasureConfig {
+export interface VerovoConfig {
     /** Project identifier (deployment context, not entity authority). */
     projectId?: string;
     /** Observer principal, e.g. "am-sdk@acme". */
@@ -40,7 +40,7 @@ export interface AgentMeasureConfig {
     trustDomain?: string;
     /** Observer side; provider SDK observes at the server boundary. */
     observerSide?: "client" | "server" | "platform";
-    /** Events directory (local spool). Default $AGENTMEASURE_EVENTS_DIR or ~/.agentmeasure/events. */
+    /** Events directory (local spool). Default $VEROVO_EVENTS_DIR or ~/.verovo/events. */
     eventsDir?: string;
     /** Surface namespace, e.g. "mcp". */
     surfaceNamespace?: string;
@@ -66,11 +66,11 @@ export interface AgentMeasureConfig {
     /** Keep at most this many rotated spool files (default 7). */
     maxSpoolFiles?: number;
     /**
-     * Active spool file name (default "agentmeasure-events.jsonl").
+     * Active spool file name (default "verovo-events.jsonl").
      * eventsDir MUST NOT be shared between processes in 0.1.x; for multi-process
      * deployments use a per-instance name, e.g.
-     * `agentmeasure-events-${process.pid}.jsonl`, and point the collector at the
-     * glob `agentmeasure-events-*.jsonl`.
+     * `verovo-events-${process.pid}.jsonl`, and point the collector at the
+     * glob `verovo-events-*.jsonl`.
      */
     spoolFileName?: string;
     /** Install SIGTERM/SIGINT handlers that drain the queue before exit (default false). */
@@ -108,7 +108,7 @@ export interface BufferHealth {
     bufferLimit: number;
     flushing: boolean;
 }
-export declare class AgentMeasure {
+export declare class Verovo {
     private readonly projectId;
     private readonly observerPrincipal;
     private readonly trustDomain;
@@ -137,7 +137,7 @@ export declare class AgentMeasure {
     private rotatedFiles;
     private readonly file;
     private readonly instanceId;
-    constructor(config?: AgentMeasureConfig);
+    constructor(config?: VerovoConfig);
     /** Non-blocking observation emit: enqueue only. Never throws. */
     emit(opts: EmitOptions): void;
     /** Flush the memory queue to disk (serialized; resolves when drained). */
@@ -180,12 +180,12 @@ export declare function fingerprint(raw: string): string;
  * attempt_started/attempt_completed observations without touching arguments
  * or results.
  *
- *   import { agentmeasure } from "@agentmeasure/mcp";
- *   const mw = agentmeasure({ projectId: "github.com/acme/foo" });
+ *   import { verovo } from "@verovo/mcp";
+ *   const mw = verovo({ projectId: "github.com/acme/foo" });
  *   const wrapped = mw.wrapTool(name, handler, { getCaller: resolveCaller });
  */
-export declare function agentmeasure(config?: AgentMeasureConfig): {
-    am: AgentMeasure;
+export declare function verovo(config?: VerovoConfig): {
+    am: Verovo;
     wrapTool: <A extends unknown[], R>(name: string, handler: (...args: A) => Promise<R> | R, opts?: {
         caller?: CallerClaim;
         getCaller?: (ctx?: CallerContext) => CallerClaim | undefined;

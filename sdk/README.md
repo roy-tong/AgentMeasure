@@ -1,21 +1,21 @@
-# @agentmeasure/mcp
+# @verovo/mcp
 
-**AgentMeasure Provider SDK** — observe-first capability usage measurement for MCP
-servers. Emits Canonical Observations (AgentMeasure Draft 0.4.3); non-blocking
+**Verovo Provider SDK** — observe-first capability usage measurement for MCP
+servers. Emits Canonical Observations (Verovo Draft 0.4.3); non-blocking
 buffered spool; no content captured.
 
 ```bash
 # SDK 0.2.0 on npm, verified 2026-10-14 (versioned separately from the CLI).
-npm install @agentmeasure/mcp
+npm install @verovo/mcp
 ```
 
 ## MCP SDK v2 (primary) — `@modelcontextprotocol/server`
 
 ```ts
 import { McpServer } from "@modelcontextprotocol/server";
-import { agentmeasure } from "@agentmeasure/mcp";
+import { verovo } from "@verovo/mcp";
 
-const mw = agentmeasure({ projectId: "github.com/acme/weather-service" });
+const mw = verovo({ projectId: "github.com/acme/weather-service" });
 
 const server = new McpServer({ name: "acme-weather", version: "1.0.0" });
 server.registerTool(
@@ -32,9 +32,9 @@ server.registerTool(
 
 ```ts
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { agentmeasure } from "@agentmeasure/mcp";
+import { verovo } from "@verovo/mcp";
 
-const mw = agentmeasure({ projectId: "github.com/acme/weather-service" });
+const mw = verovo({ projectId: "github.com/acme/weather-service" });
 const server = new McpServer({ name: "acme-weather", version: "1.0.0" });
 const origTool = server.tool.bind(server);
 server.tool = (name, schema, handler) =>
@@ -72,7 +72,7 @@ wrong annotation is worse than none, and registries increasingly check.
 ## What you get (local, no cloud)
 
 ```bash
-python3 product/local-analytics.py ~/.agentmeasure/events/agentmeasure-events.jsonl --project github.com/acme/weather-service
+python3 product/local-analytics.py ~/.verovo/events/verovo-events.jsonl --project github.com/acme/weather-service
 ```
 
 ```text
@@ -120,8 +120,8 @@ are stamped into each persisted batch's `collection_health` block.
 
 **Multi-process deployments**: `eventsDir` MUST NOT be shared between processes
 in 0.1.x. Give each process its own file, e.g.
-`agentmeasure({ spoolFileName: \`agentmeasure-events-${process.pid}.jsonl\` })`,
-and point the collector at the `agentmeasure-events-*.jsonl` glob.
+`verovo({ spoolFileName: \`verovo-events-${process.pid}.jsonl\` })`,
+and point the collector at the `verovo-events-*.jsonl` glob.
 
 **Deterministic fixtures**: `wrapTool(..., { durationMs })` accepts a fixed value
 or a function sampled at completion time — used by the demo fixture so that

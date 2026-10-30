@@ -8,7 +8,7 @@ import unittest
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from agentmeasure_lab.cli import main as cli_main
+from verovo_lab.cli import main as cli_main
 from tests._support import LabWorkspace, base_manifest
 
 

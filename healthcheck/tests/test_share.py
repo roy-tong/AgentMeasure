@@ -10,9 +10,9 @@ import unittest
 
 from _support import fixture, HEALTHCHECK_DIR
 
-from am_healthcheck.checks import run_checks
-from am_healthcheck.codex import parse_session
-from am_healthcheck.share import (ALLOWED_KEYS, build_share_summary,
+from verovo_healthcheck.checks import run_checks
+from verovo_healthcheck.codex import parse_session
+from verovo_healthcheck.share import (ALLOWED_KEYS, build_share_summary,
                                   share_json, share_markdown)
 
 PLANTED = [
@@ -51,14 +51,14 @@ class TestShareRedaction(unittest.TestCase):
     def test_json_serializable_and_sorted(self):
         blob = share_json(self.summary)
         parsed = json.loads(blob)
-        self.assertEqual(parsed["tool"], "AgentMeasure Healthcheck")
+        self.assertEqual(parsed["tool"], "Verovo Healthcheck")
 
 
 class TestNoNetworkCode(unittest.TestCase):
     def test_package_imports_no_network_modules(self):
         banned = ("socket", "http", "urllib", "requests", "ftplib", "smtplib",
                   "xmlrpc", "telnetlib", "asyncio", "subprocess")
-        pkg = os.path.join(HEALTHCHECK_DIR, "am_healthcheck")
+        pkg = os.path.join(HEALTHCHECK_DIR, "verovo_healthcheck")
         for name in os.listdir(pkg):
             if not name.endswith(".py"):
                 continue

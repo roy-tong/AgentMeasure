@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>AgentMeasure — recount a billing month in your browser</title>
+<title>Verovo — recount a billing month in your browser</title>
 <style>
 :root{--ink:#1d1b17;--soft:#5b5548;--line:#ddd3c2;--panel:#faf7f0;--accent:#a4511f;
 --ok:#2c6e49;--find:#a4511f;--unprov:#7a6a2f;--info:#4a5d82;--bg:#f4efe5}
@@ -55,11 +55,11 @@ padding:14px 18px;font-size:13.5px;color:var(--ink);margin-top:14px;max-width:72
 code{background:#eee7da;padding:1px 5px;border-radius:3px;font-size:12.5px}
 .mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px}
 </style>
-<link rel="canonical" href="https://roy-tong.github.io/AgentMeasure/recount.html">
+<link rel="canonical" href="https://roy-tong.github.io/verovo/recount.html">
 </head>
 <body>
 <header style="max-width:900px;margin:0 auto;padding:16px 24px 0;display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap">
-  <a href="index.html" style="font-weight:700;color:var(--ink);text-decoration:none">← AgentMeasure</a>
+  <a href="index.html" style="font-weight:700;color:var(--ink);text-decoration:none">← Verovo</a>
   <span style="font-size:13.5px"><a href="first-look.html" style="color:var(--accent);font-weight:600">Workflow reference →</a></span>
 </header>
 <main>
@@ -113,8 +113,8 @@ code{background:#eee7da;padding:1px 5px;border-radius:3px;font-size:12.5px}
 <script>
 (function () {
   "use strict";
-  var RULES = window.AGENTMEASURE_VENDOR_RULES;
-  var am = window.AgentMeasureRecount(RULES);
+  var RULES = window.VEROVO_VENDOR_RULES;
+  var am = window.VerovoRecount(RULES);
   var current = null;
 
   var drop = document.getElementById("drop");
@@ -307,7 +307,7 @@ code{background:#eee7da;padding:1px 5px;border-radius:3px;font-size:12.5px}
     if (!current || !current.result) return;
     var buyer = buyerInput.value || "(unspecified)";
     var payload = {
-      schema: "agentmeasure.commercial/dispute-pack",
+      schema: "verovo.commercial/dispute-pack",
       schema_version: "0.1.0",
       generated_at: new Date().toISOString(),
       generated_by: "browser-local recount (no upload)",

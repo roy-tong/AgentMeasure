@@ -2,7 +2,7 @@
 
 Two implementations of one rule set is exactly how standards drift. The browser
 recount (website/recount.js) exists so a buyer can run the Tier 1 check with no
-upload, and the CLI (healthcheck/am_healthcheck/vendors.py) exists so it can run
+upload, and the CLI (healthcheck/verovo_healthcheck/vendors.py) exists so it can run
 in CI. They read the same rules file and MUST produce the same verdicts.
 
 These tests run the node implementation and compare it field by field with the
@@ -18,7 +18,7 @@ import unittest
 
 from _support import REPO_ROOT, fixture
 
-from am_healthcheck.vendors import load_export, recount
+from verovo_healthcheck.vendors import load_export, recount
 
 NODE_CANDIDATES = [
     "node",

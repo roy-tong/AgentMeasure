@@ -1,5 +1,5 @@
 {
-  "schema": "agentmeasure.lab/task-set",
+  "schema": "verovo.lab/task-set",
   "schema_version": "1.0.0",
   "id": "search-retrieval-scrape",
   "version": "1.0.0",

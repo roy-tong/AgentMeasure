@@ -9,8 +9,8 @@ import unittest
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from agentmeasure_lab.prereg import load_schema
-from agentmeasure_lab.schemas import validate
+from verovo_lab.prereg import load_schema
+from verovo_lab.schemas import validate
 from tests._support import LabWorkspace, base_manifest, load_json
 
 NULL = {"id": "label-b", "baseline": False,

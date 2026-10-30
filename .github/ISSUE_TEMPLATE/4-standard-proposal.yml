@@ -14,7 +14,7 @@ body:
     id: proposal
     attributes:
       label: 提案
-      description: 新的定义/规则/指标合同（AgentMeasure-METRICS Contract 模板）
+      description: 新的定义/规则/指标合同（Verovo-METRICS Contract 模板）
     validations:
       required: true
   - type: textarea

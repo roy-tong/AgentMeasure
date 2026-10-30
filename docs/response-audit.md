@@ -4,7 +4,7 @@ Use this when a fork/resumed session appears to repeat the same response usage,
 or two copies of a response disagree. Requires CLI 0.8.0.
 
 ```bash
-agentmeasure response-audit original.jsonl fork.jsonl --json response-evidence.json
+verovo response-audit original.jsonl fork.jsonl --json response-evidence.json
 ```
 
 Inputs are explicit JSONL files; nothing is auto-uploaded or rewritten. Each

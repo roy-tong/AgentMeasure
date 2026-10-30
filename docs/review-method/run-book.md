@@ -6,7 +6,7 @@
 
 ## 0. Intake — what to accept, in one look
 
-**Shape A** accepts a `summary.json` produced by `agentmeasure share`
+**Shape A** accepts a `summary.json` produced by `verovo share`
 (aggregate counts — enough for triage and evidence boundaries). Specific fix
 steps need a manually redacted error excerpt (tool name + first error), always
 optional. Never ask for raw logs.
@@ -28,10 +28,10 @@ what was redacted, what window, synthetic or production-derived.
 **Shape A (local anomaly)**:
 
 ```bash
-pip install --upgrade agentmeasure
-agentmeasure check --json report.json
-agentmeasure share report.json --out summary.json
-agentmeasure validate summary.json
+pip install --upgrade verovo
+verovo check --json report.json
+verovo share report.json --out summary.json
+verovo validate summary.json
 ```
 
 The requester runs these locally and sends only `summary.json` (inspect it

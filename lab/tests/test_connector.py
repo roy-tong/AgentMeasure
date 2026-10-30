@@ -9,8 +9,8 @@ import unittest
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from agentmeasure_lab import connector
-from agentmeasure_lab.connector import ConnectorError
+from verovo_lab import connector
+from verovo_lab.connector import ConnectorError
 from tests._support import TASK_SET_NAME, LabWorkspace, base_manifest, generate_production_events, load_json
 
 

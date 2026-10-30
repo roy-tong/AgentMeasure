@@ -1,9 +1,9 @@
 """LLM 客户端（仅用于首次格式适配与异常解释，不参与账目计算）.
 
 配置（环境变量）：
-  AM_LLM_BASE_URL  OpenAI 兼容端点，如 https://open.bigmodel.cn/api/paas/v4
-  AM_LLM_API_KEY   密钥
-  AM_LLM_MODEL     模型名
+  VEROVO_LLM_BASE_URL  OpenAI 兼容端点，如 https://open.bigmodel.cn/api/paas/v4
+  VEROVO_LLM_API_KEY   密钥
+  VEROVO_LLM_MODEL     模型名
 
 纪律（方向文档 §3.3）：Agent 负责"识别与映射"，确定性程序负责"计算"。
 LLM 的输出只能是解析规格（spec），不是金额。
@@ -22,9 +22,9 @@ class LLMError(RuntimeError):
 
 class LLMClient:
     def __init__(self, base_url=None, api_key=None, model=None):
-        self.base_url = (base_url or os.environ.get("AM_LLM_BASE_URL", "")).rstrip("/")
-        self.api_key = api_key or os.environ.get("AM_LLM_API_KEY", "")
-        self.model = model or os.environ.get("AM_LLM_MODEL", "")
+        self.base_url = (base_url or os.environ.get("VEROVO_LLM_BASE_URL", "")).rstrip("/")
+        self.api_key = api_key or os.environ.get("VEROVO_LLM_API_KEY", "")
+        self.model = model or os.environ.get("VEROVO_LLM_MODEL", "")
 
     @property
     def configured(self):
@@ -33,7 +33,7 @@ class LLMClient:
     def chat(self, system, user, temperature=0.0, timeout=60):
         if not self.configured:
             raise LLMError(
-                "LLM not configured: set AM_LLM_BASE_URL / AM_LLM_API_KEY / AM_LLM_MODEL")
+                "LLM not configured: set VEROVO_LLM_BASE_URL / VEROVO_LLM_API_KEY / VEROVO_LLM_MODEL")
         parsed = urllib.parse.urlsplit(self.base_url)
         local = parsed.hostname in ("localhost", "127.0.0.1", "::1")
         if parsed.scheme != "https" and not (parsed.scheme == "http" and local):

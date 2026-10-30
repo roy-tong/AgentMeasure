@@ -1,6 +1,6 @@
 # Contributing
 
-AgentMeasure 是一个 measurement 标准项目。**问题定义和测量严谨性优先于功能数量。**
+Verovo 是一个 measurement 标准项目。**问题定义和测量严谨性优先于功能数量。**
 
 ## 参与方式
 
@@ -49,7 +49,7 @@ AgentMeasure 是一个 measurement 标准项目。**问题定义和测量严谨�
 2. **人对每行负责**：人类作者必须能解释并背书 PR 的每一行——"AI 写的我没细看"是拒收理由。
 3. **不收批量 slop**：一次一个论证完整的报告，胜过十条泛泛的自动 issue/PR；模式化批量提交会被直接关闭。
 4. **断言可复现**：每个测量/行为断言附 fixture、命令与期望输出；无法复现的断言按项目纪律标 UNPROVABLE，不合并不猜测。
-5. 新增 conformance 向量请用脚手架：`agentmeasure conformance --new-vector <name>`，生成即过 CI 校验。
+5. 新增 conformance 向量请用脚手架：`verovo conformance --new-vector <name>`，生成即过 CI 校验。
 
 ## 响应时效（维护者对自己的承诺）
 

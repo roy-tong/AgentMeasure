@@ -2,12 +2,12 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
 import { join } from "node:path";
-import { AgentMeasure } from "../dist/index.js";
+import { Verovo } from "../dist/index.js";
 import { REPO_ROOT, makeEventsDir, drain } from "./helpers.mjs";
 
 test("canonical schema: every emitted observation validates (python single source)", async () => {
   const dir = makeEventsDir();
-  const am = new AgentMeasure({
+  const am = new Verovo({
     eventsDir: dir,
     projectId: "t/schema",
     usageContext: "synthetic",
@@ -44,7 +44,7 @@ test("canonical schema: every emitted observation validates (python single sourc
   assert.equal(started.validity, "health_check");
   assert.equal(started.validity_source, "provider_configuration");
 
-  const file = join(dir, "agentmeasure-events.jsonl");
+  const file = join(dir, "verovo-events.jsonl");
   const r = spawnSync(
     "python3",
     [join(REPO_ROOT, "schemas", "validate_jsonl.py"), file],
@@ -55,7 +55,7 @@ test("canonical schema: every emitted observation validates (python single sourc
 
 test("defaults: observe first — usage_context/validity unknown, sources none", async () => {
   const dir = makeEventsDir();
-  const am = new AgentMeasure({ eventsDir: dir, projectId: "t/defaults" });
+  const am = new Verovo({ eventsDir: dir, projectId: "t/defaults" });
   am.emit({ type: "attempt_started", payload: { tool_call_id: "tc-1" } });
   const [env] = await drain(am, dir);
   assert.equal(env.usage_context, "unknown");

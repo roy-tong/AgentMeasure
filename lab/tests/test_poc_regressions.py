@@ -20,7 +20,7 @@ import unittest
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from tests._support import LAB_DIR, LabWorkspace, base_manifest, load_json
-from agentmeasure_lab.cli import main as cli_main
+from verovo_lab.cli import main as cli_main
 
 
 def _deep_merge_effects(base: dict, override: dict) -> None:
@@ -124,7 +124,7 @@ class TestNullPowerNoteAndDominance(unittest.TestCase):
         (within 2%) at >2% higher cost with no better consumption; must NOT
         fire when B is genuinely more profitable.
         """
-        from agentmeasure_lab.analysis import _annotate_dominance
+        from verovo_lab.analysis import _annotate_dominance
 
         def variant(vid, diff, margin, cost, cons, sig="significant"):
             return {
@@ -173,7 +173,7 @@ class TestCliFriendliness(unittest.TestCase):
         self.assertEqual(code, 1)
         self.assertNotIn("Traceback", err)
         self.assertIn("error:", err)
-        self.assertIn("AM_LAB_DEBUG", err)
+        self.assertIn("VEROVO_LAB_DEBUG", err)
 
     def test_task_path_fallback_to_shipped_corpus(self):
         """A hand-written manifest whose task path only names the shipped

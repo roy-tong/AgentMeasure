@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Verovo — Caller identity evidence ladder</title>
+<style>
+  *{box-sizing:border-box}
+  html,body{margin:0;width:1600px;height:863px;overflow:hidden}
+  body{
+    background:
+      radial-gradient(1200px 620px at 78% -10%, rgba(56,98,180,.28), transparent 62%),
+      linear-gradient(155deg,#0a1120 0%,#0b1424 52%,#0a1220 100%);
+    color:#e8eef7;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{padding:60px 78px;height:100%;display:flex;flex-direction:column}
+  h1{margin:0;font-size:44px;letter-spacing:-.02em;font-weight:700}
+  h1 em{font-style:normal;color:#60a5fa}
+  .sub{margin:14px 0 0;font-size:19px;color:#93a4ba;letter-spacing:-.005em}
+  .rows{margin-top:44px;display:flex;flex-direction:column;gap:16px}
+  .row{
+    display:flex;align-items:center;gap:26px;
+    background:linear-gradient(90deg,rgba(18,28,43,.96),rgba(16,26,40,.72));
+    border:1px solid #1d2939;border-radius:12px;padding:22px 26px;
+    box-shadow:0 1px 0 rgba(255,255,255,.02) inset;
+  }
+  .bar{width:5px;align-self:stretch;border-radius:3px;margin:-4px 0}
+  .label{width:210px;font-size:25px;font-weight:700;letter-spacing:-.01em}
+  .desc{flex:1;font-size:17px;color:#b8c6d8;line-height:1.45}
+  .pill{font-size:14px;font-weight:650;padding:7px 15px;border-radius:999px;white-space:nowrap}
+  .arrow{color:#33415a;font-size:18px;text-align:center;margin:-6px 0}
+  .footer{display:flex;justify-content:space-between;align-items:center;margin-top:auto;padding-top:26px;border-top:1px solid #16203380}
+  .foot{font-size:14.5px;color:#7d8da2}
+  .foot b{color:#a9b8ca;font-weight:600}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Caller Identity: <em>Evidence Ladder</em></h1>
+  <p class="sub">Verovo never guesses who called. Identity is graded by evidence strength, and unknown is the default.</p>
+
+  <div class="rows">
+    <div class="row">
+      <div class="bar" style="background:#3ddc97"></div>
+      <div class="label" style="color:#3ddc97">Attested</div>
+      <div class="desc">The platform itself proves the caller (runtime signature, platform attestation).</div>
+      <div class="pill" style="color:#7ef0bb;background:rgba(61,220,151,.10);border:1px solid rgba(61,220,151,.38)">platform proof</div>
+    </div>
+    <div class="arrow">▲</div>
+    <div class="row">
+      <div class="bar" style="background:#a78bfa"></div>
+      <div class="label" style="color:#a78bfa">Correlated</div>
+      <div class="desc">Independent evidence matches the call (clientInfo + request pattern + timing).</div>
+      <div class="pill" style="color:#c4b1ff;background:rgba(167,139,250,.10);border:1px solid rgba(167,139,250,.38)">independent evidence</div>
+    </div>
+    <div class="arrow">▲</div>
+    <div class="row">
+      <div class="bar" style="background:#4d8df7"></div>
+      <div class="label" style="color:#6aa6ff">Declared</div>
+      <div class="desc">The caller says who it is (self-claimed clientInfo, user-agent). Unverifiable alone.</div>
+      <div class="pill" style="color:#8fbaff;background:rgba(77,141,247,.10);border:1px solid rgba(77,141,247,.38)">self-claimed</div>
+    </div>
+    <div class="arrow">▲</div>
+    <div class="row" style="background:linear-gradient(90deg,rgba(16,23,34,.92),rgba(14,20,30,.7));border-color:#1a2431">
+      <div class="bar" style="background:#41506a"></div>
+      <div class="label" style="color:#8b98ab">Unknown</div>
+      <div class="desc" style="color:#8fa0b5">No identity evidence yet. The default for every observation.</div>
+      <div class="pill" style="color:#9aa7b8;background:#141c28;border:1px solid #26313f">default</div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div class="foot"><b>Verovo</b> · open measurement infrastructure for the Agent Capability Economy</div>
+    <div class="foot">github.com/roy-tong/verovo</div>
+  </div>
+</div>
+</body>
+</html>

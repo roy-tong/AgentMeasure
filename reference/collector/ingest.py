@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""AgentMeasure canonical ingestion boundary（Draft 0.4.3）。
+"""Verovo canonical ingestion boundary（Draft 0.4.3）。
 
 Adapter / Provider SDK / Runtime Adapter 只产出 Canonical Observation Envelope
 （schemas/observation.schema.json）。本模块是 Collector 的**唯一** ingestion 输入：

@@ -1,5 +1,5 @@
 {
-  "spec_version": "agentmeasure-0.4",
+  "spec_version": "verovo-0.4",
   "family": "OUT Outcome Audit",
   "description": "Outcome & Effect conformance checks for incrementality audit (uplift-audit proposal P1). Vector structure follows urusilla-001 three-part pattern: event + expectation + mapping.",
   "vectors": [
@@ -290,7 +290,7 @@
       "id": "OUT-004",
       "name": "Claim-Evidence Match",
       "description": "When billing_basis=outcome, the billing line MUST carry incrementality_evidence. The claimed evidence level (V-ladder) must match or exceed the actual evidence available. An incrementality claim stronger than the evidence = FAIL.",
-      "principle": "Claim strength must not exceed evidence level (uplift-audit §4). correlation ≠ causation (invariant 14). This is the direct standard-layer answer to '支付宝也需要淘宝' — AgentMeasure is the ruler, not the marketplace.",
+      "principle": "Claim strength must not exceed evidence level (uplift-audit §4). correlation ≠ causation (invariant 14). This is the direct standard-layer answer to '支付宝也需要淘宝' — Verovo is the ruler, not the marketplace.",
       "vectors": [
         {
           "id": "out-004a-evidence-matches",

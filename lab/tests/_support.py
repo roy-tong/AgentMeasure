@@ -9,12 +9,12 @@ import tempfile
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from agentmeasure_lab.prereg import (  # noqa: E402
+from verovo_lab.prereg import (  # noqa: E402
     create_preregistration,
     load_preregistration,
     save_preregistration,
 )
-from agentmeasure_lab.runner import run_experiment  # noqa: E402
+from verovo_lab.runner import run_experiment  # noqa: E402
 
 LAB_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TASK_SET_NAME = "search-retrieval-scrape.v1.json"
@@ -30,7 +30,7 @@ def base_manifest(experiment_id="test-exp", variants=None, seed=7, replicates=40
              "levels": {"description_clarity": "clear", "version_label": "a"}},
         ]
     return {
-        "schema": "agentmeasure.lab/experiment-manifest",
+        "schema": "verovo.lab/experiment-manifest",
         "schema_version": "1.0.0",
         "experiment_id": experiment_id,
         "hypothesis": "test hypothesis long enough to validate",
@@ -86,7 +86,7 @@ class LabWorkspace:
     """Temp workspace with the shipped task set copied in."""
 
     def __init__(self):
-        self.tmp = tempfile.mkdtemp(prefix="am-lab-test-")
+        self.tmp = tempfile.mkdtemp(prefix="verovo-lab-test-")
         shutil.copyfile(
             os.path.join(LAB_DIR, "tasks", TASK_SET_NAME),
             os.path.join(self.tmp, TASK_SET_NAME),
@@ -136,8 +136,8 @@ def generate_production_events(
     arm_selection_probs: {variant_id: P(subject selected)} — the planted
     production effect the calibration analysis must recover.
     """
-    from agentmeasure_lab import FUNNEL_RULES_VERSION
-    from agentmeasure_lab.rng import DetRng
+    from verovo_lab import FUNNEL_RULES_VERSION
+    from verovo_lab.rng import DetRng
 
     lines = []
     counter = 0
@@ -148,7 +148,7 @@ def generate_production_events(
             task_id = task_ids[rng.below(len(task_ids))]
             assignment_id = f"{experiment_id}/{harness_id}/{task_id}/p{i:05d}/{variant_id}"
             base = {
-                "schema": "agentmeasure.lab/funnel-event",
+                "schema": "verovo.lab/funnel-event",
                 "schema_version": "1.0.0",
                 "experiment_id": experiment_id,
                 "assignment_id": assignment_id,

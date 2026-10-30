@@ -24,7 +24,7 @@
 
 ```yaml
 settlement_evidence_bundle:
-  schema: agentmeasure.commercial/settlement-bundle
+  schema: verovo.commercial/settlement-bundle
   schema_version: "0.1.0"
   
   # PART 0: 元数据

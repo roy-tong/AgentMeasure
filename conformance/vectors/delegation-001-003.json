@@ -1,5 +1,5 @@
 {
-  "spec_version": "agentmeasure-0.4",
+  "spec_version": "verovo-0.4",
   "family": "DELEGATION Multi-Agent Audit",
   "description": "Delegation conformance checks for multi-agent delegation audit (CORE 0.4.5).",
   "vectors": [
@@ -16,7 +16,7 @@
             "task_id": "t-1",
             "delegations": [
               {
-                "delegation_id": "am-delegation-1",
+                "delegation_id": "verovo-delegation-1",
                 "delegating_caller": "agent-a",
                 "called_agent": "agent-b",
                 "called_capability": "agent:accept_subtask",
@@ -54,7 +54,7 @@
             "task_id": "t-2",
             "delegations": [
               {
-                "delegation_id": "am-delegation-2",
+                "delegation_id": "verovo-delegation-2",
                 "delegating_caller": "agent-a",
                 "called_agent": "agent-b",
                 "called_capability": "agent:accept_subtask",
@@ -114,13 +114,13 @@
           "input": {
             "delegations": [
               {
-                "delegation_id": "am-delegation-3",
+                "delegation_id": "verovo-delegation-3",
                 "delegating_caller": "agent-a",
                 "called_agent": "agent-b",
                 "depth": 0
               },
               {
-                "delegation_id": "am-delegation-4",
+                "delegation_id": "verovo-delegation-4",
                 "delegating_caller": "agent-b",
                 "called_agent": "agent-c",
                 "depth": 1
@@ -140,13 +140,13 @@
           "input": {
             "delegations": [
               {
-                "delegation_id": "am-delegation-5",
+                "delegation_id": "verovo-delegation-5",
                 "delegating_caller": "agent-a",
                 "called_agent": "agent-b",
                 "depth": 0
               },
               {
-                "delegation_id": "am-delegation-6",
+                "delegation_id": "verovo-delegation-6",
                 "delegating_caller": "agent-b",
                 "called_agent": "agent-a",
                 "depth": 1
@@ -166,19 +166,19 @@
           "input": {
             "delegations": [
               {
-                "delegation_id": "am-delegation-7",
+                "delegation_id": "verovo-delegation-7",
                 "delegating_caller": "agent-a",
                 "called_agent": "agent-b",
                 "depth": 0
               },
               {
-                "delegation_id": "am-delegation-8",
+                "delegation_id": "verovo-delegation-8",
                 "delegating_caller": "agent-b",
                 "called_agent": "agent-c",
                 "depth": 1
               },
               {
-                "delegation_id": "am-delegation-9",
+                "delegation_id": "verovo-delegation-9",
                 "delegating_caller": "agent-c",
                 "called_agent": "agent-d",
                 "depth": 2
@@ -207,7 +207,7 @@
           "input": {
             "task_id": "t-10",
             "parent_harness_delegation": {
-              "delegation_id": "am-delegation-10",
+              "delegation_id": "verovo-delegation-10",
               "delegating_caller": "agent-a",
               "called_agent": "agent-b",
               "depth": 0,
@@ -252,13 +252,13 @@
           "id": "del-003c-lineage-trace",
           "description": "Cross-harness lineage must be preserved for cost tracing back to origin",
           "input": {
-            "delegation_id": "am-delegation-11",
+            "delegation_id": "verovo-delegation-11",
             "delegating_caller": "agent-a",
             "called_agent": "agent-b",
             "depth": 0,
             "scope": "cross_harness",
             "lineage": [
-              "am-delegation-11"
+              "verovo-delegation-11"
             ],
             "child_ref": "session-abc",
             "child_session_attempts": [
@@ -274,7 +274,7 @@
               }
             ],
             "aggregation_report": {
-              "delegation_id": "am-delegation-11",
+              "delegation_id": "verovo-delegation-11",
               "total_child_cost": 0.03,
               "lineage_trace": [
                 {

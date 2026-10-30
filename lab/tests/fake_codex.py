@@ -5,7 +5,7 @@ Emits the LIVE-VALIDATED transcript shapes (codex-cli 0.149.0-alpha):
 `mcp_tool_call` items with server/tool fields, `agent_message` final answer,
 and `turn.completed` with token usage.
 
-Scenario via env AM_FAKE_MODE: subject (default) / competitor / timeout / error.
+Scenario via env VEROVO_FAKE_MODE: subject (default) / competitor / timeout / error.
 """
 import json
 import os
@@ -26,8 +26,8 @@ def mcp(item_id, server, tool, status, error=None):
 
 
 def main():
-    mode = os.environ.get("AM_FAKE_MODE", "subject")
-    server = "am-lab-tools"
+    mode = os.environ.get("VEROVO_FAKE_MODE", "subject")
+    server = "verovo-lab-tools"
 
     emit({"type": "thread.started"})
     if mode == "timeout":

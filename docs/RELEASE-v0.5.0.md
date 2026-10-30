@@ -40,7 +40,7 @@ structurally enter the shared pool).
 
 ## The console
 
-`agentmeasure console` renders the verification documents as one offline
+`verovo console` renders the verification documents as one offline
 app: sidebar navigation over two user journeys (vendor bill review; agent
 channel operations), an overview workbench whose stage states are derived
 from the documents, hash-routed views, a print mode that flattens every
@@ -62,9 +62,9 @@ statistics that never masquerade as a verdict.
 ## Channels
 
 - GitHub Release (this page) — ships on tag push.
-- npm `@agentmeasure/mcp` — published by the same workflow when the token
+- npm `@verovo/mcp` — published by the same workflow when the token
   is present.
-- PyPI `agentmeasure` — the workflow attempts trusted publishing; the
+- PyPI `verovo` — the workflow attempts trusted publishing; the
   PyPI-side publisher configuration is a project-owner setting. If this
   release's publish job fails the same way v0.4.1's did, configure the
   pending publisher on pypi.org and re-run the failed job — no rebuild

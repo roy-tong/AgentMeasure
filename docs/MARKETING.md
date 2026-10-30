@@ -1,4 +1,4 @@
-# AgentMeasure Marketing & Operations Plan（GitHub × X）
+# Verovo Marketing & Operations Plan（GitHub × X）
 
 > 原则：**Concrete Problem → Real Data → Framework → Capability Economy**。
 > 不再传播"我写了一套很完整的标准"；只传播"有一个真实问题 + 一个正在变好的答案"。

@@ -2,7 +2,7 @@
 /* Parity harness: run the browser-local recount in node and print JSON.
  *
  * The Python parity test (healthcheck/tests/test_parity.py) runs this and
- * compares the result field by field with healthcheck/am_healthcheck/vendors.py
+ * compares the result field by field with healthcheck/verovo_healthcheck/vendors.py
  * on the same fixture. Two implementations of one rule set must not drift.
  *
  * Usage: node parity_recount.js <export.csv> <vendor_id>

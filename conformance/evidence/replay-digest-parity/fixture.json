@@ -2,13 +2,13 @@
   "case": "replay-digest-parity",
   "schema_version": 1,
   "origin": {
-    "semantics": "Metrecept (iwasinnam2 / Ivan Karpusheff) — six-questions answer 2026-10-12, the replay vector: 'the fill and the replay of the same request, from two planes, with equal request and response digests, and a changed payload alongside with its own digests. That is cost-preservation stated as bytes: a replay is the same answer, and the record proves it rather than asserts it.' Wording and fixture: AgentMeasure.",
+    "semantics": "Metrecept (iwasinnam2 / Ivan Karpusheff) — six-questions answer 2026-10-12, the replay vector: 'the fill and the replay of the same request, from two planes, with equal request and response digests, and a changed payload alongside with its own digests. That is cost-preservation stated as bytes: a replay is the same answer, and the record proves it rather than asserts it.' Wording and fixture: Verovo.",
     "companion_external_fixtures": [
       "conformance/vectors/external/iwasinnam-001 (hop-replay ledger)",
       "conformance/vectors/external/iwasinnam-005 (replay, production cut — offered 2026-10-12, in flight)"
     ]
   },
-  "claim_boundary": "Synthetic fixture authored by AgentMeasure for conformance use. Not a Metrecept production artifact, not an endorsement, not an external reproduction.",
+  "claim_boundary": "Synthetic fixture authored by Verovo for conformance use. Not a Metrecept production artifact, not an endorsement, not an external reproduction.",
   "published_rules": {
     "canonical_json": "sorted keys, no whitespace, UTF-8, ensure_ascii=false — digests are sha256 over this form",
     "stream_assembly": "a streamed response body is the concatenation of its text deltas in emission order; the digest is taken over the assembled body (the published assembly rule)"

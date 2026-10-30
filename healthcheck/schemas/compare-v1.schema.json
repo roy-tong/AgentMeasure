@@ -1,8 +1,8 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://roy-tong.github.io/AgentMeasure/schemas/healthcheck/compare-v1.schema.json",
-  "title": "AgentMeasure Healthcheck comparison export (v1)",
-  "description": "Machine-readable export written by `agentmeasure compare ... --json PATH`. Deltas are B − A per metric. Token rows exist only when token_state is \"provable\" (both sides provable); UNPROVABLE sides are labelled, never differenced. Within a schema version fields are only added, never renamed or removed.",
+  "$id": "https://roy-tong.github.io/verovo/schemas/healthcheck/compare-v1.schema.json",
+  "title": "Verovo Healthcheck comparison export (v1)",
+  "description": "Machine-readable export written by `verovo compare ... --json PATH`. Deltas are B − A per metric. Token rows exist only when token_state is \"provable\" (both sides provable); UNPROVABLE sides are labelled, never differenced. Within a schema version fields are only added, never renamed or removed.",
   "type": "object",
   "required": ["schema", "a", "b", "rows", "token_state", "token_rows", "verdicts", "changed_verdicts", "warnings"],
   "properties": {

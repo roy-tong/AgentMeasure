@@ -8,9 +8,9 @@ import unittest
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from agentmeasure_lab.calibrate import calibrate, write_calibration_report
-from agentmeasure_lab.prereg import load_schema
-from agentmeasure_lab.schemas import validate
+from verovo_lab.calibrate import calibrate, write_calibration_report
+from verovo_lab.prereg import load_schema
+from verovo_lab.schemas import validate
 from tests._support import (
     TASK_SET_NAME,
     LabWorkspace,

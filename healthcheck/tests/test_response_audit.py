@@ -5,8 +5,8 @@ from pathlib import Path
 import tempfile
 import unittest
 from contextlib import redirect_stdout, redirect_stderr
-from am_healthcheck.response_audit import audit
-from am_healthcheck.cli import main
+from verovo_healthcheck.response_audit import audit
+from verovo_healthcheck.cli import main
 
 class TestResponseAudit(unittest.TestCase):
     def setUp(self):

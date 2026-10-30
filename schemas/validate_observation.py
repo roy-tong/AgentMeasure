@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""AgentMeasure canonical observation validator（零依赖，Draft 0.4.3）。
+"""Verovo canonical observation validator（零依赖，Draft 0.4.3）。
 
 用法: python3 schemas/validate_observation.py
 校验 schemas/examples/observations.json 中的每条 observation：

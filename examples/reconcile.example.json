@@ -1,7 +1,7 @@
 {
   "vendor": "intercom",
   "billing_period": "YYYY-MM",
-  "export": ".agentmeasure/recount-export.csv",
+  "export": ".verovo/recount-export.csv",
   "reviewed_export_sha256": "REPLACE_WITH_REVIEWED_FILE_SHA256",
   "open_tracking_issue": false
 }

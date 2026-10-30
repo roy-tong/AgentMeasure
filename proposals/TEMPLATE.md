@@ -3,7 +3,7 @@
 - 状态：Draft
 - 作者：
 - 日期：
-- 相关：AgentMeasure Core Draft 0.4 / Metrics M? 
+- 相关：Verovo Core Draft 0.4 / Metrics M? 
 
 ## 问题
 
@@ -11,7 +11,7 @@
 
 ## 提案
 
-（新的定义/规则/指标合同；用 AgentMeasure-METRICS 的 Contract 模板）
+（新的定义/规则/指标合同；用 Verovo-METRICS 的 Contract 模板）
 
 ## 影响
 

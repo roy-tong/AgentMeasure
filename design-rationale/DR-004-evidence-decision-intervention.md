@@ -19,8 +19,8 @@ If the final control outcome overwrites the evidence that caused it, the audit t
    interpreted) / Intervention (what action was taken). Never collapse into `outcome = failed`.
 3. **Decision Provenance:** decisions reference the exact evidence that triggered them via
    stable IDs (`decision.based_on: [eval_1]`).
-4. AgentMeasure boundary: measurement records evidence; it observes decisions and interventions
-   but MUST NOT define policy decisions. AgentMeasure is not a governance engine.
+4. Verovo boundary: measurement records evidence; it observes decisions and interventions
+   but MUST NOT define policy decisions. Verovo is not a governance engine.
 
 ## Implications
 
@@ -30,5 +30,5 @@ If the final control outcome overwrites the evidence that caused it, the audit t
 
 ## Rejected alternatives
 
-- AgentMeasure deciding whether an agent may run — rejected: expands the project into
+- Verovo deciding whether an agent may run — rejected: expands the project into
   governance; measurement stays observational.

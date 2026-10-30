@@ -26,7 +26,7 @@ HERE = Path(__file__).parent
 REPO = HERE.parent.parent.parent  # conformance/evidence/<case> -> repo root
 sys.path.insert(0, str(REPO / "healthcheck"))
 
-from am_healthcheck.settle import generate_bundle  # noqa: E402
+from verovo_healthcheck.settle import generate_bundle  # noqa: E402
 
 FIXTURE = HERE / "fixture.jsonl"
 RESULTS = HERE / "results.json"

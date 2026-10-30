@@ -58,7 +58,7 @@ Below is a synthetic fixture (`fixture.jsonl`) that models the exact shape of th
 ### Analysis
 
 ```text
-$ agentmeasure settle --bundle ./conformance/evidence/assumed-resolution/fixture.jsonl
+$ verovo settle --bundle ./conformance/evidence/assumed-resolution/fixture.jsonl
 
 ═══ Settlement Evidence Report ═══
 
@@ -96,7 +96,7 @@ rate is 40%, not 70%.
 
 ---
 
-## Relevance to AgentMeasure Conformance
+## Relevance to Verovo Conformance
 
 This case study exercises three core conformance primitives:
 
@@ -118,10 +118,10 @@ This case study exercises three core conformance primitives:
 
 - Intercom Help: [Fin AI Agent outcomes](https://www.intercom.com/help/en/articles/8205718-fin-ai-agent-outcomes) (defines resolution = confirmed + assumed)
 - DragApp Blog: [AI Support Agent Resolution Rates](https://www.dragapp.com/blog/ai-support-agent-resolution-rates/) (independent audit of vendor claims)
-- AgentMeasure Registry: [vocabularies.yaml](/registry/vocabularies.yaml)
-- AgentMeasure Schema: [effect-confirmed.schema.json](/schemas/payloads/effect-confirmed.schema.json)
+- Verovo Registry: [vocabularies.yaml](/registry/vocabularies.yaml)
+- Verovo Schema: [effect-confirmed.schema.json](/schemas/payloads/effect-confirmed.schema.json)
 - Operation Records: `OUT-001`, `OUT-002`
 
 ---
 
-*This case study is a synthetic conformance fixture for the AgentMeasure framework. It does not contain real Intercom customer data.*
+*This case study is a synthetic conformance fixture for the Verovo framework. It does not contain real Intercom customer data.*

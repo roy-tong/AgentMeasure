@@ -13,13 +13,13 @@ import unittest
 
 from _support import fixture
 
-from am_healthcheck import crosscheck as cc
-from am_healthcheck import dashboard as dash
-from am_healthcheck import delivery as del_mod
-from am_healthcheck import ledger as ledger_mod
-from am_healthcheck import narrative as narr
-from am_healthcheck import rulesdiff as rd
-from am_healthcheck.vendors import load_export
+from verovo_healthcheck import crosscheck as cc
+from verovo_healthcheck import dashboard as dash
+from verovo_healthcheck import delivery as del_mod
+from verovo_healthcheck import ledger as ledger_mod
+from verovo_healthcheck import narrative as narr
+from verovo_healthcheck import rulesdiff as rd
+from verovo_healthcheck.vendors import load_export
 
 EXPORT = fixture("vendor-export-intercom.csv")
 
@@ -143,7 +143,7 @@ class TestVerifiedLedger(unittest.TestCase):
         with open(paths["json"], encoding="utf-8") as fh:
             reloaded = json.load(fh)
         self.assertEqual(reloaded["schema"],
-                         "agentmeasure.commercial/verified-ledger")
+                         "verovo.commercial/verified-ledger")
 
 
 class TestRulesDiff(unittest.TestCase):
@@ -195,7 +195,7 @@ class TestRulesDiff(unittest.TestCase):
 class TestNarrative(unittest.TestCase):
     def setUp(self):
         self.pack = {
-            "schema": "agentmeasure.commercial/dispute-pack",
+            "schema": "verovo.commercial/dispute-pack",
             "vendor": {"name": "Intercom Fin", "id": "intercom",
                        "rule_source": "https://example.com/fin-rules"},
             "currency": "USD",
@@ -322,7 +322,7 @@ class TestDelivery(unittest.TestCase):
             del_mod.log_event(path, "A", "intercom", 1, "mapping", -5)
 
     def test_prepare_fingerprint_is_stable_and_value_free(self):
-        from am_healthcheck import prepare as prepare_mod
+        from verovo_healthcheck import prepare as prepare_mod
         native = ("Ticket ID,Created at,Solved at\n"
                   "77102,2026-08-01T09:00:00Z,2026-08-01T09:30:00Z\n")
         p1 = tmpfile(".csv", native)

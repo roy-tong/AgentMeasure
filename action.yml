@@ -1,4 +1,4 @@
-name: "AgentMeasure Conformance"
+name: "Verovo Conformance"
 description: Check an agent-telemetry fixture against measurement invariants (PASS / FAIL / UNPROVABLE). Turning measurement assumptions into CI checks.
 inputs:
   fixture:
@@ -19,24 +19,24 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Install AgentMeasure
+    - name: Install Verovo
       shell: bash
-      run: pipx install agentmeasure
-    - name: Run AgentMeasure conformance pack
+      run: pipx install verovo
+    - name: Run Verovo conformance pack
       shell: bash
       env:
-        AM_FIXTURE: ${{ inputs.fixture }}
-        AM_METADATA: ${{ inputs.metadata }}
-        AM_CLAIMS: ${{ inputs.claims }}
-        AM_REQUIRE: ${{ inputs.require }}
+        VEROVO_FIXTURE: ${{ inputs.fixture }}
+        VEROVO_METADATA: ${{ inputs.metadata }}
+        VEROVO_CLAIMS: ${{ inputs.claims }}
+        VEROVO_REQUIRE: ${{ inputs.require }}
       run: |
         set -euo pipefail
-        ARGS=(conformance --fixture "$AM_FIXTURE")
-        [ -n "$AM_METADATA" ] && ARGS+=("--metadata" "$AM_METADATA")
-        [ -n "$AM_CLAIMS" ] && ARGS+=("--claims" "$AM_CLAIMS")
-        [ -n "$AM_REQUIRE" ] && ARGS+=("--require" "$AM_REQUIRE")
-        agentmeasure "${ARGS[@]}" | tee pack-report.txt
-        echo '## AgentMeasure Conformance' >> "$GITHUB_STEP_SUMMARY"
+        ARGS=(conformance --fixture "$VEROVO_FIXTURE")
+        [ -n "$VEROVO_METADATA" ] && ARGS+=("--metadata" "$VEROVO_METADATA")
+        [ -n "$VEROVO_CLAIMS" ] && ARGS+=("--claims" "$VEROVO_CLAIMS")
+        [ -n "$VEROVO_REQUIRE" ] && ARGS+=("--require" "$VEROVO_REQUIRE")
+        verovo "${ARGS[@]}" | tee pack-report.txt
+        echo '## Verovo Conformance' >> "$GITHUB_STEP_SUMMARY"
         echo '```' >> "$GITHUB_STEP_SUMMARY"
         cat pack-report.txt >> "$GITHUB_STEP_SUMMARY"
         echo '```' >> "$GITHUB_STEP_SUMMARY"

@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "AgentMeasure Commerce Profile (v0.1)",
+  "title": "Verovo Commerce Profile (v0.1)",
   "description": "F2.1-F2.3/F2.7: the record envelope for agent-commerce measurement — the chain where the click disappears. One record = one fact on the Invocation -> Order -> Payment -> Refund chain, or one agent decision observation. Discipline baked in at the schema layer: live / replay / synthetic observation modes are DISTINCT values and must never be mixed inside one aggregation (synthetic lab probes entering a production aggregate is the exact mistake most GEO tools make); every record carries the measurement_policy_version it was collected under (governance 1); decision observations record OBSERVED merchants, never a candidate_set — a black-box platform does not show the full candidate set and pretending otherwise is fabrication (F2.2).",
   "type": "object",
   "required": [
@@ -13,7 +13,7 @@
   "properties": {
     "schema_version": {
       "type": "string",
-      "enum": ["agentmeasure-commerce-0.1"]
+      "enum": ["verovo-commerce-0.1"]
     },
     "record_type": {
       "type": "string",

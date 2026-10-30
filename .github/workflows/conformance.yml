@@ -47,7 +47,7 @@ jobs:
       - name: Healthcheck unit tests and selftest
         run: |
           python3 -m unittest discover -s healthcheck/tests
-          python3 healthcheck/agentmeasure selftest
+          python3 healthcheck/verovo selftest
       - name: Healthcheck install smoke (packaged artifact)
         run: bash healthcheck/scripts/smoke_install.sh
 
@@ -67,9 +67,9 @@ jobs:
           python -m unittest discover -s healthcheck/tests
       - name: CLI smoke on a Windows console codepage (demo + share export)
         run: |
-          python healthcheck/agentmeasure demo --json demo-report.json
-          python healthcheck/agentmeasure share demo-report.json --out summary.json
-          python healthcheck/agentmeasure validate summary.json
+          python healthcheck/verovo demo --json demo-report.json
+          python healthcheck/verovo share demo-report.json --out summary.json
+          python healthcheck/verovo validate summary.json
 
   # ─── 套件 0c：buyer-ledger（买方侧统一费用账本，M1；不变量 INV-1..6） ───
   buyer-ledger:
@@ -105,7 +105,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - name: AgentMeasure test vectors
+      - name: Verovo test vectors
         env:
           PYTHONPATH: reference
         run: |
@@ -136,10 +136,10 @@ jobs:
       - name: "SSE usage conformance (SSE-001: Anthropic message_start input bucket)"
         run: |
           python3 conformance/runners/run_sse_usage.py
-      - name: "Aggregate-join conformance (AMS-1 S-9: an aggregate is evidence only if it reconciles to its members)"
+      - name: "Aggregate-join conformance (VSS-1 S-9: an aggregate is evidence only if it reconciles to its members)"
         run: |
           python3 conformance/runners/run_aggregate_join.py
-      - name: "Replay-digest conformance (AMS-1 S-9: cost preservation stated as bytes)"
+      - name: "Replay-digest conformance (VSS-1 S-9: cost preservation stated as bytes)"
         run: |
           python3 conformance/runners/run_replay_digest.py
       - name: "Browser-local recount: rules file in sync with the registry"
@@ -169,7 +169,7 @@ jobs:
           python3 conformance/runners/run_pricing_zero.py
       - name: "Conformance Pack selftest (caller-input contract)"
         run: |
-          python3 conformance/pack/agentmeasure selftest
+          python3 conformance/pack/verovo selftest
       - name: Registry validation (entities)
         run: |
           python3 registry/validate_entities.py
@@ -247,7 +247,7 @@ jobs:
           python3 - <<'PY'
           import sys, json, tempfile, pathlib, os, subprocess
           tmp = pathlib.Path(tempfile.mkdtemp())
-          env = dict(os.environ, AGENTMEASURE_EVENTS_DIR=str(tmp / "hook"))
+          env = dict(os.environ, VEROVO_EVENTS_DIR=str(tmp / "hook"))
           subprocess.run([sys.executable, "reference/adapters/codex/hook_agent.py"], input=json.dumps({
               "hook_event_name": "PostToolUse", "tool_name": "Bash", "tool_use_id": "tu-1",
               "session_id": "RAW-SESSION-42",
@@ -261,7 +261,7 @@ jobs:
           print("adapter privacy OK")
           PY
 
-  # ─── 套件 3：AgentMeasure Lab（experiment engine） ───
+  # ─── 套件 3：Verovo Lab（experiment engine） ───
   lab-suite:
     runs-on: ubuntu-latest
     steps:
@@ -331,15 +331,15 @@ jobs:
         run: |
           python -m venv /tmp/smoke
           /tmp/smoke/bin/pip install dist/*.whl
-          /tmp/smoke/bin/agentmeasure --version
-          cd /tmp && /tmp/smoke/bin/agentmeasure demo --no-history
-          /tmp/smoke/bin/agentmeasure selftest
-          /tmp/smoke/bin/agentmeasure recount --list-vendors
-          /tmp/smoke/bin/agentmeasure recount --sample
+          /tmp/smoke/bin/verovo --version
+          cd /tmp && /tmp/smoke/bin/verovo demo --no-history
+          /tmp/smoke/bin/verovo selftest
+          /tmp/smoke/bin/verovo recount --list-vendors
+          /tmp/smoke/bin/verovo recount --sample
           printf '%s\n' '{"type":"assistant","message":{"id":"smoke"}}' > /tmp/response.jsonl
-          /tmp/smoke/bin/agentmeasure response-audit /tmp/response.jsonl
-          /tmp/smoke/bin/agentmeasure conformance --new-vector smoke-case --out /tmp/am-smoke-vectors
-          /tmp/smoke/bin/agentmeasure conformance --fixture /tmp/am-smoke-vectors/smoke-case-001/agentmeasure_smoke_case_fixture_001.events.jsonl
+          /tmp/smoke/bin/verovo response-audit /tmp/response.jsonl
+          /tmp/smoke/bin/verovo conformance --new-vector smoke-case --out /tmp/am-smoke-vectors
+          /tmp/smoke/bin/verovo conformance --fixture /tmp/am-smoke-vectors/smoke-case-001/verovo_smoke_case_fixture_001.events.jsonl
 
   status-sync:
     runs-on: ubuntu-latest
@@ -361,7 +361,7 @@ jobs:
       - name: Regenerate website/status.json (binds Passing to this run)
         run: |
           python3 scripts/gen_status.py --write
-          git config user.name "agentmeasure-ci"
+          git config user.name "verovo-ci"
           git config user.email "actions@users.noreply.github.com"
           git add website/status.json
           if ! git diff --cached --quiet; then

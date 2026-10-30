@@ -90,7 +90,7 @@ UNPROVABLE-by-surface 的 scope 随 measurement surface 扩大而缩小。
 
 ## 6. 已实测的拓扑案例：自托管 OpenAI 兼容服务器（2026-10-13 增补）
 
-第三方实测（[@qaisermehdi3-coder, Discussion #26](https://github.com/roy-tong/AgentMeasure/discussions/26)，
+第三方实测（[@qaisermehdi3-coder, Discussion #26](https://github.com/roy-tong/verovo/discussions/26)，
 2026-09-24；vLLM 0.27.1 + Qwen2.5-0.5B，Colab T4）：
 
 - **client surface 的盲区**：流式请求不带 `stream_options` 时，客户端**零 usage 上报**——

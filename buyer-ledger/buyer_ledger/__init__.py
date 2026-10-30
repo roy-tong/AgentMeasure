@@ -1,6 +1,6 @@
-"""AgentMeasure Buyer Ledger — 买方侧统一费用账本与对账审查（M1）.
+"""Verovo Buyer Ledger — 买方侧统一费用账本与对账审查（M1）.
 
-方向文档: 产品和技术/产品规划/AgentMeasure-买方侧统一费用账本与对账-产品方向-20261029.md
+方向文档: 产品和技术/产品规划/Verovo-买方侧统一费用账本与对账-产品方向-20261029.md
 （仓库外项目工作区）。三条硬纪律（对应方向文档 §3.1 / §3.2 / §4.2）：
 
 INV-1 幂等: SourceDocument 按 content_hash + provider + tier + account +

@@ -1,4 +1,4 @@
-# AgentMeasure Harness Profile — Claude Code
+# Verovo Harness Profile — Claude Code
 
 > Draft 0.4.4。来源：Claude Code 公开文档（hooks、OTel telemetry、MCP 集成），
 > 截至 2026-08。协议侧摘要见 standard/PROFILES.md P2。
@@ -15,7 +15,7 @@
 
 ## 2. 语义映射
 
-| Claude Code | AgentMeasure | 说明 |
+| Claude Code | Verovo | 说明 |
 |---|---|---|
 | Session 内用户目标 | Task 候选（`declared`） | 无显式 task 对象 |
 | Tool result（success/duration/error_type） | Attempt completed（**自带成败判定**） | 三个 harness 中唯一 |

@@ -31,8 +31,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "healthcheck"))
 
-from am_healthcheck.claude import parse_session as claude_parse  # noqa: E402
-from am_healthcheck.codex import parse_session as codex_parse  # noqa: E402
+from verovo_healthcheck.claude import parse_session as claude_parse  # noqa: E402
+from verovo_healthcheck.codex import parse_session as codex_parse  # noqa: E402
 
 CANARY_DIR = ROOT / "healthcheck" / "fixtures" / "canary"
 MANIFEST = CANARY_DIR / "canary-manifest.json"
