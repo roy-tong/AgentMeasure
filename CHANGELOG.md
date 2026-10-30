@@ -7,6 +7,22 @@ documented here. Format follows [Keep a Changelog](https://keepachangelog.com/).
 > (AgentMeasure). The rename is recorded in v0.9.0 and in
 > [docs/RELEASE-v0.9.0.md](docs/RELEASE-v0.9.0.md).
 
+## [Unreleased] — 2026-10-31
+
+### Added
+
+- Main-preview `review` command: scoped buyer tasks, independent charge/delivery
+  criteria, local JSON observations, traceable HTML/JSON and synthetic examples.
+- Missing/null/incompatible evidence remains UNPROVABLE; rule and business criteria
+  stay separate. Inputs cannot be overwritten by reports.
+
+### Changed
+
+- Align the product definition, buyer workflows, README and public site around
+  buyer-first charges and delivery verification. Keep provider work conditional.
+- Clarify tagged installation versus main preview and retain free measurement
+  services without obsolete $10/$20 offers.
+
 ## [v0.9.0] - 2026-10-30
 
 ### Changed

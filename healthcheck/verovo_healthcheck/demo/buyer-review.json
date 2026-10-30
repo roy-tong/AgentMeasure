@@ -1,0 +1,39 @@
+{
+  "schema_version": "1.0",
+  "workflow": "both",
+  "scope": {
+    "buyer": "Example buyer (synthetic)",
+    "service": "Example AI support service",
+    "account_or_task": "sample-account / sampled support tasks",
+    "period_or_window": "2026-10 (synthetic observation window)",
+    "decision": "Review payment and renewal separately",
+    "owner": "Example operations lead",
+    "due_date": "2026-11-05"
+  },
+  "criteria": [
+    {
+      "id": "invoice-total",
+      "lane": "charges",
+      "statement": "Invoice total matches the supplied agreed total in USD",
+      "basis": {"kind": "billing_rule", "ref": "Synthetic agreement: USD 100 total; not a vendor policy", "version": "demo-1"},
+      "operator": "equals", "expected": 100,
+      "source": {"path": "buyer-observations.json", "pointer": "/invoice/total_usd"}
+    },
+    {
+      "id": "manual-rescue",
+      "lane": "delivery",
+      "statement": "Sampled tasks needing human rescue stay within the buyer's limit",
+      "basis": {"kind": "buyer_requirement", "ref": "Synthetic acceptance checklist: at most 2 sampled tasks need rescue", "version": "demo-1"},
+      "operator": "at_most", "expected": 2,
+      "source": {"path": "buyer-observations.json", "pointer": "/delivery/manual_rescue_tasks"}
+    },
+    {
+      "id": "completion-evidence",
+      "lane": "delivery",
+      "statement": "The buyer's completion record is present and true",
+      "basis": {"kind": "buyer_requirement", "ref": "Synthetic acceptance checklist: confirm external completion", "version": "demo-1"},
+      "operator": "equals", "expected": true,
+      "source": {"path": "buyer-observations.json", "pointer": "/delivery/external_completion"}
+    }
+  ]
+}

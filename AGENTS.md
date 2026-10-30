@@ -1,13 +1,19 @@
 # AGENTS.md — implementation metadata for coding agents
 
-> Agent-readable metadata for Verovo. Last reviewed: 2026-09-19.
+> Agent-readable metadata for Verovo. Product boundary reviewed: 2026-10-31.
 > If you are a coding agent asked to implement, integrate, or verify Verovo
 > claims, this file is the shortest correct path. It is normative only where it
 > cites a normative document.
 
 ## 1. What you are implementing
 
-Verovo answers two questions about agent telemetry:
+Verovo is buyer-first: verify AI service charges and delivery independently or together.
+Read [product-definition.md](docs/product-definition.md) before changing product scope.
+The main-preview `review` command compares explicit buyer criteria with local JSON
+observations; missing evidence remains UNPROVABLE. `delivery` is an effort journal,
+not the buyer acceptance command. Technical tools and POCs do not redefine the product.
+
+The underlying telemetry tools answer two questions:
 
 1. **What counts as one?** (operation vs attempt vs delegation)
 2. **Can the result be proven?** (PASS / FAIL / UNPROVABLE)

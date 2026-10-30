@@ -36,6 +36,7 @@ cd "$tmp"
 # vendor-rules.json, so a data file missing from the wheel fails here rather
 # than only in a user's install. The recount and dispute runs then exercise the
 # rules and the pack writer against the shipped fixture.
+"$tmp/venv/bin/verovo" review --sample --html "$tmp/buyer.html" --json "$tmp/buyer.json" >/dev/null
 "$tmp/venv/bin/verovo" recount --list-vendors >/dev/null
 "$tmp/venv/bin/verovo" recount --sample --json "$tmp/sample.json" >/dev/null
 printf '%s\n' '{"type":"assistant","message":{"id":"smoke"}}' > "$tmp/response.jsonl"

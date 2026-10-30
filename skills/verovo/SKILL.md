@@ -1,21 +1,45 @@
 ---
 name: verovo
-description: Check whether agent telemetry preserves measurement semantics. Use when a user asks whether retries inflate counted usage, whether an operation differs from an attempt, whether token metrics double count a subset (reasoning inside output), whether cache hits or cached replays distort counts, or wants conformance tests for agent metrics and observability claims. 中文触发：遥测语义核查、重试计数、用量口径、token 重复计数、Agent 用量指标一致性检验。
+description: Review AI service charges and delivery from the buyer side, with explicit criteria, local evidence and separate conclusions. Also route supported billing recounts and agent telemetry conformance checks. 中文触发：AI 服务费用核验、交付验收、续约核验、账单复算、遥测语义核查、重试计数、用量口径。
 ---
 
-# Verovo — Measurement Conformance
+# Verovo — buyer charges and delivery
 
-This Skill routes measurement-semantics questions to Verovo's local runners. It does not move telemetry anywhere.
+Verovo is buyer-first. Charges and delivery are independent tasks; read
+`docs/product-definition.md` before interpreting product scope. AI support is an
+initial scenario, while coding agents, automation and tools/APIs are broader
+objects to validate task by task. Provider downstream work needs a concrete
+transaction; provider upstream spend is a buyer task.
 
-## First success (offline, deterministic)
+## Buyer review (main preview, after v0.9.0)
 
 ```bash
-git clone https://github.com/roy-tong/verovo && cd Verovo
+git clone https://github.com/roy-tong/verovo && cd verovo
+python3 healthcheck/verovo review --sample --html buyer-review.html
+```
+
+The synthetic sample has matching charges, one unmet delivery requirement and
+one unprovable observation. For real inputs follow `docs/buyer-review.md`: confirm
+scope and decision owner, record separate rule references and business criteria,
+and reference authorized local JSON observations. Do not invent rules or missing
+facts. This compares supplied criteria; it does not independently certify sources,
+parse arbitrary contracts, or decide refunds. Delivery review can run alone.
+
+Use `recount` for supported billing exports, `buyer-ledger/` for tool-period
+reconciliation and the measurement runners below for technical questions. No
+command here uploads data. `delivery` is the review team's effort journal,
+not the buyer acceptance command.
+
+
+## Technical measurement checks (offline, deterministic)
+
+```bash
+git clone https://github.com/roy-tong/verovo && cd verovo
 python3 conformance/pack/verovo selftest          # Pack fixtures, PASS / FAIL / UNPROVABLE
 python3 conformance/pack/verovo conformance \
   --fixture conformance/vectors/external/urusilla-001/agentmeasure_urusilla_fixture_001.events.jsonl
 ./examples/demo-e2e.sh                                  # 42 calls -> 84 canonical observations, deterministic
-python3 conformance/runners/run_metrics.py              # 21/21 vectors PASS
+python3 conformance/runners/run_metrics.py              # metric conformance vectors
 python3 verify_vectors.py                               # receipts / correlation / operation grouping
 ```
 

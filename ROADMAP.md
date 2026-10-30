@@ -1,39 +1,41 @@
 # Verovo Roadmap
 
-## Current commercial direction — 2026-10-21
+## Product boundary — 2026-10-31
 
-Verify AI service charges and delivery for buyers making billing, acceptance
-and renewal decisions. Start with one specific outcome-billed AI support task.
+Buyer-first verification of **AI service charges and delivery**, independently
+or together. Providers extend the product through concrete transaction needs.
+[Stable definition](docs/product-definition.md).
 
-1. Confirm a real question, authorized usable records, a responsible buyer and
-   a viable action path. Review a real dispute before offering recovery work.
-2. Validate a bounded delivery through customer action and service-fee collection.
-   Recovery-based work also needs vendor acceptance and actual realized benefit.
-3. Test a new billing-period, acceptance or renewal task from the same customer.
-   Expand automation or vendor coverage only when repeated work justifies it.
+## Available on main
 
-Buyer recovery fees and procurement project fees are exploratory mechanisms,
-not launched packages or published rates. Existing $10 Healthcheck and $20
-Metering QA services retain their published scope; their purchases are not
-evidence of enterprise buyer demand.
+- Buyer `review` tasks: explicit scope and criteria, local JSON observations,
+  separate charges/delivery conclusions, evidence hashes and offline reports.
+  This is a main-branch preview, not included in the v0.9.0 tag.
+- Supported billing recounts, evidence preparation, discrepancy and recovery records.
+- Buyer Ledger tooling and catalog; cataloged platforms are not live-validated.
+- Local developer diagnostics, conformance and free measurement runs.
 
-## Keep and defer
+## Next validation work
 
-- Keep public rules, supported input adapters, reproducible findings, unknown
-  states and minimal regression cases needed by actual tasks.
-- Maintain developer tools, open-source collaboration and research on their
-  own merits. Provider work needs a concrete economic trigger.
-- Defer a general hosted quality platform, full execution replay, runtime budget
-  enforcement and training-data selection until their own tasks are validated.
+1. Complete a real application charge and/or delivery task with a buyer who has
+   a decision to make. Delivery review does not depend on finding a billing error.
+2. Complete a real tool/API account-period reconciliation; distinguish self-use
+   feasibility from external buyer value.
+3. Compare customer effort, actual decisions, agreed fees and repeated tasks
+   against the previous process. Reuse rules and mappings before broadening automation.
 
-Record findings, vendor acceptance, actual refunds/used credits, service-fee
-collection, direct costs and independent new-task repeat purchases separately.
-A useful result with no difference is valid. Lack of qualified buyer conversations
-does not isolate price as the reason for a failed experiment.
+Coding-agent task acceptance and multi-source allocation remain expansion
+candidates. Input adapters and automation follow actual tasks. A general quality
+platform, universal contract parsing, runtime spending enforcement and payment
+settlement are not current commitments.
 
-[Task scope](docs/product-scope.md) · [Commercial boundaries](docs/commercial-narrative.md) ·
-[Existing developer services](https://roy-tong.github.io/verovo/services.html) ·
-[Latest releases](https://github.com/roy-tong/verovo/releases)
+Charge review project fees, acceptance/renewal fees and suitable recovery-based
+terms remain hypotheses; no fixed enterprise rate is published. Existing
+[free measurement runs](https://roy-tong.github.io/verovo/services.html) stay free.
+
+A POC, ledger or SDK is an execution choice, not a replacement for the product
+boundary. Track engineering behavior, buyer value, payment and repeat purchase
+separately. [Scope](docs/product-scope.md) · [Commercial approach](docs/commercial-narrative.md).
 
 <details>
 <summary>Historical roadmap — August/September 2026; not current commitments</summary>

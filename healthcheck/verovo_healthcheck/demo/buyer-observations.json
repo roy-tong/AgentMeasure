@@ -1,0 +1,5 @@
+{
+  "synthetic": true,
+  "invoice": {"total_usd": 100},
+  "delivery": {"manual_rescue_tasks": 5, "external_completion": null}
+}

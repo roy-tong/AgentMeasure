@@ -56,6 +56,7 @@ from . import console as console_mod
 from . import drilldown as drilldown_mod
 from . import decisions as decisions_mod
 from . import scaffold as scaffold_mod
+from . import review as review_mod
 # Conformance pack loaded lazily in cmd_conformance
 
 DEFAULT_DAYS = 7
@@ -1699,16 +1700,56 @@ def cmd_decisions(args) -> int:
     return 0
 
 
+def cmd_review(args) -> int:
+    """Compare scoped buyer criteria with local evidence in two separate lanes."""
+    try:
+        if args.init:
+            if args.html or args.json:
+                raise ValueError("--init creates a template; omit report output flags")
+            with open(args.init, "x", encoding="utf-8") as fh:
+                json.dump(review_mod.template(), fh, ensure_ascii=False, indent=2)
+                fh.write("\n")
+            print("Created %s. Fill the scope, criteria and evidence paths before review." % args.init)
+            return 0
+        task = (os.path.join(os.path.dirname(review_mod.__file__), "demo", "buyer-review.json")
+                if args.sample else args.task)
+        result = review_mod.evaluate(task, synthetic=args.sample)
+        problem = _validate_output_paths(result["input_paths"], args.html, args.json)
+        if problem:
+            raise ValueError(problem)
+        if args.html:
+            with open(args.html, "w", encoding="utf-8") as fh:
+                fh.write(review_mod.report_html(result))
+        if args.json:
+            with open(args.json, "w", encoding="utf-8") as fh:
+                json.dump(result, fh, ensure_ascii=False, indent=2, allow_nan=False)
+                fh.write("\n")
+        print(review_mod.report_text(result))
+        return 0
+    except (ValueError, OSError) as exc:
+        print("error: %s" % exc, file=sys.stderr)
+        return 2
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="verovo",
-        description="Verovo Healthcheck — a local check-up report for "
-                    "your coding agent runs. Reads local logs, checks duplicate "
-                    "records, retry amplification and tool-error runs, and "
-                    "writes a local HTML report. No network, no upload.")
+        description="Verovo — local tools for AI service buyers to review "
+                    "charges and delivery against explicit criteria. Supported "
+                    "billing recounts, buyer reviews and developer diagnostics. "
+                    "Missing evidence stays unknown. No network, no upload.")
     parser.add_argument("--version", action="version",
                         version="verovo-healthcheck %s" % __version__)
     sub = parser.add_subparsers(dest="cmd")
+
+    p_review = sub.add_parser("review", help="review buyer charges and delivery as separate conclusions")
+    source = p_review.add_mutually_exclusive_group(required=True)
+    source.add_argument("--task", metavar="JSON", help="buyer task with criteria and relative evidence paths")
+    source.add_argument("--sample", action="store_true", help="run the bundled synthetic buyer task")
+    source.add_argument("--init", metavar="JSON", help="create an incomplete task template without overwriting")
+    p_review.add_argument("--html", metavar="PATH", help="write a local offline review report")
+    p_review.add_argument("--json", metavar="PATH", help="write traceable criteria, verdicts and source hashes")
+    p_review.set_defaults(func=cmd_review)
 
     p_check = sub.add_parser("check", help="check local agent logs (default)")
     _add_filter_args(p_check)

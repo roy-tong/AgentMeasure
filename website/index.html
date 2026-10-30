@@ -3,23 +3,23 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Verovo | Verify AI charges and multi-tool bills</title>
-  <meta name="description" content="Verify AI service charges and multi-tool agent bills against applicable rules, usage and evidence. Explore billing, acceptance and renewal decisions; 26 domestic and overseas tool billing models are cataloged.">
+  <title>Verovo | Verify AI service charges and delivery</title>
+  <meta name="description" content="Buyer-side verification of AI service charges and delivery. Connect applicable rules, usage and buyer requirements for reconciliation, acceptance, remediation and renewal.">
   <link rel="icon" type="image/svg+xml" href="./assets/favicon.svg">
   <link rel="canonical" href="https://roy-tong.github.io/verovo/">
   <meta name="theme-color" content="#090C10">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Verovo">
-  <meta property="og:title" content="Verovo | Verify AI charges and multi-tool bills">
-  <meta property="og:description" content="Verify AI service charges and multi-tool agent bills against applicable rules, usage and evidence. 26 tool billing models cataloged; cataloged is not live-validated.">
+  <meta property="og:title" content="Verovo | Verify AI service charges and delivery">
+  <meta property="og:description" content="Buyer-side AI charge and delivery review. Two independent workflows, explicit criteria and checkable evidence for payment, acceptance and renewal.">
   <meta property="og:url" content="https://roy-tong.github.io/verovo/">
   <meta property="og:image" content="https://roy-tong.github.io/verovo/assets/social-preview.png">
   <meta property="og:image:width" content="1280">
   <meta property="og:image:height" content="640">
   <meta property="og:image:alt" content="Verovo: verify AI charges, tool bills and delivery evidence">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Verovo | Verify AI charges and multi-tool bills">
-  <meta name="twitter:description" content="Verify AI service charges and multi-tool agent bills against applicable rules, usage and evidence. 26 tool billing models cataloged; cataloged is not live-validated.">
+  <meta name="twitter:title" content="Verovo | Verify AI service charges and delivery">
+  <meta name="twitter:description" content="Buyer-side AI charge and delivery review. Two independent workflows, explicit criteria and checkable evidence for payment, acceptance and renewal.">
   <meta name="twitter:image" content="https://roy-tong.github.io/verovo/assets/social-preview.png">
   <meta name="twitter:image:alt" content="Verovo: verify AI charges, tool bills and delivery evidence">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -33,7 +33,7 @@
     "@context": "https://schema.org",
     "@type": "SoftwareSourceCode",
     "name": "Verovo",
-    "description": "Open-source checks for AI service charges and multi-tool agent bills, with evidence for buyer billing, acceptance and renewal decisions. 26 tools cataloged; cataloged is not live-validated.",
+    "description": "Local tools for buyer-side AI charge and delivery review. Explicit criteria, supported recounts and evidence for reconciliation, acceptance and renewal.",
     "url": "https://roy-tong.github.io/verovo/",
     "codeRepository": "https://github.com/roy-tong/verovo",
     "license": "https://opensource.org/license/mit",
@@ -80,14 +80,14 @@
   <section class="hero" aria-label="Introduction">
     <div class="hero-grid">
       <div class="hero-copy">
-        <p class="eyebrow reveal">For AI support buyers, finance and operations</p>
-        <h1 class="reveal d1">Verify AI charges.<br><em>Understand delivery.</em></h1>
-        <p class="lede reveal d2">Connect billing rules with your records. Review whether charges follow the agreement, and define the evidence you need for acceptance or renewal. Start with one AI support service and a concrete decision.</p>
+        <p class="eyebrow reveal">For teams buying AI services — business, engineering and finance</p>
+        <h1 class="reveal d1">Verify AI charges.<br><em>Verify delivery.</em></h1>
+        <p class="lede reveal d2">Connect charging rules, spending records and delivery evidence with your business requirements. Know what matches, what needs attention and what remains unknown — before payment, acceptance or renewal.</p>
         <div class="hero-actions reveal d4">
-          <a class="btn btn-primary" href="first-look.html#contact">Discuss your billing or renewal task</a>
-          <a class="btn btn-ghost" href="./recount.html">Review a billing export</a>
+          <a class="btn btn-primary" href="first-look.html#contact">Discuss your charge or delivery task</a>
+          <a class="btn btn-ghost" href="examples/buyer-review.html">See a buyer review</a>
         </div>
-        <p class="note">Free tools support selected billing rules today. Buyer review scope and fees are under validation, with no recovery guarantee. <a href="first-look.html">See the buyer workflow and limits</a>.</p>
+        <p class="note">Local tools support selected recounts and explicit charge/delivery criteria. Enterprise review scope and fees are under validation, with no recovery guarantee. <a href="first-look.html">See the buyer workflow and limits</a>.</p>
         <p class="note">Working on local agent logs instead? Use the <a href="#how">free developer tools</a> or the <a href="services.html">free measurement runs</a>.</p>
         <p class="note reveal d5" style="margin-top:14px"><strong>CLI v0.9.0</strong> on <a href="https://github.com/roy-tong/verovo/releases/tag/v0.9.0" target="_blank" rel="noopener">GitHub</a>; the PyPI project <code>verovo</code> is pending its first publish (install from the tag meanwhile). <a href="https://www.npmjs.com/package/@verovo/mcp" target="_blank" rel="noopener">SDK v0.3.0</a>. 511 Healthcheck tests verified on 2026-10-30. Customer payment and repeat use remain unverified.</p>
       </div>
@@ -135,10 +135,26 @@
   <section class="section" id="whynow" aria-label="Buyer decisions"><div class="wrap">
 <h2 class="reveal">A billing question and a renewal decision need different evidence.</h2>
 <div class="who-grid">
-<div class="who-card reveal"><span class="who-k">Billing correction</span><p>Check a specific charge against the applicable agreement and records. A supported difference can enter vendor review; it is not yet a refund.</p></div>
-<div class="who-card reveal"><span class="who-k">Acceptance or renewal</span><p>State what the service needs to achieve for your business. A valid charge can still leave a delivery question that affects your next purchase.</p></div>
+<div class="who-card reveal"><span class="who-k">Charge review</span><p>Check a specific charge against the applicable agreement and records. A supported difference can enter vendor review; it is not yet a refund.</p></div>
+<div class="who-card reveal"><span class="who-k">Acceptance or renewal</span><p>Check observable work against your stated business requirements. Commission delivery review independently, even when every charge matches the agreement.</p></div>
 <div class="who-card reveal"><span class="who-k">A shared buyer decision</span><p>Operations explains the work. Finance or procurement owns the spend. We start by identifying the task, available evidence and who can act.</p></div>
-</div><p class="note">Missing evidence stays unknown. A stricter business requirement does not automatically make a charge incorrect. Broader delivery-review services are exploratory, not a general automated quality product.</p>
+</div><p class="note">Missing evidence stays unknown. A stricter business requirement does not automatically make a charge incorrect. The local review compares explicit criteria with supplied observations. Broader customer workflows still need validation; there is no general automated quality score.</p>
+</div></section>
+
+<section class="section section-panel" id="review" aria-label="Local buyer review"><div class="wrap">
+<h2 class="reveal">Two conclusions. One inspectable review.</h2>
+<p class="body-secondary reveal">The main-preview review command reads your scoped task and local JSON evidence. You supply the applicable charge rules and business criteria; each check shows its observation, rule reference and evidence hash.</p>
+<div class="who-grid">
+<div class="who-card reveal"><span class="who-k">Charges: PASS</span><p>The synthetic invoice matches the supplied agreed total. This conclusion applies only to that check.</p><span class="who-v">Charging criterion met</span></div>
+<div class="who-card reveal"><span class="who-k">Delivery: FAIL</span><p>The same example exceeds the buyer’s limit for tasks needing human rescue. Correct charges do not settle acceptance.</p><span class="who-v">Business criterion unmet</span></div>
+<div class="who-card reveal"><span class="who-k">One evidence gap</span><p>A missing completion record remains UNPROVABLE. The report names what is missing instead of assuming success or failure.</p><span class="who-v">Unknown stays visible</span></div>
+</div>
+<div class="terminal" style="margin-top:30px"><div class="terminal-body"><pre style="white-space:pre-wrap">git clone https://github.com/roy-tong/verovo.git
+cd verovo
+python3 healthcheck/verovo review --sample --html buyer-review.html</pre></div></div>
+<p class="note">Synthetic example, not a customer result. New on main; not included in the v0.9.0 tag. A person confirms rule applicability and source truth. <a href="https://github.com/roy-tong/verovo/blob/main/docs/buyer-review.md">Prepare your own task →</a></p>
+<div class="trial-actions"><a class="btn btn-primary" href="examples/buyer-review.html">Open the example report</a><a class="btn btn-ghost" href="first-look.html#contact">Discuss a real task</a></div>
+<p class="body-secondary" style="margin-top:30px">AI support is an initial application scenario. Coding agents, automation platforms, tools/APIs and model services enter through specific buyer tasks; capabilities are verified one scope at a time.</p>
 </div></section>
 
 <section class="section section-panel" id="toolbills" aria-label="Tool bill coverage"><div class="wrap">
@@ -146,8 +162,8 @@
 <p class="body-secondary reveal">Agent tools charge by tokens, searches, credits, browser hours, sandbox seconds, pages, characters, images and seats. Buyer Ledger catalogs the billing dimensions, imports the evidence, and separates invoice facts from what usage can prove.</p>
 <div class="who-grid">
 <div class="who-card reveal"><span class="who-k">Buyer</span><p>Check platform, direct and cloud-marketplace charges against usage and applicable pricing, including free quota, prepaid packs and credits.</p><span class="who-v">Charge review</span></div>
-<div class="who-card reveal"><span class="who-k">Seller</span><p>Audit whether metered usage is represented in billing. Unpriced or unlinked usage stays an evidence gap, not claimed leakage revenue.</p><span class="who-v">Metering integrity</span></div>
-<div class="who-card reveal"><span class="who-k">No-API portals</span><p>Attach a user-started Chrome over local CDP, replay a reviewed recipe, download the bill and run the same ingestion and audit pipeline.</p><span class="who-v">User keeps the session</span></div>
+<div class="who-card reveal"><span class="who-k">Providers with a specific task</span><p>Review upstream spend as a buyer. Downstream billing reviews extend from a concrete dispute, revenue discrepancy or procurement requirement.</p><span class="who-v">Transaction-led extension</span></div>
+<div class="who-card reveal"><span class="who-k">Start with available records</span><p>Use authorized exports, APIs or local files. Browser collection is an optional access method when the task warrants it; portal coverage is not assumed.</p><span class="who-v">Task before integration</span></div>
 </div>
 <div class="terminal" style="margin-top:30px"><div class="terminal-body"><pre style="white-space:pre-wrap">python3 -m buyer_ledger catalog summary
 python3 -m buyer_ledger catalog coverage --period 2026-10
@@ -183,9 +199,9 @@ verovo demo</pre></div></div>
 <details><summary>Next: inspect your own logs and prepare a shareable summary</summary><pre style="white-space:pre-wrap">verovo check --json report.json
 verovo share report.json --out summary.json
 verovo validate summary.json</pre><p>Auto-discovery prefers Codex when both runtimes have logs. For Claude Code use <code>verovo check --runtime claude --json report.json</code>. Open the HTML report at the path printed in the terminal; keep the full JSON and HTML local. Inspect summary.json before choosing to send it. Exporting is not uploading.</p></details>
-<details><summary>No logs, an error, or an unexpected result?</summary><p>No logs in the last seven days? Try <code>verovo check --all</code>, or point to the real directory with <code>--dir "/path/to/logs" --runtime codex</code> (use <code>claude</code> for Claude Code). An empty directory produces an input error, not a clean bill of health. If a command fails, stop before running the export commands.</p><p>Healthcheck exit 0 means the report ran, even if it contains findings. Exit 2 means an input/output problem. UNPROVABLE means missing evidence, not failure or a clean result. For conformance, exit 1 means a failed or required-but-unproven invariant.</p><p><a href="https://github.com/roy-tong/verovo/issues/new">Report a reproducible tool bug</a> with the version, command, expected behavior and a redacted error. Do not attach raw logs, report.json or credentials to public issues. Paid diagnosis is optional, not required to report a bug.</p></details>
+<details><summary>No logs, an error, or an unexpected result?</summary><p>No logs in the last seven days? Try <code>verovo check --all</code>, or point to the real directory with <code>--dir "/path/to/logs" --runtime codex</code> (use <code>claude</code> for Claude Code). An empty directory produces an input error, not a clean bill of health. If a command fails, stop before running the export commands.</p><p>Healthcheck exit 0 means the report ran, even if it contains findings. Exit 2 means an input/output problem. UNPROVABLE means missing evidence, not failure or a clean result. For conformance, exit 1 means a failed or required-but-unproven invariant.</p><p><a href="https://github.com/roy-tong/verovo/issues/new">Report a reproducible tool bug</a> with the version, command, expected behavior and a redacted error. Do not attach raw logs, report.json or credentials to public issues. Reporting a reproducible tool bug is free.</p></details>
 <p><a href="https://github.com/roy-tong/verovo/blob/main/README.zh-CN.md">中文使用说明</a> · <a href="https://github.com/roy-tong/verovo/blob/main/conformance/pack/README.md">Maintainer / metering quickstart</a></p>
-<div class="trial-points"><div class="trial-point"><span class="trial-k">1 · Run free</span><p>Review coverage and findings. The CLI and public checks stay free.</p></div><div class="trial-point"><span class="trial-k">2 · Confirm scope</span><p>For human help, send a summary ($10) or schema and sample rows ($20). We confirm fit, price and input limits before payment.</p></div><div class="trial-point"><span class="trial-k">3 · Get a report</span><p>Within 24 hours after payment, fit approval and complete input. Confirmation alone reserves a place. First response within 24 hours.</p></div></div>
+<div class="trial-points"><div class="trial-point"><span class="trial-k">1 · Run free</span><p>Review coverage and findings. The CLI and public checks stay free.</p></div><div class="trial-point"><span class="trial-k">2 · Confirm scope</span><p>For a free measurement run, bring a sanitized sample. Enterprise charge or delivery review starts with a separate task-fit discussion.</p></div><div class="trial-point"><span class="trial-k">3 · Get a report</span><p>Free sample checks usually take 48 hours after a clean sample. Enterprise scope, timing and any fee are agreed for the specific task.</p></div></div>
 <a class="btn btn-primary" href="services.html">Read the scope and apply</a></div></section>
 
   <!-- ══════════════════ 04 · WHAT A REVIEW CHECKS ══════════════════ -->
@@ -275,7 +291,7 @@ verovo validate summary.json</pre><p>Auto-discovery prefers Codex when both runt
   <!-- ══════════════════ 05 · PRICING LADDER ══════════════════ -->
   <section class="section section-panel" id="pricing" aria-label="Free runs"><div class="wrap">
 <h2 class="reveal">Everything here is free.</h2>
-<p class="body-secondary">Run the tools yourself, or bring a sanitized sample and get a human-run measurement check — free, usually within 48 hours of a clean sample. The $10/$20 developer diagnostics previously listed here were removed on 2026-10-21; the project is now entirely free and open source.</p>
+<p class="body-secondary">Run the tools yourself, or bring a sanitized sample and get a human-run measurement check — free, usually within 48 hours of a clean sample. The $10/$20 developer diagnostics previously listed here were removed on 2026-10-21; these sample runs and the open-source tools remain free. Enterprise buyer reviews have a separate, individually agreed scope.</p>
 <div class="pricing-grid"><div class="pricing-card"><div class="pricing-name">Run it yourself</div><div class="pricing-price">$0</div><ul class="pricing-list"><li>Local Healthcheck and conformance</li><li>Open-source SDK and public rules</li><li>No account or upload</li></ul><a class="btn btn-ghost" href="#how">Run the free check</a></div>
 <div class="pricing-card pricing-card-hi"><div class="pricing-name">Free measurement run</div><div class="pricing-price">$0</div><ul class="pricing-list"><li>Your 20–100 sanitized rows, our check</li><li>Findings as checkable claims; UNPROVABLE where your surface is blind</li><li>Fixture published under your handle only if you allow</li></ul><a class="btn btn-primary" href="services.html">Start a free run</a></div>
 <div class="pricing-card"><div class="pricing-name">Bring a provider surface</div><div class="pricing-price">$0</div><ul class="pricing-list"><li>External measurement runs for MCP/API providers</li><li>Mapping answered in writing; drift fails loudly</li><li>Public thread, so the next provider reads it</li></ul><a class="btn btn-ghost" href="https://github.com/roy-tong/verovo/issues/6">Issue #6</a></div></div>

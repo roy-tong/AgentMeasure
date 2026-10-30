@@ -1,4 +1,17 @@
-# Verovo Healthcheck
+# Verovo local CLI
+
+Buyer-side tools for AI service charges and delivery, with local developer diagnostics.
+The new **main-preview** `review` command evaluates separate charge and delivery
+criteria using local JSON evidence. It is not included in the v0.9.0 release tag.
+
+```bash
+python3 healthcheck/verovo review --sample --html buyer-review.html
+```
+
+Run from the repository root. [Buyer task guide](../docs/buyer-review.md) ·
+[Product definition](../docs/product-definition.md).
+
+## Developer Healthcheck
 
 **A local check-up report for your coding agent runs.**
 Point it at the logs your agent runtime already writes. It answers three
@@ -31,8 +44,8 @@ python3 healthcheck/verovo demo
 ```
 
 Historical note: the 0.4.0 wheel (2026-09) had a known first-command crash.
-Since v0.5.0 the release pipeline builds and smoke-tests the packaged wheel in
-a fresh environment before every push; PyPI is again the recommended path.
+The release pipeline builds and smoke-tests the packaged wheel. For the renamed
+Verovo project, use the Git installation above until its first PyPI publication.
 
 Python 3.9+ standard library only; zero runtime dependencies; no network code
 (a test enforces both).

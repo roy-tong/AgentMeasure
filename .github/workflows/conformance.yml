@@ -335,6 +335,7 @@ jobs:
           cd /tmp && /tmp/smoke/bin/verovo demo --no-history
           /tmp/smoke/bin/verovo selftest
           /tmp/smoke/bin/verovo recount --list-vendors
+          /tmp/smoke/bin/verovo review --sample --html /tmp/buyer-review.html --json /tmp/buyer-review.json
           /tmp/smoke/bin/verovo recount --sample
           printf '%s\n' '{"type":"assistant","message":{"id":"smoke"}}' > /tmp/response.jsonl
           /tmp/smoke/bin/verovo response-audit /tmp/response.jsonl

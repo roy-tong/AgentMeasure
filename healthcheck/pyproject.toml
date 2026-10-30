@@ -8,7 +8,7 @@ build-backend = "setuptools.build_meta"
 # "verovo-healthcheck" from schema v1 — do not rename inside exports.
 name = "verovo"
 version = "0.9.0"
-description = "Verovo — check-up report for coding agent runs + conformance pack for telemetry fixture verification. Zero external dependencies."
+description = "Buyer-side AI service charge and delivery review, supported bill recounts and local agent diagnostics. Zero external dependencies."
 readme = "README.md"
 requires-python = ">=3.9"
 license = { text = "MIT" }
@@ -39,6 +39,7 @@ verovo_healthcheck = [
     "fixtures/*.csv",
     "demo/*.jsonl",
     "demo/*.csv",
+    "demo/*.json",
     "pack_invariants.json",
     "vendor-rules.json",
     "lab/schemas/funnel-event.schema.json",
