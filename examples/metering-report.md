@@ -10,7 +10,7 @@ must be replaced with real provenance for a customer sample. It does not prove
 production correctness, invoice amounts, unit prices or customer value.
 
 ## Reproduce locally
-agentmeasure conformance --fixture metering-sample.jsonl --json metering-result.json
+verovo conformance --fixture metering-sample.jsonl --json metering-result.json
 
 Use CLI 0.7.1 or later. Version 0.7.0 omitted a required module from the wheel.
 Expected for this zero-cost example: 4 PASS, 1 UNPROVABLE (cost preservation); token/cache checks are NOT-SUPPORTED. Zero declared cost is not proof of missing cost fields.

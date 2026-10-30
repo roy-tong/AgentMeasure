@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Release notes — AgentMeasure</title>
-<meta name="description" content="What each AgentMeasure release ships, who it is for, and what you can do with it — written for the people using it, not the changelog for the people building it.">
+<title>Release notes — Verovo</title>
+<meta name="description" content="What each Verovo release ships, who it is for, and what you can do with it — written for the people using it, not the changelog for the people building it.">
 <link rel="stylesheet" href="light.css">
 <style>
 .rel{border:1px solid #e3e8ef;border-radius:14px;padding:26px 30px;background:#fff;margin:22px 0}
@@ -22,17 +22,17 @@ ul.feat code{background:#f0f2f5;padding:1px 5px;border-radius:4px;font-size:12.5
 .install .c{color:#8b96ab}
 .note{font-size:13px;color:#5c6575;margin-top:14px;border-left:3px solid #e3e8ef;padding-left:12px}
 </style>
-<link rel="canonical" href="https://roy-tong.github.io/AgentMeasure/releases.html">
+<link rel="canonical" href="https://roy-tong.github.io/verovo/releases.html">
 </head>
 <body>
 <header class="snav">
   <div class="snav-in">
-    <a class="snav-brand" href="index.html">AgentMeasure<span>_</span></a>
+    <a class="snav-brand" href="index.html"><img class="snav-mark" src="assets/verovo-mark.png" alt="" width="30" height="16">Verovo<span>_</span></a>
     <nav class="snav-links" aria-label="Sections">
       <a href="index.html#evidence">Evidence</a>
       <a href="index.html#pricing">Free runs</a>
       <a href="services.html">Free runs</a>
-      <a class="ext" href="https://github.com/roy-tong/AgentMeasure" target="_blank" rel="noopener">GitHub&nbsp;↗</a>
+      <a class="ext" href="https://github.com/roy-tong/verovo" target="_blank" rel="noopener">GitHub&nbsp;↗</a>
     </nav>
     <a class="snav-cta" href="services.html">Get a free run&nbsp;→</a>
   </div>
@@ -43,17 +43,17 @@ ul.feat code{background:#f0f2f5;padding:1px 5px;border-radius:4px;font-size:12.5
 <h1>Release notes</h1>
 <p class="lead">What each release ships, who it is for, and what you can do
 with it. Full engineering history lives in the
-<a href="https://github.com/roy-tong/AgentMeasure/blob/main/CHANGELOG.md">changelog</a>;
+<a href="https://github.com/roy-tong/verovo/blob/main/CHANGELOG.md">changelog</a>;
 this page is written for the people using the tool.</p>
 </section>
 
-<section class="rel"><h2>v0.8.0 <span class="tag">current CLI release</span></h2><div class="date">2026-10-15 · <a href="https://github.com/roy-tong/AgentMeasure/releases/tag/v0.8.0">GitHub Release</a></div><ul class="feat"><li>Compare Claude response snapshots across explicit JSONL inputs: repeated identities, conflicting usage and missing fields stay visible; no session or invoice total is inferred.</li><li>Run <code>agentmeasure recount --sample</code> with a bundled synthetic export. Report headers distinguish public-price estimates, unresolved rows and confirmed refunds.</li><li>Separate local diagnosis, metering QA and buyer-review entry points. $10/$20 services exclude invoice verification.</li><li>Optional hosted monthly reviews require a private repository, fresh period and reviewed input hash. GitHub hosting uploads data; local CLI remains available.</li></ul><div class="install">python -m pip install --upgrade agentmeasure<br>agentmeasure recount --sample</div><p class="note">511 tests. Payment checkout and buyer demand remain under validation. SDK stays 0.2.0.</p></section>
-<section class="rel"><h2>v0.7.2</h2><div class="date">2026-10-15 · <a href="https://github.com/roy-tong/AgentMeasure/releases/tag/v0.7.2">GitHub Release</a></div><ul class="feat"><li>Identify JSONL input format before choosing a check with <code>agentmeasure inspect-input sample.jsonl</code>.</li><li>Canonical provider observations receive the correct validator and onboarding path instead of unrelated FMT-002 errors.</li><li>Mixed, unknown and malformed inputs remain explicit. Format recognition is not a schema or conformance pass.</li></ul><p class="note">487 unit tests. No automatic mapping or new token/cache billing guarantees. SDK remains 0.2.0.</p></section>
-<section class="rel"><h2>v0.7.1</h2><div class="date">2026-10-15 · <a href="https://github.com/roy-tong/AgentMeasure/releases/tag/v0.7.1">GitHub Release</a></div><ul class="feat"><li>Fixes the installed conformance command: the wheel now includes its required analysis module.</li><li>Sample generation writes to your current working directory; missing fixture input explains the next step.</li><li>Installed-wheel smoke tests now run sample generation and conformance, not only Healthcheck.</li><li>Clearer local-export wording, first-run help, sample reports and email fallback templates.</li></ul><div class="install">python -m pip install --upgrade agentmeasure<br>agentmeasure conformance --new-vector my-sample --out ./vectors</div><p class="note">Upgrade from 0.7.0 if you use conformance. SDK remains 0.2.0. Payment checkout remains pending; this release does not claim a completed purchase flow.</p></section>
-<section class="rel"><h2>v0.7.0</h2><div class="date">2026-10-14 · <a href="https://github.com/roy-tong/AgentMeasure/releases/tag/v0.7.0">GitHub Release</a></div><ul class="feat"><li>Linkable metering claims index with evidence and corrections.</li><li>Standalone share-summary validation and Windows console compatibility.</li><li>$10 Healthcheck and $20 Metering QA email applications; scope and terms on the <a href="services.html">service page</a>.</li><li>CLI 0.7.0 on PyPI; independently versioned Provider SDK 0.2.0 on npm.</li></ul><div class="install">pip install agentmeasure<br>agentmeasure demo<br>npm install @agentmeasure/mcp</div><p class="note">477 Healthcheck unit tests passed on 2026-10-14. Test results and public audit findings do not establish customer value or paid adoption.</p></section>
+<section class="rel"><h2>v0.9.0 <span class="tag">current CLI release</span></h2><div class="date">2026-10-30 · <a href="https://github.com/roy-tong/verovo/releases/tag/v0.9.0">GitHub Release</a></div><ul class="feat"><li><strong>AgentMeasure is now Verovo.</strong> Same measure, new name and logo: <code>pip install verovo</code>, command <code>verovo</code>, SDK <code>@verovo/mcp</code> 0.3.0.</li><li>Environment variables move to <code>VEROVO_*</code>, the local data directory to <code>~/.verovo/</code>, and schema namespaces to <code>verovo.lab/*</code> and <code>verovo.commercial/*</code>. Scripts pinned to the old names should stay on 0.8.0.</li><li>Recorded evidence stays valid: external conformance vectors and run logs are unchanged, and <code>agentmeasure.lab/*</code> remains a permanent legacy alias in the schemas.</li><li>New wordmark and owl mark, favicon, Open Graph card and caller-identity diagram; usage rules in <code>docs/brand.md</code>.</li></ul><div class="install">python -m pip install --upgrade verovo<br>verovo demo</div><p class="note">511 tests. SDK 0.3.0. A rename is not adoption, a customer, or validation of the commercial thesis.</p></section><section class="rel"><h2>v0.8.0 </h2><div class="date">2026-10-15 · <a href="https://github.com/roy-tong/verovo/releases/tag/v0.8.0">GitHub Release</a></div><ul class="feat"><li>Compare Claude response snapshots across explicit JSONL inputs: repeated identities, conflicting usage and missing fields stay visible; no session or invoice total is inferred.</li><li>Run <code>verovo recount --sample</code> with a bundled synthetic export. Report headers distinguish public-price estimates, unresolved rows and confirmed refunds.</li><li>Separate local diagnosis, metering QA and buyer-review entry points. $10/$20 services exclude invoice verification.</li><li>Optional hosted monthly reviews require a private repository, fresh period and reviewed input hash. GitHub hosting uploads data; local CLI remains available.</li></ul><div class="install">python -m pip install --upgrade verovo<br>verovo recount --sample</div><p class="note">511 tests. Payment checkout and buyer demand remain under validation. SDK stays 0.2.0.</p></section>
+<section class="rel"><h2>v0.7.2</h2><div class="date">2026-10-15 · <a href="https://github.com/roy-tong/verovo/releases/tag/v0.7.2">GitHub Release</a></div><ul class="feat"><li>Identify JSONL input format before choosing a check with <code>verovo inspect-input sample.jsonl</code>.</li><li>Canonical provider observations receive the correct validator and onboarding path instead of unrelated FMT-002 errors.</li><li>Mixed, unknown and malformed inputs remain explicit. Format recognition is not a schema or conformance pass.</li></ul><p class="note">487 unit tests. No automatic mapping or new token/cache billing guarantees. SDK remains 0.2.0.</p></section>
+<section class="rel"><h2>v0.7.1</h2><div class="date">2026-10-15 · <a href="https://github.com/roy-tong/verovo/releases/tag/v0.7.1">GitHub Release</a></div><ul class="feat"><li>Fixes the installed conformance command: the wheel now includes its required analysis module.</li><li>Sample generation writes to your current working directory; missing fixture input explains the next step.</li><li>Installed-wheel smoke tests now run sample generation and conformance, not only Healthcheck.</li><li>Clearer local-export wording, first-run help, sample reports and email fallback templates.</li></ul><div class="install">python -m pip install --upgrade verovo<br>verovo conformance --new-vector my-sample --out ./vectors</div><p class="note">Upgrade from 0.7.0 if you use conformance. SDK remains 0.2.0. Payment checkout remains pending; this release does not claim a completed purchase flow.</p></section>
+<section class="rel"><h2>v0.7.0</h2><div class="date">2026-10-14 · <a href="https://github.com/roy-tong/verovo/releases/tag/v0.7.0">GitHub Release</a></div><ul class="feat"><li>Linkable metering claims index with evidence and corrections.</li><li>Standalone share-summary validation and Windows console compatibility.</li><li>$10 Healthcheck and $20 Metering QA email applications; scope and terms on the <a href="services.html">service page</a>.</li><li>CLI 0.7.0 on PyPI; independently versioned Provider SDK 0.2.0 on npm.</li></ul><div class="install">pip install verovo<br>verovo demo<br>npm install @verovo/mcp</div><p class="note">477 Healthcheck unit tests passed on 2026-10-14. Test results and public audit findings do not establish customer value or paid adoption.</p></section>
 <div class="rel">
 <h2>v0.6.0</h2>
-<div class="date">2026-10-11 · <a href="https://github.com/roy-tong/AgentMeasure/releases/tag/v0.6.0">GitHub Release</a> · PyPI · npm</div>
+<div class="date">2026-10-11 · <a href="https://github.com/roy-tong/verovo/releases/tag/v0.6.0">GitHub Release</a> · PyPI · npm</div>
 
 <h3>Who it is for</h3>
 <div class="cols">
@@ -65,18 +65,18 @@ this page is written for the people using the tool.</p>
 
 <h3>What you can do now</h3>
 <ul class="feat">
-<li><strong>Re-check any single finding.</strong> <code>agentmeasure drilldown</code> replays one conversation end to end: the row exactly as exported, every vendor-rule step in plain language, the verdict, and the command to reproduce it. The explanation walks the same branches as the engine — a test pins them together, so they cannot drift.</li>
+<li><strong>Re-check any single finding.</strong> <code>verovo drilldown</code> replays one conversation end to end: the row exactly as exported, every vendor-rule step in plain language, the verdict, and the command to reproduce it. The explanation walks the same branches as the engine — a test pins them together, so they cannot drift.</li>
 <li><strong>Track what the review was worth, in three books.</strong> Recovered cash (<code>recovery</code>), hours saved (<code>delivery</code>) and — new in this release — decisions made differently (<code>decisions</code>): payments approved or held, discounts requested, renewals signed, each linked to the finding it rests on. Three kinds of value, three separate records, never blended.</li>
 <li><strong>Send someone a rule, not a PDF.</strong> Every vendor now has a public <a href="rules/index.html">rule card</a> — price, billing trigger, reopen handling, silence behaviour, closure timers, each fact with its source and the registry version it was read from. Linkable in an email or a ticket.</li>
-<li><strong>Wear your evidence stage.</strong> <a href="badges.html">AMS-1 badges</a> state one thing only: how far a verification artifact has traveled — self-attested, recomputable, independently reproduced, counterparty accepted. No composite score, no A–F grade, by explicit design.</li>
+<li><strong>Wear your evidence stage.</strong> <a href="badges.html">VSS-1 badges</a> state one thing only: how far a verification artifact has traveled — self-attested, recomputable, independently reproduced, counterparty accepted. No composite score, no A–F grade, by explicit design.</li>
 <li><strong>Install from anywhere.</strong> PyPI, npm and GitHub all serve the current release, and CI now smoke-tests the packaged wheel in a fresh environment on every push — “tests pass but the install crashes” is the bug this makes impossible to ship.</li>
 <li>Three new external conformance vectors, including the first <strong>availability-certification vector, contributed via pull request</strong> — the external route is growing from fixtures toward formal vectors.</li>
 </ul>
 
 <div class="install"><span class="c"># Python 3.9+, zero dependencies, runs offline</span>
-pip install agentmeasure
-agentmeasure demo
-agentmeasure drilldown --export your-export.csv --vendor intercom --conversation C-123
+pip install verovo
+verovo demo
+verovo drilldown --export your-export.csv --vendor intercom --conversation C-123
 <span class="c"># no install at all: drop an export into the browser recount — website link above</span></div>
 
 <p class="note">Everything runs locally. No message text, customer content or
@@ -86,7 +86,7 @@ for a first look does not change what the evidence says.</p>
 
 <div class="rel">
 <h2>v0.5.0</h2>
-<div class="date">2026-10-03 · <a href="https://github.com/roy-tong/AgentMeasure/releases/tag/v0.5.0">GitHub Release</a></div>
+<div class="date">2026-10-03 · <a href="https://github.com/roy-tong/verovo/releases/tag/v0.5.0">GitHub Release</a></div>
 
 <p class="lead" style="margin-top:10px">The buyer-side verification system,
 complete: the full review pipeline (<code>prepare</code> → <code>recount
@@ -102,11 +102,11 @@ tests across the release.</p>
 </div>
 <footer class="sfoot">
   <div class="sfoot-in">
-    <span class="sfoot-brand">AgentMeasure<span>_</span></span>
+    <span class="sfoot-brand">Verovo<span>_</span></span>
     <a href="index.html">Home</a>
     <a href="claims.html">Claims index</a>
     <a href="rules/index.html">Vendor rule cards</a>
-    <a href="https://github.com/roy-tong/AgentMeasure" target="_blank" rel="noopener">GitHub</a>
+    <a href="https://github.com/roy-tong/verovo" target="_blank" rel="noopener">GitHub</a>
     <span class="sfoot-note">Open source under MIT. The verification rules stay public and free.</span>
   </div>
 </footer>

@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>A tool result in the next LLM context does not mean the agent used it — AgentMeasure</title>
+  <title>A tool result in the next LLM context does not mean the agent used it — Verovo</title>
   <meta name="description" content="Context availability, reference, and causal influence are three different facts. Most agent usage metrics collapse them into one — and every downstream number inherits the ambiguity.">
   <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
-  <link rel="canonical" href="https://roy-tong.github.io/AgentMeasure/blog/context-availability.html">
+  <link rel="canonical" href="https://roy-tong.github.io/verovo/blog/context-availability.html">
   <meta property="og:type" content="article">
-  <meta property="og:site_name" content="AgentMeasure">
+  <meta property="og:site_name" content="Verovo">
   <meta property="og:title" content="A tool result in the next LLM context does not mean the agent used it">
   <meta property="og:description" content="Context availability, reference, and causal influence are three different facts. Most agent usage metrics collapse them into one.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -36,10 +36,10 @@
 </head>
 <body>
   <main class="post" id="main">
-    <a class="post-back" href="../index.html">← AgentMeasure</a>
+    <a class="post-back" href="../index.html">← Verovo</a>
     <p class="post-k">Research note · Semantics</p>
     <h1>A tool result in the next LLM context does not mean the agent&nbsp;used&nbsp;it</h1>
-    <p class="post-meta">2026-08-25 · cross-posted from <a href="https://github.com/roy-tong/AgentMeasure/issues/11" target="_blank" rel="noopener">issue #11</a> and <a href="https://github.com/roy-tong/AgentMeasure/blob/main/design-rationale/DR-005-evidence-calibrated-consumption-claims.md" target="_blank" rel="noopener">DR-005</a></p>
+    <p class="post-meta">2026-08-25 · cross-posted from <a href="https://github.com/roy-tong/verovo/issues/11" target="_blank" rel="noopener">issue #11</a> and <a href="https://github.com/roy-tong/verovo/blob/main/design-rationale/DR-005-evidence-calibrated-consumption-claims.md" target="_blank" rel="noopener">DR-005</a></p>
 
     <p>You shipped MCP observability. Your dashboard shows a green checkmark: <strong>consumed</strong>. The tool returned a result, and <code>mcp_tool.name</code> shows up in the next model request. Chain closed, right?</p>
     <p>Here is what that checkmark actually proves — and what it doesn't.</p>
@@ -86,11 +86,11 @@ Evidence for influence, ranked:
     <p>A measurement system that knows which layer it's in can say exactly what it knows — and that turns out to be the harder, more valuable feature than another dashboard.</p>
 
     <h2>What we did with this</h2>
-    <p>This boundary exposed an overclaim in our own spec: our Claude Code profile called <code>mcp_tool.name</code> in the next request a "consumption signal" — the first platform where consumption was "empirically proven." By the two states above, that signal certifies <strong>context availability</strong>, and we've corrected the claim and renamed the signal (<a href="https://github.com/roy-tong/AgentMeasure/issues/11" target="_blank" rel="noopener">issue #11</a>, <a href="https://github.com/roy-tong/AgentMeasure/blob/main/design-rationale/DR-005-evidence-calibrated-consumption-claims.md" target="_blank" rel="noopener">DR-005</a>).</p>
+    <p>This boundary exposed an overclaim in our own spec: our Claude Code profile called <code>mcp_tool.name</code> in the next request a "consumption signal" — the first platform where consumption was "empirically proven." By the two states above, that signal certifies <strong>context availability</strong>, and we've corrected the claim and renamed the signal (<a href="https://github.com/roy-tong/verovo/issues/11" target="_blank" rel="noopener">issue #11</a>, <a href="https://github.com/roy-tong/verovo/blob/main/design-rationale/DR-005-evidence-calibrated-consumption-claims.md" target="_blank" rel="noopener">DR-005</a>).</p>
     <p>Claude Code is still genuinely notable — it's the first client runtime where availability is certifiable at all. That's a real capability. It's one state short of what we claimed, and the state is the whole point.</p>
     <p>This is why agent usage needs evidence-aware measurement semantics: metrics that name what they observe, dashboards that mark what they don't.</p>
 
-    <p class="post-meta" style="margin-top:44px">AgentMeasure is an open measurement standard for software used by AI agents — <a href="https://github.com/roy-tong/AgentMeasure" target="_blank" rel="noopener">GitHub</a> · <a href="../index.html">what it measures</a></p>
+    <p class="post-meta" style="margin-top:44px">Verovo is an open measurement standard for software used by AI agents — <a href="https://github.com/roy-tong/verovo" target="_blank" rel="noopener">GitHub</a> · <a href="../index.html">what it measures</a></p>
   </main>
 </body>
 </html>

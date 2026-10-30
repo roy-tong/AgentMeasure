@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tool bill coverage | Verovo</title>
+  <meta name="description" content="Verovo catalog for domestic and overseas agent tool bills: token, credits, per-call, browser-hour, sandbox, OCR, voice and generation. Buyer and seller audit views, plus local CDP collection.">
+  <link rel="icon" type="image/svg+xml" href="./assets/favicon.svg">
+  <link rel="canonical" href="https://roy-tong.github.io/verovo/tools.html">
+  <meta name="theme-color" content="#090C10">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Tool bill coverage | Verovo">
+  <meta property="og:description" content="Cataloged agent-tool billing models, buyer and seller audit views, and local CDP collection. Cataloged is not the same as live-validated.">
+  <meta property="og:url" content="https://roy-tong.github.io/verovo/tools.html">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css">
+  <script defer src="./script.js"></script>
+</head>
+<body>
+  <header class="nav">
+    <div class="nav-inner">
+      <a class="brand" href="index.html" aria-label="Verovo home"><span class="brand-plate"><img class="brand-mark" src="./assets/verovo-mark.png" alt="" width="42" height="23"></span>Verovo<span class="brand-cursor">_</span></a>
+      <nav class="nav-links" id="nav-links" aria-label="Sections">
+        <a href="index.html#whynow">Buyer decisions</a>
+        <a href="tools.html">Tool bills</a>
+        <a href="index.html#evidence">Evidence</a>
+        <a href="index.html#developers">Developer tools</a>
+        <a class="ext" href="https://github.com/roy-tong/verovo/tree/main/buyer-ledger">GitHub ↗</a>
+      </nav>
+      <div class="nav-cta">
+        <a class="btn btn-primary btn-sm" href="https://github.com/roy-tong/verovo/tree/main/buyer-ledger">Open Buyer Ledger →</a>
+        <button class="nav-toggle" id="nav-toggle" aria-expanded="false" aria-controls="nav-links" aria-label="Toggle menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-grid">
+        <div class="hero-copy">
+          <p class="eyebrow">Research preview · domestic and overseas tools</p>
+          <h1>One review layer<br><em>for many tool bills.</em></h1>
+          <p class="lede">Agent stacks now charge by tokens, searches, image outputs, browser hours, sandbox seconds, characters, credits and seats. Verovo catalogs the billing dimensions, imports the evidence, and separates what the bill says from what usage can prove.</p>
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="https://github.com/roy-tong/verovo/blob/main/buyer-ledger/README.md">Run locally</a>
+            <a class="btn btn-ghost" href="#matrix">See the support matrix</a>
+          </div>
+          <p class="note">Cataloged ≠ connected ≠ live-validated. The catalog currently has <strong>26 tools</strong>; <strong>0</strong> have a live customer-bill validation. No customer savings or recovery claims are made here.</p>
+        </div>
+        <div class="console" aria-label="Tool bill coverage example">
+          <div class="console-bar">
+            <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+            <span class="console-title">buyer-ledger catalog list</span>
+          </div>
+          <div class="console-body">
+            <div class="cline"><span class="tag-ok">READY</span><span class="path"> Anthropic</span><span class="num right">token + search + hour</span></div>
+            <div class="cline"><span class="tag-ok">READY</span><span class="path"> Coze</span><span class="num right">credits + third-party cash</span></div>
+            <div class="cline"><span class="tag-ok">READY</span><span class="path"> Amap</span><span class="num right">per 10k + quota</span></div>
+            <div class="cline"><span class="tag-ok">READY</span><span class="path"> Browserbase</span><span class="num right">hour + fetch + proxy</span></div>
+            <div class="cline rule"></div>
+            <div class="cline"><span class="tag-unknown">NOT YET</span><span class="path"> live bill validation</span><span class="num right">0 tools</span></div>
+            <div class="cline"><span class="k">cataloged ≠ invoice-connected</span></div>
+            <div class="cline cursor-line"><span class="cursor">▌</span></div>
+          </div>
+          <div class="console-foot"><span class="mono-xs">source: buyer-ledger/catalog/tools.json · 2026-10-29</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="matrix"><div class="wrap">
+      <h2>What the product can model</h2>
+      <p class="body-secondary">A tool is not “supported” because its logo appears here. Each row records the billing unit, bill source, audit capability and validation state. Unknown providers stay visible instead of being forced into a known format.</p>
+      <div class="matrix-wrap">
+        <table class="matrix">
+          <thead><tr><th>Family</th><th>Examples</th><th>Bill dimensions</th><th>Buyer / seller checks</th></tr></thead>
+          <tbody>
+            <tr><th>Agent platforms</th><td>Coze · Zapier · Lindy</td><td>credits · tasks · seats · model/plugin pass-through</td><td>Estimated credits vs cash bill; third-party cash; included quota</td></tr>
+            <tr><th>Model platforms</th><td>Anthropic · OpenAI · Gemini · Bailian · Ark · Hunyuan</td><td>tokens · search calls · container/session hours</td><td>Token vs tool fee; project/tag allocation; price version</td></tr>
+            <tr><th>Search & web</th><td>Tavily · Exa · Firecrawl · Bocha</td><td>credits · requests · pages · runs</td><td>Depth/source multipliers; included credits; overage</td></tr>
+            <tr><th>Browser & sandbox</th><td>Browserbase · E2B</td><td>browser-hour · proxy GB · CPU/memory-second</td><td>Session boundaries; idle/terminated states; resource specs</td></tr>
+            <tr><th>OCR & voice</th><td>AWS Textract · Azure Doc Intelligence · Deepgram · ElevenLabs</td><td>pages · minutes · characters</td><td>Successful pages; character/minute rounding; layered voice fees</td></tr>
+            <tr><th>Media</th><td>Replicate · Coze image/video</td><td>output images · seconds · resolution</td><td>Request count ≠ output count; failed generation rules</td></tr>
+            <tr><th>Maps & weather</th><td>Amap · QWeather · OpenWeather</td><td>requests · monthly tiers · quota · minimum charge</td><td>Service-family quotas; tier accumulation; free allowance</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="note">Domestic examples: Coze, Bailian, Ark, Aliyun OCR, Baidu OCR, Amap, QWeather, Hunyuan, Bocha. Overseas examples: Anthropic, OpenAI, Gemini, Tavily, Exa, Firecrawl, Browserbase, E2B, Deepgram, ElevenLabs, Replicate, OpenWeather, Zapier, Lindy, AWS Textract, Azure Document Intelligence.</p>
+    </div></section>
+
+    <section class="section section-panel" id="roles"><div class="wrap">
+      <h2>One ledger, two questions</h2>
+      <div class="who-grid">
+        <div class="who-card"><span class="who-k">Buyer</span><p>Did the provider charge the agreed amount? Separate invoice facts, platform usage and a rule-based recount. Keep free quota, prepaid packs, credits, tax and unlinked usage visible.</p><span class="who-v">Charge review</span></div>
+        <div class="who-card"><span class="who-k">Seller</span><p>Is metered usage fully represented in billing? Surface unpriced usage, unlinked usage and review gaps. Do not call an evidence gap “leakage revenue.”</p><span class="who-v">Metering integrity</span></div>
+        <div class="who-card"><span class="who-k">Evidence</span><p>Every source document, row, pricing policy and browser run keeps a hash, locator and audit trail. Missing evidence produces review_required, not zero.</p><span class="who-v">Traceable, not guessed</span></div>
+      </div>
+      <div class="terminal" style="margin-top:36px"><div class="terminal-body"><pre style="white-space:pre-wrap">python3 -m buyer_ledger catalog summary
+python3 -m buyer_ledger catalog list --region global --role buyer
+python3 -m buyer_ledger catalog coverage --period 2026-10
+python3 -m buyer_ledger report --period 2026-10 --perspective seller --out seller.md</pre></div></div>
+    </div></section>
+
+    <section class="section" id="cdp"><div class="wrap">
+      <h2>CDP attach, not credential handoff</h2>
+      <p class="body-secondary">Some bill portals have no API. Buyer Ledger can attach to a user-started Chrome over the local DevTools Protocol, reuse the logged-in session, execute a reviewed recipe, download the bill, and push it through the same ingestion and audit pipeline.</p>
+      <div class="trial-points">
+        <div class="trial-point"><span class="trial-k">1 · User starts Chrome</span><p>A dedicated profile opens a loopback debugging port. The user signs in and completes MFA; Verovo never handles the password.</p></div>
+        <div class="trial-point"><span class="trial-k">2 · Reviewed recipe runs</span><p>HTTPS and allowed hosts are checked before actions. Cross-origin navigation and downloads are blocked before they can enter the ledger.</p></div>
+        <div class="trial-point"><span class="trial-k">3 · Bill is analyzed</span><p>The downloaded artifact keeps run_id, recipe hash and audit path. Parsing can be deterministic or produce a pending draft for review.</p></div>
+      </div>
+      <div class="terminal" style="margin-top:32px"><div class="terminal-body"><pre style="white-space:pre-wrap"># Local Chrome must already be running with --remote-debugging-port=9222
+python3 -m buyer_ledger session cdp --endpoint http://127.0.0.1:9222
+python3 -m buyer_ledger fetch --recipe recipe.json --period 2026-10 --cdp http://127.0.0.1:9222 --analyze --out report.md</pre></div></div>
+      <p class="note">Security boundary: loopback only; no query tokens; any local process that can reach the debug port can control that browser. Use a dedicated profile, close it after the run, and never point this at a daily browser. Recipe actions are not a sandbox; use platform read-only roles where available.</p>
+    </div></section>
+
+    <section class="section section-panel" id="cases"><div class="wrap">
+      <h2>Research cases, not customer logos</h2>
+      <div class="claims">
+        <div class="claim"><div class="claim-main"><span class="claim-no">01</span><p class="claim-line"><span>Coze</span></p><p class="claim-cap">One enterprise bill can contain credits, model fees, official plugins, third-party plugin cash, voice and storage. “One agent bill” is not one fee.</p></div></div>
+        <div class="claim"><div class="claim-main"><span class="claim-no">02</span><p class="claim-line"><span>Anthropic</span></p><p class="claim-cap">Web Search is priced per 1K searches and excludes token processing; Code Execution has free hours then container-hour pricing; Managed Agents add session-hour. Four evidence lines for one task.</p></div></div>
+        <div class="claim"><div class="claim-main"><span class="claim-no">03</span><p class="claim-line"><span>Amap · QWeather</span></p><p class="claim-cap">Quota, prepaid packs, service-family exclusions, monthly tiers and a minimum charge all change the payable amount. A simple “calls × unit price” review is not enough.</p></div></div>
+      </div>
+      <p class="note">These are public-pricing research examples. They do not claim a customer, refund, saving or live integration.</p>
+      <div class="trial-actions"><a class="btn btn-primary" href="https://github.com/roy-tong/verovo/tree/main/buyer-ledger">Read the implementation</a><a class="btn btn-ghost" href="https://github.com/roy-tong/verovo/blob/main/buyer-ledger/REVIEW-20261029.md">Read the review limits</a></div>
+    </div></section>
+
+    <section class="section" id="complaints"><div class="wrap">
+      <h2>What public billing complaints actually show</h2>
+      <p class="body-secondary">A SURE 1.6 study collected 1,949 public discovery records, read 150, and admitted 66 strict evidence records. It is exploratory: audit fails 3/12 gates, Chinese sources were unreachable, and only 3 of 18 required vendors produced admissible evidence.</p>
+      <div class="audit-numbers">
+        <div class="an"><span class="an-v">22</span><span class="an-k">credits expire / reset / unusable</span></div>
+        <div class="an"><span class="an-v">9</span><span class="an-k">unexpected charge / hard-limit failure</span></div>
+        <div class="an"><span class="an-v">8</span><span class="an-k">auto-recharge / automatic debit</span></div>
+        <div class="an"><span class="an-v">2</span><span class="an-k">price increase (not the main theme)</span></div>
+      </div>
+      <div class="who-grid" style="margin-top:32px">
+        <div class="who-card"><span class="who-k">The pattern</span><p>Users react strongly when paid credits expire, a spending cap fails, auto-recharge is invisible, or the usage dashboard cannot reproduce the invoice. Small amounts can still trigger chargebacks.</p><span class="who-v">Ownership + visibility</span></div>
+        <div class="who-card"><span class="who-k">For the buyer ledger</span><p>Model credits, expiry, auto-recharge, hard caps, included quota and cash billing separately. Keep a queue of unexplained charges rather than forcing them into zero.</p><span class="who-v">Entitlement ledger</span></div>
+        <div class="who-card"><span class="who-k">For the seller ledger</span><p>Check whether metered usage is represented in billing. Unpriced or unlinked usage remains an evidence gap; it is not automatically leakage revenue.</p><span class="who-v">Metering integrity</span></div>
+      </div>
+      <p class="note">Not a complaint rate, not a market validation, and not a claim about any vendor's overall conduct. A larger SURE discovery expansion now holds 50,000 unique public records (HN 49,090); strict evidence remains 66. Discovery volume is not evidence volume. <a href="https://github.com/roy-tong/verovo/blob/main/buyer-ledger/COMPLAINTS-20261029.md">Read the bounded study summary →</a></p>
+    </div></section>
+  </main>
+
+  <footer class="footer"><div class="wrap">
+    <div class="footer-grid">
+      <div class="footer-brand"><span class="brand"><span class="brand-plate"><img class="brand-mark" src="./assets/verovo-mark.png" alt="" width="42" height="23"></span>Verovo<span class="brand-cursor">_</span></span><p>Evidence for AI service charges and delivery.</p></div>
+      <nav class="footer-col" aria-label="Product"><span class="footer-k">Product</span><a href="index.html">Overview</a><a href="tools.html">Tool bills</a><a href="recount.html">Recount</a><a href="services.html">Free runs</a></nav>
+      <nav class="footer-col" aria-label="Project"><span class="footer-k">Project</span><a href="https://github.com/roy-tong/verovo">GitHub</a><a href="releases.html">Releases</a><a href="https://github.com/roy-tong/verovo/blob/main/ROADMAP.md">Roadmap</a></nav>
+      <nav class="footer-col" aria-label="Evidence"><span class="footer-k">Evidence</span><a href="claims.html">Claims index</a><a href="https://github.com/roy-tong/verovo/blob/main/buyer-ledger/REVIEW-20261029.md">Buyer Ledger review</a><a href="https://github.com/roy-tong/verovo/blob/main/standard/SETTLEMENT.md">VSS-1</a></nav>
+    </div>
+    <div class="footer-bottom"><span>Open source under MIT.</span><span class="footer-epigraph">Cataloged is not connected. Connected is not live-validated.</span></div>
+  </div></footer>
+</body>
+</html>

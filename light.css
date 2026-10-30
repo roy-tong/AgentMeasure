@@ -1,5 +1,5 @@
 /* ════════════════════════════════════════════════════════════════
-   AgentMeasure — light base for evidence & service pages.
+   Verovo — light base for evidence & service pages.
    The dark landing (styles.css) is the instrument; these sheets are
    the paper the findings are printed on. Same vocabulary, light surface.
    ════════════════════════════════════════════════════════════════ */
@@ -53,9 +53,11 @@ code { background: #f0f2f5; padding: 1px 5px; border-radius: 4px; font-size: 12.
   height: 52px; display: flex; align-items: center; gap: 22px;
 }
 .snav-brand {
+  display: inline-flex; align-items: center; gap: 8px;
   font-family: var(--mono); font-weight: 600; font-size: 14.5px;
   color: var(--ink); white-space: nowrap;
 }
+.snav-mark { display: block; width: 26px; height: 14px; }
 .snav-brand span { color: var(--green); }
 .snav-brand:hover { text-decoration: none; }
 .snav-links { display: flex; align-items: center; gap: 20px; margin-right: auto; }

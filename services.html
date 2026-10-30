@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Free measurement runs — AgentMeasure</title>
+<title>Free measurement runs — Verovo</title>
 <meta name="description" content="Free, human-run measurement checks: bring 20-100 sanitized rows, get a checkable report within 48 hours. Open-source project; fixtures published under your handle only if you allow.">
 <link rel="stylesheet" href="light.css">
 
@@ -21,20 +21,20 @@
 .snippet{background:#f6f7f9;border:1px solid #e3e8ef;border-radius:8px;padding:10px 14px;font-size:12.5px;overflow-x:auto;font-family:ui-monospace,Menlo,monospace;max-width:64ch}
 h2{margin-top:34px}
 </style>
-<link rel="canonical" href="https://roy-tong.github.io/AgentMeasure/services.html">
+<link rel="canonical" href="https://roy-tong.github.io/verovo/services.html">
 </head>
 <body>
 <header class="snav">
   <div class="snav-in">
-    <a class="snav-brand" href="index.html">AgentMeasure<span>_</span></a>
+    <a class="snav-brand" href="index.html"><img class="snav-mark" src="assets/verovo-mark.png" alt="" width="30" height="16">Verovo<span>_</span></a>
     <nav class="snav-links" aria-label="Sections">
       <a href="first-look.html">Buyer review scope</a>
       <a href="index.html#evidence">Evidence</a>
       <a href="index.html#pricing">Free runs</a>
       <a href="services.html">Free measurement runs</a>
-      <a class="ext" href="https://github.com/roy-tong/AgentMeasure" target="_blank" rel="noopener">GitHub&nbsp;↗</a>
+      <a class="ext" href="https://github.com/roy-tong/verovo" target="_blank" rel="noopener">GitHub&nbsp;↗</a>
     </nav>
-    <a class="snav-cta" href="https://github.com/roy-tong/AgentMeasure/issues/6">Start a free run&nbsp;→</a>
+    <a class="snav-cta" href="https://github.com/roy-tong/verovo/issues/6">Start a free run&nbsp;→</a>
   </div>
 </header>
 <a class="skip-link" href="#main">Skip to content</a>
@@ -42,7 +42,7 @@ h2{margin-top:34px}
 <section>
 <h1>Free measurement runs — you bring the sample, we run the check</h1>
 <p class="lead">The CLI tools are <strong>free and local</strong>. If you want a human-run measurement check on your own sanitized data, that is free too. Bring <strong>20–100 anonymized rows</strong> (or a public export) and we return a measurement check, usually within <strong>48 hours</strong> of a clean sample. You keep the report either way.</p>
-<p class="note"><strong>Everything on this page is free.</strong> The $10 / $20 paid diagnostics previously listed here were removed on 2026-10-21 — the project is now entirely free and open source. We do not quote prices, take payments, or condition anything on one. <a href="https://github.com/roy-tong/AgentMeasure/blob/main/README.zh-CN.md">中文说明</a></p>
+<p class="note"><strong>Everything on this page is free.</strong> The $10 / $20 paid diagnostics previously listed here were removed on 2026-10-21 — the project is now entirely free and open source. We do not quote prices, take payments, or condition anything on one. <a href="https://github.com/roy-tong/verovo/blob/main/README.zh-CN.md">中文说明</a></p>
 </section>
 
 <section id="what">
@@ -59,15 +59,15 @@ h2{margin-top:34px}
 <h2>How to start</h2>
 <div class="sku">
 <h3>Option 1 — GitHub issue #6 (preferred)</h3>
-<p>Comment on <a href="https://github.com/roy-tong/AgentMeasure/issues/6">issue #6 — external measurement runs</a> with your project/repo, protocol (MCP / API / other), and one agent-facing capability you want measured. The thread is public on purpose: the next provider reads your run's answer. First response within 24 hours.</p>
+<p>Comment on <a href="https://github.com/roy-tong/verovo/issues/6">issue #6 — external measurement runs</a> with your project/repo, protocol (MCP / API / other), and one agent-facing capability you want measured. The thread is public on purpose: the next provider reads your run's answer. First response within 24 hours.</p>
 </div>
 <div class="sku">
 <h3>Option 2 — email</h3>
 <p>Write to <strong>tongroy18@gmail.com</strong> with the same three lines and your sample attached or linked. Same terms: free, 24h first response, 48h check after a clean sample.</p>
 </div>
-<p>The full guide is <a href="https://github.com/roy-tong/AgentMeasure/blob/main/docs/provider-onboarding.md">docs/provider-onboarding.md</a> — three entry paths, five steps, validate-before-sending, and the four criteria that define a successful run (the same yardstick for both sides).</p>
-<p>Want to run the same review yourself? The full method — intake checks, the FMT-002 mapping guide, the mapper script and both report templates — is open: <a href="https://github.com/roy-tong/AgentMeasure/tree/main/docs/review-method">docs/review-method/</a>.</p>
-<p class="note">Sample format: canonical JSONL per the <a href="https://github.com/roy-tong/AgentMeasure/blob/main/reference/collector-input.md">collector input contract</a>. <code>python3 schemas/validate_jsonl.py your.jsonl</code> must exit 0 before sending — that is the only format gate. Mapping method and the honest-absence discipline are in <a href="https://github.com/roy-tong/AgentMeasure/blob/main/registry/provider-mapping.md">registry/provider-mapping.md</a>.</p>
+<p>The full guide is <a href="https://github.com/roy-tong/verovo/blob/main/docs/provider-onboarding.md">docs/provider-onboarding.md</a> — three entry paths, five steps, validate-before-sending, and the four criteria that define a successful run (the same yardstick for both sides).</p>
+<p>Want to run the same review yourself? The full method — intake checks, the FMT-002 mapping guide, the mapper script and both report templates — is open: <a href="https://github.com/roy-tong/verovo/tree/main/docs/review-method">docs/review-method/</a>.</p>
+<p class="note">Sample format: canonical JSONL per the <a href="https://github.com/roy-tong/verovo/blob/main/reference/collector-input.md">collector input contract</a>. <code>python3 schemas/validate_jsonl.py your.jsonl</code> must exit 0 before sending — that is the only format gate. Mapping method and the honest-absence discipline are in <a href="https://github.com/roy-tong/verovo/blob/main/registry/provider-mapping.md">registry/provider-mapping.md</a>.</p>
 </section>
 
 <section id="runs">
@@ -77,26 +77,26 @@ h2{margin-top:34px}
 
 <section>
 <h2>Prepare a summary locally first (optional)</h2>
-<div class="snippet">agentmeasure check --json report.json
-agentmeasure share report.json --out summary.json
-agentmeasure validate summary.json</div>
+<div class="snippet">verovo check --json report.json
+verovo share report.json --out summary.json
+verovo validate summary.json</div>
 <p class="note"><code>--out</code> writes immediately on your machine. Inspect the file before you choose to send it. Nothing is automatically uploaded. "No finding" and "not enough evidence" are valid outcomes.</p>
 </section>
 
 <section>
 <h2>What this is not</h2>
-<p class="lead">A free run is not an enterprise invoice review, a vendor acceptance, a refund, or runtime budget enforcement — those are separate tasks outside this scope. Tool bugs go to <a href="https://github.com/roy-tong/AgentMeasure/issues/new">Issues</a> free, with a redacted reproduction. Buyer-scope questions start at <a href="first-look.html">first-look.html</a>.</p>
+<p class="lead">A free run is not an enterprise invoice review, a vendor acceptance, a refund, or runtime budget enforcement — those are separate tasks outside this scope. Tool bugs go to <a href="https://github.com/roy-tong/verovo/issues/new">Issues</a> free, with a redacted reproduction. Buyer-scope questions start at <a href="first-look.html">first-look.html</a>.</p>
 <p class="lead">The <a href="index.html">local check-up</a>, the <a href="recount.html">browser recount</a>, the <a href="claims.html">claims index</a> and the conformance pack remain free and open source.</p>
 </section>
 
 </main>
 <footer class="sfoot">
   <div class="sfoot-in">
-    <span class="sfoot-brand">AgentMeasure<span>_</span></span>
+    <span class="sfoot-brand">Verovo<span>_</span></span>
     <a href="index.html">Home</a>
     <a href="claims.html">Claims index</a>
     <a href="releases.html">Release notes</a>
-    <a href="https://github.com/roy-tong/AgentMeasure" target="_blank" rel="noopener">GitHub</a>
+    <a href="https://github.com/roy-tong/verovo" target="_blank" rel="noopener">GitHub</a>
     <span class="sfoot-note">Open source under MIT. The verification rules stay public and free.</span>
   </div>
 </footer>

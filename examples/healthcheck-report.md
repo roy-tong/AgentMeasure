@@ -1,6 +1,6 @@
 # Free triage baseline — synthetic, not a paid-value demonstration
 
-Scope: explain the retry finding in the bundled AgentMeasure demo summary.
+Scope: explain the retry finding in the bundled Verovo demo summary.
 Input: synthetic-demo; 1 session; 10 command executions; 7 failed executions;
 1 retry chain containing 3 executions. These counts come from the bundled demo.
 
