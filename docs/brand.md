@@ -13,6 +13,7 @@ on a light plate so the eye whites survive.
 | `assets/verovo-mark.png` | Owl mark (the two eyes and the tuft), transparent. Favicons, avatars, nav lockups. |
 | `website/assets/favicon.svg` | 64×64 icon: light plate, owl mark, 1.5px border. |
 | `website/assets/favicon-256.png` | 256×256 raster of the same icon (aimed at 180/192px consumers). |
+| `assets/verovo-avatar.png` | 512×512 square lockup (light plate, owl mark) for profile/avatar slots that need a compact square. |
 | `assets/social-preview.png` | 1280×640 Open Graph / social card. Source: `website/assets/social-preview.html`. |
 | `assets/quality-ladder.png` | 1600×863 caller-identity diagram. Source: `assets/quality-ladder.html`. |
 | `assets/verovo-stack.svg` | Vector measurement-stack diagram. |
