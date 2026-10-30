@@ -5,6 +5,10 @@
 
 **Verify AI service charges and delivery with evidence your team can check.**
 
+> **Status 2026-10-30:** renamed to Verovo (CLI 0.9.0 tagged on GitHub; the PyPI
+> project `verovo` is pending its first publish). Buyer Ledger is pre-M1: 106
+> tests pass on synthetic data, and no real platform bill has been validated yet.
+
 Verovo helps AI service buyers connect applicable billing rules with
 event records and business requirements. Start with a specific AI support bill
 or an upcoming acceptance or renewal decision.

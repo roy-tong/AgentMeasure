@@ -124,7 +124,7 @@
     <div class="status-strip reveal d5" role="list" aria-label="Project status">
       <div class="status" role="listitem"><span class="status-k">Open source</span><span class="status-v ok">MIT</span></div>
       <div class="status" role="listitem"><span class="status-k">Spec</span><span class="status-v spec" data-status="spec">Draft 0.4.5</span></div>
-      <div class="status" role="listitem"><span class="status-k">CLI</span><span class="status-v ok">v0.9.0 · PyPI / GitHub</span></div>
+      <div class="status" role="listitem"><span class="status-k">CLI</span><span class="status-v ok">v0.9.0 · GitHub</span></div>
       <div class="status" role="listitem"><span class="status-k">SDK</span><span class="status-v" data-status="sdk">v0.3.0</span></div>
       <div class="status" role="listitem"><span class="status-k">Tool bills</span><span class="status-v spec">26 cataloged · 0 live-validated</span></div>
       <div class="status" role="listitem"><span class="status-k">Ecosystem audit</span><span class="status-v ok">110 tools · September report</span></div>
@@ -170,7 +170,8 @@ python3 -m buyer_ledger fetch --recipe bill.recipe.json --period 2026-10 --cdp h
   <section class="section section-panel" id="how" aria-label="Start locally"><div class="wrap">
 <h2 class="reveal">Developer tools: inspect your own logs.</h2>
 <p class="body-secondary">For developers using Codex or Claude Code: first try a synthetic example. You need Python 3.9+ and a terminal on a computer. No logs or account required.</p>
-<div class="terminal"><div class="terminal-body"><pre style="white-space:pre-wrap">python -m pip install --upgrade verovo
+<div class="terminal"><div class="terminal-body"><pre style="white-space:pre-wrap"># PyPI project `verovo` is pending its first publish; install the 0.9.0 tag for now
+python -m pip install "git+https://github.com/roy-tong/verovo@v0.9.0#subdirectory=healthcheck"
 verovo demo</pre></div></div>
 <p class="note">Open <code>verovo-demo-report.html</code> in the folder where you ran the command. The terminal prints the exact path. The example contains a retry chain and failed executions; these are demonstration findings, not installation failures.</p>
 <details><summary>Just browsing? See what an explanation looks like</summary><p>The synthetic demo shows 1 retry chain containing 3 executions, and 7 failed executions. That does not prove seven bugs or seven charges. A useful next check is to inspect the first error in the longest failure run.</p><p><a href="examples/healthcheck-report.html">Read an illustrative diagnosis</a>. To inspect your own sessions, run the CLI on the computer holding your logs.</p></details>
