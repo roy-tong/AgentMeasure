@@ -1,0 +1,37 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Verovo — buyer review</title><style>body{font:16px/1.6 system-ui,sans-serif;background:#f7f8f3;color:#17372c;margin:0;padding:28px}main{max-width:1000px;margin:auto}.lanes{display:flex;gap:20px;flex-wrap:wrap}section{background:#e8f0e9;padding:18px 24px;flex:1;min-width:200px;border:1px solid #b8cdbf}h2{margin:0 0 10px}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:24px;border:1px solid #d5dfd7;font:13px/1.8 ui-monospace,monospace}@media print{body{padding:0;background:white}pre{border:0}}</style><main><h1>Verovo buyer review</h1><p>Charges and delivery are separate conclusions. Local, scoped checks; human review required.</p><p><strong>SYNTHETIC DEMO — not a customer result.</strong></p><div class="lanes"><section><h2>Charges</h2><strong>PASS</strong><p>1 checks · 0 evidence gaps</p></section><section><h2>Delivery</h2><strong>FAIL</strong><p>2 checks · 1 evidence gaps</p></section></div><pre>Verovo buyer review — SYNTHETIC DEMO
+
+buyer: Example buyer (synthetic)
+service: Example AI support service
+account_or_task: sample-account / sampled support tasks
+period_or_window: 2026-10 (synthetic observation window)
+decision: Review payment and renewal separately
+owner: Example operations lead
+due_date: 2026-11-05
+
+CHARGES: PASS (1 checks; 0 evidence gaps)
+DELIVERY: FAIL (2 checks; 1 evidence gaps)
+
+[PASS] charges / invoice-total: Invoice total matches the supplied agreed total in USD
+  Basis: Synthetic agreement: USD 100 total; not a vendor policy (version demo-1)
+  Expected: equals 100; observed: 100
+  Evidence: buyer-observations.json#/invoice/total_usd
+  SHA-256: 953cd66a17f8f60713101b41d59d5b0c94ff6f9a27f3d80519e4a19eb72c681d
+  Local observation meets the supplied criterion.
+
+[FAIL] delivery / manual-rescue: Sampled tasks needing human rescue stay within the buyer&#x27;s limit
+  Basis: Synthetic acceptance checklist: at most 2 sampled tasks need rescue (version demo-1)
+  Expected: at_most 2; observed: 5
+  Evidence: buyer-observations.json#/delivery/manual_rescue_tasks
+  SHA-256: 953cd66a17f8f60713101b41d59d5b0c94ff6f9a27f3d80519e4a19eb72c681d
+  Local observation does not meet the supplied criterion.
+
+[UNPROVABLE] delivery / completion-evidence: The buyer&#x27;s completion record is present and true
+  Basis: Synthetic acceptance checklist: confirm external completion (version demo-1)
+  Expected: equals True; observed: None
+  Evidence: buyer-observations.json#/delivery/external_completion
+  SHA-256: 953cd66a17f8f60713101b41d59d5b0c94ff6f9a27f3d80519e4a19eb72c681d
+  Evidence gap: observation is missing, non-finite or not a scalar
+
+Next: review the rule references; obtain missing evidence; record the buyer&#x27;s decision separately.
+Verdicts apply only to supplied criteria and local observations. Rule applicability and source truth need human review. Delivery failure is not proof of incorrect billing or a refund. No money is summed, recovered or approved by this report.</pre></main></html>

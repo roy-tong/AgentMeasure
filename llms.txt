@@ -1,14 +1,14 @@
 # Verovo
 
-> Evidence for AI service charges and delivery. Free local tools support selected billing rules. Buyer billing, acceptance and renewal services are under validation; $10/$20 developer diagnostics have separate scope. Last reviewed: 2026-10-29.
+> Buyer-side AI service charge and delivery verification. Independent workflows with explicit criteria; local tools and sample measurement runs are free. Enterprise scope and commercial acceptance remain under validation. Last reviewed: 2026-10-31.
 
 ## Start here
 
 - [Website](https://roy-tong.github.io/verovo/): overview and local quickstart
-- [Services](https://roy-tong.github.io/verovo/services.html): input requirements, prices, turnaround and refunds
-- [Tool bill coverage](https://roy-tong.github.io/verovo/tools.html): cataloged domestic/overseas tool billing models, buyer/seller views, local CDP collection. Cataloged is not live-validated.
+- [Services](https://roy-tong.github.io/verovo/services.html): free measurement-run scope, inputs and turnaround
+- [Tool bill coverage](https://roy-tong.github.io/verovo/tools.html): cataloged tool billing models for buyer tasks; provider work is a conditional extension. Cataloged is not live-validated.
 - [Healthcheck](https://github.com/roy-tong/verovo/blob/main/healthcheck/README.md): CLI 0.9.0, local session checks, sharing and supported commands
-- [SDK](https://github.com/roy-tong/verovo/blob/main/sdk/README.md): Provider SDK 0.2.0 on npm
+- [SDK](https://github.com/roy-tong/verovo/blob/main/sdk/README.md): Provider SDK, independently versioned
 - [Release notes](https://roy-tong.github.io/verovo/releases.html): independent package versions and dated releases
 
 ## Measurement and evidence
@@ -24,9 +24,15 @@
 
 - [Commercial scope](https://github.com/roy-tong/verovo/blob/main/docs/commercial-narrative.md): buyer tasks, provider incentives, partners and open-source boundaries
 
+## Product definition and buyer review
+
+- [Product definition](https://github.com/roy-tong/verovo/blob/main/docs/product-definition.md): buyer-first charges and delivery, independent workflows; provider extensions need a concrete transaction.
+- [Buyer review guide](https://github.com/roy-tong/verovo/blob/main/docs/buyer-review.md): main-preview local criteria and JSON evidence; separate verdicts, hashes and offline reports. Not in v0.9.0.
+- [Synthetic buyer report](https://roy-tong.github.io/verovo/examples/buyer-review.html): charge match, unmet delivery requirement and missing evidence, kept separate.
+
 ## Service and evidence limits
 
-Analysis runs locally; a user may explicitly send a summary or redacted sample. `share --out` writes immediately to a local file; inspect before sending. Confirmation is not payment. Work starts only after payment, fit approval and complete input. First response within 24 hours; delivery within 24 hours after those conditions, unless a different slot is agreed before payment.
+Analysis runs locally. Sharing is a user choice after inspection. Existing sample-based measurement runs are free with their published scope. Enterprise charge/delivery reviews require a concrete task, agreed scope and any individually agreed fee; no fixed price or recovery guarantee is published. Delivery review does not require a billing error. Rule applicability and source truth require human review.
 
 Summary counts support interpretation, not guaranteed root-cause diagnosis. Core FMT-002 does not verify token/cache semantics, invoice amounts or pricing accuracy. Missing evidence remains UNPROVABLE. Technical findings and synthetic fixtures are not customer value or paid-demand proof.
 

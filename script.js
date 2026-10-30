@@ -55,7 +55,7 @@
   }
 
   /* ── active nav link ───────────────────────────────────────── */
-  var sectionIds = ["whynow", "how", "evidence", "pricing", "developers"];
+  var sectionIds = ["whynow", "review", "toolbills", "how", "evidence", "pricing", "developers"];
   var navAnchors = {};
   document.querySelectorAll(".nav-links a").forEach(function (a) {
     var href = a.getAttribute("href") || "";

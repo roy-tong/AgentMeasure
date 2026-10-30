@@ -2,7 +2,9 @@ To: tongroy18@gmail.com
 Subject: AI buyer review — task fit
 
 Vendor and service:
-Billing question or upcoming acceptance/renewal decision:
+Workflow (charges / delivery / both):
+Charge question or upcoming acceptance/renewal decision:
+Business acceptance criteria (separate from billing rules):
 Billing period or decision date:
 Available record types (no raw data attached):
 Who can provide authorized records:

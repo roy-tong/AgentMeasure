@@ -4,13 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tool bill coverage | Verovo</title>
-  <meta name="description" content="Verovo catalog for domestic and overseas agent tool bills: token, credits, per-call, browser-hour, sandbox, OCR, voice and generation. Buyer and seller audit views, plus local CDP collection.">
+  <meta name="description" content="Verovo catalog for domestic and overseas agent tool bills: token, credits, per-call, browser-hour, sandbox, OCR, voice and generation. Buyer-first charge review, scoped provider extensions and optional local collection.">
   <link rel="icon" type="image/svg+xml" href="./assets/favicon.svg">
   <link rel="canonical" href="https://roy-tong.github.io/verovo/tools.html">
   <meta name="theme-color" content="#090C10">
   <meta property="og:type" content="website">
   <meta property="og:title" content="Tool bill coverage | Verovo">
-  <meta property="og:description" content="Cataloged agent-tool billing models, buyer and seller audit views, and local CDP collection. Cataloged is not the same as live-validated.">
+  <meta property="og:description" content="Cataloged agent-tool billing models for buyer charge review; provider work extends from concrete transactions. Cataloged is not the same as live-validated.">
   <meta property="og:url" content="https://roy-tong.github.io/verovo/tools.html">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -76,7 +76,7 @@
       <p class="body-secondary">A tool is not “supported” because its logo appears here. Each row records the billing unit, bill source, audit capability and validation state. Unknown providers stay visible instead of being forced into a known format.</p>
       <div class="matrix-wrap">
         <table class="matrix">
-          <thead><tr><th>Family</th><th>Examples</th><th>Bill dimensions</th><th>Buyer / seller checks</th></tr></thead>
+          <thead><tr><th>Family</th><th>Examples</th><th>Bill dimensions</th><th>Buyer checks / scoped extensions</th></tr></thead>
           <tbody>
             <tr><th>Agent platforms</th><td>Coze · Zapier · Lindy</td><td>credits · tasks · seats · model/plugin pass-through</td><td>Estimated credits vs cash bill; third-party cash; included quota</td></tr>
             <tr><th>Model platforms</th><td>Anthropic · OpenAI · Gemini · Bailian · Ark · Hunyuan</td><td>tokens · search calls · container/session hours</td><td>Token vs tool fee; project/tag allocation; price version</td></tr>
@@ -95,13 +95,13 @@
       <h2>One ledger, two questions</h2>
       <div class="who-grid">
         <div class="who-card"><span class="who-k">Buyer</span><p>Did the provider charge the agreed amount? Separate invoice facts, platform usage and a rule-based recount. Keep free quota, prepaid packs, credits, tax and unlinked usage visible.</p><span class="who-v">Charge review</span></div>
-        <div class="who-card"><span class="who-k">Seller</span><p>Is metered usage fully represented in billing? Surface unpriced usage, unlinked usage and review gaps. Do not call an evidence gap “leakage revenue.”</p><span class="who-v">Metering integrity</span></div>
+        <div class="who-card"><span class="who-k">Provider extension</span><p>For a concrete customer dispute, revenue discrepancy or procurement requirement, compare metered usage with billing. Upstream spend is a buyer task. Unlinked usage remains an evidence gap.</p><span class="who-v">Metering integrity</span></div>
         <div class="who-card"><span class="who-k">Evidence</span><p>Every source document, row, pricing policy and browser run keeps a hash, locator and audit trail. Missing evidence produces review_required, not zero.</p><span class="who-v">Traceable, not guessed</span></div>
       </div>
       <div class="terminal" style="margin-top:36px"><div class="terminal-body"><pre style="white-space:pre-wrap">python3 -m buyer_ledger catalog summary
 python3 -m buyer_ledger catalog list --region global --role buyer
 python3 -m buyer_ledger catalog coverage --period 2026-10
-python3 -m buyer_ledger report --period 2026-10 --perspective seller --out seller.md</pre></div></div>
+python3 -m buyer_ledger report --period 2026-10 --perspective buyer --out buyer.md</pre></div></div>
     </div></section>
 
     <section class="section" id="cdp"><div class="wrap">
@@ -141,7 +141,7 @@ python3 -m buyer_ledger fetch --recipe recipe.json --period 2026-10 --cdp http:/
       <div class="who-grid" style="margin-top:32px">
         <div class="who-card"><span class="who-k">The pattern</span><p>Users react strongly when paid credits expire, a spending cap fails, auto-recharge is invisible, or the usage dashboard cannot reproduce the invoice. Small amounts can still trigger chargebacks.</p><span class="who-v">Ownership + visibility</span></div>
         <div class="who-card"><span class="who-k">For the buyer ledger</span><p>Model credits, expiry, auto-recharge, hard caps, included quota and cash billing separately. Keep a queue of unexplained charges rather than forcing them into zero.</p><span class="who-v">Entitlement ledger</span></div>
-        <div class="who-card"><span class="who-k">For the seller ledger</span><p>Check whether metered usage is represented in billing. Unpriced or unlinked usage remains an evidence gap; it is not automatically leakage revenue.</p><span class="who-v">Metering integrity</span></div>
+        <div class="who-card"><span class="who-k">For a provider transaction</span><p>Check whether metered usage is represented in billing. Unpriced or unlinked usage remains an evidence gap; it is not automatically leakage revenue.</p><span class="who-v">Metering integrity</span></div>
       </div>
       <p class="note">Not a complaint rate, not a market validation, and not a claim about any vendor's overall conduct. A larger SURE discovery expansion now holds 50,000 unique public records (HN 49,090); strict evidence remains 66. Discovery volume is not evidence volume. <a href="https://github.com/roy-tong/verovo/blob/main/buyer-ledger/COMPLAINTS-20261029.md">Read the bounded study summary →</a></p>
     </div></section>

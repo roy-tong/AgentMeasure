@@ -2,11 +2,12 @@
 
 Live: https://roy-tong.github.io/verovo/
 
-Static HTML, CSS and JavaScript. The main entry is an AI support buyer with a specific billing, acceptance or renewal task. Buyer services and fee mechanisms are under validation. Local developer tools and the existing $10/$20 services retain their separate scope. Standards, SDK, claims and research remain supporting resources.
+Static HTML, CSS and JavaScript. The main entry is an AI service buyer with a specific charge or delivery task. Support is an initial scenario, not the product boundary. Buyer services and fee mechanisms are under validation. Local developer tools and the existing free measurement runs retain their separate scope. Standards, SDK, claims and research remain supporting resources.
 
 ## Pages
 
-- `index.html`: buyer decisions, task-fit entry, local tools, distinct developer services and technical evidence.
+- `index.html`: two independent buyer workflows, main-preview review demo, task-fit entry, developer tools and technical evidence.
+- `examples/buyer-review.html`: generated synthetic output of the actual `review --sample` command.
 - `tools.html`: cataloged domestic/overseas tool bill coverage, buyer vs seller audit, local CDP collection and research cases. Cataloged is not live-validated.
 - `services.html`: canonical service terms, input requirements, application links and refunds.
 - `claims.html`: dated technical evidence; no paid-adoption claims.
