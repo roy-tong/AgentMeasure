@@ -63,6 +63,52 @@ CLI 0.8.0 可直接运行 `agentmeasure recount --sample`，使用相同的内�
 [examples/showcase](examples/showcase/README.md)，期望输出已冻结、CI 每次
 变更都会比对，展示与现实不会悄悄分叉。
 
+## 核对国内外 Agent 工具账单（研究预览）
+
+Buyer Ledger 把同一套证据纪律扩展到 Agent 工具支出：模型 Token、搜索次数、
+credits、浏览器小时、沙箱秒数、OCR 页数、语音字符、生成内容数量和席位。
+产品区分账单事实、平台用量和按规则复算；一个工具出现在表里，不代表已接通
+或已通过真实账单验证。
+
+- **买家视角**：核对平台代收、直接 API、云市场账单，以及免费额度、预付包、
+  credits 和第三方现金支出。
+- **卖家视角**：检查实际计量用量是否进入计费；未计价或未关联用量只作为
+  证据缺口，不直接宣称漏收收入。
+- **能力目录**：26 个国内外工具，记录计费模型、计量单位、账单来源、审计能力
+  和验证状态。见 [catalog/tools.json](buyer-ledger/catalog/tools.json)。
+- **无 API 的账单后台**：附着用户自行启动的 Chrome 本地 CDP，重放受审配方、
+  下载账单并进入同一审计管线；系统不接收密码。
+- **边界**：当前是“已编目”，不是实时接通；尚无工具完成真实客户账单验证。
+  通用 CSV/TSV 与 CDP 管线只有合成 fixture 测试。见
+  [Buyer Ledger](buyer-ledger/README.md) 和
+  [审查边界](buyer-ledger/REVIEW-20261029.md)。
+- **账单不满证据（探索性）**：SURE 1.6 研究从 1,949 条公开发现中审读 150 条，
+  得到 **66 条严格证据**；credits 到期、未预期扣费、自动充值和计量不一致是
+  主线，涨价仅 2/66。审计 12 门中 3 门未过（仅 3/18 家 vendor、单一地区、
+  反证 7 条），不能表述为发生率或市场验证。见
+  [边界摘要](buyer-ledger/COMPLAINTS-20261029.md)。
+- **CDP discovery 第一阶段**：本地 Chrome CDP 采集 2,734 条公开讨论，分层得到
+  **2,437 条可用 discovery**（1,708 条 direct vendor、729 条泛 AI/API 账单），
+  另登记 26 个官方计费页；这是发现层，不是严格证据或客户账单。
+- **SURE 50,000 发现扩展**：去重后 **50,000 条**公开记录，HN 49,090 条；严格
+  证据仍 66、审读仍 150，主审计仍 9/12、exploratory。50,000 条不是 50,000
+  名用户，也不是 50,000 条证据。
+- **H1–H5 压力测试**：H1 证据形状支持（人工 core 率 credits 30% vs price 6%），
+  但提及量接近；H2 不支持（HN 内方向反转）；H3 仅支持英文源不可见；H4 关键词
+  初筛降级率 **71.6%**；H5 仅提示。没有假设升级为 validated。
+
+```bash
+python3 -m buyer_ledger catalog summary
+python3 -m buyer_ledger catalog list --region cn --role buyer
+python3 -m buyer_ledger catalog coverage --period 2026-10
+python3 -m buyer_ledger report --period 2026-10 --perspective seller --out seller.md
+python3 -m buyer_ledger fetch --recipe recipe.json --period 2026-10 \
+  --cdp http://127.0.0.1:9222
+```
+
+支持矩阵与案例：[website/tools.html](website/tools.html)；
+GitHub Pages 部署后由官网路径提供。
+
 ## 按账期重复核对
 
 希望数据只留本地，可对每期新导出运行CLI。可选的[GitHub Actions工作流](RECONCILE.md)

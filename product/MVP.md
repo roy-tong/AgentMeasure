@@ -88,7 +88,7 @@ Alpha 期间记录 `Measurement insight → action`：
 
 - ❌ Observed Selection Rate / Share of Choice（无信号）
 - ❌ Consumption 链（无 agent 侧）
-- ❌ Metering / 账单（COMMERCIAL 是语义；支付是别人的 rails）
+- ❌ Metering / 账单（COMMERCIAL 是语义；支付是别人的 rails）——2026-10-30 更新：此非目标仅约束本 Provider 侧 MVP；买方侧按 A（合约事件核验）/ B（账户账期核验）分别做真实数据验证，统一账本不是当前的平台化授权，Provider 侧也不作为并重商业核心。方向见项目工作区《AgentMeasure-产品定位与双POC商业取舍-v1.1-20261030.md》
 - ❌ 跨 Provider 排名（coverage_basis 限制）
 - ❌ 冒充"AgentMeasure 官方 SDK"——未实现前全部标注 in development
 

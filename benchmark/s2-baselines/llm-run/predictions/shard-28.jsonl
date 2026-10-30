@@ -1,0 +1,12 @@
+{"instance_id": "196a19d087ee", "output": {"discrepancies": []}}
+{"instance_id": "fe580da4ec01", "output": {"discrepancies": []}}
+{"instance_id": "bd28928f5e11", "output": {"discrepancies": [{"error_class": "E09_tier_boundary_error", "line_ref": {"line_index": 35, "event": "e00035"}, "confidence": 0.85, "explanation": "e00035 计 3 credits 按 0.11 收费，但该行之前累计仅 77 credits，未超出 150 credits 周期额度，应属额度内 unit_price=0；含该行后 included 总数恰为 150，说明此行被错误地提前按超额档计价（跨档单价适用错位）。"}]}}
+{"instance_id": "6739014540bb", "output": {"discrepancies": [{"error_class": "E12_credit_non_application", "line_ref": {"line_index": 32, "event": "e00071"}, "confidence": 0.8, "explanation": "e00071 reopened=true，按规则重开会话应冲减为 0 不得计费，但其 reopen 冲减（其他重开行均以 reopen_credit qty=0 体现）未应用到该行，仍按 1×0.83 收费。"}]}}
+{"instance_id": "d2bb59fb299b", "output": {"discrepancies": []}}
+{"instance_id": "8ff2a4dc0cc9", "output": {"discrepancies": []}}
+{"instance_id": "cc212f41d2b6", "output": {"discrepancies": [{"error_class": "E09_tier_boundary_error", "line_ref": {"line_index": 51, "event": "e00049"}, "confidence": 0.7, "explanation": "agent-1 当月前 7 次应为 included_allowance 免费额度，但该 agent 仅标了 6 次免费（agent-2/agent-3 均恰为 7），e00049 这 1 次被错误划入 committed_tier 按 1.27 计费，属免费额度边界划分错误。"}]}}
+{"instance_id": "95d9cf387b24", "output": {"discrepancies": []}}
+{"instance_id": "d78458d7ab80", "output": {"discrepancies": []}}
+{"instance_id": "ef96a40e72e5", "output": {"discrepancies": [{"error_class": "E09_tier_boundary_error", "line_ref": {"line_index": 7, "event": "e00007"}, "confidence": 0.85, "explanation": "e00007 计 3 credits 按 0.11 收费，但该行之前累计仅 15 credits，未超出 150 credits 周期额度，应属额度内 unit_price=0；含该行后 included 总数恰为 150，说明此行被错误地提前按超额档计价（跨档单价适用错位）。"}]}}
+{"instance_id": "1f16206af3c5", "output": {"discrepancies": [{"error_class": "E12_credit_non_application", "line_ref": {"line_index": 32, "event": "e00071"}, "confidence": 0.8, "explanation": "e00071 reopened=true，按规则重开会话应冲减为 0 不得计费，但其 reopen 冲减（其他重开行均以 reopen_credit qty=0 体现）未应用到该行，仍按 1×0.83 收费。"}]}}
+{"instance_id": "d971f6f2fcb6", "output": {"discrepancies": []}}

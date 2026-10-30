@@ -1,0 +1,12 @@
+{"instance_id": "2a856a1edb95", "output": {"discrepancies": []}}
+{"instance_id": "b75b68d91095", "output": {"discrepancies": []}}
+{"instance_id": "93eeac5b43fd", "output": {"discrepancies": [{"error_class": "E14_rollover_expiry_error", "line_ref": {"line_index": 100, "event": null}, "confidence": 0.97, "explanation": "ZETA 规则规定 150 credits 额度周期末过期、不结转不退款，任何 credit_carryover 抵扣行均为错误；本行将 31 credits 以 -3.41 结转抵扣本期费用，属于应过期却被结转"}]}}
+{"instance_id": "9108be13536e", "output": {"discrepancies": []}}
+{"instance_id": "c67feea88f1e", "output": {"discrepancies": []}}
+{"instance_id": "f3a16e2d0d01", "output": {"discrepancies": []}}
+{"instance_id": "dd6b56eec23b", "output": {"discrepancies": []}}
+{"instance_id": "1fd0b56068d6", "output": {"discrepancies": []}}
+{"instance_id": "414d7d5aa33b", "output": {"discrepancies": []}}
+{"instance_id": "7d86c7b6772d", "output": {"discrepancies": [{"error_class": "E14_rollover_expiry_error", "line_ref": {"line_index": 100, "event": null}, "confidence": 0.97, "explanation": "ZETA 规则规定额度周期末过期、不结转不退款，任何 credit_carryover 抵扣行均为错误；本行将 54 credits 以 -5.94 结转抵扣本期费用，属于应过期却被结转"}]}}
+{"instance_id": "1716e560eea3", "output": {"discrepancies": []}}
+{"instance_id": "b3f8680d1f50", "output": {"discrepancies": []}}

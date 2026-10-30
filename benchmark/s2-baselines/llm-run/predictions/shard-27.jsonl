@@ -1,0 +1,12 @@
+{"instance_id": "251e4165205a", "output": {"discrepancies": []}}
+{"instance_id": "ebe32ba35b01", "output": {"discrepancies": []}}
+{"instance_id": "649d92b17d1b", "output": {"discrepancies": []}}
+{"instance_id": "d3546f382cdd", "output": {"discrepancies": []}}
+{"instance_id": "7bbb707511e3", "output": {"discrepancies": []}}
+{"instance_id": "77ffb7e8016b", "output": {"discrepancies": [{"error_class": "E11_pass_through_markup", "line_ref": {"line_index": 100, "event": null}, "confidence": 0.9, "explanation": "pass_through_markup 基数错误：markup_base=28.32 为语音服务费全额（472分钟×0.06），规则规定仅对语音通行成本 0.02/分钟 收 15% 加价，基数应为 472×0.02=9.44（加价约1.42），而非按服务费全额计 4.25"}]}}
+{"instance_id": "28aa86b485dc", "output": {"discrepancies": []}}
+{"instance_id": "816470ce38b7", "output": {"discrepancies": []}}
+{"instance_id": "a270baf04c5a", "output": {"discrepancies": []}}
+{"instance_id": "20da8bee6b3a", "output": {"discrepancies": []}}
+{"instance_id": "770948087899", "output": {"discrepancies": []}}
+{"instance_id": "328a837debc8", "output": {"discrepancies": []}}

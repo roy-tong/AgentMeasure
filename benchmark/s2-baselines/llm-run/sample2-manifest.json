@@ -1,0 +1,866 @@
+[
+ {
+  "instance_id": "c93112de79f6",
+  "class": "E05_component_execution_billing",
+  "profile": "P-cognigylike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "e7f9c7b580a9",
+  "class": "E05_component_execution_billing",
+  "profile": "P-conversationlike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "844923c23413",
+  "class": "E05_component_execution_billing",
+  "profile": "P-creditlike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "d717957f546b",
+  "class": "E05_component_execution_billing",
+  "profile": "P-finlike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "e0a5bbcb637c",
+  "class": "E05_component_execution_billing",
+  "profile": "P-gorgiaslike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "a313360ad9c6",
+  "class": "E05_component_execution_billing",
+  "profile": "P-parloalike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "3e92a7aeabd7",
+  "class": "E05_component_execution_billing",
+  "profile": "P-zendeskalike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "cb0e2292aa74",
+  "class": "E05_component_execution_billing",
+  "profile": "P-cognigylike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "0113bf1f3eb9",
+  "class": "E05_component_execution_billing",
+  "profile": "P-conversationlike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "cb687bb4a6c9",
+  "class": "E05_component_execution_billing",
+  "profile": "P-creditlike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "19d2c4c8d672",
+  "class": "E05_component_execution_billing",
+  "profile": "P-finlike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "cba8e25868f6",
+  "class": "E05_component_execution_billing",
+  "profile": "P-gorgiaslike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "5f3a7c26c5d9",
+  "class": "E06_duplicate_conversation_count",
+  "profile": "P-cognigylike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "8ebbdf9d44ec",
+  "class": "E06_duplicate_conversation_count",
+  "profile": "P-conversationlike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "45225af7355e",
+  "class": "E06_duplicate_conversation_count",
+  "profile": "P-creditlike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "e7076c31f5b7",
+  "class": "E06_duplicate_conversation_count",
+  "profile": "P-finlike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "a04147f5f881",
+  "class": "E06_duplicate_conversation_count",
+  "profile": "P-gorgiaslike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "fe10940fcffc",
+  "class": "E06_duplicate_conversation_count",
+  "profile": "P-parloalike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "752e3f85d5f2",
+  "class": "E06_duplicate_conversation_count",
+  "profile": "P-zendeskalike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "4b242a23150c",
+  "class": "E06_duplicate_conversation_count",
+  "profile": "P-cognigylike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "39dc81627c7f",
+  "class": "E06_duplicate_conversation_count",
+  "profile": "P-conversationlike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "d58e23ce689b",
+  "class": "E06_duplicate_conversation_count",
+  "profile": "P-creditlike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "6c2f7a9842d5",
+  "class": "E06_duplicate_conversation_count",
+  "profile": "P-finlike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "3ab0b189e862",
+  "class": "E06_duplicate_conversation_count",
+  "profile": "P-gorgiaslike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "3c933f3df045",
+  "class": "E07_stale_price_table",
+  "profile": "P-cognigylike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "a1d8332d96ea",
+  "class": "E07_stale_price_table",
+  "profile": "P-conversationlike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "cf8776b75b3f",
+  "class": "E07_stale_price_table",
+  "profile": "P-creditlike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "adb1bc007df2",
+  "class": "E07_stale_price_table",
+  "profile": "P-finlike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "55d2819a86e2",
+  "class": "E07_stale_price_table",
+  "profile": "P-gorgiaslike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "6ac816965307",
+  "class": "E07_stale_price_table",
+  "profile": "P-parloalike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "f77178a1c80d",
+  "class": "E07_stale_price_table",
+  "profile": "P-zendeskalike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "bb7d14831744",
+  "class": "E07_stale_price_table",
+  "profile": "P-cognigylike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "2753d54d9adc",
+  "class": "E07_stale_price_table",
+  "profile": "P-conversationlike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "20ccf28fac9b",
+  "class": "E07_stale_price_table",
+  "profile": "P-creditlike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "ed695ea3d117",
+  "class": "E07_stale_price_table",
+  "profile": "P-finlike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "782560e7269d",
+  "class": "E07_stale_price_table",
+  "profile": "P-gorgiaslike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "66b85ca89145",
+  "class": "E08_retroactive_repricing",
+  "profile": "P-cognigylike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "a10c28234aaf",
+  "class": "E08_retroactive_repricing",
+  "profile": "P-conversationlike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "b5e1f3f93fc7",
+  "class": "E08_retroactive_repricing",
+  "profile": "P-creditlike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "e89f9e9a5647",
+  "class": "E08_retroactive_repricing",
+  "profile": "P-finlike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "a0115c8c5695",
+  "class": "E08_retroactive_repricing",
+  "profile": "P-gorgiaslike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "0d04981424eb",
+  "class": "E08_retroactive_repricing",
+  "profile": "P-parloalike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "0d64dc48a7fd",
+  "class": "E08_retroactive_repricing",
+  "profile": "P-zendeskalike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "6464b3e4876a",
+  "class": "E08_retroactive_repricing",
+  "profile": "P-cognigylike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "9fbb7cea5626",
+  "class": "E08_retroactive_repricing",
+  "profile": "P-conversationlike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "65d9ef5c7afb",
+  "class": "E08_retroactive_repricing",
+  "profile": "P-creditlike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "7a9cf4bd6c5b",
+  "class": "E08_retroactive_repricing",
+  "profile": "P-finlike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "46fb2dbd1dc0",
+  "class": "E08_retroactive_repricing",
+  "profile": "P-gorgiaslike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "2848f471bab9",
+  "class": "E09_tier_boundary_error",
+  "profile": "P-cognigylike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "c62a875b30b7",
+  "class": "E09_tier_boundary_error",
+  "profile": "P-conversationlike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "1f28cf485a82",
+  "class": "E09_tier_boundary_error",
+  "profile": "P-creditlike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "dcc9982680c5",
+  "class": "E09_tier_boundary_error",
+  "profile": "P-finlike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "a2031ab6e099",
+  "class": "E09_tier_boundary_error",
+  "profile": "P-gorgiaslike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "67c9ef552125",
+  "class": "E09_tier_boundary_error",
+  "profile": "P-parloalike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "0f73df297585",
+  "class": "E09_tier_boundary_error",
+  "profile": "P-zendeskalike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "01428b34204f",
+  "class": "E09_tier_boundary_error",
+  "profile": "P-cognigylike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "991014ad2943",
+  "class": "E09_tier_boundary_error",
+  "profile": "P-conversationlike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "edbecde1f5ab",
+  "class": "E09_tier_boundary_error",
+  "profile": "P-creditlike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "378d0a83d78d",
+  "class": "E09_tier_boundary_error",
+  "profile": "P-finlike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "1cfec7c3f89b",
+  "class": "E09_tier_boundary_error",
+  "profile": "P-gorgiaslike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "fc4ea468e6f7",
+  "class": "E10_rounding_error",
+  "profile": "P-cognigylike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "a2c80bc1d66d",
+  "class": "E10_rounding_error",
+  "profile": "P-conversationlike",
+  "status": "not_applicable"
+ },
+ {
+  "instance_id": "8fa15a46d658",
+  "class": "E10_rounding_error",
+  "profile": "P-creditlike",
+  "status": "not_applicable"
+ },
+ {
+  "instance_id": "37dcdbcb4387",
+  "class": "E10_rounding_error",
+  "profile": "P-finlike",
+  "status": "not_applicable"
+ },
+ {
+  "instance_id": "6a06c26fc6c5",
+  "class": "E10_rounding_error",
+  "profile": "P-gorgiaslike",
+  "status": "not_applicable"
+ },
+ {
+  "instance_id": "fdacb0fd0ef1",
+  "class": "E10_rounding_error",
+  "profile": "P-parloalike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "1025259d733f",
+  "class": "E10_rounding_error",
+  "profile": "P-zendeskalike",
+  "status": "not_applicable"
+ },
+ {
+  "instance_id": "b0ecc97e75c8",
+  "class": "E10_rounding_error",
+  "profile": "P-cognigylike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "484e4ed8d3f5",
+  "class": "E10_rounding_error",
+  "profile": "P-conversationlike",
+  "status": "not_applicable"
+ },
+ {
+  "instance_id": "e528fe9eba6c",
+  "class": "E10_rounding_error",
+  "profile": "P-creditlike",
+  "status": "not_applicable"
+ },
+ {
+  "instance_id": "3d60af64dc91",
+  "class": "E10_rounding_error",
+  "profile": "P-finlike",
+  "status": "not_applicable"
+ },
+ {
+  "instance_id": "0a974eb7e5d1",
+  "class": "E10_rounding_error",
+  "profile": "P-gorgiaslike",
+  "status": "not_applicable"
+ },
+ {
+  "instance_id": "251e4165205a",
+  "class": "E11_pass_through_markup",
+  "profile": "P-cognigylike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "ebe32ba35b01",
+  "class": "E11_pass_through_markup",
+  "profile": "P-conversationlike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "649d92b17d1b",
+  "class": "E11_pass_through_markup",
+  "profile": "P-creditlike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "d3546f382cdd",
+  "class": "E11_pass_through_markup",
+  "profile": "P-finlike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "7bbb707511e3",
+  "class": "E11_pass_through_markup",
+  "profile": "P-gorgiaslike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "77ffb7e8016b",
+  "class": "E11_pass_through_markup",
+  "profile": "P-parloalike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "28aa86b485dc",
+  "class": "E11_pass_through_markup",
+  "profile": "P-zendeskalike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "816470ce38b7",
+  "class": "E11_pass_through_markup",
+  "profile": "P-cognigylike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "a270baf04c5a",
+  "class": "E11_pass_through_markup",
+  "profile": "P-conversationlike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "20da8bee6b3a",
+  "class": "E11_pass_through_markup",
+  "profile": "P-creditlike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "770948087899",
+  "class": "E11_pass_through_markup",
+  "profile": "P-finlike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "328a837debc8",
+  "class": "E11_pass_through_markup",
+  "profile": "P-gorgiaslike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "196a19d087ee",
+  "class": "E12_credit_non_application",
+  "profile": "P-cognigylike",
+  "status": "not_applicable"
+ },
+ {
+  "instance_id": "fe580da4ec01",
+  "class": "E12_credit_non_application",
+  "profile": "P-conversationlike",
+  "status": "not_applicable"
+ },
+ {
+  "instance_id": "bd28928f5e11",
+  "class": "E12_credit_non_application",
+  "profile": "P-creditlike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "6739014540bb",
+  "class": "E12_credit_non_application",
+  "profile": "P-finlike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "d2bb59fb299b",
+  "class": "E12_credit_non_application",
+  "profile": "P-gorgiaslike",
+  "status": "not_applicable"
+ },
+ {
+  "instance_id": "8ff2a4dc0cc9",
+  "class": "E12_credit_non_application",
+  "profile": "P-parloalike",
+  "status": "not_applicable"
+ },
+ {
+  "instance_id": "cc212f41d2b6",
+  "class": "E12_credit_non_application",
+  "profile": "P-zendeskalike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "95d9cf387b24",
+  "class": "E12_credit_non_application",
+  "profile": "P-cognigylike",
+  "status": "not_applicable"
+ },
+ {
+  "instance_id": "d78458d7ab80",
+  "class": "E12_credit_non_application",
+  "profile": "P-conversationlike",
+  "status": "not_applicable"
+ },
+ {
+  "instance_id": "ef96a40e72e5",
+  "class": "E12_credit_non_application",
+  "profile": "P-creditlike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "1f16206af3c5",
+  "class": "E12_credit_non_application",
+  "profile": "P-finlike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "d971f6f2fcb6",
+  "class": "E12_credit_non_application",
+  "profile": "P-gorgiaslike",
+  "status": "not_applicable"
+ },
+ {
+  "instance_id": "68fef2c17ce8",
+  "class": "E13_handoff_window_reclassification",
+  "profile": "P-cognigylike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "15a2160ad853",
+  "class": "E13_handoff_window_reclassification",
+  "profile": "P-conversationlike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "177fc5881474",
+  "class": "E13_handoff_window_reclassification",
+  "profile": "P-creditlike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "022673ad9db4",
+  "class": "E13_handoff_window_reclassification",
+  "profile": "P-finlike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "624cc543d78b",
+  "class": "E13_handoff_window_reclassification",
+  "profile": "P-gorgiaslike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "bec57bbb4ea9",
+  "class": "E13_handoff_window_reclassification",
+  "profile": "P-parloalike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "837d1fe02a6b",
+  "class": "E13_handoff_window_reclassification",
+  "profile": "P-zendeskalike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "ae742ffa9123",
+  "class": "E13_handoff_window_reclassification",
+  "profile": "P-cognigylike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "67207cd7497c",
+  "class": "E13_handoff_window_reclassification",
+  "profile": "P-conversationlike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "c453f9a53406",
+  "class": "E13_handoff_window_reclassification",
+  "profile": "P-creditlike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "eb5af72fb24a",
+  "class": "E13_handoff_window_reclassification",
+  "profile": "P-finlike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "6c9ad1680f0b",
+  "class": "E13_handoff_window_reclassification",
+  "profile": "P-gorgiaslike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "2a856a1edb95",
+  "class": "E14_rollover_expiry_error",
+  "profile": "P-cognigylike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "b75b68d91095",
+  "class": "E14_rollover_expiry_error",
+  "profile": "P-conversationlike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "93eeac5b43fd",
+  "class": "E14_rollover_expiry_error",
+  "profile": "P-creditlike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "9108be13536e",
+  "class": "E14_rollover_expiry_error",
+  "profile": "P-finlike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "c67feea88f1e",
+  "class": "E14_rollover_expiry_error",
+  "profile": "P-gorgiaslike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "f3a16e2d0d01",
+  "class": "E14_rollover_expiry_error",
+  "profile": "P-parloalike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "dd6b56eec23b",
+  "class": "E14_rollover_expiry_error",
+  "profile": "P-zendeskalike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "1fd0b56068d6",
+  "class": "E14_rollover_expiry_error",
+  "profile": "P-cognigylike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "414d7d5aa33b",
+  "class": "E14_rollover_expiry_error",
+  "profile": "P-conversationlike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "7d86c7b6772d",
+  "class": "E14_rollover_expiry_error",
+  "profile": "P-creditlike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "1716e560eea3",
+  "class": "E14_rollover_expiry_error",
+  "profile": "P-finlike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "b3f8680d1f50",
+  "class": "E14_rollover_expiry_error",
+  "profile": "P-gorgiaslike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "d27cd8c099ec",
+  "class": "E15_minimum_commit_error",
+  "profile": "P-cognigylike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "73f748e8c127",
+  "class": "E15_minimum_commit_error",
+  "profile": "P-conversationlike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "396094601cb7",
+  "class": "E15_minimum_commit_error",
+  "profile": "P-creditlike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "7fb43dc5e05c",
+  "class": "E15_minimum_commit_error",
+  "profile": "P-finlike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "ab167e067375",
+  "class": "E15_minimum_commit_error",
+  "profile": "P-gorgiaslike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "987d41686f93",
+  "class": "E15_minimum_commit_error",
+  "profile": "P-parloalike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "48f50b6a4555",
+  "class": "E15_minimum_commit_error",
+  "profile": "P-zendeskalike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "fd4c7cfef5c9",
+  "class": "E15_minimum_commit_error",
+  "profile": "P-cognigylike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "deea46faea30",
+  "class": "E15_minimum_commit_error",
+  "profile": "P-conversationlike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "1076382f2a2a",
+  "class": "E15_minimum_commit_error",
+  "profile": "P-creditlike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "7712969a27b2",
+  "class": "E15_minimum_commit_error",
+  "profile": "P-finlike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "2f9a619f01d2",
+  "class": "E15_minimum_commit_error",
+  "profile": "P-gorgiaslike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "33e53f0c996a",
+  "class": "E16_auto_recharge_error",
+  "profile": "P-cognigylike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "9dd0185c300b",
+  "class": "E16_auto_recharge_error",
+  "profile": "P-conversationlike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "6ffa1e8e2a80",
+  "class": "E16_auto_recharge_error",
+  "profile": "P-creditlike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "e2de2691c7c1",
+  "class": "E16_auto_recharge_error",
+  "profile": "P-finlike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "8e87f4a0e9fd",
+  "class": "E16_auto_recharge_error",
+  "profile": "P-gorgiaslike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "6dd8c4700ec3",
+  "class": "E16_auto_recharge_error",
+  "profile": "P-parloalike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "b95a9183f698",
+  "class": "E16_auto_recharge_error",
+  "profile": "P-zendeskalike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "6dab19cac31e",
+  "class": "E16_auto_recharge_error",
+  "profile": "P-cognigylike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "1700eb0ffadc",
+  "class": "E16_auto_recharge_error",
+  "profile": "P-conversationlike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "42682316dccf",
+  "class": "E16_auto_recharge_error",
+  "profile": "P-creditlike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "a9d6f907c464",
+  "class": "E16_auto_recharge_error",
+  "profile": "P-finlike",
+  "status": "injected"
+ },
+ {
+  "instance_id": "fc7945e26fa0",
+  "class": "E16_auto_recharge_error",
+  "profile": "P-gorgiaslike",
+  "status": "injected"
+ }
+]

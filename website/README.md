@@ -7,6 +7,7 @@ Static HTML, CSS and JavaScript. The main entry is an AI support buyer with a sp
 ## Pages
 
 - `index.html`: buyer decisions, task-fit entry, local tools, distinct developer services and technical evidence.
+- `tools.html`: cataloged domestic/overseas tool bill coverage, buyer vs seller audit, local CDP collection and research cases. Cataloged is not live-validated.
 - `services.html`: canonical service terms, input requirements, application links and refunds.
 - `claims.html`: dated technical evidence; no paid-adoption claims.
 - `releases.html`: CLI and SDK release information; package versions are independent.

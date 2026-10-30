@@ -18,6 +18,7 @@ on:
       - 'examples/**'
       - 'benchmark/**'
       - 'healthcheck/**'
+      - 'buyer-ledger/**'
       - 'reports/**'
       - 'bundles/**'
       - 'README*'
@@ -69,6 +70,32 @@ jobs:
           python healthcheck/agentmeasure demo --json demo-report.json
           python healthcheck/agentmeasure share demo-report.json --out summary.json
           python healthcheck/agentmeasure validate summary.json
+
+  # ─── 套件 0c：buyer-ledger（买方侧统一费用账本，M1；不变量 INV-1..6） ───
+  buyer-ledger:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.9', '3.11']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Buyer ledger unit tests (ledger invariants / parsing / reconcile / recipes)
+        run: |
+          python3 -m unittest discover -s buyer-ledger/tests -t buyer-ledger
+      - name: Recipe examples validate (read-only whitelist, no credential actions)
+        run: |
+          python3 - <<'PY'
+          import glob, sys
+          sys.path.insert(0, "buyer-ledger")
+          from buyer_ledger import browser
+          for path in glob.glob("buyer-ledger/recipes/examples/*.json"):
+              errors = browser.validate_recipe(browser.load_recipe(path))
+              assert not errors, "%s: %s" % (path, errors)
+              print("recipe OK:", path)
+          PY
 
   # ─── 套件 1：spec conformance（向量 + registry + metric registry） ───
   spec-conformance:
@@ -316,7 +343,7 @@ jobs:
 
   status-sync:
     runs-on: ubuntu-latest
-    needs: [healthcheck, healthcheck-windows, spec-conformance, reference-implementation, lab-suite, sdk-gate, documentation-consistency, release-smoke]
+    needs: [healthcheck, healthcheck-windows, buyer-ledger, spec-conformance, reference-implementation, lab-suite, sdk-gate, documentation-consistency, release-smoke]
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     permissions:
       contents: write

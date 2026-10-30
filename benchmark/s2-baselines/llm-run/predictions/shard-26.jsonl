@@ -1,0 +1,12 @@
+{"instance_id": "fc4ea468e6f7", "output": {"discrepancies": [{"error_class": "E10_rounding_error", "line_ref": {"line_index": 21, "event": "e00021"}, "confidence": 0.95, "explanation": "语音会话 823 秒=14 分钟，按每 10 分钟计 1 个会话应向上取整 qty=ceil(14/10)=2，账单按 truncate 计 qty=1，少计 1 个会话"}]}}
+{"instance_id": "a2c80bc1d66d", "output": {"discrepancies": []}}
+{"instance_id": "8fa15a46d658", "output": {"discrepancies": []}}
+{"instance_id": "37dcdbcb4387", "output": {"discrepancies": []}}
+{"instance_id": "6a06c26fc6c5", "output": {"discrepancies": []}}
+{"instance_id": "fdacb0fd0ef1", "output": {"discrepancies": [{"error_class": "E10_rounding_error", "line_ref": {"line_index": 20, "event": "e00020"}, "confidence": 0.95, "explanation": "语音会话 398 秒应按 60 秒向上取整计 7 分钟，账单按 truncate 计 qty=6 分钟，少计 1 分钟"}]}}
+{"instance_id": "1025259d733f", "output": {"discrepancies": []}}
+{"instance_id": "b0ecc97e75c8", "output": {"discrepancies": [{"error_class": "E10_rounding_error", "line_ref": {"line_index": 34, "event": "e00034"}, "confidence": 0.93, "explanation": "语音会话 180 秒=3 分钟，按每 10 分钟计 1 个会话应向上取整 qty=1，账单按 truncate 计 qty=0，整个会话漏计"}]}}
+{"instance_id": "484e4ed8d3f5", "output": {"discrepancies": []}}
+{"instance_id": "e528fe9eba6c", "output": {"discrepancies": []}}
+{"instance_id": "3d60af64dc91", "output": {"discrepancies": []}}
+{"instance_id": "0a974eb7e5d1", "output": {"discrepancies": []}}

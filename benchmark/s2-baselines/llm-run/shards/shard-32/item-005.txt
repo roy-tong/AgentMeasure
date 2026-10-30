@@ -1,0 +1,1083 @@
+INSTANCE_ID: 6dd8c4700ec3
+
+你是计费对账员（reconciler）。给定厂商计费规则文档与一张账单，逐行核对并找出所有与规则不符的差异。
+
+【厂商计费规则】
+【ETA 计费规则】语音：按分钟计 0.06/分钟，每会话秒数按 60 秒向上取整（voice_minute 行 qty 应=ceil(duration_seconds/60)）。聊天（含 email/sms）：按轮计 0.13/轮，欢迎轮免费（qty=max(0,user_inputs-1)）。多 agent 独立计量（行内 agent 标识，无跨 agent 合并或共享额度）。渠道通行成本加价：仅对语音通行成本（0.02/分钟）收 15% 加价（pass_through_markup 行的 markup_base/rate 应为该基数与 0.15）。
+
+【账单（JSON）】
+{
+ "period": "2031-01",
+ "profile": "P-parloalike",
+ "currency": "USD",
+ "price_table_version": "2031-01",
+ "line_items": [
+  {
+   "event": "e00000",
+   "unit": "chat_turn",
+   "qty": 53,
+   "unit_price": 0.13,
+   "amount": 6.89,
+   "channel": "sms",
+   "user_inputs": 54,
+   "agent": "agent-3"
+  },
+  {
+   "event": "e00001",
+   "unit": "voice_minute",
+   "qty": 29,
+   "unit_price": 0.06,
+   "amount": 1.74,
+   "channel": "voice",
+   "duration_seconds": 1711,
+   "agent": "agent-1"
+  },
+  {
+   "event": "e00002",
+   "unit": "chat_turn",
+   "qty": 113,
+   "unit_price": 0.13,
+   "amount": 14.69,
+   "channel": "sms",
+   "user_inputs": 114,
+   "agent": "agent-2"
+  },
+  {
+   "event": "e00003",
+   "unit": "voice_minute",
+   "qty": 13,
+   "unit_price": 0.06,
+   "amount": 0.78,
+   "channel": "voice",
+   "duration_seconds": 754,
+   "agent": "agent-2"
+  },
+  {
+   "event": "e00004",
+   "unit": "voice_minute",
+   "qty": 14,
+   "unit_price": 0.06,
+   "amount": 0.84,
+   "channel": "voice",
+   "duration_seconds": 794,
+   "agent": "agent-3"
+  },
+  {
+   "event": "e00005",
+   "unit": "voice_minute",
+   "qty": 8,
+   "unit_price": 0.06,
+   "amount": 0.48,
+   "channel": "voice",
+   "duration_seconds": 475,
+   "agent": "agent-3"
+  },
+  {
+   "event": "e00006",
+   "unit": "chat_turn",
+   "qty": 59,
+   "unit_price": 0.13,
+   "amount": 7.67,
+   "channel": "chat",
+   "user_inputs": 60,
+   "agent": "agent-2"
+  },
+  {
+   "event": "e00007",
+   "unit": "chat_turn",
+   "qty": 40,
+   "unit_price": 0.13,
+   "amount": 5.2,
+   "channel": "email",
+   "user_inputs": 41,
+   "agent": "agent-3"
+  },
+  {
+   "event": "e00008",
+   "unit": "chat_turn",
+   "qty": 95,
+   "unit_price": 0.13,
+   "amount": 12.35,
+   "channel": "email",
+   "user_inputs": 96,
+   "agent": "agent-1"
+  },
+  {
+   "event": "e00009",
+   "unit": "chat_turn",
+   "qty": 59,
+   "unit_price": 0.13,
+   "amount": 7.67,
+   "channel": "email",
+   "user_inputs": 60,
+   "agent": "agent-1"
+  },
+  {
+   "event": "e00010",
+   "unit": "chat_turn",
+   "qty": 66,
+   "unit_price": 0.13,
+   "amount": 8.58,
+   "channel": "email",
+   "user_inputs": 67,
+   "agent": "agent-2"
+  },
+  {
+   "event": "e00011",
+   "unit": "chat_turn",
+   "qty": 116,
+   "unit_price": 0.13,
+   "amount": 15.08,
+   "channel": "email",
+   "user_inputs": 117,
+   "agent": "agent-2"
+  },
+  {
+   "event": "e00012",
+   "unit": "chat_turn",
+   "qty": 69,
+   "unit_price": 0.13,
+   "amount": 8.97,
+   "channel": "chat",
+   "user_inputs": 70,
+   "agent": "agent-1"
+  },
+  {
+   "event": "e00013",
+   "unit": "chat_turn",
+   "qty": 112,
+   "unit_price": 0.13,
+   "amount": 14.56,
+   "channel": "email",
+   "user_inputs": 113,
+   "agent": "agent-2"
+  },
+  {
+   "event": "e00014",
+   "unit": "voice_minute",
+   "qty": 26,
+   "unit_price": 0.06,
+   "amount": 1.56,
+   "channel": "voice",
+   "duration_seconds": 1545,
+   "agent": "agent-1"
+  },
+  {
+   "event": "e00015",
+   "unit": "chat_turn",
+   "qty": 107,
+   "unit_price": 0.13,
+   "amount": 13.91,
+   "channel": "sms",
+   "user_inputs": 108,
+   "agent": "agent-3"
+  },
+  {
+   "event": "e00016",
+   "unit": "chat_turn",
+   "qty": 22,
+   "unit_price": 0.13,
+   "amount": 2.86,
+   "channel": "sms",
+   "user_inputs": 23,
+   "agent": "agent-3"
+  },
+  {
+   "event": "e00017",
+   "unit": "voice_minute",
+   "qty": 17,
+   "unit_price": 0.06,
+   "amount": 1.02,
+   "channel": "voice",
+   "duration_seconds": 988,
+   "agent": "agent-2"
+  },
+  {
+   "event": "e00018",
+   "unit": "chat_turn",
+   "qty": 71,
+   "unit_price": 0.13,
+   "amount": 9.23,
+   "channel": "chat",
+   "user_inputs": 72,
+   "agent": "agent-1"
+  },
+  {
+   "event": "e00019",
+   "unit": "chat_turn",
+   "qty": 14,
+   "unit_price": 0.13,
+   "amount": 1.82,
+   "channel": "chat",
+   "user_inputs": 15,
+   "agent": "agent-2"
+  },
+  {
+   "event": "e00020",
+   "unit": "voice_minute",
+   "qty": 7,
+   "unit_price": 0.06,
+   "amount": 0.42,
+   "channel": "voice",
+   "duration_seconds": 398,
+   "agent": "agent-1"
+  },
+  {
+   "event": "e00021",
+   "unit": "chat_turn",
+   "qty": 75,
+   "unit_price": 0.13,
+   "amount": 9.75,
+   "channel": "sms",
+   "user_inputs": 76,
+   "agent": "agent-3"
+  },
+  {
+   "event": "e00022",
+   "unit": "voice_minute",
+   "qty": 16,
+   "unit_price": 0.06,
+   "amount": 0.96,
+   "channel": "voice",
+   "duration_seconds": 952,
+   "agent": "agent-1"
+  },
+  {
+   "event": "e00023",
+   "unit": "chat_turn",
+   "qty": 18,
+   "unit_price": 0.13,
+   "amount": 2.34,
+   "channel": "chat",
+   "user_inputs": 19,
+   "agent": "agent-1"
+  },
+  {
+   "event": "e00024",
+   "unit": "chat_turn",
+   "qty": 96,
+   "unit_price": 0.13,
+   "amount": 12.48,
+   "channel": "email",
+   "user_inputs": 97,
+   "agent": "agent-2"
+  },
+  {
+   "event": "e00025",
+   "unit": "voice_minute",
+   "qty": 29,
+   "unit_price": 0.06,
+   "amount": 1.74,
+   "channel": "voice",
+   "duration_seconds": 1688,
+   "agent": "agent-1"
+  },
+  {
+   "event": "e00026",
+   "unit": "voice_minute",
+   "qty": 30,
+   "unit_price": 0.06,
+   "amount": 1.8,
+   "channel": "voice",
+   "duration_seconds": 1760,
+   "agent": "agent-1"
+  },
+  {
+   "event": "e00027",
+   "unit": "chat_turn",
+   "qty": 1,
+   "unit_price": 0.13,
+   "amount": 0.13,
+   "channel": "email",
+   "user_inputs": 2,
+   "agent": "agent-3"
+  },
+  {
+   "event": "e00028",
+   "unit": "chat_turn",
+   "qty": 86,
+   "unit_price": 0.13,
+   "amount": 11.18,
+   "channel": "email",
+   "user_inputs": 87,
+   "agent": "agent-1"
+  },
+  {
+   "event": "e00029",
+   "unit": "chat_turn",
+   "qty": 18,
+   "unit_price": 0.13,
+   "amount": 2.34,
+   "channel": "email",
+   "user_inputs": 19,
+   "agent": "agent-3"
+  },
+  {
+   "event": "e00030",
+   "unit": "chat_turn",
+   "qty": 87,
+   "unit_price": 0.13,
+   "amount": 11.31,
+   "channel": "chat",
+   "user_inputs": 88,
+   "agent": "agent-3"
+  },
+  {
+   "event": "e00031",
+   "unit": "chat_turn",
+   "qty": 9,
+   "unit_price": 0.13,
+   "amount": 1.17,
+   "channel": "chat",
+   "user_inputs": 10,
+   "agent": "agent-1"
+  },
+  {
+   "event": "e00032",
+   "unit": "chat_turn",
+   "qty": 63,
+   "unit_price": 0.13,
+   "amount": 8.19,
+   "channel": "chat",
+   "user_inputs": 64,
+   "agent": "agent-2"
+  },
+  {
+   "event": "e00033",
+   "unit": "chat_turn",
+   "qty": 18,
+   "unit_price": 0.13,
+   "amount": 2.34,
+   "channel": "email",
+   "user_inputs": 19,
+   "agent": "agent-1"
+  },
+  {
+   "event": "e00034",
+   "unit": "chat_turn",
+   "qty": 103,
+   "unit_price": 0.13,
+   "amount": 13.39,
+   "channel": "chat",
+   "user_inputs": 104,
+   "agent": "agent-2"
+  },
+  {
+   "event": "e00035",
+   "unit": "voice_minute",
+   "qty": 12,
+   "unit_price": 0.06,
+   "amount": 0.72,
+   "channel": "voice",
+   "duration_seconds": 680,
+   "agent": "agent-3"
+  },
+  {
+   "event": "e00036",
+   "unit": "chat_turn",
+   "qty": 107,
+   "unit_price": 0.13,
+   "amount": 13.91,
+   "channel": "email",
+   "user_inputs": 108,
+   "agent": "agent-3"
+  },
+  {
+   "event": "e00037",
+   "unit": "chat_turn",
+   "qty": 82,
+   "unit_price": 0.13,
+   "amount": 10.66,
+   "channel": "chat",
+   "user_inputs": 83,
+   "agent": "agent-3"
+  },
+  {
+   "event": "e00038",
+   "unit": "chat_turn",
+   "qty": 89,
+   "unit_price": 0.13,
+   "amount": 11.57,
+   "channel": "sms",
+   "user_inputs": 90,
+   "agent": "agent-1"
+  },
+  {
+   "event": "e00039",
+   "unit": "chat_turn",
+   "qty": 18,
+   "unit_price": 0.13,
+   "amount": 2.34,
+   "channel": "sms",
+   "user_inputs": 19,
+   "agent": "agent-2"
+  },
+  {
+   "event": "e00040",
+   "unit": "chat_turn",
+   "qty": 110,
+   "unit_price": 0.13,
+   "amount": 14.3,
+   "channel": "email",
+   "user_inputs": 111,
+   "agent": "agent-2"
+  },
+  {
+   "event": "e00041",
+   "unit": "chat_turn",
+   "qty": 90,
+   "unit_price": 0.13,
+   "amount": 11.7,
+   "channel": "sms",
+   "user_inputs": 91,
+   "agent": "agent-3"
+  },
+  {
+   "event": "e00042",
+   "unit": "chat_turn",
+   "qty": 118,
+   "unit_price": 0.13,
+   "amount": 15.34,
+   "channel": "chat",
+   "user_inputs": 119,
+   "agent": "agent-1"
+  },
+  {
+   "event": "e00043",
+   "unit": "chat_turn",
+   "qty": 39,
+   "unit_price": 0.13,
+   "amount": 5.07,
+   "channel": "email",
+   "user_inputs": 40,
+   "agent": "agent-3"
+  },
+  {
+   "event": "e00044",
+   "unit": "voice_minute",
+   "qty": 2,
+   "unit_price": 0.06,
+   "amount": 0.12,
+   "channel": "voice",
+   "duration_seconds": 67,
+   "agent": "agent-1"
+  },
+  {
+   "event": "e00045",
+   "unit": "chat_turn",
+   "qty": 94,
+   "unit_price": 0.13,
+   "amount": 12.22,
+   "channel": "chat",
+   "user_inputs": 95,
+   "agent": "agent-1"
+  },
+  {
+   "event": "e00046",
+   "unit": "chat_turn",
+   "qty": 105,
+   "unit_price": 0.13,
+   "amount": 13.65,
+   "channel": "email",
+   "user_inputs": 106,
+   "agent": "agent-1"
+  },
+  {
+   "event": "e00047",
+   "unit": "voice_minute",
+   "qty": 12,
+   "unit_price": 0.06,
+   "amount": 0.72,
+   "channel": "voice",
+   "duration_seconds": 711,
+   "agent": "agent-3"
+  },
+  {
+   "event": "e00048",
+   "unit": "chat_turn",
+   "qty": 2,
+   "unit_price": 0.13,
+   "amount": 0.26,
+   "channel": "chat",
+   "user_inputs": 3,
+   "agent": "agent-3"
+  },
+  {
+   "event": "e00049",
+   "unit": "chat_turn",
+   "qty": 100,
+   "unit_price": 0.13,
+   "amount": 13.0,
+   "channel": "sms",
+   "user_inputs": 101,
+   "agent": "agent-3"
+  },
+  {
+   "event": "e00050",
+   "unit": "voice_minute",
+   "qty": 3,
+   "unit_price": 0.06,
+   "amount": 0.18,
+   "channel": "voice",
+   "duration_seconds": 130,
+   "agent": "agent-3"
+  },
+  {
+   "event": "e00051",
+   "unit": "chat_turn",
+   "qty": 74,
+   "unit_price": 0.13,
+   "amount": 9.62,
+   "channel": "chat",
+   "user_inputs": 75,
+   "agent": "agent-3"
+  },
+  {
+   "event": "e00052",
+   "unit": "chat_turn",
+   "qty": 32,
+   "unit_price": 0.13,
+   "amount": 4.16,
+   "channel": "email",
+   "user_inputs": 33,
+   "agent": "agent-1"
+  },
+  {
+   "event": "e00053",
+   "unit": "chat_turn",
+   "qty": 72,
+   "unit_price": 0.13,
+   "amount": 9.36,
+   "channel": "sms",
+   "user_inputs": 73,
+   "agent": "agent-2"
+  },
+  {
+   "event": "e00054",
+   "unit": "chat_turn",
+   "qty": 97,
+   "unit_price": 0.13,
+   "amount": 12.61,
+   "channel": "email",
+   "user_inputs": 98,
+   "agent": "agent-2"
+  },
+  {
+   "event": "e00055",
+   "unit": "voice_minute",
+   "qty": 9,
+   "unit_price": 0.06,
+   "amount": 0.54,
+   "channel": "voice",
+   "duration_seconds": 517,
+   "agent": "agent-1"
+  },
+  {
+   "event": "e00056",
+   "unit": "voice_minute",
+   "qty": 21,
+   "unit_price": 0.06,
+   "amount": 1.26,
+   "channel": "voice",
+   "duration_seconds": 1255,
+   "agent": "agent-2"
+  },
+  {
+   "event": "e00057",
+   "unit": "chat_turn",
+   "qty": 37,
+   "unit_price": 0.13,
+   "amount": 4.81,
+   "channel": "sms",
+   "user_inputs": 38,
+   "agent": "agent-2"
+  },
+  {
+   "event": "e00058",
+   "unit": "chat_turn",
+   "qty": 58,
+   "unit_price": 0.13,
+   "amount": 7.54,
+   "channel": "email",
+   "user_inputs": 59,
+   "agent": "agent-3"
+  },
+  {
+   "event": "e00059",
+   "unit": "voice_minute",
+   "qty": 18,
+   "unit_price": 0.06,
+   "amount": 1.08,
+   "channel": "voice",
+   "duration_seconds": 1073,
+   "agent": "agent-1"
+  },
+  {
+   "event": "e00060",
+   "unit": "chat_turn",
+   "qty": 49,
+   "unit_price": 0.13,
+   "amount": 6.37,
+   "channel": "sms",
+   "user_inputs": 50,
+   "agent": "agent-2"
+  },
+  {
+   "event": "e00061",
+   "unit": "chat_turn",
+   "qty": 3,
+   "unit_price": 0.13,
+   "amount": 0.39,
+   "channel": "email",
+   "user_inputs": 4,
+   "agent": "agent-3"
+  },
+  {
+   "event": "e00062",
+   "unit": "voice_minute",
+   "qty": 28,
+   "unit_price": 0.06,
+   "amount": 1.68,
+   "channel": "voice",
+   "duration_seconds": 1677,
+   "agent": "agent-1"
+  },
+  {
+   "event": "e00063",
+   "unit": "chat_turn",
+   "qty": 47,
+   "unit_price": 0.13,
+   "amount": 6.11,
+   "channel": "email",
+   "user_inputs": 48,
+   "agent": "agent-3"
+  },
+  {
+   "event": "e00064",
+   "unit": "chat_turn",
+   "qty": 94,
+   "unit_price": 0.13,
+   "amount": 12.22,
+   "channel": "chat",
+   "user_inputs": 95,
+   "agent": "agent-3"
+  },
+  {
+   "event": "e00065",
+   "unit": "voice_minute",
+   "qty": 27,
+   "unit_price": 0.06,
+   "amount": 1.62,
+   "channel": "voice",
+   "duration_seconds": 1566,
+   "agent": "agent-2"
+  },
+  {
+   "event": "e00066",
+   "unit": "chat_turn",
+   "qty": 38,
+   "unit_price": 0.13,
+   "amount": 4.94,
+   "channel": "sms",
+   "user_inputs": 39,
+   "agent": "agent-3"
+  },
+  {
+   "event": "e00067",
+   "unit": "chat_turn",
+   "qty": 7,
+   "unit_price": 0.13,
+   "amount": 0.91,
+   "channel": "email",
+   "user_inputs": 8,
+   "agent": "agent-3"
+  },
+  {
+   "event": "e00068",
+   "unit": "chat_turn",
+   "qty": 13,
+   "unit_price": 0.13,
+   "amount": 1.69,
+   "channel": "sms",
+   "user_inputs": 14,
+   "agent": "agent-3"
+  },
+  {
+   "event": "e00069",
+   "unit": "chat_turn",
+   "qty": 60,
+   "unit_price": 0.13,
+   "amount": 7.8,
+   "channel": "chat",
+   "user_inputs": 61,
+   "agent": "agent-3"
+  },
+  {
+   "event": "e00070",
+   "unit": "chat_turn",
+   "qty": 66,
+   "unit_price": 0.13,
+   "amount": 8.58,
+   "channel": "email",
+   "user_inputs": 67,
+   "agent": "agent-2"
+  },
+  {
+   "event": "e00071",
+   "unit": "chat_turn",
+   "qty": 75,
+   "unit_price": 0.13,
+   "amount": 9.75,
+   "channel": "chat",
+   "user_inputs": 76,
+   "agent": "agent-3"
+  },
+  {
+   "event": "e00072",
+   "unit": "chat_turn",
+   "qty": 46,
+   "unit_price": 0.13,
+   "amount": 5.98,
+   "channel": "email",
+   "user_inputs": 47,
+   "agent": "agent-1"
+  },
+  {
+   "event": "e00073",
+   "unit": "chat_turn",
+   "qty": 100,
+   "unit_price": 0.13,
+   "amount": 13.0,
+   "channel": "sms",
+   "user_inputs": 101,
+   "agent": "agent-1"
+  },
+  {
+   "event": "e00074",
+   "unit": "chat_turn",
+   "qty": 33,
+   "unit_price": 0.13,
+   "amount": 4.29,
+   "channel": "sms",
+   "user_inputs": 34,
+   "agent": "agent-3"
+  },
+  {
+   "event": "e00075",
+   "unit": "chat_turn",
+   "qty": 67,
+   "unit_price": 0.13,
+   "amount": 8.71,
+   "channel": "chat",
+   "user_inputs": 68,
+   "agent": "agent-1"
+  },
+  {
+   "event": "e00076",
+   "unit": "chat_turn",
+   "qty": 107,
+   "unit_price": 0.13,
+   "amount": 13.91,
+   "channel": "chat",
+   "user_inputs": 108,
+   "agent": "agent-2"
+  },
+  {
+   "event": "e00077",
+   "unit": "chat_turn",
+   "qty": 34,
+   "unit_price": 0.13,
+   "amount": 4.42,
+   "channel": "chat",
+   "user_inputs": 35,
+   "agent": "agent-3"
+  },
+  {
+   "event": "e00078",
+   "unit": "voice_minute",
+   "qty": 25,
+   "unit_price": 0.06,
+   "amount": 1.5,
+   "channel": "voice",
+   "duration_seconds": 1459,
+   "agent": "agent-1"
+  },
+  {
+   "event": "e00079",
+   "unit": "voice_minute",
+   "qty": 24,
+   "unit_price": 0.06,
+   "amount": 1.44,
+   "channel": "voice",
+   "duration_seconds": 1386,
+   "agent": "agent-2"
+  },
+  {
+   "event": "e00080",
+   "unit": "chat_turn",
+   "qty": 20,
+   "unit_price": 0.13,
+   "amount": 2.6,
+   "channel": "sms",
+   "user_inputs": 21,
+   "agent": "agent-2"
+  },
+  {
+   "event": "e00081",
+   "unit": "chat_turn",
+   "qty": 9,
+   "unit_price": 0.13,
+   "amount": 1.17,
+   "channel": "chat",
+   "user_inputs": 10,
+   "agent": "agent-3"
+  },
+  {
+   "event": "e00082",
+   "unit": "voice_minute",
+   "qty": 28,
+   "unit_price": 0.06,
+   "amount": 1.68,
+   "channel": "voice",
+   "duration_seconds": 1668,
+   "agent": "agent-2"
+  },
+  {
+   "event": "e00083",
+   "unit": "chat_turn",
+   "qty": 10,
+   "unit_price": 0.13,
+   "amount": 1.3,
+   "channel": "email",
+   "user_inputs": 11,
+   "agent": "agent-2"
+  },
+  {
+   "event": "e00084",
+   "unit": "chat_turn",
+   "qty": 33,
+   "unit_price": 0.13,
+   "amount": 4.29,
+   "channel": "email",
+   "user_inputs": 34,
+   "agent": "agent-3"
+  },
+  {
+   "event": "e00085",
+   "unit": "chat_turn",
+   "qty": 85,
+   "unit_price": 0.13,
+   "amount": 11.05,
+   "channel": "sms",
+   "user_inputs": 86,
+   "agent": "agent-1"
+  },
+  {
+   "event": "e00086",
+   "unit": "chat_turn",
+   "qty": 64,
+   "unit_price": 0.13,
+   "amount": 8.32,
+   "channel": "email",
+   "user_inputs": 65,
+   "agent": "agent-3"
+  },
+  {
+   "event": "e00087",
+   "unit": "chat_turn",
+   "qty": 110,
+   "unit_price": 0.13,
+   "amount": 14.3,
+   "channel": "sms",
+   "user_inputs": 111,
+   "agent": "agent-3"
+  },
+  {
+   "event": "e00088",
+   "unit": "voice_minute",
+   "qty": 27,
+   "unit_price": 0.06,
+   "amount": 1.62,
+   "channel": "voice",
+   "duration_seconds": 1597,
+   "agent": "agent-3"
+  },
+  {
+   "event": "e00089",
+   "unit": "voice_minute",
+   "qty": 5,
+   "unit_price": 0.06,
+   "amount": 0.3,
+   "channel": "voice",
+   "duration_seconds": 260,
+   "agent": "agent-1"
+  },
+  {
+   "event": "e00090",
+   "unit": "chat_turn",
+   "qty": 69,
+   "unit_price": 0.13,
+   "amount": 8.97,
+   "channel": "chat",
+   "user_inputs": 70,
+   "agent": "agent-3"
+  },
+  {
+   "event": "e00091",
+   "unit": "chat_turn",
+   "qty": 3,
+   "unit_price": 0.13,
+   "amount": 0.39,
+   "channel": "sms",
+   "user_inputs": 4,
+   "agent": "agent-1"
+  },
+  {
+   "event": "e00092",
+   "unit": "chat_turn",
+   "qty": 58,
+   "unit_price": 0.13,
+   "amount": 7.54,
+   "channel": "email",
+   "user_inputs": 59,
+   "agent": "agent-1"
+  },
+  {
+   "event": "e00093",
+   "unit": "chat_turn",
+   "qty": 14,
+   "unit_price": 0.13,
+   "amount": 1.82,
+   "channel": "sms",
+   "user_inputs": 15,
+   "agent": "agent-3"
+  },
+  {
+   "event": "e00094",
+   "unit": "chat_turn",
+   "qty": 69,
+   "unit_price": 0.13,
+   "amount": 8.97,
+   "channel": "chat",
+   "user_inputs": 70,
+   "agent": "agent-1"
+  },
+  {
+   "event": "e00095",
+   "unit": "chat_turn",
+   "qty": 84,
+   "unit_price": 0.13,
+   "amount": 10.92,
+   "channel": "sms",
+   "user_inputs": 85,
+   "agent": "agent-2"
+  },
+  {
+   "event": "e00096",
+   "unit": "chat_turn",
+   "qty": 58,
+   "unit_price": 0.13,
+   "amount": 7.54,
+   "channel": "email",
+   "user_inputs": 59,
+   "agent": "agent-1"
+  },
+  {
+   "event": "e00097",
+   "unit": "chat_turn",
+   "qty": 31,
+   "unit_price": 0.13,
+   "amount": 4.03,
+   "channel": "chat",
+   "user_inputs": 32,
+   "agent": "agent-3"
+  },
+  {
+   "event": "e00098",
+   "unit": "voice_minute",
+   "qty": 20,
+   "unit_price": 0.06,
+   "amount": 1.2,
+   "channel": "voice",
+   "duration_seconds": 1180,
+   "agent": "agent-2"
+  },
+  {
+   "event": "e00099",
+   "unit": "voice_minute",
+   "qty": 22,
+   "unit_price": 0.06,
+   "amount": 1.32,
+   "channel": "voice",
+   "duration_seconds": 1307,
+   "agent": "agent-2"
+  },
+  {
+   "event": null,
+   "unit": "pass_through_markup",
+   "qty": 1,
+   "unit_price": 1.42,
+   "amount": 1.42,
+   "markup_base": 9.44,
+   "markup_rate": 0.15
+  },
+  {
+   "event": null,
+   "unit": "auto_recharge_pack",
+   "qty": 100,
+   "unit_price": 0.13,
+   "amount": 13.0,
+   "reason": "auto_recharge"
+  }
+ ],
+ "summary": {
+  "per_agent_subtotal": {
+   "agent-1": 188.81,
+   "agent-2": 193.88,
+   "agent-3": 224.13
+  },
+  "line_count": 102,
+  "billable_qty": 5023,
+  "subtotal": 621.24,
+  "total": 621.24
+ }
+}
+
+【输出要求】
+仅输出一个 JSON 对象（不要输出其他文字），schema 如下：
+{
+ "discrepancies": [
+  {
+   "error_class": "枚举之一（E01..E16，见 prompt 内类清单）",
+   "line_ref": {
+    "line_index": "int：账单 line_items 数组下标",
+    "event": "str|null：行内 event 字段"
+   },
+   "confidence": "0.0-1.0",
+   "explanation": "一句话差异说明"
+  }
+ ]
+}
+
+error_class 必须是以下枚举之一：
+E01_unit_misclassification, E02_retry_attribution, E03_split_threshold_misapplication, E04_cross_period_double_count, E05_component_execution_billing, E06_duplicate_conversation_count, E07_stale_price_table, E08_retroactive_repricing, E09_tier_boundary_error, E10_rounding_error, E11_pass_through_markup, E12_credit_non_application, E13_handoff_window_reclassification, E14_rollover_expiry_error, E15_minimum_commit_error, E16_auto_recharge_error
+
+各类含义：
+- E01_unit_misclassification: 会话/解决/尝试单位混用：按 conversation 计的事件被计为 resolution
+- E02_retry_attribution: 重试与归因歧义：1 operation/2 attempts/1 order 的计数归属
+- E03_split_threshold_misapplication: 会话切分阈值误用：超时窗口（15min/3d/10d/24h/2-72h/跨月）适用错误导致多计或少计
+- E04_cross_period_double_count: 同一会话跨计费周期被双计
+- E05_component_execution_billing: 平台内部组件执行被计入用量
+- E06_duplicate_conversation_count: 同一用户/同一问题多渠道或重复开启被分别计数
+- E07_stale_price_table: 适用过期单价（价表已更新仍按旧价计）
+- E08_retroactive_repricing: 回溯调价/重分类：对已发生用量改单价或重归类
+- E09_tier_boundary_error: 分层边界计算错误：跨档单价适用错位
+- E10_rounding_error: 取整规则错误：向上取整适用错（语音秒→分钟、分数→整数事件）
+- E11_pass_through_markup: 通行成本加价计算错误（渠道费%handle fee 的基数或费率错）
+- E12_credit_non_application: 已触发的信用/退款未应用到账单
+- E13_handoff_window_reclassification: 转人工时间窗重分类未执行（如 72h 内应退为票费仍收 AI 费）
+- E14_rollover_expiry_error: 额度结转/过期规则适用错误（应结转的被过期、应过期的被结转）
+- E15_minimum_commit_error: 最低承诺计算错误（低于下限按实际计、高于下限按下限计错）
+- E16_auto_recharge_error: 自动充值机制误触发/误定价（不可关闭机制下的包大小或触发阈值错）
+
+若账单与规则完全一致，输出 {"discrepancies": []}。

@@ -1,0 +1,1197 @@
+INSTANCE_ID: 6464b3e4876a
+
+你是计费对账员（reconciler）。给定厂商计费规则文档与一张账单，逐行核对并找出所有与规则不符的差异。
+
+【厂商计费规则】
+【EPSILON 计费规则】单位=per_conversation，单价 0.29/次。文本会话：user_inputs 每 50 次计 1 个会话（qty=max(1,ceil(inputs/50))），活动间隔超 24h 每多一段 +1（行内 segments）。语音会话：每 10 分钟计 1 个会话，分钟数按 60 秒向上取整（qty 应等于 ceil(ceil(duration_seconds/60)/10)）。handoff 会话只计一次。平台 Transformer 执行每 50 次折 1 个额外会话（transformer_executions 行内 transformer_execs 为总执行数，qty 应为 floor(execs/50)）；内部组件执行按次计费均为错误。
+
+【账单（JSON）】
+{
+ "period": "2031-01",
+ "profile": "P-cognigylike",
+ "currency": "USD",
+ "price_table_version": "2031-01",
+ "line_items": [
+  {
+   "event": "e00000",
+   "unit": "conversation",
+   "qty": 3,
+   "unit_price": 0.29,
+   "amount": 0.87,
+   "channel": "email",
+   "user_inputs": 112,
+   "segments": 1,
+   "human_replies": 0
+  },
+  {
+   "event": "e00001",
+   "unit": "conversation",
+   "qty": 3,
+   "unit_price": 0.29,
+   "amount": 0.87,
+   "channel": "sms",
+   "user_inputs": 34,
+   "segments": 3,
+   "human_replies": 1
+  },
+  {
+   "event": "e00002",
+   "unit": "conversation",
+   "qty": 1,
+   "unit_price": 0.29,
+   "amount": 0.29,
+   "channel": "email",
+   "user_inputs": 39,
+   "segments": 1,
+   "human_replies": 2
+  },
+  {
+   "event": "e00003",
+   "unit": "conversation",
+   "qty": 4,
+   "unit_price": 0.29,
+   "amount": 1.16,
+   "channel": "chat",
+   "user_inputs": 111,
+   "segments": 2,
+   "human_replies": 2
+  },
+  {
+   "event": "e00004",
+   "unit": "conversation",
+   "qty": 3,
+   "unit_price": 0.29,
+   "amount": 0.87,
+   "channel": "email",
+   "user_inputs": 15,
+   "segments": 3,
+   "human_replies": 2
+  },
+  {
+   "event": "e00005",
+   "unit": "conversation",
+   "qty": 4,
+   "unit_price": 0.29,
+   "amount": 1.16,
+   "channel": "sms",
+   "user_inputs": 56,
+   "segments": 3,
+   "human_replies": 2
+  },
+  {
+   "event": "e00006",
+   "unit": "conversation",
+   "qty": 1,
+   "unit_price": 0.29,
+   "amount": 0.29,
+   "channel": "email",
+   "user_inputs": 13,
+   "segments": 1,
+   "human_replies": 2
+  },
+  {
+   "event": "e00007",
+   "unit": "conversation",
+   "qty": 1,
+   "unit_price": 0.29,
+   "amount": 0.29,
+   "channel": "email",
+   "user_inputs": 31,
+   "segments": 1,
+   "human_replies": 0
+  },
+  {
+   "event": "e00008",
+   "unit": "conversation",
+   "qty": 3,
+   "unit_price": 0.29,
+   "amount": 0.87,
+   "channel": "chat",
+   "user_inputs": 116,
+   "segments": 1,
+   "human_replies": 1
+  },
+  {
+   "event": "e00009",
+   "unit": "conversation",
+   "qty": 3,
+   "unit_price": 0.29,
+   "amount": 0.87,
+   "channel": "sms",
+   "user_inputs": 32,
+   "segments": 3,
+   "human_replies": 0
+  },
+  {
+   "event": "e00010",
+   "unit": "conversation",
+   "qty": 3,
+   "unit_price": 0.29,
+   "amount": 0.87,
+   "channel": "voice",
+   "duration_seconds": 1295,
+   "voice_minutes": 22,
+   "segments": 1,
+   "human_replies": 2
+  },
+  {
+   "event": "e00011",
+   "unit": "conversation",
+   "qty": 2,
+   "unit_price": 0.29,
+   "amount": 0.58,
+   "channel": "sms",
+   "user_inputs": 52,
+   "segments": 1,
+   "human_replies": 0
+  },
+  {
+   "event": "e00012",
+   "unit": "conversation",
+   "qty": 2,
+   "unit_price": 0.29,
+   "amount": 0.58,
+   "channel": "chat",
+   "user_inputs": 68,
+   "segments": 1,
+   "human_replies": 1
+  },
+  {
+   "event": "e00013",
+   "unit": "conversation",
+   "qty": 2,
+   "unit_price": 0.29,
+   "amount": 0.58,
+   "channel": "voice",
+   "duration_seconds": 1189,
+   "voice_minutes": 20,
+   "segments": 1,
+   "human_replies": 0
+  },
+  {
+   "event": "e00014",
+   "unit": "conversation",
+   "qty": 3,
+   "unit_price": 0.29,
+   "amount": 0.87,
+   "channel": "email",
+   "user_inputs": 59,
+   "segments": 2,
+   "human_replies": 1
+  },
+  {
+   "event": "e00015",
+   "unit": "conversation",
+   "qty": 3,
+   "unit_price": 0.29,
+   "amount": 0.87,
+   "channel": "chat",
+   "user_inputs": 94,
+   "segments": 2,
+   "human_replies": 2
+  },
+  {
+   "event": "e00016",
+   "unit": "conversation",
+   "qty": 1,
+   "unit_price": 0.29,
+   "amount": 0.29,
+   "channel": "chat",
+   "user_inputs": 21,
+   "segments": 1,
+   "human_replies": 2
+  },
+  {
+   "event": "e00017",
+   "unit": "conversation",
+   "qty": 2,
+   "unit_price": 0.29,
+   "amount": 0.58,
+   "channel": "chat",
+   "user_inputs": 82,
+   "segments": 1,
+   "human_replies": 1
+  },
+  {
+   "event": "e00018",
+   "unit": "conversation",
+   "qty": 2,
+   "unit_price": 0.29,
+   "amount": 0.58,
+   "channel": "voice",
+   "duration_seconds": 1031,
+   "voice_minutes": 18,
+   "segments": 1,
+   "human_replies": 0
+  },
+  {
+   "event": "e00019",
+   "unit": "conversation",
+   "qty": 2,
+   "unit_price": 0.29,
+   "amount": 0.58,
+   "channel": "email",
+   "user_inputs": 56,
+   "segments": 1,
+   "human_replies": 2
+  },
+  {
+   "event": "e00020",
+   "unit": "conversation",
+   "qty": 1,
+   "unit_price": 0.29,
+   "amount": 0.29,
+   "channel": "voice",
+   "duration_seconds": 127,
+   "voice_minutes": 3,
+   "segments": 1,
+   "human_replies": 0
+  },
+  {
+   "event": "e00021",
+   "unit": "conversation",
+   "qty": 2,
+   "unit_price": 0.29,
+   "amount": 0.58,
+   "channel": "voice",
+   "duration_seconds": 823,
+   "voice_minutes": 14,
+   "segments": 1,
+   "human_replies": 1
+  },
+  {
+   "event": "e00022",
+   "unit": "conversation",
+   "qty": 1,
+   "unit_price": 0.29,
+   "amount": 0.29,
+   "channel": "sms",
+   "user_inputs": 10,
+   "segments": 1,
+   "human_replies": 2
+  },
+  {
+   "event": "e00023",
+   "unit": "conversation",
+   "qty": 4,
+   "unit_price": 0.29,
+   "amount": 1.16,
+   "channel": "chat",
+   "user_inputs": 109,
+   "segments": 2,
+   "human_replies": 0
+  },
+  {
+   "event": "e00024",
+   "unit": "conversation",
+   "qty": 2,
+   "unit_price": 0.29,
+   "amount": 0.58,
+   "channel": "voice",
+   "duration_seconds": 971,
+   "voice_minutes": 17,
+   "segments": 1,
+   "human_replies": 1
+  },
+  {
+   "event": "e00025",
+   "unit": "conversation",
+   "qty": 2,
+   "unit_price": 0.29,
+   "amount": 0.58,
+   "channel": "chat",
+   "user_inputs": 17,
+   "segments": 2,
+   "human_replies": 2
+  },
+  {
+   "event": "e00026",
+   "unit": "conversation",
+   "qty": 2,
+   "unit_price": 0.29,
+   "amount": 0.58,
+   "channel": "chat",
+   "user_inputs": 52,
+   "segments": 1,
+   "human_replies": 1
+  },
+  {
+   "event": "e00027",
+   "unit": "conversation",
+   "qty": 4,
+   "unit_price": 0.29,
+   "amount": 1.16,
+   "channel": "chat",
+   "user_inputs": 113,
+   "segments": 2,
+   "human_replies": 0
+  },
+  {
+   "event": "e00028",
+   "unit": "conversation",
+   "qty": 2,
+   "unit_price": 0.29,
+   "amount": 0.58,
+   "channel": "voice",
+   "duration_seconds": 777,
+   "voice_minutes": 13,
+   "segments": 1,
+   "human_replies": 1
+  },
+  {
+   "event": "e00029",
+   "unit": "conversation",
+   "qty": 2,
+   "unit_price": 0.29,
+   "amount": 0.58,
+   "channel": "chat",
+   "user_inputs": 8,
+   "segments": 2,
+   "human_replies": 0
+  },
+  {
+   "event": "e00030",
+   "unit": "conversation",
+   "qty": 3,
+   "unit_price": 0.29,
+   "amount": 0.87,
+   "channel": "sms",
+   "user_inputs": 33,
+   "segments": 3,
+   "human_replies": 1
+  },
+  {
+   "event": "e00031",
+   "unit": "conversation",
+   "qty": 5,
+   "unit_price": 0.29,
+   "amount": 1.45,
+   "channel": "chat",
+   "user_inputs": 117,
+   "segments": 3,
+   "human_replies": 1
+  },
+  {
+   "event": "e00032",
+   "unit": "conversation",
+   "qty": 1,
+   "unit_price": 0.29,
+   "amount": 0.29,
+   "channel": "sms",
+   "user_inputs": 44,
+   "segments": 1,
+   "human_replies": 2
+  },
+  {
+   "event": "e00033",
+   "unit": "conversation",
+   "qty": 3,
+   "unit_price": 0.29,
+   "amount": 0.87,
+   "channel": "email",
+   "user_inputs": 37,
+   "segments": 3,
+   "human_replies": 2
+  },
+  {
+   "event": "e00034",
+   "unit": "conversation",
+   "qty": 1,
+   "unit_price": 0.29,
+   "amount": 0.29,
+   "channel": "voice",
+   "duration_seconds": 180,
+   "voice_minutes": 3,
+   "segments": 1,
+   "human_replies": 2
+  },
+  {
+   "event": "e00035",
+   "unit": "conversation",
+   "qty": 2,
+   "unit_price": 0.29,
+   "amount": 0.58,
+   "channel": "chat",
+   "user_inputs": 98,
+   "segments": 1,
+   "human_replies": 2
+  },
+  {
+   "event": "e00036",
+   "unit": "conversation",
+   "qty": 2,
+   "unit_price": 0.29,
+   "amount": 0.58,
+   "channel": "voice",
+   "duration_seconds": 1083,
+   "voice_minutes": 19,
+   "segments": 1,
+   "human_replies": 1
+  },
+  {
+   "event": "e00037",
+   "unit": "conversation",
+   "qty": 2,
+   "unit_price": 0.29,
+   "amount": 0.58,
+   "channel": "chat",
+   "user_inputs": 51,
+   "segments": 1,
+   "human_replies": 1
+  },
+  {
+   "event": "e00038",
+   "unit": "conversation",
+   "qty": 3,
+   "unit_price": 0.29,
+   "amount": 0.87,
+   "channel": "email",
+   "user_inputs": 2,
+   "segments": 3,
+   "human_replies": 2
+  },
+  {
+   "event": "e00039",
+   "unit": "conversation",
+   "qty": 3,
+   "unit_price": 0.29,
+   "amount": 0.87,
+   "channel": "voice",
+   "duration_seconds": 1659,
+   "voice_minutes": 28,
+   "segments": 1,
+   "human_replies": 2
+  },
+  {
+   "event": "e00040",
+   "unit": "conversation",
+   "qty": 1,
+   "unit_price": 0.29,
+   "amount": 0.29,
+   "channel": "email",
+   "user_inputs": 3,
+   "segments": 1,
+   "human_replies": 2
+  },
+  {
+   "event": "e00041",
+   "unit": "conversation",
+   "qty": 2,
+   "unit_price": 0.29,
+   "amount": 0.58,
+   "channel": "email",
+   "user_inputs": 92,
+   "segments": 1,
+   "human_replies": 2
+  },
+  {
+   "event": "e00042",
+   "unit": "conversation",
+   "qty": 1,
+   "unit_price": 0.29,
+   "amount": 0.29,
+   "channel": "voice",
+   "duration_seconds": 219,
+   "voice_minutes": 4,
+   "segments": 1,
+   "human_replies": 0
+  },
+  {
+   "event": "e00043",
+   "unit": "conversation",
+   "qty": 5,
+   "unit_price": 0.29,
+   "amount": 1.45,
+   "channel": "email",
+   "user_inputs": 101,
+   "segments": 3,
+   "human_replies": 2
+  },
+  {
+   "event": "e00044",
+   "unit": "conversation",
+   "qty": 3,
+   "unit_price": 0.29,
+   "amount": 0.87,
+   "channel": "voice",
+   "duration_seconds": 1337,
+   "voice_minutes": 23,
+   "segments": 1,
+   "human_replies": 2
+  },
+  {
+   "event": "e00045",
+   "unit": "conversation",
+   "qty": 1,
+   "unit_price": 0.29,
+   "amount": 0.29,
+   "channel": "chat",
+   "user_inputs": 32,
+   "segments": 1,
+   "human_replies": 2
+  },
+  {
+   "event": "e00046",
+   "unit": "conversation",
+   "qty": 1,
+   "unit_price": 0.29,
+   "amount": 0.29,
+   "channel": "sms",
+   "user_inputs": 21,
+   "segments": 1,
+   "human_replies": 1
+  },
+  {
+   "event": "e00047",
+   "unit": "conversation",
+   "qty": 2,
+   "unit_price": 0.29,
+   "amount": 0.58,
+   "channel": "sms",
+   "user_inputs": 93,
+   "segments": 1,
+   "human_replies": 1
+  },
+  {
+   "event": "e00048",
+   "unit": "conversation",
+   "qty": 2,
+   "unit_price": 0.29,
+   "amount": 0.58,
+   "channel": "email",
+   "user_inputs": 87,
+   "segments": 1,
+   "human_replies": 1
+  },
+  {
+   "event": "e00049",
+   "unit": "conversation",
+   "qty": 2,
+   "unit_price": 0.29,
+   "amount": 0.58,
+   "channel": "sms",
+   "user_inputs": 62,
+   "segments": 1,
+   "human_replies": 0
+  },
+  {
+   "event": "e00050",
+   "unit": "conversation",
+   "qty": 3,
+   "unit_price": 0.29,
+   "amount": 0.87,
+   "channel": "chat",
+   "user_inputs": 32,
+   "segments": 3,
+   "human_replies": 2
+  },
+  {
+   "event": "e00051",
+   "unit": "conversation",
+   "qty": 2,
+   "unit_price": 0.29,
+   "amount": 0.58,
+   "channel": "chat",
+   "user_inputs": 18,
+   "segments": 2,
+   "human_replies": 0
+  },
+  {
+   "event": "e00052",
+   "unit": "conversation",
+   "qty": 1,
+   "unit_price": 0.29,
+   "amount": 0.29,
+   "channel": "voice",
+   "duration_seconds": 100,
+   "voice_minutes": 2,
+   "segments": 1,
+   "human_replies": 1
+  },
+  {
+   "event": "e00053",
+   "unit": "conversation",
+   "qty": 2,
+   "unit_price": 0.29,
+   "amount": 0.58,
+   "channel": "sms",
+   "user_inputs": 45,
+   "segments": 2,
+   "human_replies": 0
+  },
+  {
+   "event": "e00054",
+   "unit": "conversation",
+   "qty": 3,
+   "unit_price": 0.29,
+   "amount": 0.87,
+   "channel": "voice",
+   "duration_seconds": 1306,
+   "voice_minutes": 22,
+   "segments": 1,
+   "human_replies": 2
+  },
+  {
+   "event": "e00055",
+   "unit": "conversation",
+   "qty": 1,
+   "unit_price": 0.29,
+   "amount": 0.29,
+   "channel": "email",
+   "user_inputs": 49,
+   "segments": 1,
+   "human_replies": 1
+  },
+  {
+   "event": "e00056",
+   "unit": "conversation",
+   "qty": 3,
+   "unit_price": 0.29,
+   "amount": 0.87,
+   "channel": "sms",
+   "user_inputs": 40,
+   "segments": 3,
+   "human_replies": 2
+  },
+  {
+   "event": "e00057",
+   "unit": "conversation",
+   "qty": 2,
+   "unit_price": 0.29,
+   "amount": 0.58,
+   "channel": "voice",
+   "duration_seconds": 1015,
+   "voice_minutes": 17,
+   "segments": 1,
+   "human_replies": 0
+  },
+  {
+   "event": "e00058",
+   "unit": "conversation",
+   "qty": 3,
+   "unit_price": 0.29,
+   "amount": 0.87,
+   "channel": "voice",
+   "duration_seconds": 1523,
+   "voice_minutes": 26,
+   "segments": 1,
+   "human_replies": 0
+  },
+  {
+   "event": "e00059",
+   "unit": "conversation",
+   "qty": 1,
+   "unit_price": 0.29,
+   "amount": 0.29,
+   "channel": "sms",
+   "user_inputs": 38,
+   "segments": 1,
+   "human_replies": 0
+  },
+  {
+   "event": "e00060",
+   "unit": "conversation",
+   "qty": 3,
+   "unit_price": 0.32,
+   "amount": 0.96,
+   "channel": "email",
+   "user_inputs": 51,
+   "segments": 2,
+   "human_replies": 1,
+   "original_unit_price": 0.29,
+   "reprice_event": "retroactive"
+  },
+  {
+   "event": "e00061",
+   "unit": "conversation",
+   "qty": 1,
+   "unit_price": 0.29,
+   "amount": 0.29,
+   "channel": "email",
+   "user_inputs": 4,
+   "segments": 1,
+   "human_replies": 1
+  },
+  {
+   "event": "e00062",
+   "unit": "conversation",
+   "qty": 1,
+   "unit_price": 0.29,
+   "amount": 0.29,
+   "channel": "voice",
+   "duration_seconds": 367,
+   "voice_minutes": 7,
+   "segments": 1,
+   "human_replies": 0
+  },
+  {
+   "event": "e00063",
+   "unit": "conversation",
+   "qty": 2,
+   "unit_price": 0.29,
+   "amount": 0.58,
+   "channel": "chat",
+   "user_inputs": 60,
+   "segments": 1,
+   "human_replies": 2
+  },
+  {
+   "event": "e00064",
+   "unit": "conversation",
+   "qty": 3,
+   "unit_price": 0.29,
+   "amount": 0.87,
+   "channel": "email",
+   "user_inputs": 118,
+   "segments": 1,
+   "human_replies": 1
+  },
+  {
+   "event": "e00065",
+   "unit": "conversation",
+   "qty": 4,
+   "unit_price": 0.29,
+   "amount": 1.16,
+   "channel": "email",
+   "user_inputs": 113,
+   "segments": 2,
+   "human_replies": 0
+  },
+  {
+   "event": "e00066",
+   "unit": "conversation",
+   "qty": 1,
+   "unit_price": 0.29,
+   "amount": 0.29,
+   "channel": "email",
+   "user_inputs": 15,
+   "segments": 1,
+   "human_replies": 0
+  },
+  {
+   "event": "e00067",
+   "unit": "conversation",
+   "qty": 3,
+   "unit_price": 0.29,
+   "amount": 0.87,
+   "channel": "sms",
+   "user_inputs": 113,
+   "segments": 1,
+   "human_replies": 0
+  },
+  {
+   "event": "e00068",
+   "unit": "conversation",
+   "qty": 4,
+   "unit_price": 0.29,
+   "amount": 1.16,
+   "channel": "sms",
+   "user_inputs": 54,
+   "segments": 3,
+   "human_replies": 0
+  },
+  {
+   "event": "e00069",
+   "unit": "conversation",
+   "qty": 4,
+   "unit_price": 0.29,
+   "amount": 1.16,
+   "channel": "email",
+   "user_inputs": 103,
+   "segments": 2,
+   "human_replies": 2
+  },
+  {
+   "event": "e00070",
+   "unit": "conversation",
+   "qty": 3,
+   "unit_price": 0.29,
+   "amount": 0.87,
+   "channel": "voice",
+   "duration_seconds": 1282,
+   "voice_minutes": 22,
+   "segments": 1,
+   "human_replies": 0
+  },
+  {
+   "event": "e00071",
+   "unit": "conversation",
+   "qty": 2,
+   "unit_price": 0.29,
+   "amount": 0.58,
+   "channel": "voice",
+   "duration_seconds": 708,
+   "voice_minutes": 12,
+   "segments": 1,
+   "human_replies": 2
+  },
+  {
+   "event": "e00072",
+   "unit": "conversation",
+   "qty": 3,
+   "unit_price": 0.29,
+   "amount": 0.87,
+   "channel": "email",
+   "user_inputs": 99,
+   "segments": 2,
+   "human_replies": 0
+  },
+  {
+   "event": "e00073",
+   "unit": "conversation",
+   "qty": 2,
+   "unit_price": 0.29,
+   "amount": 0.58,
+   "channel": "sms",
+   "user_inputs": 35,
+   "segments": 2,
+   "human_replies": 2
+  },
+  {
+   "event": "e00074",
+   "unit": "conversation",
+   "qty": 2,
+   "unit_price": 0.29,
+   "amount": 0.58,
+   "channel": "voice",
+   "duration_seconds": 1153,
+   "voice_minutes": 20,
+   "segments": 1,
+   "human_replies": 1
+  },
+  {
+   "event": "e00075",
+   "unit": "conversation",
+   "qty": 4,
+   "unit_price": 0.29,
+   "amount": 1.16,
+   "channel": "email",
+   "user_inputs": 84,
+   "segments": 3,
+   "human_replies": 1
+  },
+  {
+   "event": "e00076",
+   "unit": "conversation",
+   "qty": 3,
+   "unit_price": 0.29,
+   "amount": 0.87,
+   "channel": "voice",
+   "duration_seconds": 1450,
+   "voice_minutes": 25,
+   "segments": 1,
+   "human_replies": 0
+  },
+  {
+   "event": "e00077",
+   "unit": "conversation",
+   "qty": 3,
+   "unit_price": 0.29,
+   "amount": 0.87,
+   "channel": "voice",
+   "duration_seconds": 1471,
+   "voice_minutes": 25,
+   "segments": 1,
+   "human_replies": 0
+  },
+  {
+   "event": "e00078",
+   "unit": "conversation",
+   "qty": 2,
+   "unit_price": 0.29,
+   "amount": 0.58,
+   "channel": "sms",
+   "user_inputs": 34,
+   "segments": 2,
+   "human_replies": 0
+  },
+  {
+   "event": "e00079",
+   "unit": "conversation",
+   "qty": 2,
+   "unit_price": 0.29,
+   "amount": 0.58,
+   "channel": "sms",
+   "user_inputs": 61,
+   "segments": 1,
+   "human_replies": 2
+  },
+  {
+   "event": "e00080",
+   "unit": "conversation",
+   "qty": 4,
+   "unit_price": 0.29,
+   "amount": 1.16,
+   "channel": "email",
+   "user_inputs": 89,
+   "segments": 3,
+   "human_replies": 2
+  },
+  {
+   "event": "e00081",
+   "unit": "conversation",
+   "qty": 3,
+   "unit_price": 0.29,
+   "amount": 0.87,
+   "channel": "sms",
+   "user_inputs": 115,
+   "segments": 1,
+   "human_replies": 1
+  },
+  {
+   "event": "e00082",
+   "unit": "conversation",
+   "qty": 2,
+   "unit_price": 0.29,
+   "amount": 0.58,
+   "channel": "chat",
+   "user_inputs": 86,
+   "segments": 1,
+   "human_replies": 1
+  },
+  {
+   "event": "e00083",
+   "unit": "conversation",
+   "qty": 2,
+   "unit_price": 0.29,
+   "amount": 0.58,
+   "channel": "sms",
+   "user_inputs": 26,
+   "segments": 2,
+   "human_replies": 1
+  },
+  {
+   "event": "e00084",
+   "unit": "conversation",
+   "qty": 2,
+   "unit_price": 0.29,
+   "amount": 0.58,
+   "channel": "chat",
+   "user_inputs": 54,
+   "segments": 1,
+   "human_replies": 1
+  },
+  {
+   "event": "e00085",
+   "unit": "conversation",
+   "qty": 2,
+   "unit_price": 0.29,
+   "amount": 0.58,
+   "channel": "sms",
+   "user_inputs": 75,
+   "segments": 1,
+   "human_replies": 1
+  },
+  {
+   "event": "e00086",
+   "unit": "conversation",
+   "qty": 4,
+   "unit_price": 0.29,
+   "amount": 1.16,
+   "channel": "email",
+   "user_inputs": 78,
+   "segments": 3,
+   "human_replies": 1
+  },
+  {
+   "event": "e00087",
+   "unit": "conversation",
+   "qty": 1,
+   "unit_price": 0.29,
+   "amount": 0.29,
+   "channel": "chat",
+   "user_inputs": 18,
+   "segments": 1,
+   "human_replies": 0
+  },
+  {
+   "event": "e00088",
+   "unit": "conversation",
+   "qty": 1,
+   "unit_price": 0.29,
+   "amount": 0.29,
+   "channel": "email",
+   "user_inputs": 23,
+   "segments": 1,
+   "human_replies": 0
+  },
+  {
+   "event": "e00089",
+   "unit": "conversation",
+   "qty": 2,
+   "unit_price": 0.29,
+   "amount": 0.58,
+   "channel": "chat",
+   "user_inputs": 28,
+   "segments": 2,
+   "human_replies": 2
+  },
+  {
+   "event": "e00090",
+   "unit": "conversation",
+   "qty": 1,
+   "unit_price": 0.29,
+   "amount": 0.29,
+   "channel": "email",
+   "user_inputs": 12,
+   "segments": 1,
+   "human_replies": 2
+  },
+  {
+   "event": "e00091",
+   "unit": "conversation",
+   "qty": 3,
+   "unit_price": 0.29,
+   "amount": 0.87,
+   "channel": "sms",
+   "user_inputs": 101,
+   "segments": 1,
+   "human_replies": 2
+  },
+  {
+   "event": "e00092",
+   "unit": "conversation",
+   "qty": 3,
+   "unit_price": 0.29,
+   "amount": 0.87,
+   "channel": "sms",
+   "user_inputs": 105,
+   "segments": 1,
+   "human_replies": 1
+  },
+  {
+   "event": "e00093",
+   "unit": "conversation",
+   "qty": 1,
+   "unit_price": 0.29,
+   "amount": 0.29,
+   "channel": "sms",
+   "user_inputs": 44,
+   "segments": 1,
+   "human_replies": 2
+  },
+  {
+   "event": "e00094",
+   "unit": "conversation",
+   "qty": 1,
+   "unit_price": 0.29,
+   "amount": 0.29,
+   "channel": "chat",
+   "user_inputs": 44,
+   "segments": 1,
+   "human_replies": 1
+  },
+  {
+   "event": "e00095",
+   "unit": "conversation",
+   "qty": 3,
+   "unit_price": 0.29,
+   "amount": 0.87,
+   "channel": "voice",
+   "duration_seconds": 1718,
+   "voice_minutes": 29,
+   "segments": 1,
+   "human_replies": 1
+  },
+  {
+   "event": "e00096",
+   "unit": "conversation",
+   "qty": 2,
+   "unit_price": 0.29,
+   "amount": 0.58,
+   "channel": "sms",
+   "user_inputs": 65,
+   "segments": 1,
+   "human_replies": 2
+  },
+  {
+   "event": "e00097",
+   "unit": "conversation",
+   "qty": 3,
+   "unit_price": 0.29,
+   "amount": 0.87,
+   "channel": "voice",
+   "duration_seconds": 1219,
+   "voice_minutes": 21,
+   "segments": 1,
+   "human_replies": 2
+  },
+  {
+   "event": "e00098",
+   "unit": "conversation",
+   "qty": 1,
+   "unit_price": 0.29,
+   "amount": 0.29,
+   "channel": "email",
+   "user_inputs": 46,
+   "segments": 1,
+   "human_replies": 2
+  },
+  {
+   "event": "e00099",
+   "unit": "conversation",
+   "qty": 2,
+   "unit_price": 0.29,
+   "amount": 0.58,
+   "channel": "voice",
+   "duration_seconds": 915,
+   "voice_minutes": 16,
+   "segments": 1,
+   "human_replies": 1
+  },
+  {
+   "event": null,
+   "unit": "conversation",
+   "qty": 26,
+   "unit_price": 0.29,
+   "amount": 7.54,
+   "reason": "transformer_executions",
+   "transformer_execs": 1309
+  }
+ ],
+ "summary": {
+  "line_count": 101,
+  "billable_qty": 257,
+  "subtotal": 74.62,
+  "total": 74.62
+ }
+}
+
+【输出要求】
+仅输出一个 JSON 对象（不要输出其他文字），schema 如下：
+{
+ "discrepancies": [
+  {
+   "error_class": "枚举之一（E01..E16，见 prompt 内类清单）",
+   "line_ref": {
+    "line_index": "int：账单 line_items 数组下标",
+    "event": "str|null：行内 event 字段"
+   },
+   "confidence": "0.0-1.0",
+   "explanation": "一句话差异说明"
+  }
+ ]
+}
+
+error_class 必须是以下枚举之一：
+E01_unit_misclassification, E02_retry_attribution, E03_split_threshold_misapplication, E04_cross_period_double_count, E05_component_execution_billing, E06_duplicate_conversation_count, E07_stale_price_table, E08_retroactive_repricing, E09_tier_boundary_error, E10_rounding_error, E11_pass_through_markup, E12_credit_non_application, E13_handoff_window_reclassification, E14_rollover_expiry_error, E15_minimum_commit_error, E16_auto_recharge_error
+
+各类含义：
+- E01_unit_misclassification: 会话/解决/尝试单位混用：按 conversation 计的事件被计为 resolution
+- E02_retry_attribution: 重试与归因歧义：1 operation/2 attempts/1 order 的计数归属
+- E03_split_threshold_misapplication: 会话切分阈值误用：超时窗口（15min/3d/10d/24h/2-72h/跨月）适用错误导致多计或少计
+- E04_cross_period_double_count: 同一会话跨计费周期被双计
+- E05_component_execution_billing: 平台内部组件执行被计入用量
+- E06_duplicate_conversation_count: 同一用户/同一问题多渠道或重复开启被分别计数
+- E07_stale_price_table: 适用过期单价（价表已更新仍按旧价计）
+- E08_retroactive_repricing: 回溯调价/重分类：对已发生用量改单价或重归类
+- E09_tier_boundary_error: 分层边界计算错误：跨档单价适用错位
+- E10_rounding_error: 取整规则错误：向上取整适用错（语音秒→分钟、分数→整数事件）
+- E11_pass_through_markup: 通行成本加价计算错误（渠道费%handle fee 的基数或费率错）
+- E12_credit_non_application: 已触发的信用/退款未应用到账单
+- E13_handoff_window_reclassification: 转人工时间窗重分类未执行（如 72h 内应退为票费仍收 AI 费）
+- E14_rollover_expiry_error: 额度结转/过期规则适用错误（应结转的被过期、应过期的被结转）
+- E15_minimum_commit_error: 最低承诺计算错误（低于下限按实际计、高于下限按下限计错）
+- E16_auto_recharge_error: 自动充值机制误触发/误定价（不可关闭机制下的包大小或触发阈值错）
+
+若账单与规则完全一致，输出 {"discrepancies": []}。

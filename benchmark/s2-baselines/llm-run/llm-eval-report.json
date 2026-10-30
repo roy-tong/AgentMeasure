@@ -1,0 +1,80 @@
+{
+ "reconciler": "llm-two-step (GLM agent run, 2026-10-26)",
+ "n_instances_total": 5600,
+ "n_predictions_loaded": 344,
+ "n_missing_predictions": 5256,
+ "n_scored": 328,
+ "n_not_applicable": 5272,
+ "class_recall": 0.8049,
+ "exact_match_rate": 0.6951,
+ "prediction_precision": 0.4342,
+ "line_ref_hit_rate_given_hit": 0.9659,
+ "mean_confidence_on_hits": 0.921,
+ "schema_errors": 0,
+ "per_class": {
+  "E01_unit_misclassification": {
+   "n": 50,
+   "hit": 50
+  },
+  "E02_retry_attribution": {
+   "n": 50,
+   "hit": 50
+  },
+  "E03_split_threshold_misapplication": {
+   "n": 50,
+   "hit": 35
+  },
+  "E04_cross_period_double_count": {
+   "n": 50,
+   "hit": 50
+  },
+  "E05_component_execution_billing": {
+   "n": 12,
+   "hit": 12
+  },
+  "E06_duplicate_conversation_count": {
+   "n": 12,
+   "hit": 12
+  },
+  "E07_stale_price_table": {
+   "n": 12,
+   "hit": 12
+  },
+  "E08_retroactive_repricing": {
+   "n": 12,
+   "hit": 12
+  },
+  "E09_tier_boundary_error": {
+   "n": 12,
+   "hit": 12
+  },
+  "E10_rounding_error": {
+   "n": 3,
+   "hit": 3
+  },
+  "E11_pass_through_markup": {
+   "n": 12,
+   "hit": 1
+  },
+  "E12_credit_non_application": {
+   "n": 5,
+   "hit": 2
+  },
+  "E13_handoff_window_reclassification": {
+   "n": 12,
+   "hit": 7
+  },
+  "E14_rollover_expiry_error": {
+   "n": 12,
+   "hit": 2
+  },
+  "E15_minimum_commit_error": {
+   "n": 12,
+   "hit": 2
+  },
+  "E16_auto_recharge_error": {
+   "n": 12,
+   "hit": 2
+  }
+ }
+}

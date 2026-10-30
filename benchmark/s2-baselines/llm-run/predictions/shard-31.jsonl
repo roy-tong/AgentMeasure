@@ -1,0 +1,12 @@
+{"instance_id": "d27cd8c099ec", "output": {"discrepancies": []}}
+{"instance_id": "73f748e8c127", "output": {"discrepancies": []}}
+{"instance_id": "396094601cb7", "output": {"discrepancies": []}}
+{"instance_id": "7fb43dc5e05c", "output": {"discrepancies": [{"error_class": "E15_minimum_commit_error", "line_ref": {"line_index": 46, "event": null}, "confidence": 0.95, "explanation": "计费解决数 23 低于最低承诺 41 次，minimum_commit 行应补足至 41（qty 应为 18），但该行 qty=0 未补足。"}]}}
+{"instance_id": "ab167e067375", "output": {"discrepancies": []}}
+{"instance_id": "987d41686f93", "output": {"discrepancies": []}}
+{"instance_id": "48f50b6a4555", "output": {"discrepancies": []}}
+{"instance_id": "fd4c7cfef5c9", "output": {"discrepancies": []}}
+{"instance_id": "deea46faea30", "output": {"discrepancies": []}}
+{"instance_id": "1076382f2a2a", "output": {"discrepancies": []}}
+{"instance_id": "7712969a27b2", "output": {"discrepancies": [{"error_class": "E15_minimum_commit_error", "line_ref": {"line_index": 46, "event": null}, "confidence": 0.95, "explanation": "计费解决数 23 低于最低承诺 41 次，minimum_commit 行应补足至 41（qty 应为 18），但该行 qty=0 未补足。"}]}}
+{"instance_id": "2f9a619f01d2", "output": {"discrepancies": []}}

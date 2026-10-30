@@ -76,6 +76,62 @@ in both directions, the contract lane) live in
 [examples/showcase](examples/showcase/README.md) with frozen expected outputs
 that CI compares on every change.
 
+## Review domestic and overseas tool bills (research preview)
+
+Buyer Ledger extends the same evidence discipline to agent-tool spending: model
+tokens, search calls, credits, browser hours, sandbox seconds, OCR pages, voice
+characters, generated outputs and seats. The product separates invoice facts,
+platform usage and rule-based recomputation; a tool is not marked “supported”
+merely because its logo is in a table.
+
+- **Buyer view:** check platform, direct and cloud-marketplace charges, including
+  free quota, prepaid packs, credits and third-party cash.
+- **Seller view:** audit whether metered usage is represented in billing; keep
+  unpriced or unlinked usage as an evidence gap, not “leakage revenue.”
+- **Catalog:** 26 domestic and overseas tools, with billing models, metering
+  units, bill sources, audit capabilities and validation status. See
+  [catalog/tools.json](buyer-ledger/catalog/tools.json).
+- **No-API bill portals:** attach a user-started Chrome over a loopback CDP
+  endpoint, replay a reviewed recipe, download the bill and ingest it through
+  the same audit pipeline. Credentials are never handed to the tool.
+- **Boundary:** tools are **cataloged**, not live-connected. No tool has a live
+  customer-bill validation yet, and generic CSV/TSV plus CDP plumbing are tested
+  with synthetic fixtures. Read [Buyer Ledger](buyer-ledger/README.md) and its
+  [review limits](buyer-ledger/REVIEW-20261029.md).
+- **Complaint evidence (exploratory):** SURE 1.6 study of 1,949 public discovery
+  records → 150 reads → **66 strict evidence records**. Prepaid-credit expiry,
+  unexpected charges, auto-recharge and metering mismatch dominate; price
+  increases are only 2/66. Audit fails 3/12 gates (3/18 vendors, one region,
+  7 counterexamples); it is not a complaint rate or market validation. See the
+  [bounded case summary](buyer-ledger/COMPLAINTS-20261029.md).
+- **50k discovery expansion:** the public discovery corpus now holds **50,000**
+  unique records (HN 49,090 + six existing source families). Strict evidence
+  remains **66**, full reads remain **150**, and the audit remains 9/12 and
+  exploratory. Fifty thousand records are not fifty thousand users or evidence.
+- **Hypothesis stress test:** on the 50k layer, H1's evidence shape is supported
+  (manual core rate: credits 30% vs price 6%) but raw mentions are near parity;
+  H2 is **not supported** (the credit/subscription difference reverses within
+  HN); H3 supports only English-source invisibility; H4's keyword-screen
+  downgrade rate is **71.6%** (95% CI 66.2–76.4); H5 remains suggestive. No
+  hypothesis was promoted to validated.
+- **CDP discovery, phase 1:** a local Chrome CDP pass captured 2,734 public
+  discussions → **2,437 curated discovery records** (1,708 direct-vendor,
+  729 generic AI/API billing) plus 26 official pricing pages. This is a discovery
+  corpus, not strict evidence or customer invoices.
+
+```bash
+python3 -m buyer_ledger catalog summary
+python3 -m buyer_ledger catalog list --region global --role buyer
+python3 -m buyer_ledger catalog coverage --period 2026-10
+python3 -m buyer_ledger report --period 2026-10 --perspective seller --out seller.md
+python3 -m buyer_ledger fetch --recipe recipe.json --period 2026-10 \
+  --cdp http://127.0.0.1:9222 --analyze --out report.md
+```
+
+The support matrix and case notes are in
+[website/tools.html](website/tools.html); the Pages URL becomes available after
+the normal website deployment.
+
 ## Repeat a billing review
 
 For local-only handling, run the CLI on each new period's export. The optional

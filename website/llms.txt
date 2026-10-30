@@ -1,11 +1,12 @@
 # AgentMeasure
 
-> Evidence for AI service charges and delivery. Free local tools support selected billing rules. Buyer billing, acceptance and renewal services are under validation; $10/$20 developer diagnostics have separate scope. Last reviewed: 2026-10-21.
+> Evidence for AI service charges and delivery. Free local tools support selected billing rules. Buyer billing, acceptance and renewal services are under validation; $10/$20 developer diagnostics have separate scope. Last reviewed: 2026-10-29.
 
 ## Start here
 
 - [Website](https://roy-tong.github.io/AgentMeasure/): overview and local quickstart
 - [Services](https://roy-tong.github.io/AgentMeasure/services.html): input requirements, prices, turnaround and refunds
+- [Tool bill coverage](https://roy-tong.github.io/AgentMeasure/tools.html): cataloged domestic/overseas tool billing models, buyer/seller views, local CDP collection. Cataloged is not live-validated.
 - [Healthcheck](https://github.com/roy-tong/AgentMeasure/blob/main/healthcheck/README.md): CLI 0.8.0, local session checks, sharing and supported commands
 - [SDK](https://github.com/roy-tong/AgentMeasure/blob/main/sdk/README.md): Provider SDK 0.2.0 on npm
 - [Release notes](https://roy-tong.github.io/AgentMeasure/releases.html): independent package versions and dated releases

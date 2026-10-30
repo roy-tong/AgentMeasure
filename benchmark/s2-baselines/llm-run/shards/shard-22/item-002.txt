@@ -1,0 +1,1057 @@
+INSTANCE_ID: 45225af7355e
+
+你是计费对账员（reconciler）。给定厂商计费规则文档与一张账单，逐行核对并找出所有与规则不符的差异。
+
+【厂商计费规则】
+【ZETA 计费规则】单位=per_action_credit，1 credit=0.11。action 成本：basic=1、advanced=3（行内 action_type 应与 qty 一致）。每周期含 150 credits 额度（额度内 unit_price=0），超出按 0.11 计。额度周期末过期、不结转、不退款：未用完额度仅出现在 credit_expiry（amount=0）信息行；任何 credit_carryover 抵扣行均为错误。
+
+【账单（JSON）】
+{
+ "period": "2031-01",
+ "profile": "P-creditlike",
+ "currency": "USD",
+ "price_table_version": "2031-01",
+ "line_items": [
+  {
+   "event": "e00000",
+   "unit": "action_credit",
+   "qty": 3,
+   "unit_price": 0.0,
+   "amount": 0.0,
+   "channel": "voice",
+   "reason": "included_credits",
+   "action_type": "advanced"
+  },
+  {
+   "event": "e00001",
+   "unit": "action_credit",
+   "qty": 1,
+   "unit_price": 0.0,
+   "amount": 0.0,
+   "channel": "email",
+   "reason": "included_credits",
+   "action_type": "basic"
+  },
+  {
+   "event": "e00002",
+   "unit": "action_credit",
+   "qty": 3,
+   "unit_price": 0.0,
+   "amount": 0.0,
+   "channel": "chat",
+   "reason": "included_credits",
+   "action_type": "advanced"
+  },
+  {
+   "event": "e00003",
+   "unit": "action_credit",
+   "qty": 3,
+   "unit_price": 0.0,
+   "amount": 0.0,
+   "channel": "sms",
+   "reason": "included_credits",
+   "action_type": "advanced"
+  },
+  {
+   "event": "e00004",
+   "unit": "action_credit",
+   "qty": 1,
+   "unit_price": 0.0,
+   "amount": 0.0,
+   "channel": "sms",
+   "reason": "included_credits",
+   "action_type": "basic"
+  },
+  {
+   "event": "e00005",
+   "unit": "action_credit",
+   "qty": 3,
+   "unit_price": 0.0,
+   "amount": 0.0,
+   "channel": "voice",
+   "reason": "included_credits",
+   "action_type": "advanced"
+  },
+  {
+   "event": "e00006",
+   "unit": "action_credit",
+   "qty": 1,
+   "unit_price": 0.0,
+   "amount": 0.0,
+   "channel": "email",
+   "reason": "included_credits",
+   "action_type": "basic"
+  },
+  {
+   "event": "e00007",
+   "unit": "action_credit",
+   "qty": 3,
+   "unit_price": 0.0,
+   "amount": 0.0,
+   "channel": "voice",
+   "reason": "included_credits",
+   "action_type": "advanced"
+  },
+  {
+   "event": "e00008",
+   "unit": "action_credit",
+   "qty": 3,
+   "unit_price": 0.0,
+   "amount": 0.0,
+   "channel": "email",
+   "reason": "included_credits",
+   "action_type": "advanced"
+  },
+  {
+   "event": "e00009",
+   "unit": "action_credit",
+   "qty": 3,
+   "unit_price": 0.0,
+   "amount": 0.0,
+   "channel": "sms",
+   "reason": "included_credits",
+   "action_type": "advanced"
+  },
+  {
+   "event": "e00010",
+   "unit": "action_credit",
+   "qty": 3,
+   "unit_price": 0.0,
+   "amount": 0.0,
+   "channel": "voice",
+   "reason": "included_credits",
+   "action_type": "advanced"
+  },
+  {
+   "event": "e00011",
+   "unit": "action_credit",
+   "qty": 3,
+   "unit_price": 0.0,
+   "amount": 0.0,
+   "channel": "email",
+   "reason": "included_credits",
+   "action_type": "advanced"
+  },
+  {
+   "event": "e00012",
+   "unit": "action_credit",
+   "qty": 1,
+   "unit_price": 0.0,
+   "amount": 0.0,
+   "channel": "voice",
+   "reason": "included_credits",
+   "action_type": "basic"
+  },
+  {
+   "event": "e00013",
+   "unit": "action_credit",
+   "qty": 1,
+   "unit_price": 0.0,
+   "amount": 0.0,
+   "channel": "voice",
+   "reason": "included_credits",
+   "action_type": "basic"
+  },
+  {
+   "event": "e00014",
+   "unit": "action_credit",
+   "qty": 1,
+   "unit_price": 0.0,
+   "amount": 0.0,
+   "channel": "voice",
+   "reason": "included_credits",
+   "action_type": "basic"
+  },
+  {
+   "event": "e00015",
+   "unit": "action_credit",
+   "qty": 1,
+   "unit_price": 0.0,
+   "amount": 0.0,
+   "channel": "voice",
+   "reason": "included_credits",
+   "action_type": "basic"
+  },
+  {
+   "event": "e00016",
+   "unit": "action_credit",
+   "qty": 1,
+   "unit_price": 0.0,
+   "amount": 0.0,
+   "channel": "email",
+   "reason": "included_credits",
+   "action_type": "basic"
+  },
+  {
+   "event": "e00017",
+   "unit": "action_credit",
+   "qty": 1,
+   "unit_price": 0.0,
+   "amount": 0.0,
+   "channel": "voice",
+   "reason": "included_credits",
+   "action_type": "basic"
+  },
+  {
+   "event": "e00018",
+   "unit": "action_credit",
+   "qty": 3,
+   "unit_price": 0.0,
+   "amount": 0.0,
+   "channel": "voice",
+   "reason": "included_credits",
+   "action_type": "advanced"
+  },
+  {
+   "event": "e00019",
+   "unit": "action_credit",
+   "qty": 3,
+   "unit_price": 0.0,
+   "amount": 0.0,
+   "channel": "email",
+   "reason": "included_credits",
+   "action_type": "advanced"
+  },
+  {
+   "event": "e00020",
+   "unit": "action_credit",
+   "qty": 3,
+   "unit_price": 0.0,
+   "amount": 0.0,
+   "channel": "chat",
+   "reason": "included_credits",
+   "action_type": "advanced"
+  },
+  {
+   "event": "e00021",
+   "unit": "action_credit",
+   "qty": 3,
+   "unit_price": 0.0,
+   "amount": 0.0,
+   "channel": "email",
+   "reason": "included_credits",
+   "action_type": "advanced"
+  },
+  {
+   "event": "e00022",
+   "unit": "action_credit",
+   "qty": 1,
+   "unit_price": 0.0,
+   "amount": 0.0,
+   "channel": "sms",
+   "reason": "included_credits",
+   "action_type": "basic"
+  },
+  {
+   "event": "e00023",
+   "unit": "action_credit",
+   "qty": 3,
+   "unit_price": 0.0,
+   "amount": 0.0,
+   "channel": "chat",
+   "reason": "included_credits",
+   "action_type": "advanced"
+  },
+  {
+   "event": "e00024",
+   "unit": "action_credit",
+   "qty": 3,
+   "unit_price": 0.0,
+   "amount": 0.0,
+   "channel": "sms",
+   "reason": "included_credits",
+   "action_type": "advanced"
+  },
+  {
+   "event": "e00025",
+   "unit": "action_credit",
+   "qty": 3,
+   "unit_price": 0.0,
+   "amount": 0.0,
+   "channel": "sms",
+   "reason": "included_credits",
+   "action_type": "advanced"
+  },
+  {
+   "event": "e00026",
+   "unit": "action_credit",
+   "qty": 3,
+   "unit_price": 0.0,
+   "amount": 0.0,
+   "channel": "voice",
+   "reason": "included_credits",
+   "action_type": "advanced"
+  },
+  {
+   "event": "e00027",
+   "unit": "action_credit",
+   "qty": 3,
+   "unit_price": 0.0,
+   "amount": 0.0,
+   "channel": "sms",
+   "reason": "included_credits",
+   "action_type": "advanced"
+  },
+  {
+   "event": "e00028",
+   "unit": "action_credit",
+   "qty": 3,
+   "unit_price": 0.0,
+   "amount": 0.0,
+   "channel": "voice",
+   "reason": "included_credits",
+   "action_type": "advanced"
+  },
+  {
+   "event": "e00029",
+   "unit": "action_credit",
+   "qty": 1,
+   "unit_price": 0.0,
+   "amount": 0.0,
+   "channel": "voice",
+   "reason": "included_credits",
+   "action_type": "basic"
+  },
+  {
+   "event": "e00030",
+   "unit": "action_credit",
+   "qty": 3,
+   "unit_price": 0.0,
+   "amount": 0.0,
+   "channel": "chat",
+   "reason": "included_credits",
+   "action_type": "advanced"
+  },
+  {
+   "event": "e00031",
+   "unit": "action_credit",
+   "qty": 3,
+   "unit_price": 0.0,
+   "amount": 0.0,
+   "channel": "email",
+   "reason": "included_credits",
+   "action_type": "advanced"
+  },
+  {
+   "event": "e00032",
+   "unit": "action_credit",
+   "qty": 1,
+   "unit_price": 0.0,
+   "amount": 0.0,
+   "channel": "email",
+   "reason": "included_credits",
+   "action_type": "basic"
+  },
+  {
+   "event": "e00033",
+   "unit": "action_credit",
+   "qty": 1,
+   "unit_price": 0.0,
+   "amount": 0.0,
+   "channel": "voice",
+   "reason": "included_credits",
+   "action_type": "basic"
+  },
+  {
+   "event": "e00034",
+   "unit": "action_credit",
+   "qty": 1,
+   "unit_price": 0.0,
+   "amount": 0.0,
+   "channel": "email",
+   "reason": "included_credits",
+   "action_type": "basic"
+  },
+  {
+   "event": "e00035",
+   "unit": "action_credit",
+   "qty": 3,
+   "unit_price": 0.0,
+   "amount": 0.0,
+   "channel": "sms",
+   "reason": "included_credits",
+   "action_type": "advanced"
+  },
+  {
+   "event": "e00036",
+   "unit": "action_credit",
+   "qty": 3,
+   "unit_price": 0.0,
+   "amount": 0.0,
+   "channel": "voice",
+   "reason": "included_credits",
+   "action_type": "advanced"
+  },
+  {
+   "event": "e00037",
+   "unit": "action_credit",
+   "qty": 1,
+   "unit_price": 0.0,
+   "amount": 0.0,
+   "channel": "email",
+   "reason": "included_credits",
+   "action_type": "basic"
+  },
+  {
+   "event": "e00038",
+   "unit": "action_credit",
+   "qty": 1,
+   "unit_price": 0.0,
+   "amount": 0.0,
+   "channel": "chat",
+   "reason": "included_credits",
+   "action_type": "basic"
+  },
+  {
+   "event": "e00039",
+   "unit": "action_credit",
+   "qty": 3,
+   "unit_price": 0.0,
+   "amount": 0.0,
+   "channel": "sms",
+   "reason": "included_credits",
+   "action_type": "advanced"
+  },
+  {
+   "event": "e00040",
+   "unit": "action_credit",
+   "qty": 1,
+   "unit_price": 0.0,
+   "amount": 0.0,
+   "channel": "sms",
+   "reason": "included_credits",
+   "action_type": "basic"
+  },
+  {
+   "event": "e00041",
+   "unit": "action_credit",
+   "qty": 1,
+   "unit_price": 0.0,
+   "amount": 0.0,
+   "channel": "chat",
+   "reason": "included_credits",
+   "action_type": "basic"
+  },
+  {
+   "event": "e00042",
+   "unit": "action_credit",
+   "qty": 1,
+   "unit_price": 0.0,
+   "amount": 0.0,
+   "channel": "voice",
+   "reason": "included_credits",
+   "action_type": "basic"
+  },
+  {
+   "event": "e00043",
+   "unit": "action_credit",
+   "qty": 3,
+   "unit_price": 0.0,
+   "amount": 0.0,
+   "channel": "sms",
+   "reason": "included_credits",
+   "action_type": "advanced"
+  },
+  {
+   "event": "e00044",
+   "unit": "action_credit",
+   "qty": 1,
+   "unit_price": 0.0,
+   "amount": 0.0,
+   "channel": "voice",
+   "reason": "included_credits",
+   "action_type": "basic"
+  },
+  {
+   "event": "e00045",
+   "unit": "action_credit",
+   "qty": 1,
+   "unit_price": 0.0,
+   "amount": 0.0,
+   "channel": "sms",
+   "reason": "included_credits",
+   "action_type": "basic"
+  },
+  {
+   "event": "e00046",
+   "unit": "action_credit",
+   "qty": 1,
+   "unit_price": 0.0,
+   "amount": 0.0,
+   "channel": "voice",
+   "reason": "included_credits",
+   "action_type": "basic"
+  },
+  {
+   "event": "e00047",
+   "unit": "action_credit",
+   "qty": 1,
+   "unit_price": 0.0,
+   "amount": 0.0,
+   "channel": "voice",
+   "reason": "included_credits",
+   "action_type": "basic"
+  },
+  {
+   "event": "e00048",
+   "unit": "action_credit",
+   "qty": 3,
+   "unit_price": 0.0,
+   "amount": 0.0,
+   "channel": "email",
+   "reason": "included_credits",
+   "action_type": "advanced"
+  },
+  {
+   "event": "e00049",
+   "unit": "action_credit",
+   "qty": 1,
+   "unit_price": 0.0,
+   "amount": 0.0,
+   "channel": "chat",
+   "reason": "included_credits",
+   "action_type": "basic"
+  },
+  {
+   "event": "e00050",
+   "unit": "action_credit",
+   "qty": 3,
+   "unit_price": 0.0,
+   "amount": 0.0,
+   "channel": "chat",
+   "reason": "included_credits",
+   "action_type": "advanced"
+  },
+  {
+   "event": "e00051",
+   "unit": "action_credit",
+   "qty": 1,
+   "unit_price": 0.0,
+   "amount": 0.0,
+   "channel": "voice",
+   "reason": "included_credits",
+   "action_type": "basic"
+  },
+  {
+   "event": "e00052",
+   "unit": "action_credit",
+   "qty": 1,
+   "unit_price": 0.0,
+   "amount": 0.0,
+   "channel": "email",
+   "reason": "included_credits",
+   "action_type": "basic"
+  },
+  {
+   "event": "e00053",
+   "unit": "action_credit",
+   "qty": 1,
+   "unit_price": 0.0,
+   "amount": 0.0,
+   "channel": "chat",
+   "reason": "included_credits",
+   "action_type": "basic"
+  },
+  {
+   "event": "e00054",
+   "unit": "action_credit",
+   "qty": 3,
+   "unit_price": 0.0,
+   "amount": 0.0,
+   "channel": "voice",
+   "reason": "included_credits",
+   "action_type": "advanced"
+  },
+  {
+   "event": "e00055",
+   "unit": "action_credit",
+   "qty": 3,
+   "unit_price": 0.0,
+   "amount": 0.0,
+   "channel": "voice",
+   "reason": "included_credits",
+   "action_type": "advanced"
+  },
+  {
+   "event": "e00056",
+   "unit": "action_credit",
+   "qty": 1,
+   "unit_price": 0.0,
+   "amount": 0.0,
+   "channel": "chat",
+   "reason": "included_credits",
+   "action_type": "basic"
+  },
+  {
+   "event": "e00057",
+   "unit": "action_credit",
+   "qty": 1,
+   "unit_price": 0.0,
+   "amount": 0.0,
+   "channel": "voice",
+   "reason": "included_credits",
+   "action_type": "basic"
+  },
+  {
+   "event": "e00058",
+   "unit": "action_credit",
+   "qty": 1,
+   "unit_price": 0.0,
+   "amount": 0.0,
+   "channel": "voice",
+   "reason": "included_credits",
+   "action_type": "basic"
+  },
+  {
+   "event": "e00059",
+   "unit": "action_credit",
+   "qty": 1,
+   "unit_price": 0.0,
+   "amount": 0.0,
+   "channel": "email",
+   "reason": "included_credits",
+   "action_type": "basic"
+  },
+  {
+   "event": "e00060",
+   "unit": "action_credit",
+   "qty": 1,
+   "unit_price": 0.0,
+   "amount": 0.0,
+   "channel": "sms",
+   "reason": "included_credits",
+   "action_type": "basic"
+  },
+  {
+   "event": "e00061",
+   "unit": "action_credit",
+   "qty": 3,
+   "unit_price": 0.0,
+   "amount": 0.0,
+   "channel": "voice",
+   "reason": "included_credits",
+   "action_type": "advanced"
+  },
+  {
+   "event": "e00062",
+   "unit": "action_credit",
+   "qty": 3,
+   "unit_price": 0.0,
+   "amount": 0.0,
+   "channel": "sms",
+   "reason": "included_credits",
+   "action_type": "advanced"
+  },
+  {
+   "event": "e00063",
+   "unit": "action_credit",
+   "qty": 3,
+   "unit_price": 0.0,
+   "amount": 0.0,
+   "channel": "chat",
+   "reason": "included_credits",
+   "action_type": "advanced"
+  },
+  {
+   "event": "e00064",
+   "unit": "action_credit",
+   "qty": 1,
+   "unit_price": 0.0,
+   "amount": 0.0,
+   "channel": "email",
+   "reason": "included_credits",
+   "action_type": "basic"
+  },
+  {
+   "event": "e00065",
+   "unit": "action_credit",
+   "qty": 1,
+   "unit_price": 0.0,
+   "amount": 0.0,
+   "channel": "email",
+   "reason": "included_credits",
+   "action_type": "basic"
+  },
+  {
+   "event": "e00066",
+   "unit": "action_credit",
+   "qty": 1,
+   "unit_price": 0.0,
+   "amount": 0.0,
+   "channel": "chat",
+   "reason": "included_credits",
+   "action_type": "basic"
+  },
+  {
+   "event": "e00067",
+   "unit": "action_credit",
+   "qty": 3,
+   "unit_price": 0.0,
+   "amount": 0.0,
+   "channel": "voice",
+   "reason": "included_credits",
+   "action_type": "advanced"
+  },
+  {
+   "event": "e00068",
+   "unit": "action_credit",
+   "qty": 1,
+   "unit_price": 0.0,
+   "amount": 0.0,
+   "channel": "email",
+   "reason": "included_credits",
+   "action_type": "basic"
+  },
+  {
+   "event": "e00069",
+   "unit": "action_credit",
+   "qty": 3,
+   "unit_price": 0.0,
+   "amount": 0.0,
+   "channel": "chat",
+   "reason": "included_credits",
+   "action_type": "advanced"
+  },
+  {
+   "event": "e00070",
+   "unit": "action_credit",
+   "qty": 1,
+   "unit_price": 0.0,
+   "amount": 0.0,
+   "channel": "voice",
+   "reason": "included_credits",
+   "action_type": "basic"
+  },
+  {
+   "event": "e00071",
+   "unit": "action_credit",
+   "qty": 1,
+   "unit_price": 0.0,
+   "amount": 0.0,
+   "channel": "sms",
+   "reason": "included_credits",
+   "action_type": "basic"
+  },
+  {
+   "event": "e00072",
+   "unit": "action_credit",
+   "qty": 1,
+   "unit_price": 0.0,
+   "amount": 0.0,
+   "channel": "chat",
+   "reason": "included_credits",
+   "action_type": "basic"
+  },
+  {
+   "event": "e00073",
+   "unit": "action_credit",
+   "qty": 1,
+   "unit_price": 0.0,
+   "amount": 0.0,
+   "channel": "email",
+   "reason": "included_credits",
+   "action_type": "basic"
+  },
+  {
+   "event": "e00074",
+   "unit": "action_credit",
+   "qty": 3,
+   "unit_price": 0.0,
+   "amount": 0.0,
+   "channel": "email",
+   "reason": "included_credits",
+   "action_type": "advanced"
+  },
+  {
+   "event": "e00075",
+   "unit": "action_credit",
+   "qty": 1,
+   "unit_price": 0.0,
+   "amount": 0.0,
+   "channel": "email",
+   "reason": "included_credits",
+   "action_type": "basic"
+  },
+  {
+   "event": "e00076",
+   "unit": "action_credit",
+   "qty": 1,
+   "unit_price": 0.0,
+   "amount": 0.0,
+   "channel": "email",
+   "reason": "included_credits",
+   "action_type": "basic"
+  },
+  {
+   "event": "e00077",
+   "unit": "action_credit",
+   "qty": 3,
+   "unit_price": 0.0,
+   "amount": 0.0,
+   "channel": "sms",
+   "reason": "included_credits",
+   "action_type": "advanced"
+  },
+  {
+   "event": "e00078",
+   "unit": "action_credit",
+   "qty": 1,
+   "unit_price": 0.11,
+   "amount": 0.11,
+   "channel": "email",
+   "action_type": "basic"
+  },
+  {
+   "event": "e00079",
+   "unit": "action_credit",
+   "qty": 3,
+   "unit_price": 0.11,
+   "amount": 0.33,
+   "channel": "sms",
+   "action_type": "advanced"
+  },
+  {
+   "event": "e00080",
+   "unit": "action_credit",
+   "qty": 3,
+   "unit_price": 0.11,
+   "amount": 0.33,
+   "channel": "sms",
+   "action_type": "advanced"
+  },
+  {
+   "event": "e00081",
+   "unit": "action_credit",
+   "qty": 3,
+   "unit_price": 0.11,
+   "amount": 0.33,
+   "channel": "chat",
+   "action_type": "advanced"
+  },
+  {
+   "event": "e00082",
+   "unit": "action_credit",
+   "qty": 1,
+   "unit_price": 0.11,
+   "amount": 0.11,
+   "channel": "voice",
+   "action_type": "basic"
+  },
+  {
+   "event": "e00083",
+   "unit": "action_credit",
+   "qty": 3,
+   "unit_price": 0.11,
+   "amount": 0.33,
+   "channel": "voice",
+   "action_type": "advanced"
+  },
+  {
+   "event": "e00084",
+   "unit": "action_credit",
+   "qty": 3,
+   "unit_price": 0.11,
+   "amount": 0.33,
+   "channel": "sms",
+   "action_type": "advanced"
+  },
+  {
+   "event": "e00085",
+   "unit": "action_credit",
+   "qty": 1,
+   "unit_price": 0.11,
+   "amount": 0.11,
+   "channel": "chat",
+   "action_type": "basic"
+  },
+  {
+   "event": "e00086",
+   "unit": "action_credit",
+   "qty": 1,
+   "unit_price": 0.11,
+   "amount": 0.11,
+   "channel": "chat",
+   "action_type": "basic"
+  },
+  {
+   "event": "e00087",
+   "unit": "action_credit",
+   "qty": 1,
+   "unit_price": 0.11,
+   "amount": 0.11,
+   "channel": "email",
+   "action_type": "basic"
+  },
+  {
+   "event": "e00088",
+   "unit": "action_credit",
+   "qty": 1,
+   "unit_price": 0.11,
+   "amount": 0.11,
+   "channel": "voice",
+   "action_type": "basic"
+  },
+  {
+   "event": "e00089",
+   "unit": "action_credit",
+   "qty": 3,
+   "unit_price": 0.11,
+   "amount": 0.33,
+   "channel": "chat",
+   "action_type": "advanced"
+  },
+  {
+   "event": "e00090",
+   "unit": "action_credit",
+   "qty": 3,
+   "unit_price": 0.11,
+   "amount": 0.33,
+   "channel": "voice",
+   "action_type": "advanced"
+  },
+  {
+   "event": "e00091",
+   "unit": "action_credit",
+   "qty": 1,
+   "unit_price": 0.11,
+   "amount": 0.11,
+   "channel": "email",
+   "action_type": "basic"
+  },
+  {
+   "event": "e00092",
+   "unit": "action_credit",
+   "qty": 1,
+   "unit_price": 0.11,
+   "amount": 0.11,
+   "channel": "chat",
+   "action_type": "basic"
+  },
+  {
+   "event": "e00093",
+   "unit": "action_credit",
+   "qty": 1,
+   "unit_price": 0.11,
+   "amount": 0.11,
+   "channel": "chat",
+   "action_type": "basic"
+  },
+  {
+   "event": "e00094",
+   "unit": "action_credit",
+   "qty": 1,
+   "unit_price": 0.11,
+   "amount": 0.11,
+   "channel": "sms",
+   "action_type": "basic"
+  },
+  {
+   "event": "e00095",
+   "unit": "action_credit",
+   "qty": 1,
+   "unit_price": 0.11,
+   "amount": 0.11,
+   "channel": "email",
+   "action_type": "basic"
+  },
+  {
+   "event": "e00096",
+   "unit": "action_credit",
+   "qty": 1,
+   "unit_price": 0.11,
+   "amount": 0.11,
+   "channel": "sms",
+   "action_type": "basic"
+  },
+  {
+   "event": "e00097",
+   "unit": "action_credit",
+   "qty": 3,
+   "unit_price": 0.11,
+   "amount": 0.33,
+   "channel": "sms",
+   "action_type": "advanced"
+  },
+  {
+   "event": "e00098",
+   "unit": "action_credit",
+   "qty": 3,
+   "unit_price": 0.11,
+   "amount": 0.33,
+   "channel": "chat",
+   "action_type": "advanced"
+  },
+  {
+   "event": "e00099",
+   "unit": "action_credit",
+   "qty": 1,
+   "unit_price": 0.11,
+   "amount": 0.11,
+   "channel": "email",
+   "action_type": "basic"
+  },
+  {
+   "event": null,
+   "unit": "credit_expiry",
+   "qty": 0,
+   "unit_price": 0.0,
+   "amount": 0.0,
+   "reason": "expired_no_rollover"
+  },
+  {
+   "event": "e00019",
+   "unit": "action_credit",
+   "qty": 3,
+   "unit_price": 0.0,
+   "amount": 0.0,
+   "channel": "chat",
+   "reason": "included_credits",
+   "action_type": "advanced"
+  }
+ ],
+ "summary": {
+  "line_count": 102,
+  "billable_qty": 193,
+  "subtotal": 4.4,
+  "total": 4.4
+ }
+}
+
+【输出要求】
+仅输出一个 JSON 对象（不要输出其他文字），schema 如下：
+{
+ "discrepancies": [
+  {
+   "error_class": "枚举之一（E01..E16，见 prompt 内类清单）",
+   "line_ref": {
+    "line_index": "int：账单 line_items 数组下标",
+    "event": "str|null：行内 event 字段"
+   },
+   "confidence": "0.0-1.0",
+   "explanation": "一句话差异说明"
+  }
+ ]
+}
+
+error_class 必须是以下枚举之一：
+E01_unit_misclassification, E02_retry_attribution, E03_split_threshold_misapplication, E04_cross_period_double_count, E05_component_execution_billing, E06_duplicate_conversation_count, E07_stale_price_table, E08_retroactive_repricing, E09_tier_boundary_error, E10_rounding_error, E11_pass_through_markup, E12_credit_non_application, E13_handoff_window_reclassification, E14_rollover_expiry_error, E15_minimum_commit_error, E16_auto_recharge_error
+
+各类含义：
+- E01_unit_misclassification: 会话/解决/尝试单位混用：按 conversation 计的事件被计为 resolution
+- E02_retry_attribution: 重试与归因歧义：1 operation/2 attempts/1 order 的计数归属
+- E03_split_threshold_misapplication: 会话切分阈值误用：超时窗口（15min/3d/10d/24h/2-72h/跨月）适用错误导致多计或少计
+- E04_cross_period_double_count: 同一会话跨计费周期被双计
+- E05_component_execution_billing: 平台内部组件执行被计入用量
+- E06_duplicate_conversation_count: 同一用户/同一问题多渠道或重复开启被分别计数
+- E07_stale_price_table: 适用过期单价（价表已更新仍按旧价计）
+- E08_retroactive_repricing: 回溯调价/重分类：对已发生用量改单价或重归类
+- E09_tier_boundary_error: 分层边界计算错误：跨档单价适用错位
+- E10_rounding_error: 取整规则错误：向上取整适用错（语音秒→分钟、分数→整数事件）
+- E11_pass_through_markup: 通行成本加价计算错误（渠道费%handle fee 的基数或费率错）
+- E12_credit_non_application: 已触发的信用/退款未应用到账单
+- E13_handoff_window_reclassification: 转人工时间窗重分类未执行（如 72h 内应退为票费仍收 AI 费）
+- E14_rollover_expiry_error: 额度结转/过期规则适用错误（应结转的被过期、应过期的被结转）
+- E15_minimum_commit_error: 最低承诺计算错误（低于下限按实际计、高于下限按下限计错）
+- E16_auto_recharge_error: 自动充值机制误触发/误定价（不可关闭机制下的包大小或触发阈值错）
+
+若账单与规则完全一致，输出 {"discrepancies": []}。

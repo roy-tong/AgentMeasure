@@ -1,0 +1,579 @@
+INSTANCE_ID: 22fe952d4762
+
+你是计费对账员（reconciler）。给定厂商计费规则文档与一张账单，逐行核对并找出所有与规则不符的差异。
+
+【厂商计费规则】
+【ALPHA 计费规则】单位=per_resolution，单价 0.83/次。同一会话至多计 1 次；AI 未回复也计为已解决。同一会话重开（行内 reopened=true）应冲减为 0，不得计费。试用期（2031-01-14 及之前）会话不计费。转人工（human_replies>0）后须 customer_confirmed=true 才计为解决。最低承诺 41 次/周期：计费次数不足 41 时以 minimum_commit 行补足至 41；已达 41 后不得再追加补差行。
+
+【账单（JSON）】
+{
+ "period": "2031-01",
+ "profile": "P-finlike",
+ "currency": "USD",
+ "price_table_version": "2031-01",
+ "line_items": [
+  {
+   "event": "e00001",
+   "unit": "resolution",
+   "qty": 1,
+   "unit_price": 0.83,
+   "amount": 0.83,
+   "channel": "email",
+   "reopened": false,
+   "human_replies": 2
+  },
+  {
+   "event": "e00002",
+   "unit": "resolution",
+   "qty": 0,
+   "unit_price": 0.83,
+   "amount": 0.0,
+   "channel": "chat",
+   "reason": "reopen_credit",
+   "reopened": true,
+   "human_replies": 0
+  },
+  {
+   "event": "e00003",
+   "unit": "resolution",
+   "qty": 0,
+   "unit_price": 0.83,
+   "amount": 0.0,
+   "channel": "sms",
+   "reason": "handoff_unconfirmed",
+   "customer_confirmed": false,
+   "reopened": false,
+   "human_replies": 2
+  },
+  {
+   "event": "e00005",
+   "unit": "resolution",
+   "qty": 1,
+   "unit_price": 0.83,
+   "amount": 0.83,
+   "channel": "email",
+   "reopened": false,
+   "human_replies": 0
+  },
+  {
+   "event": "e00010",
+   "unit": "resolution",
+   "qty": 0,
+   "unit_price": 0.83,
+   "amount": 0.0,
+   "channel": "sms",
+   "reason": "handoff_unconfirmed",
+   "customer_confirmed": false,
+   "reopened": false,
+   "human_replies": 2
+  },
+  {
+   "event": "e00013",
+   "unit": "resolution",
+   "qty": 0,
+   "unit_price": 0.83,
+   "amount": 0.0,
+   "channel": "voice",
+   "reason": "reopen_credit",
+   "reopened": true,
+   "human_replies": 0
+  },
+  {
+   "event": "e00014",
+   "unit": "resolution",
+   "qty": 0,
+   "unit_price": 0.83,
+   "amount": 0.0,
+   "channel": "sms",
+   "reason": "reopen_credit",
+   "reopened": true,
+   "human_replies": 0
+  },
+  {
+   "event": "e00015",
+   "unit": "resolution",
+   "qty": 0,
+   "unit_price": 0.83,
+   "amount": 0.0,
+   "channel": "chat",
+   "reason": "reopen_credit",
+   "reopened": true,
+   "human_replies": 1
+  },
+  {
+   "event": "e00019",
+   "unit": "resolution",
+   "qty": 0,
+   "unit_price": 0.83,
+   "amount": 0.0,
+   "channel": "chat",
+   "reason": "handoff_unconfirmed",
+   "customer_confirmed": false,
+   "reopened": false,
+   "human_replies": 2
+  },
+  {
+   "event": "e00023",
+   "unit": "resolution",
+   "qty": 1,
+   "unit_price": 0.83,
+   "amount": 0.83,
+   "channel": "sms",
+   "reopened": false,
+   "human_replies": 0
+  },
+  {
+   "event": "e00024",
+   "unit": "resolution",
+   "qty": 1,
+   "unit_price": 0.83,
+   "amount": 0.83,
+   "channel": "email",
+   "reopened": false,
+   "human_replies": 0
+  },
+  {
+   "event": "e00028",
+   "unit": "resolution",
+   "qty": 0,
+   "unit_price": 0.83,
+   "amount": 0.0,
+   "channel": "sms",
+   "reason": "handoff_unconfirmed",
+   "customer_confirmed": false,
+   "reopened": false,
+   "human_replies": 2
+  },
+  {
+   "event": "e00030",
+   "unit": "resolution",
+   "qty": 0,
+   "unit_price": 0.83,
+   "amount": 0.0,
+   "channel": "voice",
+   "reason": "handoff_unconfirmed",
+   "customer_confirmed": false,
+   "reopened": false,
+   "human_replies": 1
+  },
+  {
+   "event": "e00032",
+   "unit": "resolution",
+   "qty": 1,
+   "unit_price": 0.83,
+   "amount": 0.83,
+   "channel": "voice",
+   "reopened": false,
+   "human_replies": 0
+  },
+  {
+   "event": "e00033",
+   "unit": "resolution",
+   "qty": 1,
+   "unit_price": 0.83,
+   "amount": 0.83,
+   "channel": "chat",
+   "reopened": false,
+   "human_replies": 0
+  },
+  {
+   "event": "e00035",
+   "unit": "resolution",
+   "qty": 1,
+   "unit_price": 0.83,
+   "amount": 0.83,
+   "channel": "voice",
+   "reopened": false,
+   "human_replies": 1
+  },
+  {
+   "event": "e00036",
+   "unit": "resolution",
+   "qty": 1,
+   "unit_price": 0.83,
+   "amount": 0.83,
+   "channel": "email",
+   "reopened": false,
+   "human_replies": 0
+  },
+  {
+   "event": "e00038",
+   "unit": "resolution",
+   "qty": 1,
+   "unit_price": 0.83,
+   "amount": 0.83,
+   "channel": "chat",
+   "reopened": false,
+   "human_replies": 0
+  },
+  {
+   "event": "e00041",
+   "unit": "resolution",
+   "qty": 0,
+   "unit_price": 0.83,
+   "amount": 0.0,
+   "channel": "chat",
+   "reason": "handoff_unconfirmed",
+   "customer_confirmed": false,
+   "reopened": false,
+   "human_replies": 2
+  },
+  {
+   "event": "e00044",
+   "unit": "resolution",
+   "qty": 1,
+   "unit_price": 0.83,
+   "amount": 0.83,
+   "channel": "chat",
+   "reopened": false,
+   "human_replies": 1
+  },
+  {
+   "event": "e00046",
+   "unit": "resolution",
+   "qty": 0,
+   "unit_price": 0.83,
+   "amount": 0.0,
+   "channel": "sms",
+   "reason": "handoff_unconfirmed",
+   "customer_confirmed": false,
+   "reopened": false,
+   "human_replies": 2
+  },
+  {
+   "event": "e00047",
+   "unit": "resolution",
+   "qty": 1,
+   "unit_price": 0.83,
+   "amount": 0.83,
+   "channel": "chat",
+   "reopened": false,
+   "human_replies": 0
+  },
+  {
+   "event": "e00050",
+   "unit": "resolution",
+   "qty": 0,
+   "unit_price": 0.83,
+   "amount": 0.0,
+   "channel": "chat",
+   "reason": "reopen_credit",
+   "reopened": true,
+   "human_replies": 0
+  },
+  {
+   "event": "e00054",
+   "unit": "resolution",
+   "qty": 0,
+   "unit_price": 0.83,
+   "amount": 0.0,
+   "channel": "chat",
+   "reason": "reopen_credit",
+   "reopened": true,
+   "human_replies": 0
+  },
+  {
+   "event": "e00055",
+   "unit": "resolution",
+   "qty": 1,
+   "unit_price": 0.83,
+   "amount": 0.83,
+   "channel": "chat",
+   "reopened": false,
+   "human_replies": 1
+  },
+  {
+   "event": "e00058",
+   "unit": "resolution",
+   "qty": 1,
+   "unit_price": 0.83,
+   "amount": 0.83,
+   "channel": "sms",
+   "reopened": false,
+   "human_replies": 2
+  },
+  {
+   "event": "e00059",
+   "unit": "resolution",
+   "qty": 0,
+   "unit_price": 0.83,
+   "amount": 0.0,
+   "channel": "email",
+   "reason": "handoff_unconfirmed",
+   "customer_confirmed": false,
+   "reopened": false,
+   "human_replies": 2
+  },
+  {
+   "event": "e00060",
+   "unit": "resolution",
+   "qty": 0,
+   "unit_price": 0.83,
+   "amount": 0.0,
+   "channel": "voice",
+   "reason": "handoff_unconfirmed",
+   "customer_confirmed": false,
+   "reopened": false,
+   "human_replies": 2
+  },
+  {
+   "event": "e00061",
+   "unit": "resolution",
+   "qty": 1,
+   "unit_price": 0.83,
+   "amount": 0.83,
+   "channel": "chat",
+   "reopened": false,
+   "human_replies": 0
+  },
+  {
+   "event": "e00063",
+   "unit": "resolution",
+   "qty": 1,
+   "unit_price": 0.83,
+   "amount": 0.83,
+   "channel": "chat",
+   "reopened": false,
+   "human_replies": 0
+  },
+  {
+   "event": "e00068",
+   "unit": "resolution",
+   "qty": 1,
+   "unit_price": 0.83,
+   "amount": 0.83,
+   "channel": "sms",
+   "reopened": false,
+   "human_replies": 0
+  },
+  {
+   "event": "e00070",
+   "unit": "resolution",
+   "qty": 0,
+   "unit_price": 0.83,
+   "amount": 0.0,
+   "channel": "email",
+   "reason": "handoff_unconfirmed",
+   "customer_confirmed": false,
+   "reopened": false,
+   "human_replies": 2
+  },
+  {
+   "event": "e00071",
+   "unit": "resolution",
+   "qty": 0,
+   "unit_price": 0.83,
+   "amount": 0.0,
+   "channel": "email",
+   "reason": "reopen_credit",
+   "reopened": true,
+   "human_replies": 0
+  },
+  {
+   "event": "e00072",
+   "unit": "resolution",
+   "qty": 1,
+   "unit_price": 0.83,
+   "amount": 0.83,
+   "channel": "voice",
+   "reopened": false,
+   "human_replies": 0
+  },
+  {
+   "event": "e00076",
+   "unit": "resolution",
+   "qty": 1,
+   "unit_price": 0.83,
+   "amount": 0.83,
+   "channel": "sms",
+   "reopened": false,
+   "human_replies": 0
+  },
+  {
+   "event": "e00078",
+   "unit": "resolution",
+   "qty": 0,
+   "unit_price": 0.83,
+   "amount": 0.0,
+   "channel": "chat",
+   "reason": "handoff_unconfirmed",
+   "customer_confirmed": false,
+   "reopened": false,
+   "human_replies": 1
+  },
+  {
+   "event": "e00079",
+   "unit": "resolution",
+   "qty": 0,
+   "unit_price": 0.83,
+   "amount": 0.0,
+   "channel": "sms",
+   "reason": "handoff_unconfirmed",
+   "customer_confirmed": false,
+   "reopened": false,
+   "human_replies": 1
+  },
+  {
+   "event": "e00080",
+   "unit": "resolution",
+   "qty": 1,
+   "unit_price": 0.83,
+   "amount": 0.83,
+   "channel": "sms",
+   "reopened": false,
+   "human_replies": 2
+  },
+  {
+   "event": "e00081",
+   "unit": "resolution",
+   "qty": 1,
+   "unit_price": 0.83,
+   "amount": 0.83,
+   "channel": "sms",
+   "reopened": false,
+   "human_replies": 2
+  },
+  {
+   "event": "e00082",
+   "unit": "resolution",
+   "qty": 0,
+   "unit_price": 0.83,
+   "amount": 0.0,
+   "channel": "email",
+   "reason": "handoff_unconfirmed",
+   "customer_confirmed": false,
+   "reopened": false,
+   "human_replies": 2
+  },
+  {
+   "event": "e00083",
+   "unit": "resolution",
+   "qty": 1,
+   "unit_price": 0.83,
+   "amount": 0.83,
+   "channel": "email",
+   "reopened": false,
+   "human_replies": 1
+  },
+  {
+   "event": "e00087",
+   "unit": "resolution",
+   "qty": 0,
+   "unit_price": 0.83,
+   "amount": 0.0,
+   "channel": "email",
+   "reason": "handoff_unconfirmed",
+   "customer_confirmed": false,
+   "reopened": false,
+   "human_replies": 1
+  },
+  {
+   "event": "e00088",
+   "unit": "resolution",
+   "qty": 1,
+   "unit_price": 0.83,
+   "amount": 0.83,
+   "channel": "email",
+   "reopened": false,
+   "human_replies": 0
+  },
+  {
+   "event": "e00093",
+   "unit": "resolution",
+   "qty": 1,
+   "unit_price": 0.83,
+   "amount": 0.83,
+   "channel": "chat",
+   "reopened": false,
+   "human_replies": 1
+  },
+  {
+   "event": "e00094",
+   "unit": "resolution",
+   "qty": 0,
+   "unit_price": 0.83,
+   "amount": 0.0,
+   "channel": "email",
+   "reason": "handoff_unconfirmed",
+   "customer_confirmed": false,
+   "reopened": false,
+   "human_replies": 2
+  },
+  {
+   "event": "e00099",
+   "unit": "resolution",
+   "qty": 0,
+   "unit_price": 0.83,
+   "amount": 0.0,
+   "channel": "voice",
+   "reason": "handoff_unconfirmed",
+   "customer_confirmed": false,
+   "reopened": false,
+   "human_replies": 2
+  },
+  {
+   "event": null,
+   "unit": "minimum_commit",
+   "qty": 18,
+   "unit_price": 0.83,
+   "amount": 14.94,
+   "reason": "minimum_commit_topup"
+  },
+  {
+   "event": "e00055",
+   "unit": "resolution",
+   "qty": 1,
+   "unit_price": 0.83,
+   "amount": 0.83,
+   "channel": "chat",
+   "reopened": false,
+   "human_replies": 1,
+   "billed_period": "2030-12"
+  }
+ ],
+ "summary": {
+  "line_count": 48,
+  "billable_qty": 42,
+  "subtotal": 34.86,
+  "total": 34.86
+ }
+}
+
+【输出要求】
+仅输出一个 JSON 对象（不要输出其他文字），schema 如下：
+{
+ "discrepancies": [
+  {
+   "error_class": "枚举之一（E01..E16，见 prompt 内类清单）",
+   "line_ref": {
+    "line_index": "int：账单 line_items 数组下标",
+    "event": "str|null：行内 event 字段"
+   },
+   "confidence": "0.0-1.0",
+   "explanation": "一句话差异说明"
+  }
+ ]
+}
+
+error_class 必须是以下枚举之一：
+E01_unit_misclassification, E02_retry_attribution, E03_split_threshold_misapplication, E04_cross_period_double_count, E05_component_execution_billing, E06_duplicate_conversation_count, E07_stale_price_table, E08_retroactive_repricing, E09_tier_boundary_error, E10_rounding_error, E11_pass_through_markup, E12_credit_non_application, E13_handoff_window_reclassification, E14_rollover_expiry_error, E15_minimum_commit_error, E16_auto_recharge_error
+
+各类含义：
+- E01_unit_misclassification: 会话/解决/尝试单位混用：按 conversation 计的事件被计为 resolution
+- E02_retry_attribution: 重试与归因歧义：1 operation/2 attempts/1 order 的计数归属
+- E03_split_threshold_misapplication: 会话切分阈值误用：超时窗口（15min/3d/10d/24h/2-72h/跨月）适用错误导致多计或少计
+- E04_cross_period_double_count: 同一会话跨计费周期被双计
+- E05_component_execution_billing: 平台内部组件执行被计入用量
+- E06_duplicate_conversation_count: 同一用户/同一问题多渠道或重复开启被分别计数
+- E07_stale_price_table: 适用过期单价（价表已更新仍按旧价计）
+- E08_retroactive_repricing: 回溯调价/重分类：对已发生用量改单价或重归类
+- E09_tier_boundary_error: 分层边界计算错误：跨档单价适用错位
+- E10_rounding_error: 取整规则错误：向上取整适用错（语音秒→分钟、分数→整数事件）
+- E11_pass_through_markup: 通行成本加价计算错误（渠道费%handle fee 的基数或费率错）
+- E12_credit_non_application: 已触发的信用/退款未应用到账单
+- E13_handoff_window_reclassification: 转人工时间窗重分类未执行（如 72h 内应退为票费仍收 AI 费）
+- E14_rollover_expiry_error: 额度结转/过期规则适用错误（应结转的被过期、应过期的被结转）
+- E15_minimum_commit_error: 最低承诺计算错误（低于下限按实际计、高于下限按下限计错）
+- E16_auto_recharge_error: 自动充值机制误触发/误定价（不可关闭机制下的包大小或触发阈值错）
+
+若账单与规则完全一致，输出 {"discrepancies": []}。

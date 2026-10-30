@@ -1,0 +1,21 @@
+{
+  "recipe_id": "example.saas/usage-csv/v1",
+  "provider": "example.saas",
+  "version": 1,
+  "readonly": true,
+  "tier": "platform_usage",
+  "doc_type": "usage_export",
+  "start_url": "https://portal.example.saas/billing/usage",
+  "logged_in_indicator": {
+    "url_pattern": "^portal\\.example\\.saas/billing(?:/|$)",
+    "logged_out_patterns": ["(?:login|signin|auth)(?:/|$)"]
+  },
+  "steps": [
+    { "action": "navigate", "url": "https://portal.example.saas/billing/usage" },
+    { "action": "wait_for", "selector": "table.usage-table", "timeout_ms": 10000 },
+    { "action": "screenshot", "name": "usage-page", "full_page": false },
+    { "action": "click", "selector": "button[data-testid='export-csv']" },
+    { "action": "wait_for", "selector": "a.download-link", "timeout_ms": 15000 },
+    { "action": "download", "link_selector": "a.download-link", "save_as": "usage-{period}.csv" }
+  ]
+}

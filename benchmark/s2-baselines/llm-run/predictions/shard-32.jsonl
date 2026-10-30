@@ -1,0 +1,12 @@
+{"instance_id": "33e53f0c996a", "output": {"discrepancies": []}}
+{"instance_id": "9dd0185c300b", "output": {"discrepancies": [{"error_class": "E16_auto_recharge_error", "line_ref": {"line_index": 101, "event": null}, "confidence": 0.97, "explanation": "auto_recharge_pack 行被收费（qty=100×0.41=41.0），规则要求充值包仅为 amount=0 的信息行且本期用量 52 次未达 190 次触发阈值，属自动充值误触发/误计费"}]}}
+{"instance_id": "6ffa1e8e2a80", "output": {"discrepancies": []}}
+{"instance_id": "e2de2691c7c1", "output": {"discrepancies": []}}
+{"instance_id": "8e87f4a0e9fd", "output": {"discrepancies": []}}
+{"instance_id": "6dd8c4700ec3", "output": {"discrepancies": []}}
+{"instance_id": "b95a9183f698", "output": {"discrepancies": []}}
+{"instance_id": "6dab19cac31e", "output": {"discrepancies": []}}
+{"instance_id": "1700eb0ffadc", "output": {"discrepancies": [{"error_class": "E16_auto_recharge_error", "line_ref": {"line_index": 101, "event": null}, "confidence": 0.97, "explanation": "auto_recharge_pack 行被收费（qty=100×0.41=41.0），规则要求充值包仅为 amount=0 的信息行且本期用量 52 次未达 190 次触发阈值，属自动充值误触发/误计费"}]}}
+{"instance_id": "42682316dccf", "output": {"discrepancies": []}}
+{"instance_id": "a9d6f907c464", "output": {"discrepancies": []}}
+{"instance_id": "fc7945e26fa0", "output": {"discrepancies": []}}

@@ -3,25 +3,25 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AgentMeasure | Verify AI service charges and delivery</title>
-  <meta name="description" content="Verify AI service charges against applicable rules. Explore evidence for billing, acceptance and renewal decisions, with free local tools and scoped buyer discussions.">
+  <title>AgentMeasure | Verify AI charges and multi-tool bills</title>
+  <meta name="description" content="Verify AI service charges and multi-tool agent bills against applicable rules, usage and evidence. Explore billing, acceptance and renewal decisions; 26 domestic and overseas tool billing models are cataloged.">
   <link rel="icon" type="image/svg+xml" href="./assets/favicon.svg">
   <link rel="canonical" href="https://roy-tong.github.io/AgentMeasure/">
   <meta name="theme-color" content="#090C10">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="AgentMeasure">
-  <meta property="og:title" content="AgentMeasure | Verify AI service charges and delivery">
-  <meta property="og:description" content="Verify AI service charges against applicable rules. Explore evidence for billing, acceptance and renewal decisions, with free local tools and scoped buyer discussions.">
+  <meta property="og:title" content="AgentMeasure | Verify AI charges and multi-tool bills">
+  <meta property="og:description" content="Verify AI service charges and multi-tool agent bills against applicable rules, usage and evidence. 26 tool billing models cataloged; cataloged is not live-validated.">
   <meta property="og:url" content="https://roy-tong.github.io/AgentMeasure/">
   <meta property="og:image" content="https://roy-tong.github.io/AgentMeasure/assets/social-preview.png">
   <meta property="og:image:width" content="1280">
   <meta property="og:image:height" content="640">
-  <meta property="og:image:alt" content="AgentMeasure: re-count your AI vendor bill against the vendor's own rules">
+  <meta property="og:image:alt" content="AgentMeasure: verify AI charges, tool bills and delivery evidence">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="AgentMeasure | Verify AI service charges and delivery">
-  <meta name="twitter:description" content="Verify AI service charges against applicable rules. Explore evidence for billing, acceptance and renewal decisions, with free local tools and scoped buyer discussions.">
+  <meta name="twitter:title" content="AgentMeasure | Verify AI charges and multi-tool bills">
+  <meta name="twitter:description" content="Verify AI service charges and multi-tool agent bills against applicable rules, usage and evidence. 26 tool billing models cataloged; cataloged is not live-validated.">
   <meta name="twitter:image" content="https://roy-tong.github.io/AgentMeasure/assets/social-preview.png">
-  <meta name="twitter:image:alt" content="AgentMeasure: re-count your AI vendor bill against the vendor's own rules">
+  <meta name="twitter:image:alt" content="AgentMeasure: verify AI charges, tool bills and delivery evidence">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -33,7 +33,7 @@
     "@context": "https://schema.org",
     "@type": "SoftwareSourceCode",
     "name": "AgentMeasure",
-    "description": "Open-source checks for AI service charges and evidence for buyer billing, acceptance and renewal decisions. Buyer services are under validation.",
+    "description": "Open-source checks for AI service charges and multi-tool agent bills, with evidence for buyer billing, acceptance and renewal decisions. 26 tools cataloged; cataloged is not live-validated.",
     "url": "https://roy-tong.github.io/AgentMeasure/",
     "codeRepository": "https://github.com/roy-tong/AgentMeasure",
     "license": "https://opensource.org/license/mit",
@@ -58,6 +58,7 @@
       </a>
       <nav class="nav-links" id="nav-links" aria-label="Sections">
         <a href="#whynow">Buyer decisions</a>
+        <a href="tools.html">Tool bills</a>
         <a href="#how">Start locally</a>
         <a href="#evidence">Evidence</a>
         <a href="#developers">Developer tools</a>
@@ -125,6 +126,7 @@
       <div class="status" role="listitem"><span class="status-k">Spec</span><span class="status-v spec" data-status="spec">Draft 0.4.5</span></div>
       <div class="status" role="listitem"><span class="status-k">CLI</span><span class="status-v ok">v0.8.0 · PyPI / GitHub</span></div>
       <div class="status" role="listitem"><span class="status-k">SDK</span><span class="status-v" data-status="sdk">v0.2.0</span></div>
+      <div class="status" role="listitem"><span class="status-k">Tool bills</span><span class="status-v spec">26 cataloged · 0 live-validated</span></div>
       <div class="status" role="listitem"><span class="status-k">Ecosystem audit</span><span class="status-v ok">110 tools · September report</span></div>
       <div class="status" role="listitem"><span class="status-k">Upstream fixes</span><span class="status-v ok">See dated claims index</span></div>
     </div>
@@ -139,7 +141,21 @@
 </div><p class="note">Missing evidence stays unknown. A stricter business requirement does not automatically make a charge incorrect. Broader delivery-review services are exploratory, not a general automated quality product.</p>
 </div></section>
 
-<section class="section section-panel" id="buyer-workflow" aria-label="Buyer review workflow"><div class="wrap">
+<section class="section section-panel" id="toolbills" aria-label="Tool bill coverage"><div class="wrap">
+<h2 class="reveal">Many tool bills. One evidence layer.</h2>
+<p class="body-secondary reveal">Agent tools charge by tokens, searches, credits, browser hours, sandbox seconds, pages, characters, images and seats. Buyer Ledger catalogs the billing dimensions, imports the evidence, and separates invoice facts from what usage can prove.</p>
+<div class="who-grid">
+<div class="who-card reveal"><span class="who-k">Buyer</span><p>Check platform, direct and cloud-marketplace charges against usage and applicable pricing, including free quota, prepaid packs and credits.</p><span class="who-v">Charge review</span></div>
+<div class="who-card reveal"><span class="who-k">Seller</span><p>Audit whether metered usage is represented in billing. Unpriced or unlinked usage stays an evidence gap, not claimed leakage revenue.</p><span class="who-v">Metering integrity</span></div>
+<div class="who-card reveal"><span class="who-k">No-API portals</span><p>Attach a user-started Chrome over local CDP, replay a reviewed recipe, download the bill and run the same ingestion and audit pipeline.</p><span class="who-v">User keeps the session</span></div>
+</div>
+<div class="terminal" style="margin-top:30px"><div class="terminal-body"><pre style="white-space:pre-wrap">python3 -m buyer_ledger catalog summary
+python3 -m buyer_ledger catalog coverage --period 2026-10
+python3 -m buyer_ledger fetch --recipe bill.recipe.json --period 2026-10 --cdp http://127.0.0.1:9222 --analyze --out report.md</pre></div></div>
+<p class="note">Research preview: 26 tools cataloged across China and overseas. Cataloged is not connected, and 0 tools have live customer-bill validation. <a href="tools.html">See the support matrix and limits →</a></p>
+</div></section>
+
+<section class="section" id="buyer-workflow" aria-label="Buyer review workflow"><div class="wrap">
 <h2 class="reveal">From records to a decision your team can use.</h2>
 <div class="trial-points">
 <div class="trial-point"><span class="trial-k">Confirm the task</span><p>Name the vendor, period or decision date, available record types and responsible people. No full raw export is needed for the first conversation.</p></div>
@@ -422,6 +438,7 @@ agentmeasure validate summary.json</pre><p>Auto-discovery prefers Codex when bot
         <nav class="footer-col" aria-label="Review">
           <span class="footer-k">Review</span>
           <a href="first-look.html">Buyer review scope</a>
+          <a href="tools.html">Tool bill coverage</a>
           <a href="recount.html">Recount in your browser</a>
           <a href="rules/index.html">Vendor rule cards</a>
           <a href="claims.html">Metering claims index</a>
