@@ -22,8 +22,9 @@ with no GitHub account (registration blocked from their network since 2026-09-20
 ## What the report was
 
 A recurring recount of litellm's model-price table, not a delivery through the
-free lane. The 2026-10-23 recount (4,244 rows; five check classes stable at
-A1/B44/C13/D9/E1, OpenRouter block fully absorbed) flagged one block: **all 13
+free lane. The 2026-10-23 recount (4,244 rows; the contributor's five check
+classes stable across recounts, OpenRouter block fully absorbed) flagged one
+block: **all 13
 `tencent/*` price rows publish `cache_creation_input_token_cost: 0.0` — an
 explicit zero — next to a nonzero `cache_read_input_token_cost`**. Re-read
 2026-10-31 against `main` (now 4,551 models, 16 `tencent/*` rows — three new
