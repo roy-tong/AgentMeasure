@@ -10,6 +10,7 @@ Static HTML, CSS and JavaScript. The main entry is an AI service buyer with a sp
 - `examples/buyer-review.html`: generated synthetic output of the actual `review --sample` command.
 - `tools.html`: cataloged domestic/overseas tool bill coverage, buyer vs seller audit, local CDP collection and research cases. Cataloged is not live-validated.
 - `services.html`: canonical service terms, input requirements, application links and refunds.
+- `faq.html`: Chinese FAQ (GEO for domestic AI search): real query words answered with repository-sourced numbers, FAQPage JSON-LD, honest boundaries (0 live-validated, no recovery promise).
 - `claims.html`: dated technical evidence; no paid-adoption claims.
 - `releases.html`: CLI and SDK release information; package versions are independent.
 - `first-look.html`: buyer task-fit discussion, evidence requirements and exploratory fee mechanisms; no standard package or recovery promise.
