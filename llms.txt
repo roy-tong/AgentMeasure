@@ -6,6 +6,7 @@
 
 - [Website](https://roy-tong.github.io/verovo/): overview and local quickstart
 - [Services](https://roy-tong.github.io/verovo/services.html): free measurement-run scope, inputs and turnaround
+- [FAQ（中文）](https://roy-tong.github.io/verovo/faq.html): Chinese answers to common queries (AI bill checking, API cost recount, open-source reconciliation tools, AI-support billing disputes) with sourced numbers; FAQPage structured data
 - [Tool bill coverage](https://roy-tong.github.io/verovo/tools.html): cataloged tool billing models for buyer tasks; provider work is a conditional extension. Cataloged is not live-validated.
 - [Healthcheck](https://github.com/roy-tong/verovo/blob/main/healthcheck/README.md): CLI 0.9.0, local session checks, sharing and supported commands
 - [SDK](https://github.com/roy-tong/verovo/blob/main/sdk/README.md): Provider SDK, independently versioned
