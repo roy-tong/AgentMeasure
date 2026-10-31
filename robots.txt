@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://roy-tong.github.io/verovo/sitemap.xml
+Sitemap: https://roy-tong.github.io/Verovo/sitemap.xml

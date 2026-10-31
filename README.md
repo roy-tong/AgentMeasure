@@ -1,6 +1,6 @@
 # Verovo website
 
-Live: https://roy-tong.github.io/verovo/
+Live: https://roy-tong.github.io/Verovo/
 
 Static HTML, CSS and JavaScript. The main entry is an AI service buyer with a specific charge or delivery task. Support is an initial scenario, not the product boundary. Buyer services and fee mechanisms are under validation. Local developer tools and the existing free measurement runs retain their separate scope. Standards, SDK, claims and research remain supporting resources.
 
