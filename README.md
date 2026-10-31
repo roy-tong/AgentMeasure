@@ -157,3 +157,14 @@ images: [docs/launch](docs/launch/README.md).
 
 The standard, SDK, rules and reusable checks support these workflows and remain
 open source. [MIT license](LICENSE).
+
+## Extract a supplier invoice into a reviewable draft
+
+Verovo provides an **optional, local invoice2data adapter** for supplier PDF/image/text invoice files. Extraction is not booked to the economics ledger, and it never infers taxes, credits, refunds, foreign exchange or task allocation.
+
+```bash
+pip install invoice2data
+python3 healthcheck/verovo invoice-intake --file ./invoice.pdf --json ./invoice-draft.json
+```
+
+A vendor-specific template may be needed. The result includes a source SHA-256 and explicit \`review_status: unreviewed\` and \`cost_ledger_status: not_imported\` fields. Review the original invoice and contractual rules before assigning costs. Core Verovo remains standard-library-only. See [feature status](docs/feature-status.md).
