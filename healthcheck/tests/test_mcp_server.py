@@ -1,4 +1,4 @@
-"""Minimal buyer MCP server: three read-only tools over the shipped commands."""
+"""Buyer MCP: safe local review and invoice extraction tools."""
 import json
 import unittest
 
@@ -19,7 +19,7 @@ class McpServerTests(unittest.TestCase):
         init = mcp.handle({"jsonrpc": "2.0", "id": 1, "method": "initialize"})
         self.assertEqual("verovo-mcp", init["result"]["serverInfo"]["name"])
         tools = mcp.handle({"jsonrpc": "2.0", "id": 2, "method": "tools/list"})
-        self.assertEqual(["verovo_review", "verovo_review_template", "verovo_recount"],
+        self.assertEqual(["verovo_invoice_intake", "verovo_review", "verovo_review_template", "verovo_recount"],
                          [t["name"] for t in tools["result"]["tools"]])
 
     def test_review_sample_returns_lanes_levels_and_boundary(self):
@@ -50,6 +50,19 @@ class McpServerTests(unittest.TestCase):
         payload = call("verovo_recount", {"sample": True})
         self.assertEqual("zendesk", payload["vendor"])
         self.assertIn("Tier 1 Recount", payload["report_text"])
+
+    def test_invoice_intake_mcp_is_unreviewed(self):
+        from unittest.mock import patch
+        with patch.object(mcp.invoice_intake, "extract_invoice",
+                          return_value={"kind": "verovo.invoice-extraction-draft",
+                                        "review_status": "unreviewed",
+                                        "cost_ledger_status": "not_imported"}):
+            payload = call("verovo_invoice_intake", {"file": "invoice.pdf"})
+        self.assertEqual("unreviewed", payload["review_status"])
+        self.assertEqual("not_imported", payload["cost_ledger_status"])
+        response = mcp.handle({"jsonrpc": "2.0", "id": 12, "method": "tools/call",
+                               "params": {"name": "verovo_invoice_intake", "arguments": {}}})
+        self.assertTrue(response["result"]["isError"])
 
     def test_unknown_tool_is_a_tool_error_not_a_crash(self):
         response = mcp.handle({"jsonrpc": "2.0", "id": 4, "method": "tools/call",
