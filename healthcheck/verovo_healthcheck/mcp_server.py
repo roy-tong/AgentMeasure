@@ -22,11 +22,25 @@ import os
 import sys
 
 from . import review
+from . import invoice_intake
 from . import vendors as vendors_mod
 
 PROTOCOL_VERSION = "2024-11-05"
 
 TOOLS = [
+    {
+        "name": "verovo_invoice_intake",
+        "description": "Read a local supplier invoice through optional invoice2data. "
+                       "Returns an unreviewed source-hashed draft, NEVER books a cost "
+                       "or claims invoice authenticity.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "file": {"type": "string", "description": "local invoice path"},
+            },
+            "required": ["file"],
+        },
+    },
     {
         "name": "verovo_review",
         "description": "Run a scoped buyer review (charges / delivery as separate "
@@ -122,6 +136,10 @@ def _run_recount(args):
 
 
 def call_tool(name, args):
+    if name == "verovo_invoice_intake":
+        if not args.get("file"):
+            return _err("provide a local invoice file")
+        return _text(invoice_intake.extract_invoice(args["file"]))
     if name == "verovo_review":
         return _run_review(args)
     if name == "verovo_review_template":
