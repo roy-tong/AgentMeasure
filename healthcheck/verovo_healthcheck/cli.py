@@ -57,6 +57,7 @@ from . import drilldown as drilldown_mod
 from . import decisions as decisions_mod
 from . import scaffold as scaffold_mod
 from . import review as review_mod
+from . import task_economics as economics_mod
 # Conformance pack loaded lazily in cmd_conformance
 
 DEFAULT_DAYS = 7
@@ -1731,6 +1732,32 @@ def cmd_review(args) -> int:
         return 2
 
 
+def cmd_economics(args) -> int:
+    """Compute a task-level economics case from a local, explicit case file."""
+    try:
+        case = economics_mod.load_case(args.case)
+        result = economics_mod.evaluate(case)
+        problem = _validate_output_paths([args.case], args.json, args.markdown)
+        if problem:
+            raise ValueError(problem)
+        if args.json:
+            with open(args.json, "w", encoding="utf-8") as fh:
+                json.dump(result, fh, ensure_ascii=False, indent=2, allow_nan=False)
+                fh.write("\n")
+        if args.markdown:
+            with open(args.markdown, "w", encoding="utf-8") as fh:
+                fh.write(economics_mod.report_markdown(result) + "\n")
+        print(economics_mod.report_text(result))
+        if args.json:
+            print("\nJSON -> %s" % os.path.abspath(args.json))
+        if args.markdown:
+            print("Markdown -> %s" % os.path.abspath(args.markdown))
+        return 0
+    except (ValueError, OSError, json.JSONDecodeError) as exc:
+        print("error: %s" % exc, file=sys.stderr)
+        return 2
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="verovo",
@@ -1750,6 +1777,15 @@ def build_parser() -> argparse.ArgumentParser:
     p_review.add_argument("--html", metavar="PATH", help="write a local offline review report")
     p_review.add_argument("--json", metavar="PATH", help="write traceable criteria, verdicts and source hashes")
     p_review.set_defaults(func=cmd_review)
+
+    p_econ = sub.add_parser(
+        "economics",
+        help="compute task-level direct/shared cost, verified-success cost and ROI "
+             "from a local case file (no network, no currency conversion)")
+    p_econ.add_argument("--case", required=True, help="task-economics case JSON")
+    p_econ.add_argument("--json", metavar="PATH", help="write machine-readable result")
+    p_econ.add_argument("--markdown", metavar="PATH", help="write human-readable result")
+    p_econ.set_defaults(func=cmd_economics)
 
     p_check = sub.add_parser("check", help="check local agent logs (default)")
     _add_filter_args(p_check)
@@ -2325,3 +2361,7 @@ def main(argv=None) -> int:
         parser.print_help()
         return 2
     return args.func(args)
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

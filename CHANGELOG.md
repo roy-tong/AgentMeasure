@@ -30,6 +30,14 @@ documented here. Format follows [Keep a Changelog](https://keepachangelog.com/).
 - Skill task entries `verovo-review-charge` / `verovo-review-delivery` /
   `verovo-prepare-dispute` inside the single `verovo` skill (one skill, never
   separate installs), each mapped to the six stages.
+- `verovo economics` task-economics case: explicit business tasks, agent runs,
+  financialized usage, cost items, allocation rules and verified outcomes. It
+  computes direct/allocated/fully-loaded task cost, cost per verified success,
+  and ROI only when verified value exists in the same currency; duplicate cost
+  rows, cross-currency rows, unallocated items and unverified outcomes are
+  reported rather than silently combined. Schema:
+  `healthcheck/schemas/task-economics.schema.json`; boundary:
+  `docs/task-economics.md`.
 
 ### Changed
 

@@ -86,7 +86,20 @@ and realized corrections separately. A rule-priced finding is not recovered mone
 | Supported billing recounts | Selected export formats and versioned rules; applicability must be reviewed |
 | Buyer Ledger | Local tool-bill processing and 26 catalog entries; cataloged does not mean connected or validated on real customer bills |
 | Developer diagnostics | Local coding-agent log checks, measurement conformance and regression fixtures |
+| Task economics (main preview) | Local task/run/usage/cost/outcome case → direct and allocated cost, cost per verified success, ROI when verified value exists; unallocated and unverified items stay explicit |
 | Human buyer review | Scope and fees discussed for a concrete task; commercial acceptance and repeat purchase remain under validation |
+
+### Task economics (main preview)
+
+`verovo economics --case case.json --json out.json --markdown out.md` connects
+business tasks, agent runs, financialized usage, invoices/cost items and verified
+outcomes. Costs are never added across currencies; duplicate financial rows are
+reported rather than summed; missing task/run links and shared costs without an
+allocation rule stay unallocated; unverified outcomes do not enter the
+cost-per-verified-success denominator. See the
+[case schema](healthcheck/schemas/task-economics.schema.json) and
+[design boundary](docs/task-economics.md). The command is local and makes no
+network calls.
 
 [Buyer Ledger](buyer-ledger/README.md) · [Coverage limits](buyer-ledger/REVIEW-20261029.md) ·
 [Developer CLI](healthcheck/README.md) · [Conformance](conformance/pack/README.md)
