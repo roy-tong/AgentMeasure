@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" role="img" aria-labelledby="hero-title hero-desc" font-family="Inter, system-ui, -apple-system, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif">
+  <title id="hero-title">Verovo — verify AI service charges and delivery, from the buyer's side</title>
+  <desc id="hero-desc">Three input layers — charging rules, usage and payment records, delivery evidence — flow into one local buyer review that reports charges and delivery as separate verdicts: PASS, FAIL or UNPROVABLE. Missing evidence stays UNPROVABLE.</desc>
+
+  <defs>
+    <linearGradient id="verovo-grad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#2E6BFF"/>
+      <stop offset="1" stop-color="#6E3BFF"/>
+    </linearGradient>
+    <marker id="flow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#6E3BFF"/>
+    </marker>
+  </defs>
+
+  <rect x="0" y="0" width="1200" height="630" fill="#FFFFFF"/>
+
+  <!-- Header -->
+  <text x="64" y="86" font-size="46" font-weight="700" fill="#0D1330" letter-spacing="-0.02em">Verovo</text>
+  <text x="64" y="124" font-size="20" fill="#3D4654">Verify AI service charges and delivery — from the buyer&#8217;s side.</text>
+
+  <text x="64" y="176" font-size="12" font-weight="700" fill="#8B96A3" letter-spacing="0.14em">THREE RECORD LAYERS, ONE RECONCILIATION</text>
+
+  <!-- Layer cards -->
+  <g>
+    <rect x="64" y="192" width="344" height="104" rx="10" fill="#F2F5F7" stroke="#D7DEE4" stroke-width="1.5"/>
+    <text x="88" y="228" font-size="17" font-weight="700" fill="#0D1330">Charging rules</text>
+    <text x="88" y="254" font-size="13.5" fill="#3D4654">contract terms · published rates</text>
+    <text x="88" y="274" font-size="13.5" fill="#3D4654">versioned and dated</text>
+  </g>
+  <g>
+    <rect x="432" y="192" width="344" height="104" rx="10" fill="#F2F5F7" stroke="#D7DEE4" stroke-width="1.5"/>
+    <text x="456" y="228" font-size="17" font-weight="700" fill="#0D1330">Usage &amp; payment records</text>
+    <text x="456" y="254" font-size="13.5" fill="#3D4654">platform exports · invoices</text>
+    <text x="456" y="274" font-size="13.5" fill="#3D4654">payments and credits</text>
+  </g>
+  <g>
+    <rect x="800" y="192" width="344" height="104" rx="10" fill="#F2F5F7" stroke="#D7DEE4" stroke-width="1.5"/>
+    <text x="824" y="228" font-size="17" font-weight="700" fill="#0D1330">Delivery evidence</text>
+    <text x="824" y="254" font-size="13.5" fill="#3D4654">observable results</text>
+    <text x="824" y="274" font-size="13.5" fill="#3D4654">against stated buyer criteria</text>
+  </g>
+
+  <!-- Arrows into review -->
+  <path d="M 236 296 L 236 328" stroke="#6E3BFF" stroke-width="2.5" marker-end="url(#flow)"/>
+  <path d="M 604 296 L 604 328" stroke="#6E3BFF" stroke-width="2.5" marker-end="url(#flow)"/>
+  <path d="M 972 296 L 972 328" stroke="#6E3BFF" stroke-width="2.5" marker-end="url(#flow)"/>
+
+  <!-- Review bar -->
+  <rect x="64" y="336" width="1080" height="72" rx="10" fill="url(#verovo-grad)"/>
+  <text x="604" y="368" font-size="18" font-weight="700" fill="#FFFFFF" text-anchor="middle">Buyer review — local, no upload</text>
+  <text x="604" y="392" font-size="13.5" fill="#E9EEFF" text-anchor="middle">every verdict cites its criteria, observed value and evidence hash</text>
+
+  <!-- Verdict lanes -->
+  <g>
+    <rect x="64" y="436" width="520" height="126" rx="10" fill="#FFFFFF" stroke="#D7DEE4" stroke-width="1.5"/>
+    <text x="88" y="470" font-size="17" font-weight="700" fill="#0D1330">Charges</text>
+    <text x="88" y="494" font-size="13" fill="#3D4654">do the charges match the applicable rules and records?</text>
+    <g font-size="13" font-weight="700">
+      <rect x="88" y="510" width="86" height="30" rx="15" fill="#E8F8EF" stroke="#12995B" stroke-width="1.2"/>
+      <text x="131" y="530" fill="#12995B" text-anchor="middle">PASS</text>
+      <rect x="186" y="510" width="86" height="30" rx="15" fill="#FDECEC" stroke="#E05252" stroke-width="1.2"/>
+      <text x="229" y="530" fill="#E05252" text-anchor="middle">FAIL</text>
+      <rect x="284" y="510" width="140" height="30" rx="15" fill="#FCF4E0" stroke="#C9962E" stroke-width="1.2"/>
+      <text x="354" y="530" fill="#A87B1D" text-anchor="middle">UNPROVABLE</text>
+    </g>
+  </g>
+  <g>
+    <rect x="616" y="436" width="528" height="126" rx="10" fill="#FFFFFF" stroke="#D7DEE4" stroke-width="1.5"/>
+    <text x="640" y="470" font-size="17" font-weight="700" fill="#0D1330">Delivery</text>
+    <text x="640" y="494" font-size="13" fill="#3D4654">does the work meet the buyer&#8217;s stated requirements?</text>
+    <g font-size="13" font-weight="700">
+      <rect x="640" y="510" width="86" height="30" rx="15" fill="#E8F8EF" stroke="#12995B" stroke-width="1.2"/>
+      <text x="683" y="530" fill="#12995B" text-anchor="middle">PASS</text>
+      <rect x="738" y="510" width="86" height="30" rx="15" fill="#FDECEC" stroke="#E05252" stroke-width="1.2"/>
+      <text x="781" y="530" fill="#E05252" text-anchor="middle">FAIL</text>
+      <rect x="836" y="510" width="140" height="30" rx="15" fill="#FCF4E0" stroke="#C9962E" stroke-width="1.2"/>
+      <text x="906" y="530" fill="#A87B1D" text-anchor="middle">UNPROVABLE</text>
+    </g>
+  </g>
+
+  <!-- Footnote -->
+  <text x="64" y="606" font-size="13" fill="#8B96A3">Missing evidence stays UNPROVABLE — never converted to zero.&#160;&#160;·&#160;&#160;github.com/roy-tong/verovo</text>
+</svg>

@@ -8,6 +8,10 @@ Verovo helps teams connect applicable billing rules, usage and payment records,
 delivery evidence and business requirements. Use the results for reconciliation,
 payment, acceptance, remediation and renewal.
 
+<p align="center">
+  <img src="assets/launch/hero.svg" alt="Verovo connects charging rules, usage and payment records, and delivery evidence into one local buyer review that reports charges and delivery as separate PASS / FAIL / UNPROVABLE verdicts" width="720">
+</p>
+
 [Website](https://roy-tong.github.io/verovo/) · [中文](README.zh-CN.md) ·
 [Product definition](docs/product-definition.md) · [Buyer task guide](docs/buyer-review.md)
 
@@ -85,6 +89,11 @@ and realized corrections separately. A rule-priced finding is not recovered mone
 name the service, account or task, decision date, available record types and owner.
 You can request delivery review without first finding a billing discrepancy.
 
+Free measurement lane / 免费测量通道: bring 20–100 sanitized rows to
+[issue #6](https://github.com/roy-tong/verovo/issues/6) or the
+[website form](https://roy-tong.github.io/verovo/services.html) —
+免费：带 20–100 行脱敏数据提交到 issue #6 或官网表单。
+
 Providers reviewing upstream spend are buyers in that transaction. Provider-side
 work for downstream billing is an extension triggered by a concrete customer dispute,
 revenue discrepancy or procurement requirement. It does not redefine the buyer focus.
@@ -99,6 +108,13 @@ Local CLI commands do not upload data. Optional GitHub-hosted workflows upload t
 GitHub and require a private repository; do not put private bills in public issues.
 Synthetic fixtures and test results establish engineering behavior, not customer
 adoption, economic recovery or paid demand.
+
+Launch case cards — every number sourced and dated:
+[tokendash #37](docs/launch/case-tokendash-37.md) (one message billed as three),
+[claude-hud #758](docs/launch/case-claude-hud-758.md) (1-hour cache writes at the
+5-minute rate), [VibeMirror-coder-001](docs/launch/case-vibemirror-coder-001.md)
+(an independent re-measurement through the free lane). Index and walkthrough
+images: [docs/launch](docs/launch/README.md).
 
 [CI](https://github.com/roy-tong/verovo/actions/workflows/conformance.yml) ·
 [Claims and reproductions](https://roy-tong.github.io/verovo/claims.html) ·
