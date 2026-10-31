@@ -32,6 +32,19 @@ with finance and procurement as collaborators. AI support is an initial applicat
 scenario. Coding agents, automation platforms, tools/APIs and model services belong to
 the wider scope; coverage is verified task by task.
 
+## Try task economics locally
+
+```bash
+git clone https://github.com/roy-tong/Verovo.git
+cd Verovo
+python3 healthcheck/verovo economics --case examples/task-economics.json --json economics.json --markdown economics.md
+```
+
+The synthetic case has two tasks, USD 43.50 in total costs and one verified success.
+A duplicate financial row is flagged and excluded. The verified USD 100 value yields
+ROI 1.2989. These are demonstration inputs, not customer results. Use your own explicit
+records and review coverage before making a financial decision.
+
 ## Try a buyer review locally
 
 The new `review` command is a **main-branch preview**, not part of the v0.9.0 tag.

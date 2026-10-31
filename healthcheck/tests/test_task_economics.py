@@ -68,7 +68,8 @@ class TestTaskEconomics(unittest.TestCase):
         self.assertEqual("43.50", result["totals"]["fully_loaded_cost"])
         self.assertEqual(1, result["totals"]["verified_success_tasks"])
         self.assertEqual("43.50", result["totals"]["cost_per_verified_success"])
-        self.assertEqual("1.2989", result["totals"]["roi"])
+        self.assertIsNone(result["totals"]["roi"])
+        self.assertIn("incomplete", result["totals"]["roi_reason"])
         self.assertEqual("5.00", result["totals"]["loss_events"])
         self.assertTrue(any(f["code"] == "duplicate_cost_item"
                             for f in result["findings"]))
@@ -89,6 +90,7 @@ class TestTaskEconomics(unittest.TestCase):
         case = base_case()
         case["outcomes"] = [{"task_id": "t1", "status": "success",
                              "verified": True, "source_ref": "crm:1"}]
+        case["usage"] = [u for u in case["usage"] if u["usage_id"] != "u3"]
         result = econ.evaluate(case)
         self.assertIsNone(result["totals"]["roi"])
         self.assertIn("no verified business value", result["totals"]["roi_reason"])
@@ -184,6 +186,7 @@ class TestTaskEconomics(unittest.TestCase):
 
     def test_zero_verified_value_is_negative_one_roi(self):
         case = base_case()
+        case["usage"] = [u for u in case["usage"] if u["usage_id"] != "u3"]
         case["outcomes"][0]["value"] = "0"
         self.assertEqual("-1.0000", econ.evaluate(case)["totals"]["roi"])
 

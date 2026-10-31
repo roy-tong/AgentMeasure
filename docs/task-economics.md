@@ -60,3 +60,5 @@ A shared `charge_id` identifies the same financial charge represented in both us
 Repeated task/source/status outcome records are counted once. Conflicting verified task states (including a later reversal) exclude that task from success and value until the caller supplies a reconciled snapshot. Verification fields must be JSON booleans, and business value needs a source reference. A verified value of zero yields ROI -1 when costs are positive.
 
 Shared expenses use largest-remainder cent allocation. Confirmed losses need a known task and source and are deduplicated by loss identity; estimates remain visible but are excluded from confirmed totals. These are input-contract checks, not independent verification of financial documents.
+
+ROI is withheld when any input remains unallocated: partial attributed costs are not a complete denominator. Reconcile those records first.

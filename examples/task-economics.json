@@ -1,0 +1,117 @@
+{
+  "schema_version": "1.0",
+  "case_id": "synthetic-support-economics",
+  "currency": "USD",
+  "period": {
+    "start": "2026-10-01",
+    "end": "2026-10-31"
+  },
+  "allocation_rules": [
+    {
+      "id": "equal",
+      "version": "1",
+      "method": "equal"
+    }
+  ],
+  "tasks": [
+    {
+      "task_id": "t1",
+      "type": "support"
+    },
+    {
+      "task_id": "t2",
+      "type": "support"
+    }
+  ],
+  "runs": [
+    {
+      "run_id": "r1",
+      "task_id": "t1"
+    },
+    {
+      "run_id": "r2",
+      "task_id": "t2"
+    },
+    {
+      "run_id": "rx"
+    }
+  ],
+  "usage": [
+    {
+      "usage_id": "u1",
+      "run_id": "r1",
+      "cost": "1.50",
+      "financialized": true,
+      "source_ref": "trace:r1"
+    },
+    {
+      "usage_id": "u2",
+      "run_id": "r2",
+      "cost": "2.00",
+      "financialized": true,
+      "source_ref": "trace:r2"
+    },
+    {
+      "usage_id": "u4",
+      "run_id": "r1",
+      "cost": "99.00",
+      "financialized": false,
+      "source_ref": "trace:u4"
+    }
+  ],
+  "documents": [
+    {
+      "document_id": "inv1",
+      "type": "invoice",
+      "total": "43.50",
+      "source_ref": "invoice:1"
+    }
+  ],
+  "cost_items": [
+    {
+      "cost_id": "c1",
+      "task_id": "t1",
+      "amount": "10.00",
+      "source_ref": "invoice:1",
+      "vendor": "v"
+    },
+    {
+      "cost_id": "c2",
+      "task_id": "t1",
+      "amount": "10.00",
+      "source_ref": "invoice:1",
+      "vendor": "v"
+    },
+    {
+      "cost_id": "c3",
+      "amount": "30.00",
+      "source_ref": "invoice:shared",
+      "vendor": "v",
+      "allocation_rule": "equal"
+    }
+  ],
+  "outcomes": [
+    {
+      "task_id": "t1",
+      "status": "success",
+      "verified": true,
+      "source_ref": "crm:1",
+      "value": "100.00",
+      "value_verified": true
+    },
+    {
+      "task_id": "t2",
+      "status": "pending",
+      "verified": false
+    }
+  ],
+  "loss_events": [
+    {
+      "loss_id": "l1",
+      "task_id": "t1",
+      "amount": "5.00",
+      "status": "confirmed",
+      "source_ref": "claim:1"
+    }
+  ]
+}

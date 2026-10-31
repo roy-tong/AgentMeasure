@@ -337,7 +337,9 @@ def evaluate(case: Dict[str, Any]) -> Dict[str, Any]:
     verified_value_total = sum(verified_value.values(), Decimal("0"))
     roi = None
     roi_reason = "no verified business value in the case currency"
-    if verified_value and total_cost > 0:
+    if unallocated:
+        roi_reason = "unallocated records make total cost incomplete; reconcile before ROI"
+    elif verified_value and total_cost > 0:
         roi = str(((verified_value_total - total_cost) / total_cost).quantize(
             Decimal("0.0001"), rounding=ROUND_HALF_UP))
         roi_reason = "verified value and fully loaded cost in the same currency/period"
