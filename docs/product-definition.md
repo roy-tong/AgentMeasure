@@ -67,7 +67,7 @@ condition. New engineering capabilities or a narrow experiment do not silently
 replace this definition. Customer value, actual payment and repeat purchase are
 separate from engineering tests and open-source use.
 
-The current [free measurement runs](https://roy-tong.github.io/verovo/services.html)
+The current [free measurement runs](https://roy-tong.github.io/Verovo/services.html)
 remain free and limited to measurement samples. Enterprise review scope and any
 fee are agreed for a concrete task; there is no fixed enterprise rate or recovery
 guarantee. See [commercial scope](commercial-narrative.md).

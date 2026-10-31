@@ -1,6 +1,6 @@
 # GTM · 官网枢纽方案（Website-Led GTM v2）
 
-> 状态：官网已上线（`https://roy-tong.github.io/verovo/`），漏斗末端已打通
+> 状态：官网已上线（`https://roy-tong.github.io/Verovo/`），漏斗末端已打通
 > 一键申请（`5-provider-trial.yml` 模板）。本文档把官网接进**全部**获客与承接动作。
 >
 > 前置文档，仍然有效：
@@ -41,7 +41,7 @@ unmeasured——**我们卖的就是"不把不知道伪装成知道"，量自己
 ## 2. 上线前清单（Launch Checklist，半天内完成）
 
 - [ ] GitHub 仓库建 label：`provider-trial`（模板引用了它；不建不报错，但不打标）
-- [ ] Repo **About**：Website 改为 `https://roy-tong.github.io/verovo/`；
+- [ ] Repo **About**：Website 改为 `https://roy-tong.github.io/Verovo/`；
       Description 换成与官网统一的
       `Open measurement infrastructure for agent-facing software. Separate operations from attempts, evidence from inference, and usage from value.`
       （粘贴块已更新进 [GITHUB_LAUNCH.md](../GITHUB_LAUNCH.md)）

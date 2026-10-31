@@ -27,7 +27,7 @@ never into the Python installation. Existing names are refused rather than overw
 For your own data, use genuine session/operation/attempt identities. Without
 `--claims`, results only concern the sample's internal consistency. For a free
 fit review before a $20 check, send your native schema and redacted sample rows;
-you do not have to perform the mapping first. [Service scope](https://roy-tong.github.io/verovo/services.html#qa20).
+you do not have to perform the mapping first. [Service scope](https://roy-tong.github.io/Verovo/services.html#qa20).
 
 ## Use
 

@@ -31,7 +31,7 @@ sufficient or the remaining work is unsupported, we say so without charging.
 A summary can support limited interpretation; it cannot identify a cause that
 is absent from the input. We do not sell known missing evidence back to you.
 Checkout availability and existing refund terms are on the
-[service page](https://roy-tong.github.io/verovo/services.html#terms).
+[service page](https://roy-tong.github.io/Verovo/services.html#terms).
 
 ## Deliverables
 

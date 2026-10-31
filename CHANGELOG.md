@@ -62,7 +62,7 @@ documented here. Format follows [Keep a Changelog](https://keepachangelog.com/).
   namespaces `agentmeasure.*` → `verovo.*`, Python module `am_healthcheck` →
   `verovo_healthcheck`, settlement standard AMS-1 → VSS-1.
 - **Repository and site**: `roy-tong/AgentMeasure` → `roy-tong/verovo`,
-  `roy-tong.github.io/AgentMeasure` → `roy-tong.github.io/verovo`. Canonical,
+  `roy-tong.github.io/AgentMeasure` → `roy-tong.github.io/Verovo`. Canonical,
   Open Graph, sitemap and badge URLs point at the new paths.
 - **New brand assets**: wordmark and owl mark in `assets/` and `website/assets/`,
   new favicon, regenerated Open Graph card and caller-identity ladder diagram,

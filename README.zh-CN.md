@@ -12,7 +12,7 @@ Verovo 连接买方日志、供应商账单、财务记录和业务结果：先�
   <img src="assets/launch/hero.svg" alt="Verovo 将收费规则、用量与费用记录、交付证据汇入一次本地买方核验，费用与交付分别给出 PASS / FAIL / UNPROVABLE 结论" width="720">
 </p>
 
-[官网](https://roy-tong.github.io/verovo/) · [English](README.md) ·
+[官网](https://roy-tong.github.io/Verovo/) · [English](README.md) ·
 [产品定义](docs/product-definition.md) · [核验任务指南](docs/buyer-review.md)
 
 ## 从费用和交付到单任务经济性
@@ -42,7 +42,7 @@ python3 healthcheck/verovo review --sample --html buyer-review.html --json buyer
 
 合成示例输出：**费用 PASS、交付 FAIL，另一项交付证据 UNPROVABLE**。
 打开 HTML 可查看独立结论、判据、观察值、来源与文件摘要。
-[查看合成示例报告](https://roy-tong.github.io/verovo/examples/buyer-review.html)。
+[查看合成示例报告](https://roy-tong.github.io/Verovo/examples/buyer-review.html)。
 
 每份报告附带三层**结论分层**，互相独立、不合并成评分：**Level 1 规则一致性**（本次运行
 所能确立的）、**Level 2 证据可信性**（规则适用性、来源真实性与覆盖面——缺失时如实标注
@@ -84,16 +84,16 @@ CLI 与 Provider SDK 独立发布，不共用版本号。
 
 ## 带着具体任务开始
 
-[描述核验任务](https://roy-tong.github.io/verovo/first-look.html#contact)：服务商、账户/任务、
+[描述核验任务](https://roy-tong.github.io/Verovo/first-look.html#contact)：服务商、账户/任务、
 账期或决定日期、可用资料和负责人。交付验收可以独立提出，无需先有费用争议。
 
 免费测量通道 / Free measurement lane：带 20–100 行脱敏数据提交到
 [issue #6](https://github.com/roy-tong/verovo/issues/6) 或
-[官网表单](https://roy-tong.github.io/verovo/services.html) —
+[官网表单](https://roy-tong.github.io/Verovo/services.html) —
 free: bring 20–100 sanitized rows to issue #6 or the website form.
 
 服务商核对上游支出时属于买方；核对下游收费时，仅围绕具体争议、收入差异或采购要求扩展。
-现有[免费测量任务](https://roy-tong.github.io/verovo/services.html)保留样本测量范围，
+现有[免费测量任务](https://roy-tong.github.io/Verovo/services.html)保留样本测量范围，
 与企业发票、业务验收任务分开。没有统一企业报价或追回保证。
 
 本地命令不会上传数据。可选 GitHub 托管流程会上传至 GitHub，须使用私有仓库。
@@ -106,4 +106,4 @@ free: bring 20–100 sanitized rows to issue #6 or the website form.
 （免费通道的一次独立复测）。索引与分步图：[docs/launch](docs/launch/README.md)。
 
 [CI](https://github.com/roy-tong/verovo/actions/workflows/conformance.yml) ·
-[公开证据](https://roy-tong.github.io/verovo/claims.html) · [贡献指南](CONTRIBUTING.md) · [MIT](LICENSE)
+[公开证据](https://roy-tong.github.io/Verovo/claims.html) · [贡献指南](CONTRIBUTING.md) · [MIT](LICENSE)

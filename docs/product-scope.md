@@ -12,7 +12,7 @@ work item, usable evidence and explicit criteria.
 | A supported AI application bill | `prepare`, `recount`, `dispute`, `recovery` | Selected formats and rules; differences do not guarantee correction |
 | Acceptance or renewal | Delivery-only or combined task, with scoped human interpretation | Does not require an incorrect charge; real customer value remains to be verified |
 | Tool/API account period | Buyer Ledger | 26 cataloged tools are not 26 live integrations |
-| Local agent logs or a metering sample | Free tools and [free measurement runs](https://roy-tong.github.io/verovo/services.html) | Separate technical scope, not enterprise invoice or acceptance review |
+| Local agent logs or a metering sample | Free tools and [free measurement runs](https://roy-tong.github.io/Verovo/services.html) | Separate technical scope, not enterprise invoice or acceptance review |
 
 Support is an initial application scenario, not a permanent product boundary.
 Coding agents, automation platforms, tools and model services enter through
@@ -26,7 +26,7 @@ quality monitoring, runtime spend enforcement and full execution replay remain
 outside the current implementation.
 
 Describe the service, account/task, date, records and owner through the
-[buyer task page](https://roy-tong.github.io/verovo/first-look.html#contact).
+[buyer task page](https://roy-tong.github.io/Verovo/first-look.html#contact).
 Scope and any enterprise project fee are agreed before commissioned work.
 There is no fixed enterprise rate or guaranteed recovery. Existing free
 measurement runs stay free. [Commercial scope](commercial-narrative.md).

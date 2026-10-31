@@ -99,4 +99,4 @@ Day 8+    you pick an action; optional re-measure proves the before/after
 
 ---
 
-**→ Apply: [Provider Trial form](https://github.com/roy-tong/verovo/issues/new?template=5-provider-trial.yml)** (five fields, ~2 minutes) · [Program details → Issue #2](https://github.com/roy-tong/verovo/issues/2) · [Website](https://roy-tong.github.io/verovo/)
+**→ Apply: [Provider Trial form](https://github.com/roy-tong/verovo/issues/new?template=5-provider-trial.yml)** (five fields, ~2 minutes) · [Program details → Issue #2](https://github.com/roy-tong/verovo/issues/2) · [Website](https://roy-tong.github.io/Verovo/)

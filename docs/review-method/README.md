@@ -34,6 +34,6 @@ never required, never a condition.
   [provider-onboarding.md](provider-onboarding.md) and
   [registry/provider-mapping.md](../registry/provider-mapping.md)
 - The public claims index these verdicts share vocabulary with:
-  [claims.html](https://roy-tong.github.io/verovo/claims.html)
+  [claims.html](https://roy-tong.github.io/Verovo/claims.html)
 - Historical scope notes: [paid-review-scope.md](paid-review-scope.md)
   (superseded — kept for the record)

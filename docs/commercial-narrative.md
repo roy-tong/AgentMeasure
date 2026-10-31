@@ -17,7 +17,7 @@ commission work.
 Neither is a launched fixed-price package. Scope, inputs, deliverables and any
 fee are agreed before commissioned work. Repeated service is tested only when
 customers have a new task and actually choose to buy again. A fit discussion
-is not an order. Existing sample-based [measurement runs](https://roy-tong.github.io/verovo/services.html)
+is not an order. Existing sample-based [measurement runs](https://roy-tong.github.io/Verovo/services.html)
 remain free; old $10/$20 diagnostics are not current offers.
 
 ## Value and cost

@@ -27,7 +27,7 @@ result — when the logs cannot decide, that is disclosed, never zeroed.
 > is not published yet, so `pip install verovo` fails until the first upload (the
 > previous `agentmeasure` project stays at 0.8.0). Use the pinned Git install below
 > in the meantime. Provider SDK is **v0.3.0** (`@verovo/mcp`). 511 Healthcheck tests
-> passed locally. See [release notes](https://roy-tong.github.io/verovo/releases.html).
+> passed locally. See [release notes](https://roy-tong.github.io/Verovo/releases.html).
 
 ## Install
 
@@ -54,7 +54,7 @@ The 0.7.0 wheel's conformance command is broken because a bundled dependency was
 omitted. **Upgrade to 0.7.2 or later** for `conformance`; Healthcheck itself was unaffected.
 [Installed conformance quickstart](../conformance/pack/README.md#first-run-from-an-installed-cli).
 
-[Installation and error recovery](https://roy-tong.github.io/verovo/#install-help)
+[Installation and error recovery](https://roy-tong.github.io/Verovo/#install-help)
 includes Windows and virtual environments. The report path is printed after a
 successful check. Keep full JSON/HTML local; only share an inspected summary.
 

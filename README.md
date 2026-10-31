@@ -12,7 +12,7 @@ For teams buying or operating AI services, the output is a reproducible economic
   <img src="assets/launch/hero.svg" alt="Verovo connects charging rules, usage and payment records, and delivery evidence into one local buyer review that reports charges and delivery as separate PASS / FAIL / UNPROVABLE verdicts" width="720">
 </p>
 
-[Website](https://roy-tong.github.io/verovo/) · [中文](README.zh-CN.md) ·
+[Website](https://roy-tong.github.io/Verovo/) · [中文](README.zh-CN.md) ·
 [Product definition](docs/product-definition.md) · [Buyer task guide](docs/buyer-review.md)
 
 ## Three workflows for AI service buyers
@@ -66,7 +66,7 @@ the tool). The six operating stages — Intake → Source Check → Rule Resolut
 Reconciliation → Delivery Assessment → Buyer Decision — map each step to a command in
 [docs/review-method/buyer-review-stages.md](docs/review-method/buyer-review-stages.md).
 
-[View the synthetic report](https://roy-tong.github.io/verovo/examples/buyer-review.html).
+[View the synthetic report](https://roy-tong.github.io/Verovo/examples/buyer-review.html).
 Agent hosts can call the same review read-only via MCP (`verovo-mcp`: `verovo_review`,
 `verovo_review_template`, `verovo_recount`; no write or submit actions exposed).
 To review your own task, copy the [task and observation examples](healthcheck/verovo_healthcheck/demo/buyer-review.json)
@@ -120,20 +120,20 @@ network calls.
 
 ## Start with a real task
 
-[Describe a billing, acceptance or renewal task](https://roy-tong.github.io/verovo/first-look.html#contact):
+[Describe a billing, acceptance or renewal task](https://roy-tong.github.io/Verovo/first-look.html#contact):
 name the service, account or task, decision date, available record types and owner.
 You can request delivery review without first finding a billing discrepancy.
 
 Free measurement lane / 免费测量通道: bring 20–100 sanitized rows to
 [issue #6](https://github.com/roy-tong/verovo/issues/6) or the
-[website form](https://roy-tong.github.io/verovo/services.html) —
+[website form](https://roy-tong.github.io/Verovo/services.html) —
 免费：带 20–100 行脱敏数据提交到 issue #6 或官网表单。
 
 Providers reviewing upstream spend are buyers in that transaction. Provider-side
 work for downstream billing is an extension triggered by a concrete customer dispute,
 revenue discrepancy or procurement requirement. It does not redefine the buyer focus.
 
-The existing [free measurement runs](https://roy-tong.github.io/verovo/services.html)
+The existing [free measurement runs](https://roy-tong.github.io/Verovo/services.html)
 retain their separate sample-based scope. No fixed enterprise price or recovery
 promise is published. Scope and any fee are agreed before commissioned work.
 
@@ -152,7 +152,7 @@ Launch case cards — every number sourced and dated:
 images: [docs/launch](docs/launch/README.md).
 
 [CI](https://github.com/roy-tong/verovo/actions/workflows/conformance.yml) ·
-[Claims and reproductions](https://roy-tong.github.io/verovo/claims.html) ·
+[Claims and reproductions](https://roy-tong.github.io/Verovo/claims.html) ·
 [Roadmap](ROADMAP.md) · [Contributing](CONTRIBUTING.md) · [Agent instructions](AGENTS.md)
 
 The standard, SDK, rules and reusable checks support these workflows and remain

@@ -18,7 +18,7 @@ This release is the rename, plus the compatibility work the rename required.
 | Local data directory | `~/.agentmeasure/` | `~/.verovo/` |
 | Schema namespaces | `agentmeasure.lab/…`, `agentmeasure.commercial/…` | `verovo.lab/…`, `verovo.commercial/…` |
 | Settlement standard | AMS-1 | VSS-1 (Verovo Settlement Statement) |
-| Repository and site | `roy-tong/AgentMeasure` | `roy-tong/verovo`, `roy-tong.github.io/verovo` |
+| Repository and site | `roy-tong/AgentMeasure` | `roy-tong/verovo`, `roy-tong.github.io/Verovo` |
 
 If you scripted against the old names, this is a breaking rename; pin 0.8.0 if you
 need the previous surface for a migration window.

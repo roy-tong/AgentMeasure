@@ -10,7 +10,7 @@ body:
         This is a public issue. Do not include private customer data, credentials or raw production logs.
         It does not reserve a free audit or create a service commitment.
 
-        For a scoped paid check, see [the $10 / $20 services](https://roy-tong.github.io/verovo/services.html).
+        For a scoped paid check, see [the $10 / $20 services](https://roy-tong.github.io/Verovo/services.html).
         SDK installation: `npm install @verovo/mcp`.
   - type: input
     id: provider

@@ -27,7 +27,7 @@ decision it should inform).
 (five fields, ~2 minutes). Prefer email or this issue thread? Either works.
 Full methodology:
 [`product/AUDIT.md`](https://github.com/roy-tong/verovo/blob/main/product/AUDIT.md) ·
-[Website](https://roy-tong.github.io/verovo/).
+[Website](https://roy-tong.github.io/Verovo/).
 
 ## Why this matters
 

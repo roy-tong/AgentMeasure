@@ -31,7 +31,7 @@ settlement are not current commitments.
 
 Charge review project fees, acceptance/renewal fees and suitable recovery-based
 terms remain hypotheses; no fixed enterprise rate is published. Existing
-[free measurement runs](https://roy-tong.github.io/verovo/services.html) stay free.
+[free measurement runs](https://roy-tong.github.io/Verovo/services.html) stay free.
 
 A POC, ledger or SDK is an execution choice, not a replacement for the product
 boundary. Track engineering behavior, buyer value, payment and repeat purchase

@@ -171,6 +171,6 @@ The synthetic walkthrough is safe to reproduce, but real exports and output
 files can contain sensitive identifiers and are not automatically anonymized.
 
 For a browser-only vendor-rule check, use the
-[local recount page](https://roy-tong.github.io/verovo/recount.html).
+[local recount page](https://roy-tong.github.io/Verovo/recount.html).
 For the broader pipeline, including billing-ledger crosschecks and realized
 credits, see the [buyer-side commands](../healthcheck/README.md#outcome-billing-verification-prepare--recount--dispute--recovery).

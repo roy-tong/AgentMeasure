@@ -41,5 +41,5 @@ its maintainer, and not evidence of product adoption.
 | 3-block message → 3× tokens and cost; 49★; merged | [campaigns/audit-report-2026-09.md](../../campaigns/audit-report-2026-09.md), class 1 | 2026-09-06 → 09-09 |
 | Class has 10 confirmed tools; measured overcounts 2×–5× | [campaigns/audit-report-2026-09.md](../../campaigns/audit-report-2026-09.md) | 2026-09 |
 | Per-block re-summation, 2×–3× inflation instances | [campaigns/measurement-casebook.md](../../campaigns/measurement-casebook.md) | 2026-09-06/07 |
-| Fixed · Re-verified; PR #37 merged 2026-09-09 | [website/claims.html](https://roy-tong.github.io/verovo/claims.html) | published index |
+| Fixed · Re-verified; PR #37 merged 2026-09-09 | [website/claims.html](https://roy-tong.github.io/Verovo/claims.html) | published index |
 | Fix reconciles cumulative Claude usage snapshots | [campaigns/audit-report-2026-09.md](../../campaigns/audit-report-2026-09.md), fixes section | merged 09-09 |

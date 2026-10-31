@@ -14,7 +14,7 @@ endorsement by any audited project.
 The audit behind the first two cards covered ~110 repositories
 (2026-09-06 to 09-09) and filed 65+ evidence-backed findings, of which 45+
 were verified accounting bugs and 23 fixes were merged or accepted upstream
-([claims index](https://roy-tong.github.io/verovo/claims.html), 2026-10-11
+([claims index](https://roy-tong.github.io/Verovo/claims.html), 2026-10-11
 figures). The third card is a different kind of evidence: a third-party
 submission re-measured with this repository's method, published 2026-10-30
 with the submitter's permission.

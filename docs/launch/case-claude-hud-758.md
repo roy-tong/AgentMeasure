@@ -39,5 +39,5 @@ largest, passed clean.
 |---|---|---|
 | 1h writes at 1.25× — 37.5% understated on that component; 27.9k★ | [campaigns/audit-report-2026-09.md](../../campaigns/audit-report-2026-09.md), class 3 | 2026-09-06 → 09-09 |
 | 5-min writes 1.25×, 1-hour writes 2×, reads 0.1×; class = 9 tools | [campaigns/audit-report-2026-09.md](../../campaigns/audit-report-2026-09.md) | 2026-09 |
-| Fixed · Re-verified; PR #758 merged (27.9k★) | [website/claims.html](https://roy-tong.github.io/verovo/claims.html) | published index |
+| Fixed · Re-verified; PR #758 merged (27.9k★) | [website/claims.html](https://roy-tong.github.io/Verovo/claims.html) | published index |
 | Cache-pricing class listing incl. claude-hud #758 | [campaigns/measurement-casebook.md](../../campaigns/measurement-casebook.md) | 2026-09-06/07 |

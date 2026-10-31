@@ -14,7 +14,7 @@
 - Send a link, not a PDF: public vendor rule cards (versioned, sourced) and VSS-1 badges (a four-stage evidence ladder — no composite scores).
 - Install from PyPI, npm or GitHub; CI smoke-tests the packaged wheel in a fresh environment on every push.
 
-Public release-notes page (kept current with the site): https://roy-tong.github.io/verovo/releases.html
+Public release-notes page (kept current with the site): https://roy-tong.github.io/Verovo/releases.html
 
 Since v0.5.0: the verification system gained its public distribution layer
 and closed the two product gaps BP r32 named. Both package channels are now
