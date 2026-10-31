@@ -21,7 +21,7 @@ Rules that are intentionally strict:
 from __future__ import annotations
 
 import json
-from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
+from decimal import Decimal, InvalidOperation, ROUND_HALF_UP, ROUND_DOWN
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
@@ -118,15 +118,14 @@ def _allocate(total: Decimal, tasks: List[str], rule: Dict[str, Any]) -> Dict[st
     if denominator <= 0:
         raise EconomicsError("allocation weights sum to zero")
     total = _money(total)
-    allocated: Dict[str, Decimal] = {}
-    running = Decimal("0")
-    for index, task in enumerate(tasks):
-        if index == len(tasks) - 1:
-            share = total - running
-        else:
-            share = _money(total * weights[task] / denominator)
-            running += share
-        allocated[task] = share
+    # Largest remainder: preserve cents without negative shares or charging zero weights.
+    exact = {task: total * weights[task] / denominator for task in tasks}
+    allocated = {task: value.quantize(Decimal("0.01"), rounding=ROUND_DOWN)
+                 for task, value in exact.items()}
+    cents = int((total - sum(allocated.values())) * 100)
+    ranked = sorted(tasks, key=lambda task: exact[task] - allocated[task], reverse=True)
+    for task in ranked[:cents]:
+        allocated[task] += Decimal("0.01")
     return allocated
 
 
@@ -170,6 +169,20 @@ def evaluate(case: Dict[str, Any]) -> Dict[str, Any]:
     shared_items: List[Tuple[Decimal, str, str]] = []  # amount, rule_id, cost_id
     unallocated: List[Dict[str, Any]] = []
     seen_cost = set()
+    charge_owners = {}
+
+    def claim_charge(item, row_id):
+        # Shared identity must be supplied by the importer; never guess from time/amount.
+        charge_id = str(item.get("charge_id") or "").strip()
+        if not charge_id:
+            return True
+        if charge_id in charge_owners:
+            findings.append({"code": "duplicate_charge", "severity": "review",
+                             "id": row_id, "message": "charge %s already counted as %s" %
+                             (charge_id, charge_owners[charge_id])})
+            return False
+        charge_owners[charge_id] = row_id
+        return True
 
     # Technical usage is not a financial cost unless explicitly financialized.
     for usage_id, item in usage.items():
@@ -184,7 +197,7 @@ def evaluate(case: Dict[str, Any]) -> Dict[str, Any]:
             unallocated.append({"kind": "usage", "id": usage_id,
                                 "reason": "run has no known task_id"})
             continue
-        if not item.get("financialized"):
+        if item.get("financialized") is not True:
             continue
         source_ref = str(item.get("source_ref") or "").strip()
         if not source_ref:
@@ -195,7 +208,8 @@ def evaluate(case: Dict[str, Any]) -> Dict[str, Any]:
         amount = _amount(item, "cost", "usage %s" % usage_id)
         if amount < 0:
             raise EconomicsError("usage cost cannot be negative: %s" % usage_id)
-        direct[task_id] += amount
+        if claim_charge(item, usage_id):
+            direct[task_id] += amount
 
     # Direct and shared cost items. Duplicate financial rows are findings, not sums.
     for index, item in enumerate(cost_items):
@@ -227,14 +241,16 @@ def evaluate(case: Dict[str, Any]) -> Dict[str, Any]:
                 unallocated.append({"kind": "cost_item", "id": cost_id,
                                     "reason": "unknown task_id %s" % task_id})
                 continue
-            direct[task_id] += amount
+            if claim_charge(item, cost_id):
+                direct[task_id] += amount
             continue
         rule_id = str(item.get("allocation_rule") or "").strip()
         if not rule_id or rule_id not in rules:
             unallocated.append({"kind": "cost_item", "id": cost_id,
                                 "reason": "shared cost needs a known allocation_rule"})
             continue
-        shared_items.append((amount, rule_id, cost_id))
+        if claim_charge(item, cost_id):
+            shared_items.append((amount, rule_id, cost_id))
 
     allocated: Dict[str, Decimal] = {task_id: Decimal("0") for task_id in task_ids}
     allocation_details: List[Dict[str, Any]] = []
@@ -253,6 +269,11 @@ def evaluate(case: Dict[str, Any]) -> Dict[str, Any]:
     outcome_rows: List[Dict[str, Any]] = []
     verified_success = set()
     verified_value: Dict[str, Decimal] = {}
+    seen_outcomes = set()
+    task_statuses = {}
+    for item in outcomes:
+        if isinstance(item, dict) and item.get("verified") is True and item.get("source_ref"):
+            task_statuses.setdefault(item.get("task_id"), set()).add(item.get("status"))
     for index, item in enumerate(outcomes):
         if not isinstance(item, dict):
             raise EconomicsError("outcomes[%d] must be an object" % index)
@@ -260,8 +281,18 @@ def evaluate(case: Dict[str, Any]) -> Dict[str, Any]:
         if task_id not in tasks:
             raise EconomicsError("outcome references unknown task: %s" % task_id)
         status = str(item.get("status") or "")
-        verified = bool(item.get("verified"))
+        verified = item.get("verified") is True
         source_ref = str(item.get("source_ref") or "").strip()
+        identity = (task_id, source_ref, status)
+        if source_ref and identity in seen_outcomes:
+            findings.append({"code": "duplicate_outcome", "severity": "review",
+                             "task_id": task_id, "message": "duplicate outcome excluded"})
+            continue
+        seen_outcomes.add(identity)
+        if len(task_statuses.get(task_id, set())) > 1:
+            verified = False
+            findings.append({"code": "conflicting_outcome", "severity": "review",
+                             "task_id": task_id, "message": "conflicting task states require reconciliation"})
         row = {"task_id": task_id, "status": status, "verified": verified,
                "source_ref": source_ref}
         if status == "success" and verified and source_ref:
@@ -271,7 +302,7 @@ def evaluate(case: Dict[str, Any]) -> Dict[str, Any]:
                              "task_id": task_id,
                              "message": "outcome is not verified success; excluded from success denominator"})
         if item.get("value") is not None:
-            if _currency(item, "outcome %s" % task_id, currency) and item.get("value_verified") and verified and status == "success":
+            if _currency(item, "outcome %s" % task_id, currency) and item.get("value_verified") is True and verified and source_ref and status == "success":
                 value = _dec(item.get("value"), "outcome value %s" % task_id)
                 if value < 0:
                     raise EconomicsError("outcome value cannot be negative: %s" % task_id)
@@ -306,21 +337,29 @@ def evaluate(case: Dict[str, Any]) -> Dict[str, Any]:
     verified_value_total = sum(verified_value.values(), Decimal("0"))
     roi = None
     roi_reason = "no verified business value in the case currency"
-    if verified_value_total > 0 and total_cost > 0:
+    if verified_value and total_cost > 0:
         roi = str(((verified_value_total - total_cost) / total_cost).quantize(
             Decimal("0.0001"), rounding=ROUND_HALF_UP))
         roi_reason = "verified value and fully loaded cost in the same currency/period"
 
-    loss_total = sum(
-        (_dec(item.get("amount"), "loss event amount")
-         for item in loss_events if isinstance(item, dict) and item.get("amount") is not None),
-        Decimal("0"),
-    )
+    loss_total = Decimal("0")
+    seen_losses = set()
     loss_rows = []
     for index, item in enumerate(loss_events):
         if not isinstance(item, dict):
             raise EconomicsError("loss_events[%d] must be an object" % index)
         _currency(item, "loss event %d" % index, currency)
+        amount = _dec(item.get("amount", 0), "loss amount")
+        if amount < 0:
+            raise EconomicsError("loss amount cannot be negative")
+        identity = item.get("loss_id") or item.get("source_ref")
+        if (identity and identity not in seen_losses and item.get("status") == "confirmed"
+                and item.get("source_ref") and item.get("task_id") in tasks):
+            loss_total += amount
+            seen_losses.add(identity)
+        else:
+            findings.append({"code": "unconfirmed_or_duplicate_loss", "severity": "review",
+                             "message": "loss excluded from confirmed loss total"})
         loss_rows.append({
             "loss_id": item.get("loss_id", ""), "task_id": item.get("task_id", ""),
             "amount": str(_money(_dec(item.get("amount", 0), "loss amount"))),

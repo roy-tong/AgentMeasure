@@ -52,3 +52,11 @@ verovo economics --case case.json --json out.json --markdown out.md
 
 The command is read-only with respect to the case and writes only the requested
 output paths.
+
+## Reconciliation and recovery rules
+
+A shared `charge_id` identifies the same financial charge represented in both usage and bill records. Supply it only when the mapping is known. The first linked row is counted and later representations become review findings; reconcile mismatched amounts before using the result. Without this explicit ID, different source references remain distinct costs.
+
+Repeated task/source/status outcome records are counted once. Conflicting verified task states (including a later reversal) exclude that task from success and value until the caller supplies a reconciled snapshot. Verification fields must be JSON booleans, and business value needs a source reference. A verified value of zero yields ROI -1 when costs are positive.
+
+Shared expenses use largest-remainder cent allocation. Confirmed losses need a known task and source and are deduplicated by loss identity; estimates remain visible but are excluded from confirmed totals. These are input-contract checks, not independent verification of financial documents.

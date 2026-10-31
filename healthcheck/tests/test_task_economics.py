@@ -128,7 +128,8 @@ class TestTaskEconomics(unittest.TestCase):
                 [sys.executable, "-m", "verovo_healthcheck.cli", "economics",
                  "--case", str(case_path), "--json", str(json_path),
                  "--markdown", str(md_path)],
-                text=True, capture_output=True)
+                text=True, capture_output=True,
+                cwd=str(Path(__file__).resolve().parents[1]))
             self.assertEqual(0, cp.returncode, cp.stdout + cp.stderr)
             self.assertTrue(json_path.is_file())
             self.assertTrue(md_path.is_file())
@@ -141,9 +142,55 @@ class TestTaskEconomics(unittest.TestCase):
             cp = subprocess.run(
                 [sys.executable, "-m", "verovo_healthcheck.cli", "economics",
                  "--case", str(path), "--json", str(path)],
-                text=True, capture_output=True)
+                text=True, capture_output=True,
+                cwd=str(Path(__file__).resolve().parents[1]))
             self.assertEqual(2, cp.returncode)
             self.assertIn("overwrite", cp.stderr)
+
+
+    def test_rounding_never_charges_zero_weight_or_negative_share(self):
+        from decimal import Decimal
+        shares = econ._allocate(Decimal("0.03"), ["a", "b", "c"],
+                                {"method": "headcount", "basis": {"weights": {"a": 1, "b": 1, "c": 0}}})
+        self.assertEqual(Decimal("0.03"), sum(shares.values()))
+        self.assertEqual(0, shares["c"])
+        self.assertTrue(all(v >= 0 for v in shares.values()))
+
+    def test_duplicate_outcome_does_not_double_revenue(self):
+        case = base_case()
+        case["outcomes"].append(dict(case["outcomes"][0]))
+        self.assertEqual("100.00", econ.evaluate(case)["totals"]["verified_business_value"])
+
+    def test_reverted_outcome_removes_success_and_value(self):
+        case = base_case()
+        case["outcomes"].append({"task_id": "t1", "status": "reverted", "verified": True, "source_ref": "crm:reversal"})
+        totals = econ.evaluate(case)["totals"]
+        self.assertEqual(0, totals["verified_success_tasks"])
+        self.assertIsNone(totals["roi"])
+
+    def test_value_needs_source_and_real_boolean(self):
+        for field, value in [("source_ref", ""), ("verified", "false"), ("value_verified", "false")]:
+            case = base_case()
+            case["outcomes"][0][field] = value
+            self.assertIsNone(econ.evaluate(case)["totals"]["roi"])
+
+    def test_usage_and_bill_can_share_charge_identity(self):
+        case = base_case()
+        case["usage"][0]["charge_id"] = "vendor:line-1"
+        case["cost_items"] = [{"cost_id": "invoice-line", "task_id": "t1", "amount": "1.50", "source_ref": "invoice:line1", "charge_id": "vendor:line-1"}]
+        result = econ.evaluate(case)
+        self.assertEqual("3.50", result["totals"]["fully_loaded_cost"])
+        self.assertTrue(any(x["code"] == "duplicate_charge" for x in result["findings"]))
+
+    def test_zero_verified_value_is_negative_one_roi(self):
+        case = base_case()
+        case["outcomes"][0]["value"] = "0"
+        self.assertEqual("-1.0000", econ.evaluate(case)["totals"]["roi"])
+
+    def test_unconfirmed_and_duplicate_losses_are_excluded(self):
+        case = base_case()
+        case["loss_events"] += [dict(case["loss_events"][0]), {"loss_id": "l2", "task_id": "t1", "amount": "500", "status": "estimated", "source_ref": "estimate"}]
+        self.assertEqual("5.00", econ.evaluate(case)["totals"]["loss_events"])
 
 
 if __name__ == "__main__":

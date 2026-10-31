@@ -4,27 +4,67 @@
   "title": "Verovo Task Economics Case",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schema_version", "case_id", "period", "currency", "tasks"],
+  "required": [
+    "schema_version",
+    "case_id",
+    "period",
+    "currency",
+    "tasks"
+  ],
   "properties": {
-    "schema_version": {"const": "1.0"},
-    "case_id": {"type": "string", "minLength": 1},
+    "schema_version": {
+      "const": "1.0"
+    },
+    "case_id": {
+      "type": "string",
+      "minLength": 1
+    },
     "period": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["start", "end"],
-      "properties": {"start": {"type": "string"}, "end": {"type": "string"}}
+      "required": [
+        "start",
+        "end"
+      ],
+      "properties": {
+        "start": {
+          "type": "string"
+        },
+        "end": {
+          "type": "string"
+        }
+      }
     },
-    "currency": {"type": "string", "minLength": 1},
+    "currency": {
+      "type": "string",
+      "minLength": 1
+    },
     "allocation_rules": {
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["id", "version", "method"],
+        "required": [
+          "id",
+          "version",
+          "method"
+        ],
         "properties": {
-          "id": {"type": "string"},
-          "version": {"type": "string"},
-          "method": {"enum": ["equal", "headcount", "revenue"]},
-          "basis": {"type": "object"}
+          "id": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          },
+          "method": {
+            "enum": [
+              "equal",
+              "headcount",
+              "revenue"
+            ]
+          },
+          "basis": {
+            "type": "object"
+          }
         }
       }
     },
@@ -33,12 +73,22 @@
       "minItems": 1,
       "items": {
         "type": "object",
-        "required": ["task_id"],
+        "required": [
+          "task_id"
+        ],
         "properties": {
-          "task_id": {"type": "string"},
-          "type": {"type": "string"},
-          "started_at": {"type": "string"},
-          "ended_at": {"type": "string"}
+          "task_id": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "started_at": {
+            "type": "string"
+          },
+          "ended_at": {
+            "type": "string"
+          }
         }
       }
     },
@@ -46,13 +96,25 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["run_id"],
+        "required": [
+          "run_id"
+        ],
         "properties": {
-          "run_id": {"type": "string"},
-          "task_id": {"type": "string"},
-          "agent": {"type": "string"},
-          "model": {"type": "string"},
-          "started_at": {"type": "string"}
+          "run_id": {
+            "type": "string"
+          },
+          "task_id": {
+            "type": "string"
+          },
+          "agent": {
+            "type": "string"
+          },
+          "model": {
+            "type": "string"
+          },
+          "started_at": {
+            "type": "string"
+          }
         }
       }
     },
@@ -60,14 +122,36 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["usage_id", "run_id"],
+        "required": [
+          "usage_id",
+          "run_id"
+        ],
         "properties": {
-          "usage_id": {"type": "string"},
-          "run_id": {"type": "string"},
-          "cost": {"type": ["number", "string"]},
-          "currency": {"type": "string"},
-          "source_ref": {"type": "string"},
-          "financialized": {"type": "boolean"}
+          "usage_id": {
+            "type": "string"
+          },
+          "run_id": {
+            "type": "string"
+          },
+          "cost": {
+            "type": [
+              "number",
+              "string"
+            ]
+          },
+          "currency": {
+            "type": "string"
+          },
+          "source_ref": {
+            "type": "string"
+          },
+          "financialized": {
+            "type": "boolean"
+          },
+          "charge_id": {
+            "type": "string",
+            "description": "Explicit shared financial charge identity across usage and invoice rows; importer supplied, never inferred."
+          }
         }
       }
     },
@@ -75,15 +159,34 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["document_id"],
+        "required": [
+          "document_id"
+        ],
         "properties": {
-          "document_id": {"type": "string"},
-          "type": {"type": "string"},
-          "vendor": {"type": "string"},
-          "currency": {"type": "string"},
-          "total": {"type": ["number", "string"]},
-          "period": {"type": "string"},
-          "source_ref": {"type": "string"}
+          "document_id": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "vendor": {
+            "type": "string"
+          },
+          "currency": {
+            "type": "string"
+          },
+          "total": {
+            "type": [
+              "number",
+              "string"
+            ]
+          },
+          "period": {
+            "type": "string"
+          },
+          "source_ref": {
+            "type": "string"
+          }
         }
       }
     },
@@ -91,16 +194,43 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["cost_id", "amount", "source_ref"],
+        "required": [
+          "cost_id",
+          "amount",
+          "source_ref"
+        ],
         "properties": {
-          "cost_id": {"type": "string"},
-          "task_id": {"type": "string"},
-          "allocation_rule": {"type": "string"},
-          "vendor": {"type": "string"},
-          "amount": {"type": ["number", "string"]},
-          "currency": {"type": "string"},
-          "period": {"type": "string"},
-          "source_ref": {"type": "string"}
+          "cost_id": {
+            "type": "string"
+          },
+          "task_id": {
+            "type": "string"
+          },
+          "allocation_rule": {
+            "type": "string"
+          },
+          "vendor": {
+            "type": "string"
+          },
+          "amount": {
+            "type": [
+              "number",
+              "string"
+            ]
+          },
+          "currency": {
+            "type": "string"
+          },
+          "period": {
+            "type": "string"
+          },
+          "source_ref": {
+            "type": "string"
+          },
+          "charge_id": {
+            "type": "string",
+            "description": "Explicit shared financial charge identity across usage and invoice rows; importer supplied, never inferred."
+          }
         }
       }
     },
@@ -108,16 +238,38 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["task_id", "status"],
+        "required": [
+          "task_id",
+          "status"
+        ],
         "properties": {
-          "task_id": {"type": "string"},
-          "status": {"type": "string"},
-          "verified": {"type": "boolean"},
-          "source_ref": {"type": "string"},
-          "observed_at": {"type": "string"},
-          "value": {"type": ["number", "string"]},
-          "value_verified": {"type": "boolean"},
-          "currency": {"type": "string"}
+          "task_id": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "verified": {
+            "type": "boolean"
+          },
+          "source_ref": {
+            "type": "string"
+          },
+          "observed_at": {
+            "type": "string"
+          },
+          "value": {
+            "type": [
+              "number",
+              "string"
+            ]
+          },
+          "value_verified": {
+            "type": "boolean"
+          },
+          "currency": {
+            "type": "string"
+          }
         }
       }
     },
@@ -125,14 +277,32 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["loss_id", "amount"],
+        "required": [
+          "loss_id",
+          "amount"
+        ],
         "properties": {
-          "loss_id": {"type": "string"},
-          "task_id": {"type": "string"},
-          "amount": {"type": ["number", "string"]},
-          "currency": {"type": "string"},
-          "status": {"type": "string"},
-          "source_ref": {"type": "string"}
+          "loss_id": {
+            "type": "string"
+          },
+          "task_id": {
+            "type": "string"
+          },
+          "amount": {
+            "type": [
+              "number",
+              "string"
+            ]
+          },
+          "currency": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "source_ref": {
+            "type": "string"
+          }
         }
       }
     }

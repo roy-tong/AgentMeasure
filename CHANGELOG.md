@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased — execution and economics reliability
+
+- Harden interruption/evidence handling and add regression coverage.
+- Align product positioning and publish the feature implementation status.
+
 All notable changes to Verovo (standard, SDK, and reference product) are
 documented here. Format follows [Keep a Changelog](https://keepachangelog.com/).
 

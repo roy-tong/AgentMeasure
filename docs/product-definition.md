@@ -2,7 +2,10 @@
 
 Baseline: 2026-10-30. Implementation alignment: 2026-10-31.
 
-**Verovo is a buyer-side product for verifying AI service charges and delivery.**
+**Verovo is a buyer-side AI financial audit and task economics engine.**
+It connects technical usage, financial records and business outcomes to compute
+direct/shared task costs and cost per verified success. Verified monetary value
+supports ROI calculation; missing evidence remains explicit.
 It connects applicable charging rules, spending and usage records, delivery
 evidence and buyer requirements to support payment, reconciliation, acceptance,
 remediation and renewal decisions. Provider-side work extends from concrete
@@ -15,7 +18,7 @@ results. Finance and procurement help with payment, contracts and approval.
 Identify the person who has the records, the person who uses the result and the
 person who can commission work; these may be different people.
 
-## Two independent workflows
+## Independent review workflows and task economics
 
 | Workflow | Basis | Result |
 |---|---|---|
@@ -68,3 +71,7 @@ The current [free measurement runs](https://roy-tong.github.io/verovo/services.h
 remain free and limited to measurement samples. Enterprise review scope and any
 fee are agreed for a concrete task; there is no fixed enterprise rate or recovery
 guarantee. See [commercial scope](commercial-narrative.md).
+
+## Task economics
+
+`economics` consumes explicit local case files linking tasks, runs, financialized usage, costs and outcomes. See [the contract](task-economics.md). This extends charge and delivery review without treating one as proof of the other. Automated invoice extraction, causal optimization and insurance are not shipped capabilities.

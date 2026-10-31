@@ -2,11 +2,11 @@
 
 <img src="assets/verovo-logo-card.png" alt="Verovo" width="300">
 
-**Verify AI service charges and delivery — from the buyer’s side.**
+**Know what an AI task really costs, and what its result is worth.**
 
-Verovo helps teams connect applicable billing rules, usage and payment records,
-delivery evidence and business requirements. Use the results for reconciliation,
-payment, acceptance, remediation and renewal.
+Verovo connects buyer logs, supplier charges, financial records and business outcomes. Review charges and delivery, allocate direct and shared costs to tasks, and calculate cost per verified success and ROI when the evidence supports it.
+
+For teams buying or operating AI services, the output is a reproducible economic record: task costs, allocation rules, verified results and explicit evidence gaps. The local `economics` command is available on main; invoice extraction, automated optimization and insurance remain future work. [Feature status and build/integrate decisions](docs/feature-status.md).
 
 <p align="center">
   <img src="assets/launch/hero.svg" alt="Verovo connects charging rules, usage and payment records, and delivery evidence into one local buyer review that reports charges and delivery as separate PASS / FAIL / UNPROVABLE verdicts" width="720">
@@ -15,11 +15,12 @@ payment, acceptance, remediation and renewal.
 [Website](https://roy-tong.github.io/verovo/) · [中文](README.zh-CN.md) ·
 [Product definition](docs/product-definition.md) · [Buyer task guide](docs/buyer-review.md)
 
-## Two workflows, one buyer decision
+## Three workflows for AI service buyers
 
 | Workflow | Question | Useful next step |
 |---|---|---|
 | **Charge review** | Do the charges match the applicable rules and records? | Reconcile, pay, request evidence or ask the supplier to review a difference |
+| **Task economics** | What does each task cost, including shared expenses? | Compare cost per verified success and evidence-backed business value |
 | **Delivery review** | Does the work meet the buyer’s stated requirements? | Accept, request remediation, adjust scope or decide on renewal |
 
 Run either workflow independently or combine them. Correct charges do not establish
