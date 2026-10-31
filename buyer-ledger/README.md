@@ -63,6 +63,12 @@ $B rule show <fingerprint> --provider X --doc-type bill --tier bill_fact
 $B rule approve <fingerprint> --provider X --doc-type bill --tier bill_fact
 $B parse --document <doc-id>
 
+# 已知导出格式预设（openai/anthropic 用量 CSV；表头命中即确定性重放，未命中仍走 --agent）
+$B preset list
+$B preset apply openai/usage_csv
+$B import openai-usage.csv --provider openai --tier platform_usage --doc-type usage --period 2026-10
+# 客户材料索取清单与逐家导出步骤见 guides/export-guides.md
+
 $B policy policy.json
 $B price --provider X --period 2026-10
 $B reconcile --period 2026-10

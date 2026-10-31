@@ -146,6 +146,37 @@ def cmd_rule(args):
     store.close()
 
 
+def cmd_preset(args):
+    from . import presets as presets_mod
+    if args.action == "list":
+        for name, p in presets_mod.PRESETS.items():
+            print("%-22s %-12s %-8s %s" % (name, p["doc_type"], p["tier"], p["status"]))
+        return
+    if args.action == "show":
+        if args.name not in presets_mod.PRESETS:
+            raise ValueError("preset not found: %s" % args.name)
+        p = presets_mod.PRESETS[args.name]
+        print(json.dumps({"name": args.name, "provider": p["provider"],
+                          "doc_type": p["doc_type"], "tier": p["tier"],
+                          "status": p["status"],
+                          "expected_header": p["header"], "spec": p["spec"]},
+                         ensure_ascii=False, indent=2))
+        return
+    # apply：登记为已批准规则；真实文件表头一致时 import 直接重放
+    store = _store(args)
+    try:
+        fingerprint = presets_mod.apply_preset(store, args.name)
+    except KeyError:
+        store.close()
+        raise ValueError("preset not found: %s" % args.name)
+    p = presets_mod.PRESETS[args.name]
+    print(json.dumps({"applied": args.name, "provider": p["provider"],
+                      "doc_type": p["doc_type"], "tier": p["tier"],
+                      "fingerprint": fingerprint, "created_via": "preset"},
+                     ensure_ascii=False, indent=2))
+    store.close()
+
+
 def cmd_catalog(args):
     catalog = catalog_mod.load_catalog()
     if args.action == "summary":
@@ -411,6 +442,11 @@ def build_parser():
     sp.add_argument("--doc-type", default="")
     sp.add_argument("--tier", default="")
     sp.set_defaults(func=cmd_rule)
+
+    sp = sub.add_parser("preset", help="内置导出格式预设（登记已知表头的解析规则）")
+    sp.add_argument("action", choices=["list", "show", "apply"])
+    sp.add_argument("name", nargs="?", default="")
+    sp.set_defaults(func=cmd_preset)
 
     sp = sub.add_parser("catalog", help="国内外 Agent 工具账单/计费/审计能力目录")
     sp.add_argument("action", choices=["list", "show", "coverage", "summary"])
