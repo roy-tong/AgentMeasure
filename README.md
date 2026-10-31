@@ -44,9 +44,17 @@ python3 healthcheck/verovo review --sample --html buyer-review.html --json buyer
 
 The synthetic example returns **charges: PASS**, **delivery: FAIL**, and one missing
 delivery observation as **UNPROVABLE**. Open `buyer-review.html` to inspect both lanes,
-criteria, rule references, observed values and evidence hashes.
+criteria, rule references, observed values and evidence hashes. Every report carries
+three **conclusion levels**, kept separate: Level 1 rule consistency (what the run
+establishes), Level 2 evidence credibility (rule applicability, source truth, coverage —
+reported as not established when absent), Level 3 the buyer business decision (outside
+the tool). The six operating stages — Intake → Source Check → Rule Resolution →
+Reconciliation → Delivery Assessment → Buyer Decision — map each step to a command in
+[docs/review-method/buyer-review-stages.md](docs/review-method/buyer-review-stages.md).
 
 [View the synthetic report](https://roy-tong.github.io/verovo/examples/buyer-review.html).
+Agent hosts can call the same review read-only via MCP (`verovo-mcp`: `verovo_review`,
+`verovo_review_template`, `verovo_recount`; no write or submit actions exposed).
 To review your own task, copy the [task and observation examples](healthcheck/verovo_healthcheck/demo/buyer-review.json)
 and follow the [input guide](docs/buyer-review.md). Checks compare supplied criteria
 with values in local JSON files. A person must confirm rule applicability and source

@@ -15,6 +15,21 @@ documented here. Format follows [Keep a Changelog](https://keepachangelog.com/).
   criteria, local JSON observations, traceable HTML/JSON and synthetic examples.
 - Missing/null/incompatible evidence remains UNPROVABLE; rule and business criteria
   stay separate. Inputs cannot be overwritten by reports.
+- Conclusion levels on every review (text/HTML/JSON): Level 1 rule consistency
+  (established by the run), Level 2 evidence credibility (not established: rule
+  applicability is reviewer-supplied, with an explicit human-confirmation count from
+  optional `basis.confirmed_by/confirmed_at`; sources are local SHA-256 snapshots),
+  Level 3 buyer business decision (outside the tool, points to `verovo decisions`).
+  Levels are reported separately and never collapsed into a score.
+- Six-stage operating map: [docs/review-method/buyer-review-stages.md](docs/review-method/buyer-review-stages.md)
+  (Intake → Source Check → Rule Resolution → Reconciliation → Delivery Assessment →
+  Buyer Decision, each mapped to a shipped command and its human part).
+- Minimal buyer MCP server `verovo-mcp` (`verovo_healthcheck.mcp_server`, stdio
+  JSON-RPC, stdlib only): `verovo_review`, `verovo_review_template`, `verovo_recount`.
+  Read/local-compute only — dispute/recovery and any write action stay CLI-only.
+- Skill task entries `verovo-review-charge` / `verovo-review-delivery` /
+  `verovo-prepare-dispute` inside the single `verovo` skill (one skill, never
+  separate installs), each mapped to the six stages.
 
 ### Changed
 

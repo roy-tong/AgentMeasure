@@ -113,6 +113,33 @@ class ReviewTests(unittest.TestCase):
         self.assertTrue(json.loads(data.read_text())['synthetic'])
         self.assertIn('UNPROVABLE', report.read_text())
 
+    def test_conclusion_levels_are_separate_and_level_two_counts_confirmations(self):
+        """Level 1/2/3 分层：本次报告只到达 Level 1；未确认的规则适用性如实计数。"""
+        result = self.run_review()
+        levels = result['conclusion_levels']
+        self.assertIn('Established by this run', levels['level_1_rule_consistency'])
+        self.assertIn('0 of 3 criteria', levels['level_2_evidence_credibility'])
+        self.assertIn('Not established', levels['level_2_evidence_credibility'])
+        self.assertIn('verovo decisions', levels['level_3_buyer_decision'])
+        text = review.report_text(result)
+        self.assertIn('Conclusion levels', text)
+        self.assertIn('Level 1 rule consistency', text)
+        self.assertIn('Level 3 buyer decision', text)
+        html = review.report_html(result)
+        self.assertIn('Conclusion levels', html)
+
+    def test_basis_confirmation_echoed_never_inferred(self):
+        self.task['criteria'][0]['basis']['confirmed_by'] = 'Dana (counsel)'
+        self.task['criteria'][0]['basis']['confirmed_at'] = '2026-10-31'
+        result = self.run_review()
+        self.assertIn('1 of 3 criteria', result['conclusion_levels']['level_2_evidence_credibility'])
+        text = review.report_text(result)
+        self.assertIn('confirmed by Dana (counsel) at 2026-10-31', text)
+        # 半截确认（只有 by 没有 at）直接拒绝，不允许暗示已确认
+        self.task['criteria'][0]['basis'].pop('confirmed_at')
+        with self.assertRaises(ValueError):
+            self.run_review()
+
     def test_cli_preserves_input_and_template(self):
         self.run_review()
         task = self.root/'task.json'

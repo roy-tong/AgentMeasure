@@ -2,6 +2,17 @@
 
 Criteria and rule references are supplied by the reviewer. This module compares
 facts; it does not discover contractual obligations or certify source truth.
+
+Conclusion levels (kept separate, never collapsed):
+  Level 1 rule consistency — what this run establishes: PASS/FAIL/UNPROVABLE
+      verdicts of supplied criteria against local observations.
+  Level 2 evidence credibility — not established by this run: rule
+      applicability is reviewer-supplied (basis.ref/version; an optional
+      human confirmation confirmed_by/confirmed_at is echoed, never inferred),
+      sources are local snapshots with SHA-256 (no third-party corroboration),
+      coverage equals the stated scope.
+  Level 3 buyer business decision — outside the tool: pay / accept / dispute /
+      remediate is a human decision recorded separately (`verovo decisions`).
 """
 import hashlib
 import html
@@ -124,6 +135,13 @@ def evaluate(task_path, synthetic=False):
             raise ValueError("%s criteria require %s" % (lane, expected_kind))
         for key in ("ref", "version"):
             _text(basis, key)
+        # Optional human confirmation that the cited rule/requirement actually
+        # applies. Echoed, never inferred; absence is reported, not hidden.
+        if ("confirmed_by" in basis) != ("confirmed_at" in basis):
+            raise ValueError("basis confirmation requires confirmed_by and confirmed_at together")
+        for key in ("confirmed_by", "confirmed_at"):
+            if key in basis:
+                _text(basis, key)
         op, expected = criterion.get("operator"), criterion.get("expected")
         if op not in OPERATORS or not _scalar(expected):
             raise ValueError("use a supported operator and finite scalar expected value")
@@ -185,11 +203,30 @@ def evaluate(task_path, synthetic=False):
                    "FAIL" if counts["FAIL"] else
                    "UNPROVABLE" if not checks or counts["UNPROVABLE"] else "PASS")
         lanes[lane] = {"verdict": verdict, "checks": len(checks), "counts": counts}
+    confirmed = sum(1 for r in rows if r["basis"].get("confirmed_by"))
+    conclusion_levels = {
+        "level_1_rule_consistency": (
+            "Established by this run: per-criterion PASS/FAIL/UNPROVABLE verdicts "
+            "comparing supplied criteria with local observations."),
+        "level_2_evidence_credibility": (
+            "Not established by this run: rule applicability is reviewer-supplied "
+            "(%d of %d criteria carry an explicit human confirmation "
+            "basis.confirmed_by/confirmed_at); sources are local snapshots with "
+            "SHA-256 and no third-party corroboration; coverage equals the stated "
+            "scope (%s / %s)." % (confirmed, len(rows),
+                                  scope.get("service", ""), scope.get("period_or_window", ""))),
+        "level_3_buyer_decision": (
+            "Outside this tool: whether to pay, accept, dispute or require "
+            "remediation is a buyer decision recorded separately "
+            "(verovo decisions). A rule-consistent invoice is not delivery proof; "
+            "a failed delivery check is not authorization to withhold payment."),
+    }
     return {"schema_version": "1.0", "kind": "verovo.buyer-review",
             "generated_at": datetime.now(timezone.utc).isoformat(),
             "synthetic": synthetic, "scope": scope, "workflow": workflow,
             "task_sha256": task_hash, "input_paths": sorted(set(input_paths)),
             "lanes": lanes, "criteria": rows,
+            "conclusion_levels": conclusion_levels,
             "boundary": "Verdicts apply only to supplied criteria and local observations. "
                         "Rule applicability and source truth need human review. "
                         "Delivery failure is not proof of incorrect billing or a refund. "
@@ -203,9 +240,20 @@ def report_text(result):
     for lane, summary in result["lanes"].items():
         lines.append("%s: %s (%d checks; %d evidence gaps)" % (
             lane.upper(), summary["verdict"], summary["checks"], summary["counts"]["UNPROVABLE"]))
+    levels = result.get("conclusion_levels") or {}
+    lines.extend(["", "Conclusion levels (kept separate, never collapsed):"])
+    for key, label in (("level_1_rule_consistency", "Level 1 rule consistency"),
+                       ("level_2_evidence_credibility", "Level 2 evidence credibility"),
+                       ("level_3_buyer_decision", "Level 3 buyer decision")):
+        if levels.get(key):
+            lines.append("  %s: %s" % (label, levels[key]))
     for row in result["criteria"]:
+        confirmed = ""
+        if row["basis"].get("confirmed_by"):
+            confirmed = " [rule applicability confirmed by %s at %s]" % (
+                row["basis"]["confirmed_by"], row["basis"]["confirmed_at"])
         lines.extend(["", "[%s] %s / %s: %s" % (row["verdict"], row["lane"], row["id"], row["statement"]),
-                      "  Basis: %s (version %s)" % (row["basis"]["ref"], row["basis"]["version"]),
+                      "  Basis: %s (version %s)%s" % (row["basis"]["ref"], row["basis"]["version"], confirmed),
                       "  Expected: %s %s; observed: %s" % (row["operator"], row["expected"], row["observed"]),
                       "  Evidence: %s#%s" % (row["source"]["path"], row["source"]["pointer"]),
                       "  SHA-256: %s" % (row["source_sha256"] or "unavailable"), "  " + row["reason"]])
@@ -218,7 +266,15 @@ def report_html(result):
     cards = "".join('<section><h2>%s</h2><strong>%s</strong><p>%s checks · %s evidence gaps</p></section>' %
                     (esc(lane.title()), esc(v["verdict"]), v["checks"], v["counts"]["UNPROVABLE"])
                     for lane, v in result["lanes"].items())
+    levels = result.get("conclusion_levels") or {}
+    level_items = "".join("<li><strong>%s</strong> — %s</li>" % (esc(label), esc(levels[key]))
+                          for key, label in (("level_1_rule_consistency", "Level 1 · rule consistency"),
+                                             ("level_2_evidence_credibility", "Level 2 · evidence credibility"),
+                                             ("level_3_buyer_decision", "Level 3 · buyer decision"))
+                          if levels.get(key))
     return '''<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Verovo — buyer review</title><style>body{font:16px/1.6 system-ui,sans-serif;background:#f7f8f3;color:#17372c;margin:0;padding:28px}main{max-width:1000px;margin:auto}.lanes{display:flex;gap:20px;flex-wrap:wrap}section{background:#e8f0e9;padding:18px 24px;flex:1;min-width:200px;border:1px solid #b8cdbf}h2{margin:0 0 10px}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:24px;border:1px solid #d5dfd7;font:13px/1.8 ui-monospace,monospace}@media print{body{padding:0;background:white}pre{border:0}}</style><main><h1>Verovo buyer review</h1><p>Charges and delivery are separate conclusions. Local, scoped checks; human review required.</p>''' + (
+<title>Verovo — buyer review</title><style>body{font:16px/1.6 system-ui,sans-serif;background:#f7f8f3;color:#17372c;margin:0;padding:28px}main{max-width:1000px;margin:auto}.lanes{display:flex;gap:20px;flex-wrap:wrap}section{background:#e8f0e9;padding:18px 24px;flex:1;min-width:200px;border:1px solid #b8cdbf}h2{margin:0 0 10px}.levels{background:#fff;border:1px solid #d5dfd7;padding:14px 24px;margin:20px 0}.levels ul{margin:8px 0 0;padding-left:18px}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:24px;border:1px solid #d5dfd7;font:13px/1.8 ui-monospace,monospace}@media print{body{padding:0;background:white}pre{border:0}}</style><main><h1>Verovo buyer review</h1><p>Charges and delivery are separate conclusions. Local, scoped checks; human review required.</p>''' + (
         "<p><strong>SYNTHETIC DEMO — not a customer result.</strong></p>" if result["synthetic"] else "") + (
-        '<div class="lanes">' + cards + '</div><pre>' + esc(report_text(result)) + '</pre></main></html>')
+        '<div class="lanes">' + cards + '</div>'
+        '<div class="levels"><strong>Conclusion levels</strong><ul>' + level_items + '</ul></div>'
+        '<pre>' + esc(report_text(result)) + '</pre></main></html>')

@@ -35,6 +35,11 @@ scenario. Tool-period reconciliation is another concrete buyer task. Broader
 coverage requires its own adapters, usable records and customer validation.
 
 The first implementation combines existing local tools and scoped human review.
+Review reports carry three separate conclusion levels: rule consistency (what a run
+establishes), evidence credibility (explicitly not established by the tool: rule
+applicability confirmation, third-party corroboration, coverage), and the buyer
+business decision (outside the tool). The levels are never collapsed into a score
+and Level 3 never becomes a tool output.
 The [buyer review command](buyer-review.md) compares explicit criteria with local
 JSON observations and produces separate charge/delivery reports. Supported
 recounts and Buyer Ledger remain specialized input and calculation capabilities.

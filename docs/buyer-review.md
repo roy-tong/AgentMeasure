@@ -52,7 +52,7 @@ publish a package or change the tagged release.
 | `workflow` | `charges`, `delivery` or `both` |
 | `scope` | Nonempty `buyer`, `service`, `account_or_task`, `period_or_window`, `decision`, `owner`; optional `due_date` |
 | `criteria` | Nonempty list with unique `id`, selected `lane`, `statement`, `basis`, `operator`, `expected`, `source` |
-| `basis` | `kind`: `billing_rule` for charges or `buyer_requirement` for delivery; nonempty `ref` and `version` |
+| `basis` | `kind`: `billing_rule` for charges or `buyer_requirement` for delivery; nonempty `ref` and `version`; optional `confirmed_by` + `confirmed_at` (together) record that a human confirmed rule applicability — the report echoes and counts them, never infers them |
 | `operator` | `equals`, `at_least`, `at_most`; ordering accepts finite numbers only |
 | `expected` | String, boolean or finite number; null is not an acceptance criterion |
 | `source` | Relative local JSON `path` and RFC 6901 `pointer` to the observation |

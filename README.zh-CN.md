@@ -42,6 +42,16 @@ python3 healthcheck/verovo review --sample --html buyer-review.html --json buyer
 打开 HTML 可查看独立结论、判据、观察值、来源与文件摘要。
 [查看合成示例报告](https://roy-tong.github.io/verovo/examples/buyer-review.html)。
 
+每份报告附带三层**结论分层**，互相独立、不合并成评分：**Level 1 规则一致性**（本次运行
+所能确立的）、**Level 2 证据可信性**（规则适用性、来源真实性与覆盖面——缺失时如实标注
+未确立，可选的 `basis.confirmed_by/confirmed_at` 人工确认会被回显计数，绝不推断）、
+**Level 3 买方业务裁决**（工具之外，指向 `verovo decisions` 记录）。六个操作阶段
+（Intake → Source Check → Rule Resolution → Reconciliation → Delivery Assessment →
+Buyer Decision，每步对应一条已发布命令与人工职责）见
+[docs/review-method/buyer-review-stages.md](docs/review-method/buyer-review-stages.md)。
+Agent 宿主可通过 MCP 只读调用同一核验（`verovo-mcp`：`verovo_review` /
+`verovo_review_template` / `verovo_recount`；不暴露任何写入或提交动作）。
+
 自己的任务按照[输入指南](docs/buyer-review.md)准备：明确买方、服务、账户/任务、窗口、决定和负责人，
 分别填写收费规则与业务判据，并指定本地 JSON 证据字段。工具比较所提供的判据和记录；
 规则是否适用、来源是否可信仍须人工复核，不自动解析任意合同或评价所有 AI 输出。

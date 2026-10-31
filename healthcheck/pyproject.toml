@@ -26,6 +26,7 @@ classifiers = [
 
 [project.scripts]
 verovo = "verovo_healthcheck.cli:main"
+verovo-mcp = "verovo_healthcheck.mcp_server:main"
 
 [tool.setuptools]
 packages = [

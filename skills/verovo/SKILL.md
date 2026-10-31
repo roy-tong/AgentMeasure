@@ -1,6 +1,6 @@
 ---
 name: verovo
-description: Review AI service charges and delivery from the buyer side, with explicit criteria, local evidence and separate conclusions. Also route supported billing recounts and agent telemetry conformance checks. 中文触发：AI 服务费用核验、交付验收、续约核验、账单复算、遥测语义核查、重试计数、用量口径。
+description: Review AI service charges and delivery from the buyer side, with explicit criteria, local evidence and separate conclusions. Also route supported billing recounts and agent telemetry conformance checks. Task entries: verovo-review-charge (费用核验: does the invoice match the rules on independent recount), verovo-review-delivery (交付核验: did the service meet stated requirements), verovo-prepare-dispute (build the negotiable Dispute & Recovery Pack). 中文触发：AI 服务费用核验、交付验收、续约核验、账单复算、争议材料、遥测语义核查、重试计数、用量口径。
 ---
 
 # Verovo — buyer charges and delivery
@@ -24,6 +24,21 @@ scope and decision owner, record separate rule references and business criteria,
 and reference authorized local JSON observations. Do not invent rules or missing
 facts. This compares supplied criteria; it does not independently certify sources,
 parse arbitrary contracts, or decide refunds. Delivery review can run alone.
+
+### Task entries (one skill — never separate installs)
+
+| Task | User asks | Loop (stages: `docs/review-method/buyer-review-stages.md`) | Closing artifact |
+| --- | --- | --- | --- |
+| `verovo-review-charge` | “检查这笔 AI 服务费用是否该付” | Intake → Source Check → Rule Resolution (`basis.kind=billing_rule`) → `recount`/`crosscheck` → review charges lane | Review report, charges lane + Tier 1/2 recount |
+| `verovo-review-delivery` | “交付是否达标，能否验收” | Intake → Source Check → Rule Resolution (`basis.kind=buyer_requirement`) → review delivery lane | Review report, delivery lane (runs alone) |
+| `verovo-prepare-dispute` | “准备争议材料” | Review both lanes → `verovo dispute` (cover letter + Tier 1 vendor rules + Tier 2 settlement standard) → buyer decides | Dispute & Recovery Pack (`verovo.commercial/dispute-pack`) |
+
+Every report carries three conclusion levels, kept separate: **Level 1** rule
+consistency (what the run establishes), **Level 2** evidence credibility (rule
+applicability confirmations, third-party corroboration — reported as not
+established when absent), **Level 3** the buyer business decision (outside the
+tool; record via `verovo decisions`). A rule-consistent invoice is not delivery
+proof; a failed delivery check is not authorization to withhold payment.
 
 Use `recount` for supported billing exports, `buyer-ledger/` for tool-period
 reconciliation and the measurement runners below for technical questions. No
