@@ -58,6 +58,7 @@ from . import decisions as decisions_mod
 from . import scaffold as scaffold_mod
 from . import review as review_mod
 from . import task_economics as economics_mod
+from . import invoice_intake as invoice_mod
 # Conformance pack loaded lazily in cmd_conformance
 
 DEFAULT_DAYS = 7
@@ -1732,6 +1733,26 @@ def cmd_review(args) -> int:
         return 2
 
 
+def cmd_invoice_intake(args) -> int:
+    """Extract local vendor invoice fields as an explicitly unreviewed draft."""
+    try:
+        result = invoice_mod.extract_invoice(args.file)
+        if args.json:
+            problem = _validate_output_paths([args.file], args.json)
+            if problem:
+                raise ValueError(problem)
+            if os.path.exists(args.json) and not args.force:
+                raise ValueError("output already exists; pass --force to replace")
+            with open(args.json, "w", encoding="utf-8") as out:
+                json.dump(result, out, ensure_ascii=False, indent=2)
+                out.write("\n")
+        print(json.dumps(result, ensure_ascii=False, indent=2))
+        return 0
+    except (ValueError, OSError) as exc:
+        print("error: %s" % exc, file=sys.stderr)
+        return 2
+
+
 def cmd_economics(args) -> int:
     """Compute a task-level economics case from a local, explicit case file."""
     try:
@@ -1777,6 +1798,14 @@ def build_parser() -> argparse.ArgumentParser:
     p_review.add_argument("--html", metavar="PATH", help="write a local offline review report")
     p_review.add_argument("--json", metavar="PATH", help="write traceable criteria, verdicts and source hashes")
     p_review.set_defaults(func=cmd_review)
+
+    p_inv = sub.add_parser(
+        "invoice-intake",
+        help="extract an unreviewed local invoice draft via optional invoice2data")
+    p_inv.add_argument("--file", required=True, help="local PDF/image/text invoice")
+    p_inv.add_argument("--json", metavar="PATH", help="write a source-linked draft JSON")
+    p_inv.add_argument("--force", action="store_true", help="replace an existing output")
+    p_inv.set_defaults(func=cmd_invoice_intake)
 
     p_econ = sub.add_parser(
         "economics",
