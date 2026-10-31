@@ -7,8 +7,8 @@
   "profiles": 5,
   "conformance": "Passing",
   "verified": {
-    "sha": "f5fbef3",
+    "sha": "66bea84",
     "at": "2026-10-31",
-    "run": "https://github.com/roy-tong/Verovo/actions/runs/41180006450"
+    "run": "https://github.com/roy-tong/Verovo/actions/runs/41180541376"
   }
 }
